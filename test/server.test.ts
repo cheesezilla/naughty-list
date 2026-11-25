@@ -100,8 +100,9 @@ describe('server', () => {
     expect(r.json().entry.entry).toMatchObject({ outcome: 'catch', imp: 'crumb_imp' });
     const me = (await get('/api/me', c)).json();
     expect(me.player.gold).toBe(312);
-    expect(me.journal).toHaveLength(1);
+    expect(me.journal).toHaveLength(2);
     expect(me.journal[0]).toMatchObject({ n: 1, kind: 'hunt', entry: { firstCatch: true } });
+    expect(me.journal[1]).toMatchObject({ n: 0, kind: 'event', entry: { type: 'intro' } });
     expect(me.player.seen).toEqual({ crumb_imp: 1 });
     expect(me.player.stats.goldEarned).toBe(12);
   });
@@ -119,7 +120,7 @@ describe('server', () => {
     const sell = (await post('/api/sell', { item: 'stale_cookie', amount: 10 }, c)).json();
     expect(sell.log.entry).toMatchObject({ type: 'sell', amount: 10, gold: 30 });
     const me = (await get('/api/me', c)).json();
-    expect(me.journal.map((r: { kind: string }) => r.kind)).toEqual(['event', 'event', 'event', 'hunt']);
+    expect(me.journal.map((r: { kind: string }) => r.kind)).toEqual(['event', 'event', 'event', 'hunt', 'event']);
   });
 
   it('keeps the last 50 hunts with the events between them, and pages the full history', async () => {
@@ -131,7 +132,7 @@ describe('server', () => {
     }
     const log = (await get('/api/me', c)).json().journal;
     expect(log.filter((r: { kind: string }) => r.kind === 'hunt')).toHaveLength(50);
-    expect(log.filter((r: { kind: string }) => r.kind === 'event')).toHaveLength(1);
+    expect(log.filter((r: { kind: string }) => r.kind === 'event')).toHaveLength(1); // the intro is older than the 50th hunt
     expect(log[0].n).toBe(60);
     expect(log.at(-1)).toMatchObject({ kind: 'hunt', n: 11 });
 
@@ -139,9 +140,9 @@ describe('server', () => {
     expect(page1.rows).toHaveLength(40);
     expect(page1.more).toBe(true);
     const page2 = (await get(`/api/history?limit=40&before=${page1.rows.at(-1).id}`, c)).json();
-    expect(page2.rows).toHaveLength(22);
+    expect(page2.rows).toHaveLength(23);
     expect(page2.more).toBe(false);
-    expect((await get('/api/history?filter=events', c)).json().rows).toHaveLength(2);
+    expect((await get('/api/history?filter=events', c)).json().rows).toHaveLength(3);
     expect((await get('/api/history?filter=catches&limit=200', c)).json().rows).toHaveLength(60);
     expect((await get('/api/history?filter=bosses', c)).json().rows).toHaveLength(0);
   });
@@ -205,12 +206,14 @@ describe('start over', () => {
     expect(samMe.user.username).toBe('sam');
     expect(samMe.player.gold).toBe(300);
     expect(samMe.player.inventory.mistletoe_charm).toBeUndefined();
-    expect(samMe.journal).toHaveLength(0);
+    // the log starts again with Santa's letter
+    expect(samMe.journal).toEqual([expect.objectContaining({ n: 0, kind: 'event', entry: { type: 'intro' } })]);
+    expect(r.json().journal).toHaveLength(1);
 
     // the other player is untouched
     const eddyMe = (await get('/api/me', admin)).json();
     expect(eddyMe.player.gold).toBe(312);
-    expect(eddyMe.journal).toHaveLength(1);
+    expect(eddyMe.journal).toHaveLength(2);
 
     // the restart is logged with what sam had, visible to sam and to the admin
     const own = (await get('/api/restarts', sam)).json().restarts;

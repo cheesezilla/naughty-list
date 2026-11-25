@@ -17,7 +17,7 @@ export interface Game {
   hunt: () => Promise<void>;
   busy: boolean;
   setPlayer: (p: PlayerState) => void;
-  resetLog: () => void;
+  resetLog: (rows?: JournalRow[]) => void;
   logout: () => void;
 }
 

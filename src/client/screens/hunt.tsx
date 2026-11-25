@@ -99,6 +99,7 @@ export function HuntScreen() {
           <div class="section-head"><h2>Hunt log</h2><span>newest first</span></div>
           <div class="log">
             {log.length === 0 && <p class="muted center-pad">No hunts yet. Press Hunt to set your first trap!</p>}
+            {player.stats.hunts === 0 && log.length > 0 && <p class="muted center-pad">No hunts yet. Read Santa's letter, then press Hunt to set your first trap!</p>}
             {log.map((row) => <LogRow row={row} />)}
           </div>
           {player.stats.hunts > 0 && (

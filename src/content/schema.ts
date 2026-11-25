@@ -103,8 +103,18 @@ export const Constants = z.object({
   }),
 });
 
+/** content/story.json: the intro letter shown in the hunt log when a game starts, and on How to play. */
+export const Story = z.object({
+  intro: z.object({
+    title: z.string().min(1).max(60),
+    paragraphs: z.array(z.string().min(1).max(500)).min(1).max(8),
+    signoff: z.string().min(1).max(40),
+  }),
+});
+
 export const Content = z.object({
   constants: Constants,
+  story: Story.optional(),
   ranks: z.array(Rank).min(1),
   locations: z.array(Location).min(1),
   items: Items,
@@ -127,3 +137,4 @@ export type Recipe = z.infer<typeof Recipe>;
 export type Rank = z.infer<typeof Rank>;
 export type Constants = z.infer<typeof Constants>;
 export type Content = z.infer<typeof Content>;
+export type Story = z.infer<typeof Story>;

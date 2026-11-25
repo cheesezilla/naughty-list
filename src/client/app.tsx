@@ -102,7 +102,7 @@ function Playing({ content, me, onLogout }: { content: Content; me: MeResponse; 
 
   const game: Game = {
     content, data, user: me.user, player, log, act, toast, hunt, busy, setPlayer,
-    resetLog: () => setLog([]),
+    resetLog: (rows = []) => setLog(rows),
     logout: () => { api('POST', '/api/auth/logout', {}).finally(() => { go('hunt', true); onLogout(); }); },
   };
 

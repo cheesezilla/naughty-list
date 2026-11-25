@@ -126,6 +126,7 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
       if (!first && !store.settings().allowSignups) return { error: 'New accounts are closed right now. Ask the admin to open them.' } as const;
       const id = store.createUser(username, hashPassword(password), first, t);
       store.savePlayer(id, newPlayer(content, t), t);
+      store.addJournal(id, 0, { type: 'intro' }, t, 'event');
       return { id } as const;
     });
     if ('error' in result) return reply.code(400).send({ error: result.error });
@@ -216,9 +217,10 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
         gold: old.gold, points: old.points, rank: old.rank, hunts: old.stats.hunts, caught: old.stats.caught,
         impsOnList: Object.keys(old.catches).length, location: old.location,
       }, t);
+      store.addJournal(userId, 0, { type: 'intro' }, t, 'event');
       lastHunt.delete(userId);
       req.log.info({ userId, username: req.user!.username }, 'player restarted');
-      return { player: fresh, journal: [] };
+      return { player: fresh, journal: store.recentLog(userId, 50) };
     });
     game.get('/api/restarts', async (req) => ({ restarts: store.restarts(req.user!.id) }));
 
