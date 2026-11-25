@@ -11,9 +11,10 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | 2. Hunt engine, content files, tests, balance simulator | Done | #1 |
 | 3. Playable client on the server: accounts, invites, server-side hunts, SQLite saves | Done | #2 |
 | 4a. NAS deploy: compose file, Cloudflare Tunnel option, deploy guide, image smoke test | Done | #3 |
-| 4b. Friends: leaderboard and catch feed | Next | |
-| Flavour text for every item and imp (content only, not shown in the client yet) | Done | #9 |
-| Art for every UI slot: 97 original SVGs + manifest, named by game id (not shown in the client yet) | In review | #10 |
+| 4b. Friends: leaderboard and catch feed | Done | #11 |
+| Flavour text for every item and imp | Done | #9 (shown in the UI since #11) |
+| Art for every UI slot: 97 original SVGs + manifest, named by game id | Done | #10 (shown in the UI since #11) |
+| New phone-first UI (layout D2): bottom menu, hunt log with events and full history, Arsenal, Elf Emporium, Santa's Workshop, More pages, open sign-up with admin switch | In review | #11 |
 | 5. Tune from play-test | Planned | |
 
 The server runs every hunt and saves each player in SQLite. To play locally, follow "Run it locally" below.
@@ -24,7 +25,7 @@ The server runs every hunt and saves each player in SQLite. To play locally, fol
 
 v1 covers 5 ranks and 4 lair locations. Each location has 3 common imps, a rare imp, a mini boss and a local boss: 24 imps in all. Bosses drop the loot used to craft stronger gear. Expect roughly 1,400 hunts, or about 1 to 1.5 hours of active play, to reach the last v1 rank.
 
-The stack is one small Docker container (Node.js + SQLite) on the UGREEN NAS, with invite-only accounts and a leaderboard so friends can play. The stamina meter is built but switched off.
+The stack is one small Docker container (Node.js + SQLite) on the UGREEN NAS, with open sign-up (the admin can close it) and a leaderboard so friends can play. The stamina meter is built but switched off.
 
 **Decided by eddy (25 Nov 2026):** Christmas theme and the name The Naughty List; stamina off but kept as a toggle; for eddy and friends; repository cheesezilla/naughty-list; this plan lives in the repo and is updated with each PR.
 
@@ -67,7 +68,7 @@ flowchart LR
   C -- no --> E[Imp escapes<br/>bait used, nothing gained]
 ```
 
-Each hunt is written to a journal the player can scroll, which is the main feedback screen.
+Each hunt is written to the hunt log, the main feedback screen, together with the player's buys, sales, crafts, gear changes and travel. See [User interface](#user-interface).
 
 ## Formulas
 
@@ -204,7 +205,7 @@ Gold comes in only from catches and sales, and goes out on bait, charms, gear, l
 - **Sources:** 300 starting gold and 100 Stale Cookies; imp gold on each catch; selling materials (5 to 200 gold each) and gear (40% of its price).
 - **Sinks:** bait and charms every attracted hunt; gear; one-time unlock fees; crafting fees.
 
-**Elf Forge recipes**
+**Santa's Workshop recipes**
 
 | Item | Ingredients | Gold fee | Rank |
 | --- | --- | --- | --- |
@@ -244,7 +245,31 @@ Every picture has a fixed name, `src/client/public/art/<slot>/<id>.<ext>`, where
 | `icons` | 19 | 24², `currentColor` | Bottom nav, More menu, stat labels |
 | `howto` | 7 | 640×360 | One diagram per How-to-play section |
 
-`npm run art` regenerates the SVGs and the manifest. It never overwrites a custom file (a PNG/WebP/JPG with the same name, or an SVG without the generator's marker comment). `npm test` fails if any item, imp, location or rank has no picture. Wiring the art into the new UI is a later step.
+`npm run art` regenerates the SVGs and the manifest. It never overwrites a custom file (a PNG/WebP/JPG with the same name, or an SVG without the generator's marker comment). `npm test` fails if any item, imp, location or rank has no picture. The client loads `/art/manifest.json` at start and looks every picture up by slot and id, so a PNG that replaces an SVG shows up after `npm run art` and a rebuild, with no code change.
+
+## User interface
+
+Phone first (layout D2, chosen by eddy on 25 Nov 2026; mockups: https://claude.ai/artifact/7A6Y6w37aCDXneVGDSDCDs). On a computer the same layout is centred in a phone-width column. Fonts are Lilita One (titles) and Nunito (text), bundled with the page.
+
+**Frame.** Every main screen has a slim title strip (game icon and name), then a player bar (rank badge, username, rank and points, gold) and a rank progress bar. A bottom menu with icon and text: **Hunt**, **Naughty List**, **Emporium**, **Workshop**, **More**. Pages have their own address (`#/emporium/bait`), so the phone's back button works.
+
+| Screen | What it shows |
+| --- | --- |
+| Hunt | Location banner with the player bar on top and a Travel button. Trap drawn standing on its base (tap for the Arsenal), bait and charm thumbnails (tap for the quick sheet). Power, luck, attraction and catch chance under the gear. The hunt log, then a sticky Hunt button. Space bar hunts on a computer |
+| Hunt log | The last 50 hunts plus the events between them: buy, sell, craft, gear change (equip or swap), travel and unlock, and rank-ups. Hunts show their number and time, events their time, in the viewer's own time zone. Uncaught imps show the "?" card; a first catch is marked "Portrait unlocked". Tapping an imp opens its file |
+| Full history | Every saved row, newest first, grouped by day, with filters All, Catches, Escapes, Events, Bosses, and Load older |
+| Quick bait and charm sheet | Owned bait or charms as picture cards, a preview of catch chance and attraction before and after, Use. Crafted bait asks once more if the setting is on |
+| Arsenal | Full screen with Trap, Base, Bait, Charm tabs. Tap an item to preview the setup and power, luck, attraction and catch before → after, then Equip. Unowned shop items are listed with their price |
+| Item details | Picture, stats, how you get it, tagline, description and backstory from `flavour.json`, Compare and Equip |
+| Naughty List | Portrait grid per location with caught counts. Uncaught imps show "?" and "seen N times, never caught" |
+| Imp file | Caught: portrait, power, gold, points, catches, weaknesses, drops, first-catch time, tagline, description, backstory. Not caught: "?", only the rumour and "File sealed" |
+| Elf Emporium | Traps, Bases, Bait, Charms, Sell tabs. Cards with thumbnail, stats, description, price and amount owned. Bait and charms have an amount picker and "Buy for N"; gear is bought once. Next-rank items are greyed with the rank that unlocks them |
+| Santa's Workshop | Type filters with counts and "Only show what I can craft now". Each recipe: result, amount, owned, rank needed, ingredient thumbnails with have / need (green or red), gold fee, and a button that says what is missing or "Craft ×N" |
+| More | Travel map (lair map with pins, unlock and go), Hunters (leaderboard by points or Naughty List size, and a feed of rare and boss catches and rank-ups; imps the viewer hasn't caught stay "?"), My stats, How to play (one picture per topic), Settings, Admin (admin only), Account, Log out |
+| Settings | Kept on the device: sound effects (synthesised, no sound files), vibrate on a catch, ask before using rare bait, 24-hour clock, Space bar hunts. Shows whether the Cocoa meter is on |
+| Admin | Players with rank, hunts, points and last active; **Allow new accounts** switch; Cocoa meter (shown, kept off: it is set in `constants.json`); restart log |
+| Account | Change password, Start over (with the confirmation dialog), Log out |
+| Login | Full-bleed key art, large game icon and title, a form card. "Create account" asks for a username and the password twice. The first account on a new server becomes the admin |
 
 ## Tech stack and architecture
 
@@ -253,33 +278,38 @@ Every picture has a fixed name, `src/client/public/art/<slot>/<id>.<ext>`, where
 | Language | TypeScript everywhere; the engine is shared by server, client, tests and simulator |
 | Server | Node.js 22 + Fastify, serving the API and the built page |
 | Database | SQLite (Node's built-in `node:sqlite`) in the mounted `/data` folder |
-| Web client | Vite + Preact, plain CSS, mobile first (about 12 KB gzipped today) |
+| Web client | Vite + Preact, plain CSS, phone first (about 24 KB of script and 10 KB of CSS gzipped, plus the bundled fonts and the SVG art) |
 | Game content | JSON in `content/` (numbers in the per-kind files, player-facing text in `flavour.json`), validated against a schema and cross-checked at startup |
-| Accounts | First account is the admin; everyone else signs up with an invite code, then username + password and a session cookie |
+| Accounts | First account is the admin; anyone with the address can create an account while the admin's **Allow new accounts** switch is on; username + password and a session cookie |
 | Tests | Vitest for engine and server; the simulator for balance |
 
 **API:**
 
 | Call | What it does |
 | --- | --- |
-| `GET /api/health`, `GET /api/content`, `GET /api/setup-status` | Public: health, game content, whether the admin account exists yet |
-| `POST /api/auth/signup` | Create an account. The very first account becomes the admin and needs no invite; every later one needs an unused invite code |
+| `GET /api/health`, `GET /api/content`, `GET /api/setup-status` | Public: health, game content, whether the admin account exists yet and whether sign-up is open |
+| `POST /api/auth/signup` | Create an account. The very first account becomes the admin; later ones are refused while the admin has closed sign-up |
 | `POST /api/auth/login`, `POST /api/auth/logout` | Session cookie, 30 days, token stored hashed |
-| `GET /api/me` | User, player state and the last 50 journal entries |
+| `GET /api/me` | User, player state and the hunt log: the last 50 hunts plus the events between them |
+| `GET /api/history?filter=&before=&limit=` | One page (up to 200 rows) of the full history, newest first; filter `all`, `catches`, `escapes`, `events` or `bosses`; `before` is a row id |
+| `GET /api/stats` | Join date, rank-up times and first-catch times still in the log |
+| `GET /api/hunters` | Leaderboard (username, rank, points, Naughty List size) and the latest 20 rare or boss catches and rank-ups from everyone |
+| `POST /api/account/password` | Change password; needs the current one |
 | `POST /api/hunt` | One hunt, rolled on the server; limited to `maxHuntsPerSecond` (2) per player |
-| `POST /api/setup`, `/api/buy`, `/api/sell`, `/api/craft`, `/api/travel` | Engine actions on the saved player |
+| `POST /api/setup`, `/api/buy`, `/api/sell`, `/api/craft`, `/api/travel` | Engine actions on the saved player; each also writes an event to the hunt log and returns it |
 | `POST /api/restart` with `{"confirm": true}` | Start over: wipes this player's progress and journal, keeps the account, logs the restart |
 | `GET /api/restarts` | This player's own restart log |
-| `GET/POST /api/admin/invites`, `DELETE /api/admin/invites/:code` | Admin only: list, create and revoke invite codes |
+| `GET /api/admin/players` | Admin only: every player with rank, points, hunts and last active time |
+| `GET/POST /api/admin/settings` | Admin only: read or set `allowSignups` |
 | `GET /api/admin/restarts` | Admin only: every player's restart log |
 
-**Storage:** one SQLite file, `naughty-list.db`, in `DATA_DIR` (`/data` in Docker, `./data` locally), using Node's built-in `node:sqlite` so there are no native modules to compile. Tables: users, sessions, invites, players (state as JSON), journal (last 200 per player), restarts (one row per Start over, with the player's gold, points, rank, hunts, catches and Naughty List count at that moment; never deleted). Passwords are hashed with scrypt.
+**Storage:** one SQLite file, `naughty-list.db`, in `DATA_DIR` (`/data` in Docker, `./data` locally), using Node's built-in `node:sqlite` so there are no native modules to compile. Tables: users, sessions, settings (`allowSignups`), players (state as JSON), journal (the hunt log: hunts and events, marked by a `kind` column, up to 10,000 rows per player, pruned every 100 hunts), restarts (one row per Start over, with the player's gold, points, rank, hunts, catches and Naughty List count at that moment; never deleted). Passwords are hashed with scrypt. The old invites table is left in place, unused, so saves from earlier versions open unchanged; the server adds the journal's `kind` column to old saves on start.
 
-**Data stored per player:** gold, points, rank, current location, unlocked locations, setup, inventory counts, the last 200 journal entries and lifetime catch counts per imp (for The Naughty List collection page).
+**Data stored per player:** gold, points, rank, current location, unlocked locations, setup, inventory counts, the hunt log, lifetime catch counts per imp (the Naughty List), lifetime encounters per imp (`seen`, for "seen, never caught") and gold earned from catches. `seen` and gold earned start counting from this version for older saves.
 
-**Start over:** any player can wipe their own run from the **Start over** link at the bottom of the page. A confirmation dialog lists what will be lost, and nothing is wiped unless the player confirms; the server also refuses a restart without an explicit confirm flag. The wipe replaces that player's state with a fresh one and deletes their journal in one transaction. Their account, other players and the restart log are untouched. The admin sees every restart in the Admin tab.
+**Start over:** any player can wipe their own run from **More > Account > Start over**. A confirmation dialog lists what will be lost, and nothing is wiped unless the player confirms; the server also refuses a restart without an explicit confirm flag. The wipe replaces that player's state with a fresh one and deletes their journal in one transaction. Their account, other players and the restart log are untouched. The admin sees every restart on the Admin page.
 
-**Playing with friends:** eddy is the admin and creates invite codes. A leaderboard ranks players by points, with tabs for total catches and bosses caught. A shared feed shows notable catches. No trading in v1.
+**Playing with friends:** eddy is the admin and shares the game address privately. Anyone with it can create an account while **Allow new accounts** is on (More > Admin); eddy turns it off once everyone has joined. The Hunters page ranks players by points or Naughty List size and shows a feed of rare and boss catches and rank-ups. No trading in v1.
 
 ## Run it locally
 
@@ -292,7 +322,7 @@ npm install
 npm run play        # builds, then serves on http://localhost:8080
 ```
 
-The first account you create is the admin. Open the Admin tab to make invite codes for friends; a code link looks like `http://<address>:8080/?invite=SNOW-XXXX-XXXX`. Saves go to `./data/naughty-list.db`; deleting that file resets the whole server. For development with hot reload, use `npm run dev` and open http://localhost:5173.
+The first account you create is the admin. Friends create their own accounts from the login screen; close sign-up under More > Admin. Saves go to `./data/naughty-list.db`; deleting that file resets the whole server. For development with hot reload, use `npm run dev` and open http://localhost:5173.
 
 ## Deployment
 
@@ -322,6 +352,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-25 | #11 | New phone-first UI (layout D2) with all art and flavour text wired in: bottom menu, hunt log with events and full history, Arsenal, quick bait sheet, item and imp files, Elf Emporium, Santa's Workshop, More pages (travel map, Hunters leaderboard and catch feed, stats, how to play, settings, admin, account). Open sign-up with an admin switch replaces invite codes; password change. Engine records first catches, imps seen and gold earned (no numbers changed; simulator results unchanged: 200/200 reach rank 5, median 1,357 hunts). Pull requests also publish a test image `:pr-<number>` |
 | 2026-11-25 | #10 | Art: 97 original SVG assets for every UI slot (icon, key art, traps, bases, baits, charms, materials, trap types, locations, map, imp portraits and locked card, ranks, icons, How-to-play diagrams), `npm run art` generator, `art/manifest.json` with regeneration prompts, naming guide in docs/ART.md, manifest coverage test. No game numbers changed |
 | 2026-11-25 | #8 | Deploy guide: playing away from home over a WireGuard VPN with plain HTTP, and a fix for Chrome switching to HTTPS; Cloudflare kept as an optional alternative |
 | 2026-11-25 | #9 | Flavour text: tagline, description and backstory for all 34 items and 24 imps, plus a rumour for each imp, in `content/flavour.json` with length limits and completeness checks. No numbers changed |

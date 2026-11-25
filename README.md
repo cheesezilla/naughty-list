@@ -6,7 +6,7 @@ Design plan: [docs/PLAN.md](docs/PLAN.md) (updated with every PR)
 
 ## Status
 
-- Milestones 1 to 3 are in: hunt engine, v1 content (4 locations, 24 imps), balance simulator, invite-only accounts, server-side hunts and SQLite saves.
+- Milestones 1 to 3 are in: hunt engine, v1 content (4 locations, 24 imps), balance simulator, accounts with open sign-up, server-side hunts and SQLite saves, and a phone-first UI with original art.
 - Deploys to a UGREEN NAS with Docker; see [docs/DEPLOY.md](docs/DEPLOY.md).
 - Next: leaderboard and catch feed.
 
@@ -21,7 +21,7 @@ npm install
 npm run play           # build and serve on http://localhost:8080
 ```
 
-The first account you create is the admin; use the Admin tab to make invite codes for friends. Saves live in `./data/naughty-list.db`. Any player can wipe their own progress with **Start over** at the bottom of the page.
+The first account you create is the admin; friends create their own accounts from the login screen, and the admin can close sign-up under **More > Admin**. Saves live in `./data/naughty-list.db`. Any player can wipe their own progress under **More > Account > Start over**.
 
 Other commands:
 
@@ -42,7 +42,7 @@ All numbers live in `content/`:
 | `ranks.json` | Rank names and points needed |
 | `locations.json` | Locations, unlock costs and their imps (power, gold, points, weights, type matchups, loot) |
 | `items.json` | Traps, bases, baits, charms and materials |
-| `recipes.json` | Elf Forge crafting recipes |
+| `recipes.json` | Santa's Workshop crafting recipes |
 
 Edit, then run `npm run check-content` and `npm run simulate` to see the effect. The stamina meter (`constants.json` > `stamina.enabled`) is built but switched off.
 

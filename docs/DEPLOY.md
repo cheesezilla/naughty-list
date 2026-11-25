@@ -29,7 +29,7 @@ The game runs over plain `http://`. That's fine on your home network and over a 
 
 Some browsers, especially Chrome on phones, try `https://` first and then show a warning or an error. If that happens, type the address with `http://` in full. If it still switches to `https://`, turn off **Always use secure connections** in Chrome's **Settings > Privacy and security**.
 
-Make invite links while browsing from the address your friends will use, because links copy the address you're on.
+Send friends the address privately. They tap **Create account** on the login screen. Once everyone has joined, turn off **Allow new accounts** under **More > Admin**.
 
 ## Part 3 (optional): public HTTPS address with Cloudflare
 
@@ -42,7 +42,7 @@ A Cloudflare Tunnel gives the game a public `https://` address without opening a
    - Domain: your domain
    - Service: type **HTTP**, URL `naughty-list:8080`
 4. In the UGOS Docker app, edit the `naughty-list` project. Remove the `#` from the `cloudflared` lines at the bottom of the compose file, paste your token in place of `paste-your-token-here`, and redeploy.
-5. Open `https://naughtylist.<your-domain>`. Log in, go to the **Admin** tab, and create invite links from there. Links copy the address you're browsing from, so use the public address when inviting friends.
+5. Open `https://naughtylist.<your-domain>`. Share that address with friends so they can create accounts, then turn off **Allow new accounts** under **More > Admin** once everyone has joined.
 
 Tailscale is an alternative if you'd rather keep the game off the public internet. Every friend then has to install Tailscale and join your network.
 
@@ -54,6 +54,14 @@ After a pull request is merged, wait for the **Docker image** check on GitHub to
 2. Open **Project > naughty-list** and redeploy, or stop and start it.
 
 Saves are kept, because they live in the shared folder rather than in the container.
+
+### Trying a pull request before it is merged
+
+Every pull request also publishes a test image tagged `pr-<number>`, for example `ghcr.io/cheesezilla/naughty-list:pr-11`. To try it on the NAS:
+
+1. Back up the save first: copy `/volume1/docker/naughty-list` (with the game stopped) to somewhere safe. A newer version may upgrade the save, and an older version might not read it afterwards.
+2. In **Project > naughty-list**, edit the compose file and change the image line to `ghcr.io/cheesezilla/naughty-list:pr-11`. Save and redeploy.
+3. When the pull request is merged, change the line back to `:latest`, pull `latest` and redeploy.
 
 ## Troubleshooting
 

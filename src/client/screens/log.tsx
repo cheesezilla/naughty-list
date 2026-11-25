@@ -1,0 +1,159 @@
+import { useEffect, useState } from 'preact/hooks';
+import type { GameEvent, JournalEntry, JournalRow } from '../../engine/index.js';
+import { api } from '../api.js';
+import { useGame } from '../game.js';
+import { Art } from '../lib/art.js';
+import { dayLabel, num, pct, TIER_NAME, when } from '../lib/format.js';
+import { usePrefs } from '../lib/prefs.js';
+import { go } from '../lib/route.js';
+import { BackRow, MainScreen, Tabs } from '../ui.js';
+
+/** An imp's portrait, or the "?" card until this player has caught it once. */
+export function ImpThumb({ id, size = 52 }: { id: string; size?: number }) {
+  const { player, data } = useGame();
+  const caught = (player.catches[id] ?? 0) > 0;
+  const name = data.imps.get(id)?.name ?? id;
+  return (
+    <Art slot="imps" id={caught ? id : '_locked'} alt={caught ? name : 'Not caught yet'} class="thumb imp-thumb" style={{ width: `${size}px`, height: `${size}px` }} />
+  );
+}
+
+function HuntRow({ row }: { row: JournalRow & { kind: 'hunt' } }) {
+  const { data, content } = useGame();
+  const prefs = usePrefs();
+  const e: JournalEntry = row.entry;
+  const imp = e.imp ? data.imps.get(e.imp) : undefined;
+  const itemName = (id: string) => data.items.get(id)?.name ?? id;
+  const time = <span class="row-time">#{num(row.n)}<br />{when(row.at, prefs.clock24)}</span>;
+  const rankUp = e.rankUp ? content.ranks[e.rankUp - 1] : undefined;
+  const nextLoc = rankUp ? content.locations.find((l) => l.rank === rankUp.rank) : undefined;
+
+  const main = (() => {
+    if (e.outcome === 'quiet' || !imp) {
+      return (
+        <div class="log-row quiet">
+          <span class="empty-thumb" aria-hidden="true">empty</span>
+          <div class="row-body"><b>Quiet hunt</b><br />Nothing took the bait.{e.rescued && ' Mrs. Claus slipped you 10 Stale Cookies.'}</div>
+          {time}
+        </div>
+      );
+    }
+    const loot = e.loot.map((l) => `${l.amount} ${itemName(l.item)}`);
+    const caught = e.outcome === 'catch';
+    return (
+      <button class={`log-row ${caught ? 'catch' : 'escape'} ${e.firstCatch ? 'first' : ''} tier-${imp.tier}`} onClick={() => go(`imp/${imp.id}`)}>
+        <ImpThumb id={imp.id} />
+        <div class="row-body">
+          <div class="row-head">
+            <b>{caught ? `Caught ${imp.name}` : imp.name}</b>
+            <span class="tier">{TIER_NAME[imp.tier]}</span>
+            {e.firstCatch && <span class="pill gold">Portrait unlocked</span>}
+          </div>
+          {caught
+            ? <>{e.firstCatch && 'First catch! '}+{num(e.gold)} gold, +{num(e.points)} points{loot.length > 0 && `, ${loot.join(', ')}`}</>
+            : <>Escaped{e.baitUsed > 1 ? ' and stole extra bait' : ''}. {pct(e.catchChance ?? 0)} chance</>}
+        </div>
+        {time}
+      </button>
+    );
+  })();
+
+  return (
+    <>
+      {rankUp && (
+        <div class="log-row rank-up">
+          <Art slot="ranks" id={`rank_${rankUp.rank}`} alt="" class="thumb small" />
+          <div class="row-body">Rank up! You are now <b>{rankUp.name}</b>.{nextLoc && ` The ${nextLoc.name} can be unlocked.`}</div>
+          <span class="row-time">{when(row.at, prefs.clock24)}</span>
+        </div>
+      )}
+      {main}
+    </>
+  );
+}
+
+export function eventText(ev: GameEvent, itemName: (id: string) => string, locName: (id: string) => string) {
+  switch (ev.type) {
+    case 'buy': return <>Bought <b>{num(ev.amount)} {itemName(ev.item)}</b> for {num(ev.gold)} gold</>;
+    case 'sell': return <>Sold <b>{num(ev.amount)} {itemName(ev.item)}</b> for {num(ev.gold)} gold</>;
+    case 'craft': return <>Crafted <b>{ev.amount > 1 ? `${num(ev.amount)} ` : ''}{itemName(ev.item)}</b> for {num(ev.gold)} gold and materials</>;
+    case 'travel': return <>Travelled to the <b>{locName(ev.location)}</b>{ev.unlockCost > 0 && ` and unlocked it for ${num(ev.unlockCost)} gold`}</>;
+    case 'equip':
+      if (!ev.item) return <>Took off {ev.previous ? itemName(ev.previous) : 'your'} {ev.slot}</>;
+      if ((ev.slot === 'trap' || ev.slot === 'base') && ev.previous) return <>Swapped {ev.slot}: <b>{itemName(ev.item)}</b> replaces {itemName(ev.previous)}</>;
+      return <>Equipped <b>{itemName(ev.item)}</b>{ev.slot === 'bait' ? ' as bait' : ''}</>;
+  }
+}
+
+const BADGE: Record<GameEvent['type'], string> = { buy: 'Buy', sell: 'Sell', craft: 'Craft', travel: 'Travel', equip: 'Gear' };
+
+function EventRow({ row }: { row: JournalRow & { kind: 'event' } }) {
+  const { data } = useGame();
+  const prefs = usePrefs();
+  const ev = row.entry;
+  return (
+    <div class="log-row event">
+      <span class={`badge badge-${ev.type}`}>{BADGE[ev.type]}</span>
+      <div class="row-body">{eventText(ev, (id) => data.items.get(id)?.name ?? id, (id) => data.locations.get(id)?.name ?? id)}</div>
+      <span class="row-time">{when(row.at, prefs.clock24)}</span>
+    </div>
+  );
+}
+
+export function LogRow({ row }: { row: JournalRow }) {
+  return row.kind === 'hunt' ? <HuntRow row={row} /> : <EventRow row={row} />;
+}
+
+type Filter = 'all' | 'catches' | 'escapes' | 'events' | 'bosses';
+const FILTERS: { id: Filter; label: string }[] = [
+  { id: 'all', label: 'All' }, { id: 'catches', label: 'Catches' }, { id: 'escapes', label: 'Escapes' }, { id: 'events', label: 'Events' }, { id: 'bosses', label: 'Bosses' },
+];
+
+export function HistoryScreen() {
+  const { player } = useGame();
+  const [filter, setFilter] = useState<Filter>('all');
+  const [rows, setRows] = useState<JournalRow[]>([]);
+  const [more, setMore] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = async (reset: boolean) => {
+    setLoading(true);
+    setError(null);
+    const before = reset ? '' : `&before=${rows.at(-1)?.id ?? ''}`;
+    try {
+      const r = await api<{ rows: JournalRow[]; more: boolean }>('GET', `/api/history?filter=${filter}&limit=50${before}`);
+      setRows((old) => (reset ? r.rows : [...old, ...r.rows]));
+      setMore(r.more);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => { load(true); }, [filter]);
+
+  const escapes = player.stats.attracted - player.stats.caught;
+  let lastDay = '';
+  return (
+    <MainScreen tab="hunt">
+      <BackRow to="hunt" title="Full history" sub={`${num(player.stats.hunts)} hunts · ${num(player.stats.caught)} catches · ${num(escapes)} escapes`} />
+      <div class="pad">
+        <Tabs label="Show" tabs={FILTERS} value={filter} onChange={setFilter} />
+        <div class="log">
+          {rows.map((row) => {
+            const day = dayLabel(row.at);
+            const head = day !== lastDay ? <h3 class="day">{day}</h3> : null;
+            lastDay = day;
+            return <>{head}<LogRow row={row} /></>;
+          })}
+        </div>
+        {error && <p class="error">{error}</p>}
+        {!loading && rows.length === 0 && <p class="muted center-pad">Nothing here yet.</p>}
+        {loading && <p class="muted center-pad">Loading…</p>}
+        {more && !loading && <button class="outline-btn wide" onClick={() => load(false)}>Load older hunts</button>}
+        {!more && rows.length > 0 && <p class="muted center-pad small">That's the start of your saved history.</p>}
+      </div>
+    </MainScreen>
+  );
+}

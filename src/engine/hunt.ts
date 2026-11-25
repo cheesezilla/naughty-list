@@ -16,6 +16,8 @@ export interface JournalEntry {
   charmUsed: boolean;
   rankUp?: number;
   rescued?: boolean;
+  /** True on the first ever catch of this imp: the Naughty List portrait unlocks. */
+  firstCatch?: boolean;
 }
 
 export type HuntResult =
@@ -75,6 +77,7 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0): 
   const idx = pickWeighted(impWeights(data, location, p.setup.bait), rng);
   const imp = location.imps[Math.max(0, idx)]!;
   entry.imp = imp.id;
+  p.seen = { ...(p.seen ?? {}), [imp.id]: (p.seen?.[imp.id] ?? 0) + 1 };
 
   const bait = p.setup.bait!;
   addItem(p, bait, -1);
@@ -94,6 +97,8 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0): 
     p.gold += imp.gold;
     p.points += imp.points;
     p.stats.caught += 1;
+    p.stats.goldEarned = (p.stats.goldEarned ?? 0) + imp.gold;
+    if (!p.catches[imp.id]) entry.firstCatch = true;
     p.catches[imp.id] = (p.catches[imp.id] ?? 0) + 1;
     for (const l of imp.loot ?? []) {
       if (rng() < l.chance) {

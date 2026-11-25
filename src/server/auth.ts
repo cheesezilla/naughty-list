@@ -25,13 +25,6 @@ export function hashToken(token: string): string {
   return createHash('sha256').update(token).digest('hex');
 }
 
-/** Invite codes like "SNOW-7K3Q-PX9D": easy to read out loud, no 0/O or 1/I. */
-export function newInviteCode(): string {
-  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  const chars = [...randomBytes(8)].map((b) => alphabet[b % alphabet.length]).join('');
-  return `SNOW-${chars.slice(0, 4)}-${chars.slice(4)}`;
-}
-
 export function validUsername(u: unknown): u is string {
   return typeof u === 'string' && /^[A-Za-z0-9_-]{3,20}$/.test(u);
 }
