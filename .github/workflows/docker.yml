@@ -5,7 +5,7 @@ on:
     branches: [main]
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write   # to attach the downloadable image file to the "image-latest" release
   packages: write
 jobs:
   image:
@@ -46,3 +46,24 @@ jobs:
           curl -fs -b jar localhost:8080/api/me | grep '"hunts":1'
           sudo ls -la /tmp/nl-data
           docker logs nl
+      # Fallback for NASes that can't reach ghcr.io: the same image as a file that can be imported by hand.
+      - name: Export image file
+        if: github.event_name != 'pull_request'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          build-args: APP_VERSION=${{ github.sha }}
+          tags: ghcr.io/${{ github.repository }}:latest
+          outputs: type=docker,dest=/tmp/naughty-list-image.tar
+          cache-from: type=gha
+      - name: Publish image file to the image-latest release
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gzip -9 /tmp/naughty-list-image.tar
+          gh release view image-latest >/dev/null 2>&1 || gh release create image-latest --title "Latest Docker image (file)" --notes "The newest build of main as a Docker image file, for importing on a NAS that can't download from ghcr.io. See docs/DEPLOY.md." --latest=false
+          gh release upload image-latest /tmp/naughty-list-image.tar.gz --clobber
+          gh release edit image-latest --notes "The newest build of main ($GITHUB_SHA) as a Docker image file, for importing on a NAS that can't download from ghcr.io. See docs/DEPLOY.md."

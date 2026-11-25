@@ -266,7 +266,7 @@ The game ships as one Docker image (`ghcr.io/cheesezilla/naughty-list`), built a
 
 Step-by-step guide: [docs/DEPLOY.md](DEPLOY.md). In short:
 
-1. Make the GitHub package public once, or log the NAS in to ghcr.io with a `read:packages` token.
+1. Make the GitHub package public once, or log the NAS in to ghcr.io with a `read:packages` token. If the NAS can't reach ghcr.io, import `naughty-list-image.tar.gz` from the `image-latest` release instead; each merge to `main` refreshes it.
 2. In the UGOS Docker app, create a project from `compose.yaml`. Saves go to `/volume1/docker/naughty-list`.
 3. Open `http://<nas-address>:8080` and create the admin account.
 4. Optional: uncomment the `cloudflared` service and paste a tunnel token for a public HTTPS address.
@@ -288,6 +288,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-25 | #5 | Image also published as a downloadable file on the image-latest release for NASes that can't reach ghcr.io; DEPLOY.md connection checks |
 | 2026-11-25 | #4 | Start over: per-player wipe with a confirmation dialog, restart log (own and admin view); Invites tab renamed Admin |
 | 2026-11-25 | #3 | NAS deploy: compose file with optional Cloudflare Tunnel, DEPLOY.md guide, entrypoint that fixes save-folder ownership, image smoke test in CI |
 | 2026-11-25 | #2 | Milestone 3: accounts (first one is admin), invite codes, server-side hunts with rate limit, SQLite saves, login screen and Invites tab; local run steps |

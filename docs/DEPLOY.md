@@ -11,6 +11,16 @@ Every merge to `main` publishes the image `ghcr.io/cheesezilla/naughty-list:late
 - **Make the package public (simplest).** On GitHub, go to your profile, open **Packages**, then **naughty-list**. Choose **Package settings**, then **Change visibility**, and set it to **Public**. Only the built game becomes public. The source code stays private.
 - **Or keep it private.** Create a GitHub personal access token (classic) with only the `read:packages` scope. In the UGOS Docker app, open **Registry** (or **Image > Add registry**), add `ghcr.io`, and log in with your GitHub username and the token as the password.
 
+### If the NAS can't download from ghcr.io
+
+Some networks block or slow down GitHub's container registry. Docker Hub mirrors set in the UGOS Docker app don't help, because they only apply to Docker Hub. You can import the image as a file instead:
+
+1. On your computer, open the repository's [**image-latest** release](https://github.com/cheesezilla/naughty-list/releases/tag/image-latest) and download `naughty-list-image.tar.gz`, about 60 MB. Every merge to `main` updates it.
+2. In the UGOS Docker app, open **Image** and choose **Add**, then **Import** (or **Add from local**). Pick the file. If UGOS won't take the `.gz`, unzip it to `naughty-list-image.tar` first.
+3. The image shows up as `ghcr.io/cheesezilla/naughty-list:latest`, the same name `compose.yaml` uses. Part 2 then uses the local copy and doesn't download anything.
+
+To update later, import the newer file the same way and redeploy the project.
+
 ## Part 2: run it on the NAS
 
 1. In **File Manager**, make sure there is a shared folder called `docker` on volume 1. Create it if it's missing. The game creates its own `naughty-list` folder inside it.
@@ -52,7 +62,26 @@ Saves are kept, because they live in the shared folder rather than in the contai
 | Problem | Fix |
 | --- | --- |
 | Pulling the image fails with "denied" or "not found" | The package is still private. See part 1. |
+| Pulling the image times out | The NAS can't reach GitHub's registry. See "Checking the NAS connection" below. To skip the download entirely, import the image file (part 1). |
 | The page doesn't load | Check the container is running in **Container**. Open its log, which should end with `Server listening at http://0.0.0.0:8080`. Check that the port in the address matches the left number in `ports`. |
 | The log says it can't write to the save folder | Make sure `/volume1/docker` exists. The container fixes folder ownership itself on start, so redeploying usually clears this. |
 | Friends get a Cloudflare error page | Check the `naughty-list-tunnel` container is running and its log shows a connection. Check the public hostname's service is `http://naughty-list:8080`. |
 | You forgot the admin password | Stop the project, move `naughty-list.db` somewhere safe, and start again. This creates a fresh game. Password reset comes in a later version. |
+
+## Checking the NAS connection
+
+If pulls time out, these checks show where it fails. Turn on SSH under **Control Panel > Terminal**, then log in from your computer with `ssh <your-nas-user>@<nas-address>`.
+
+```sh
+nslookup ghcr.io                                    # should print an IP address
+nslookup pkg-containers.githubusercontent.com       # where the image layers download from
+curl -sI https://ghcr.io/v2/ | head -1              # should print HTTP/2 401 within a second
+sudo docker pull ghcr.io/cheesezilla/naughty-list:latest   # shows the real error
+```
+
+| What you see | Likely cause and fix |
+| --- | --- |
+| `nslookup` fails or hangs | DNS problem. In **Control Panel > Network**, set the DNS servers by hand to `1.1.1.1` and `8.8.8.8`. |
+| `pkg-containers.githubusercontent.com` doesn't resolve, or resolves to `0.0.0.0` | An ad blocker on your network, such as Pi-hole, AdGuard or the router's, is blocking it. Allow-list that host. |
+| `curl` hangs but DNS works | The connection to GitHub is blocked or very slow, for example through a VPN, a proxy, or a region that restricts GitHub. If the NAS uses IPv6 but your internet doesn't really support it, turning IPv6 off on the NAS can help. Otherwise use the image file. |
+| `docker pull` starts and then stalls | The network is slow or unstable. Run the pull again, since it resumes, or use the image file. |
