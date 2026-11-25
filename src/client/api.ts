@@ -1,4 +1,4 @@
-export interface User { id: number; username: string; isAdmin: boolean }
+export interface User { id: number; username: string; isAdmin: boolean; createdAt?: number }
 
 /** Calls the game server. Throws an Error with the server's message when the call fails. */
 export async function api<T = unknown>(method: 'GET' | 'POST' | 'DELETE', path: string, body?: object): Promise<T> {

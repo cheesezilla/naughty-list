@@ -5,11 +5,11 @@ import { existsSync } from 'node:fs';
 import { randomInt } from 'node:crypto';
 import type { Content } from '../content/schema.js';
 import {
-  buy, craft, equip, hunt, newPlayer, sell, travel,
+  buy, craft, equip, gameData, hunt, newPlayer, sell, travel,
   type ActionResult, type PlayerState, type Rng, type Setup,
 } from '../engine/index.js';
-import { Store, type UserRow } from './db.js';
-import { hashPassword, hashToken, newInviteCode, newToken, validPassword, validUsername, verifyPassword } from './auth.js';
+import { Store, type GameEvent, type HistoryFilter, type UserRow } from './db.js';
+import { hashPassword, hashToken, newToken, validPassword, validUsername, verifyPassword } from './auth.js';
 
 export interface AppOptions {
   content: Content;
@@ -37,6 +37,10 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
   const rng = opts.rng ?? cryptoRng;
   const now = opts.now ?? Date.now;
   const minHuntGapMs = 1000 / content.constants.maxHuntsPerSecond;
+  const data = gameData(content);
+  const impsOfTier = (...tiers: string[]) => [...data.imps.values()].filter((i) => tiers.includes(i.tier)).map((i) => i.id);
+  const bossIds = impsOfTier('miniboss', 'boss');
+  const notableIds = impsOfTier('rare', 'miniboss', 'boss');
   const lastHunt = new Map<number, number>();
 
   const app = Fastify({ logger: opts.logger ?? false, trustProxy: true });
@@ -74,14 +78,27 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
     if (req.user?.is_admin !== 1) return reply.code(403).send({ error: 'Only the admin can do that.' });
   };
 
-  /** Runs an engine action on the logged-in player and saves the result. */
-  function playerAction(fn: (p: PlayerState, body: Record<string, unknown>) => ActionResult) {
+  /**
+   * Runs an engine action on the logged-in player, saves the result and writes the event to the hunt log.
+   * `describe` turns the old and new state into the logged event, or null to log nothing.
+   */
+  function playerAction(
+    fn: (p: PlayerState, body: Record<string, unknown>) => ActionResult,
+    describe: (before: PlayerState, after: PlayerState, body: Record<string, unknown>) => GameEvent | null,
+  ) {
     return async (req: FastifyRequest, reply: FastifyReply) => {
       const userId = req.user!.id;
-      const r = fn(loadPlayer(userId), (req.body ?? {}) as Record<string, unknown>);
+      const body = (req.body ?? {}) as Record<string, unknown>;
+      const before = loadPlayer(userId);
+      const r = fn(before, body);
       if (!r.ok) return reply.code(400).send({ error: r.error });
-      store.savePlayer(userId, r.player, now());
-      return { player: r.player };
+      const t = now();
+      const event = describe(before, r.player, body);
+      const log = store.tx(() => {
+        store.savePlayer(userId, r.player, t);
+        return event ? store.addJournal(userId, r.player.stats.hunts, event, t, 'event') : null;
+      });
+      return { player: r.player, log };
     };
   }
   const str = (v: unknown) => (typeof v === 'string' ? v : '');
@@ -90,23 +107,24 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
   // ---------- public ----------
   app.get('/api/health', async () => ({ ok: true, version: opts.version ?? 'dev' }));
   app.get('/api/content', async () => content);
-  app.get('/api/setup-status', async () => ({ needsAdmin: store.userCount() === 0 }));
+  app.get('/api/setup-status', async () => {
+    const needsAdmin = store.userCount() === 0;
+    return { needsAdmin, signupsOpen: needsAdmin || store.settings().allowSignups };
+  });
 
   // ---------- accounts ----------
   app.post('/api/auth/signup', async (req, reply) => {
-    const { username, password, invite } = (req.body ?? {}) as Record<string, unknown>;
+    const { username, password } = (req.body ?? {}) as Record<string, unknown>;
     if (!validUsername(username)) return reply.code(400).send({ error: 'Usernames are 3 to 20 letters, digits, _ or -.' });
     if (!validPassword(password)) return reply.code(400).send({ error: 'Passwords need at least 8 characters.' });
     if (store.userByName(username)) return reply.code(400).send({ error: 'That username is taken.' });
 
     const t = now();
     const result = store.tx(() => {
-      // The very first account becomes the admin and needs no invite.
+      // The very first account becomes the admin. After that, sign-up is open unless the admin closed it.
       const first = store.userCount() === 0;
-      const code = str(invite).trim().toUpperCase();
-      if (!first && !store.inviteIsOpen(code)) return { error: 'That invite code is not valid or was already used.' } as const;
+      if (!first && !store.settings().allowSignups) return { error: 'New accounts are closed right now. Ask the admin to open them.' } as const;
       const id = store.createUser(username, hashPassword(password), first, t);
-      if (!first) store.useInvite(code, id, t);
       store.savePlayer(id, newPlayer(content, t), t);
       return { id } as const;
     });
@@ -138,10 +156,36 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
     game.addHook('preHandler', requireUser);
 
     game.get('/api/me', async (req) => ({
-      user: publicUser(req.user!),
+      user: { ...publicUser(req.user!), createdAt: req.user!.created_at },
       player: loadPlayer(req.user!.id),
-      journal: store.journal(req.user!.id, 50),
+      // The last 50 hunts plus the events between them.
+      journal: store.recentLog(req.user!.id, 50),
     }));
+
+    game.get<{ Querystring: { before?: string; filter?: string; limit?: string } }>('/api/history', async (req) => {
+      const filters: HistoryFilter[] = ['all', 'catches', 'escapes', 'events', 'bosses'];
+      const filter = filters.includes(req.query.filter as HistoryFilter) ? (req.query.filter as HistoryFilter) : 'all';
+      const before = Number(req.query.before) || undefined;
+      const limit = Number(req.query.limit) || 50;
+      const rows = store.history(req.user!.id, { before, filter, limit, bossIds });
+      return { rows, more: rows.length === Math.min(200, limit) };
+    });
+
+    game.get('/api/stats', async (req) => ({ joinedAt: req.user!.created_at, ...store.milestones(req.user!.id) }));
+
+    // Leaderboard and catch feed. Only public numbers: no inventories or gold.
+    game.get('/api/hunters', async (req) => ({
+      players: store.players().map((p) => ({ username: p.username, rank: p.rank, points: p.points, impsOnList: p.impsOnList, you: p.id === req.user!.id })),
+      feed: store.feed(notableIds, 20).map((r) => ({ id: r.id, at: r.at, username: r.username, entry: r.entry })),
+    }));
+
+    game.post('/api/account/password', async (req, reply) => {
+      const { current, next } = (req.body ?? {}) as Record<string, unknown>;
+      if (typeof current !== 'string' || !verifyPassword(current, req.user!.password_hash)) return reply.code(400).send({ error: 'Your current password is wrong.' });
+      if (!validPassword(next)) return reply.code(400).send({ error: 'Passwords need at least 8 characters.' });
+      store.setPassword(req.user!.id, hashPassword(next));
+      return { ok: true };
+    });
 
     game.post('/api/hunt', async (req, reply) => {
       const userId = req.user!.id;
@@ -152,11 +196,11 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
 
       const r = hunt(content, loadPlayer(userId), rng, t);
       if (!r.ok) return reply.code(400).send({ error: r.error });
-      store.tx(() => {
+      const row = store.tx(() => {
         store.savePlayer(userId, r.player, t);
-        store.addJournal(userId, r.player.stats.hunts, r.entry, t);
+        return store.addJournal(userId, r.player.stats.hunts, r.entry, t);
       });
-      return { player: r.player, entry: { n: r.player.stats.hunts, at: t, entry: r.entry } };
+      return { player: r.player, entry: row };
     });
 
     // Start over: wipes this player's progress and journal, keeps the account, and logs the restart.
@@ -182,27 +226,40 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
       const slot = str(b.slot) as keyof Setup;
       if (!['trap', 'base', 'bait', 'charm'].includes(slot)) return { ok: false, error: 'Unknown slot.' };
       return equip(content, p, slot, b.item === null ? null : str(b.item));
+    }, (before, after, b) => {
+      const slot = str(b.slot) as keyof Setup;
+      if (before.setup[slot] === after.setup[slot]) return null;
+      return { type: 'equip', slot, item: after.setup[slot], previous: before.setup[slot] };
     }));
-    game.post('/api/buy', playerAction((p, b) => buy(content, p, str(b.item), amount(b.amount))));
-    game.post('/api/sell', playerAction((p, b) => sell(content, p, str(b.item), amount(b.amount))));
-    game.post('/api/craft', playerAction((p, b) => craft(content, p, str(b.recipe))));
-    game.post('/api/travel', playerAction((p, b) => travel(content, p, str(b.location))));
+    game.post('/api/buy', playerAction((p, b) => buy(content, p, str(b.item), amount(b.amount)),
+      (before, after, b) => ({ type: 'buy', item: str(b.item), amount: amount(b.amount), gold: before.gold - after.gold })));
+    game.post('/api/sell', playerAction((p, b) => sell(content, p, str(b.item), amount(b.amount)),
+      (before, after, b) => ({ type: 'sell', item: str(b.item), amount: amount(b.amount), gold: after.gold - before.gold })));
+    game.post('/api/craft', playerAction((p, b) => craft(content, p, str(b.recipe)), (before, after, b) => {
+      const recipe = data.recipes.get(str(b.recipe))!;
+      return { type: 'craft', recipe: recipe.id, item: recipe.output.item, amount: recipe.output.amount, gold: before.gold - after.gold };
+    }));
+    game.post('/api/travel', playerAction((p, b) => travel(content, p, str(b.location)), (before, after) => {
+      if (before.location === after.location) return null;
+      return { type: 'travel', location: after.location, unlockCost: before.gold - after.gold };
+    }));
   });
 
   // ---------- admin ----------
   app.register(async (admin) => {
     admin.addHook('preHandler', requireAdmin);
-    admin.get('/api/admin/invites', async () => ({ invites: store.listInvites() }));
-    admin.post('/api/admin/invites', async (req) => {
-      const code = newInviteCode();
-      store.createInvite(code, req.user!.id, now());
-      return { code };
+    admin.get('/api/admin/players', async () => ({
+      players: store.players().map((p) => ({ username: p.username, isAdmin: p.isAdmin, rank: p.rank, points: p.points, hunts: p.hunts, lastActive: p.updatedAt })),
+    }));
+    admin.get('/api/admin/settings', async () => ({ settings: store.settings(), cocoaMeter: content.constants.stamina.enabled }));
+    admin.post('/api/admin/settings', async (req, reply) => {
+      const body = (req.body ?? {}) as Record<string, unknown>;
+      if (typeof body.allowSignups !== 'boolean') return reply.code(400).send({ error: 'allowSignups must be true or false.' });
+      store.setSetting('allowSignups', body.allowSignups);
+      req.log.info({ allowSignups: body.allowSignups, by: req.user!.username }, 'sign-up setting changed');
+      return { settings: store.settings() };
     });
     admin.get('/api/admin/restarts', async () => ({ restarts: store.restarts() }));
-    admin.delete<{ Params: { code: string } }>('/api/admin/invites/:code', async (req, reply) => {
-      if (!store.revokeInvite(req.params.code)) return reply.code(400).send({ error: 'That invite is already used or gone.' });
-      return { ok: true };
-    });
   });
 
   if (opts.clientDir && existsSync(opts.clientDir)) {

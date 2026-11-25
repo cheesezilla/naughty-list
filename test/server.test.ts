@@ -38,28 +38,44 @@ describe('server', () => {
   it('answers health and content without logging in', async () => {
     expect((await get('/api/health')).json()).toEqual({ ok: true, version: 'test' });
     expect((await get('/api/content')).json().locations).toHaveLength(4);
-    expect((await get('/api/setup-status')).json()).toEqual({ needsAdmin: true });
+    expect((await get('/api/setup-status')).json()).toEqual({ needsAdmin: true, signupsOpen: true });
   });
 
-  it('makes the first account the admin, then requires invites', async () => {
+  it('makes the first account the admin, then lets anyone sign up until the admin closes it', async () => {
     const admin = await signupAdmin();
     expect((await get('/api/me', admin)).json().user).toMatchObject({ username: 'eddy', isAdmin: true });
+    expect((await get('/api/setup-status')).json()).toEqual({ needsAdmin: false, signupsOpen: true });
 
-    const noInvite = await post('/api/auth/signup', { username: 'sam', password: 'snowball99' });
-    expect(noInvite.statusCode).toBe(400);
-
-    const { code } = (await post('/api/admin/invites', {}, admin)).json();
-    expect(code).toMatch(/^SNOW-[A-Z2-9]{4}-[A-Z2-9]{4}$/);
-    const sam = await post('/api/auth/signup', { username: 'sam', password: 'snowball99', invite: code.toLowerCase() });
+    const sam = await post('/api/auth/signup', { username: 'sam', password: 'snowball99' });
     expect(sam.statusCode).toBe(200);
     expect(sam.json().user.isAdmin).toBe(false);
+    expect((await post('/api/auth/signup', { username: 'SAM', password: 'snowball99' })).statusCode).toBe(400);
 
-    const reuse = await post('/api/auth/signup', { username: 'pat', password: 'snowball99', invite: code });
-    expect(reuse.statusCode).toBe(400);
+    // only the admin can change the setting
+    expect((await post('/api/admin/settings', { allowSignups: false }, cookieOf(sam))).statusCode).toBe(403);
+    expect((await post('/api/admin/settings', { allowSignups: 'no' }, admin)).statusCode).toBe(400);
+    const closed = await post('/api/admin/settings', { allowSignups: false }, admin);
+    expect(closed.json().settings).toEqual({ allowSignups: false });
+    expect((await get('/api/setup-status')).json()).toEqual({ needsAdmin: false, signupsOpen: false });
+    const refused = await post('/api/auth/signup', { username: 'pat', password: 'snowball99' });
+    expect(refused.statusCode).toBe(400);
+    expect(refused.json().error).toMatch(/closed/);
 
-    const list = (await get('/api/admin/invites', admin)).json().invites;
-    expect(list[0]).toMatchObject({ code, used_by_name: 'sam' });
-    expect((await get('/api/admin/invites', cookieOf(sam))).statusCode).toBe(403);
+    await post('/api/admin/settings', { allowSignups: true }, admin);
+    expect((await post('/api/auth/signup', { username: 'pat', password: 'snowball99' })).statusCode).toBe(200);
+
+    const players = (await get('/api/admin/players', admin)).json().players;
+    expect(players.map((p: { username: string }) => p.username)).toEqual(['eddy', 'sam', 'pat']);
+    expect(players[0]).toMatchObject({ isAdmin: true, rank: 1, hunts: 0 });
+  });
+
+  it('changes the password only with the current one', async () => {
+    const c = await signupAdmin();
+    expect((await post('/api/account/password', { current: 'nope-nope', next: 'gingerbread1' }, c)).statusCode).toBe(400);
+    expect((await post('/api/account/password', { current: 'candycane123', next: 'short' }, c)).statusCode).toBe(400);
+    expect((await post('/api/account/password', { current: 'candycane123', next: 'gingerbread1' }, c)).statusCode).toBe(200);
+    expect((await post('/api/auth/login', { username: 'eddy', password: 'candycane123' })).statusCode).toBe(400);
+    expect((await post('/api/auth/login', { username: 'eddy', password: 'gingerbread1' })).statusCode).toBe(200);
   });
 
   it('logs in and out', async () => {
@@ -85,7 +101,62 @@ describe('server', () => {
     const me = (await get('/api/me', c)).json();
     expect(me.player.gold).toBe(312);
     expect(me.journal).toHaveLength(1);
-    expect(me.journal[0].n).toBe(1);
+    expect(me.journal[0]).toMatchObject({ n: 1, kind: 'hunt', entry: { firstCatch: true } });
+    expect(me.player.seen).toEqual({ crumb_imp: 1 });
+    expect(me.player.stats.goldEarned).toBe(12);
+  });
+
+  it('logs buy, equip, sell, craft and travel events in the hunt log', async () => {
+    const c = await signupAdmin();
+    await post('/api/hunt', {}, c);
+    clock += 1000;
+    const buy = (await post('/api/buy', { item: 'jack_in_the_box' }, c)).json();
+    expect(buy.log).toMatchObject({ kind: 'event', n: 1, entry: { type: 'buy', item: 'jack_in_the_box', amount: 1, gold: 300 } });
+    const eq = (await post('/api/setup', { slot: 'trap', item: 'jack_in_the_box' }, c)).json();
+    expect(eq.log.entry).toEqual({ type: 'equip', slot: 'trap', item: 'jack_in_the_box', previous: 'stocking_snare' });
+    // equipping what is already equipped logs nothing
+    expect((await post('/api/setup', { slot: 'trap', item: 'jack_in_the_box' }, c)).json().log).toBeNull();
+    const sell = (await post('/api/sell', { item: 'stale_cookie', amount: 10 }, c)).json();
+    expect(sell.log.entry).toMatchObject({ type: 'sell', amount: 10, gold: 30 });
+    const me = (await get('/api/me', c)).json();
+    expect(me.journal.map((r: { kind: string }) => r.kind)).toEqual(['event', 'event', 'event', 'hunt']);
+  });
+
+  it('keeps the last 50 hunts with the events between them, and pages the full history', async () => {
+    const c = await signupAdmin();
+    for (let i = 0; i < 60; i++) {
+      clock += 1000;
+      await post('/api/hunt', {}, c);
+      if (i === 5 || i === 55) await post('/api/buy', { item: 'stale_cookie', amount: 1 }, c);
+    }
+    const log = (await get('/api/me', c)).json().journal;
+    expect(log.filter((r: { kind: string }) => r.kind === 'hunt')).toHaveLength(50);
+    expect(log.filter((r: { kind: string }) => r.kind === 'event')).toHaveLength(1);
+    expect(log[0].n).toBe(60);
+    expect(log.at(-1)).toMatchObject({ kind: 'hunt', n: 11 });
+
+    const page1 = (await get('/api/history?limit=40', c)).json();
+    expect(page1.rows).toHaveLength(40);
+    expect(page1.more).toBe(true);
+    const page2 = (await get(`/api/history?limit=40&before=${page1.rows.at(-1).id}`, c)).json();
+    expect(page2.rows).toHaveLength(22);
+    expect(page2.more).toBe(false);
+    expect((await get('/api/history?filter=events', c)).json().rows).toHaveLength(2);
+    expect((await get('/api/history?filter=catches&limit=200', c)).json().rows).toHaveLength(60);
+    expect((await get('/api/history?filter=bosses', c)).json().rows).toHaveLength(0);
+  });
+
+  it('shows hunters a leaderboard and a feed of notable catches and rank-ups', async () => {
+    const admin = await signupAdmin();
+    await post('/api/hunt', {}, admin);
+    const sam = cookieOf(await post('/api/auth/signup', { username: 'sam', password: 'snowball99' }));
+    const r = (await get('/api/hunters', sam)).json();
+    expect(r.players).toEqual([
+      { username: 'eddy', rank: 1, points: 20, impsOnList: 1, you: false },
+      { username: 'sam', rank: 1, points: 0, impsOnList: 0, you: true },
+    ]);
+    // a common catch is not news
+    expect(r.feed).toEqual([]);
   });
 
   it('limits hunts to the configured rate', async () => {
@@ -118,8 +189,7 @@ describe('start over', () => {
 
   it("wipes only that player's progress and journal, keeps the account and logs it", async () => {
     const admin = await signupAdmin();
-    const { code } = (await post('/api/admin/invites', {}, admin)).json();
-    const sam = cookieOf(await post('/api/auth/signup', { username: 'sam', password: 'snowball99', invite: code }));
+    const sam = cookieOf(await post('/api/auth/signup', { username: 'sam', password: 'snowball99' }));
 
     for (const c of [admin, sam]) {
       expect((await post('/api/hunt', {}, c)).statusCode).toBe(200);
@@ -157,13 +227,22 @@ describe('start over', () => {
 });
 
 describe('store', () => {
-  it('keeps only the last 200 journal entries', () => {
-    const s = new Store(':memory:');
+  it('prunes the journal to its limit every 100 hunts', () => {
+    const s = new Store(':memory:', 150);
     const id = s.createUser('a', 'x', false, 0);
     for (let n = 1; n <= 210; n++) s.addJournal(id, n, { outcome: 'quiet', location: 'x', gold: 0, points: 0, loot: [], baitUsed: 0, charmUsed: false }, n);
     const rows = s.journal(id, 500);
-    expect(rows).toHaveLength(200);
+    expect(rows).toHaveLength(160); // pruned to 150 at hunt 200, then 10 more
     expect(rows[0]!.n).toBe(210);
+    s.close();
+  });
+
+  it('adds the log kind column to journals saved by older versions', () => {
+    const s = new Store(':memory:');
+    s.db.exec('DROP TABLE journal; CREATE TABLE journal (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, hunt_no INTEGER NOT NULL, created_at INTEGER NOT NULL, entry TEXT NOT NULL)');
+    s.db.prepare('INSERT INTO journal (user_id, hunt_no, created_at, entry) VALUES (1, 1, 5, ?)').run('{"outcome":"quiet"}');
+    (s as unknown as { migrate(): void }).migrate();
+    expect(s.journal(1)).toEqual([{ id: 1, n: 1, at: 5, kind: 'hunt', entry: { outcome: 'quiet' } }]);
     s.close();
   });
 });
