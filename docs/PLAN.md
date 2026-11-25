@@ -15,6 +15,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Flavour text for every item and imp | Done | #9 (shown in the UI since #11) |
 | Art for every UI slot: 97 original SVGs + manifest, named by game id | Done | #10 (shown in the UI since #11) |
 | Custom PNG portraits for all 10 cookie-pantry/wrapping-room/toy-workshop/reindeer-stables imps | Done | #13 |
+| Custom AI-generated PNGs for the rest of the game art (traps, bases, baits, charms, materials, trap types, brand, locations, map, how-to, remaining imps) | In progress | #14 |
 | New phone-first UI (layout D2): bottom menu, hunt log with events and full history, Arsenal, Elf Emporium, Santa's Workshop, More pages, open sign-up with admin switch | Done | #11 |
 | Intro letter from Santa: the game's backstory as the first hunt-log entry of every new game, and on How to play | In review | #12 |
 | 5. Tune from play-test | Planned | |
@@ -356,6 +357,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-25 | #14 | Custom PNG art for the 8 traps and 4 of 5 bases (`cardboard_box`, `gingerbread_slab`, `candy_cane_platform`, `ice_block`; `yule_log_base` still generated SVG), generated with Gemini on a plain background then cut out locally with `rembg`. Rest of the non-icon art (baits, charms, materials, trap types, brand, locations, map, how-to, remaining 15 imps) still queued, paused on Gemini's daily image-generation limit. No game numbers changed |
 | 2026-11-25 | #13 | Custom PNG portraits for all 10 cookie-pantry/wrapping-room/toy-workshop/reindeer-stables imps (`crumb_imp`, `gingerbread_imp`, `baron_crumblewick`, `glitter_imp`, `madame_shredwell`, `windup_imp`, `foreman_grimbolt`, `carrot_crook`, `grizzlewick`, `_locked`), generated with an AI image tool and dropped in per docs/ART.md; `npm run art` picked them up as custom and left the other 15 imps on generated SVG. No game numbers changed |
 | 2026-11-25 | #12 | Intro letter from Santa (`content/story.json`), logged as a Story event when a game starts (sign-up and Start over) and shown on How to play. No numbers changed |
 | 2026-11-25 | #11 | New phone-first UI (layout D2) with all art and flavour text wired in: bottom menu, hunt log with events and full history, Arsenal, quick bait sheet, item and imp files, Elf Emporium, Santa's Workshop, More pages (travel map, Hunters leaderboard and catch feed, stats, how to play, settings, admin, account). Open sign-up with an admin switch replaces invite codes; password change. Engine records first catches, imps seen and gold earned (no numbers changed; simulator results unchanged: 200/200 reach rank 5, median 1,357 hunts). Pull requests also publish a test image `:pr-<number>` |
