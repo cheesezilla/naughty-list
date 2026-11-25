@@ -2,7 +2,7 @@
 
 A Christmas imp-trapping browser game. Scrinch's imps are raiding Santa's secret lair; you arm a trap, pick a bait and hunt them, back to back, with no wait timer. Bait cost paces progress instead.
 
-Design plan: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9
+Design plan: [docs/PLAN.md](docs/PLAN.md) (updated with every PR)
 
 ## Status
 
