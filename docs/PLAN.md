@@ -12,6 +12,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | 3. Playable client on the server: accounts, invites, server-side hunts, SQLite saves | Done | #2 |
 | 4a. NAS deploy: compose file, Cloudflare Tunnel option, deploy guide, image smoke test | Done | #3 |
 | 4b. Friends: leaderboard and catch feed | Next | |
+| Flavour text for every item and imp (content only, not shown in the client yet) | Done | #8 |
 | 5. Tune from play-test | Planned | |
 
 The server runs every hunt and saves each player in SQLite. To play locally, follow "Run it locally" below.
@@ -182,6 +183,19 @@ Jarbelly, Bow Burglar and Bell Thief steal an extra bait when they escape. Brims
 | Jingle Bell Charm | +15% attraction | 2 | 25 gold |
 | Wind-up Key Charm | +20% power | 3 | 60 gold |
 
+## Flavour text
+
+Every trap, base, bait, charm, material and imp has text for its detail screen, in `content/flavour.json`, keyed by id. At load the text is copied onto each entry as a `flavour` field, so `GET /api/content` already returns it. The slots and limits come from the phone-first UI layout (option D):
+
+| Field | Who has it | Limit | Shown |
+| --- | --- | --- | --- |
+| `tagline` | Items and imps | 60 characters | Under the name on cards and detail screens |
+| `description` | Items and imps | 160 characters, 1 to 2 sentences | Detail screens and shop cards; says what the thing does |
+| `backstory` | Items and imps | 400 characters, 3 to 4 sentences | Detail screens; for imps, only after the first catch |
+| `rumour` | Imps only | 100 characters | Before the first catch, in place of the portrait text |
+
+Imp descriptions and rumours hint at each imp's weaknesses and resistances, so players can work out the right trap type from the text. Loading fails if any item or imp has no text, if text names an unknown id, or if a field is over its limit. The text is a first pass; edit `flavour.json` freely, no numbers live there.
+
 ## Economy
 
 Gold comes in only from catches and sales, and goes out on bait, charms, gear, location unlocks and crafting fees.
@@ -220,7 +234,7 @@ Gold comes in only from catches and sales, and goes out on bait, charms, gear, l
 | Server | Node.js 22 + Fastify, serving the API and the built page |
 | Database | SQLite (Node's built-in `node:sqlite`) in the mounted `/data` folder |
 | Web client | Vite + Preact, plain CSS, mobile first (about 12 KB gzipped today) |
-| Game content | JSON in `content/`, validated against a schema and cross-checked at startup |
+| Game content | JSON in `content/` (numbers in the per-kind files, player-facing text in `flavour.json`), validated against a schema and cross-checked at startup |
 | Accounts | First account is the admin; everyone else signs up with an invite code, then username + password and a session cookie |
 | Tests | Vitest for engine and server; the simulator for balance |
 
@@ -288,6 +302,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-25 | #8 | Flavour text: tagline, description and backstory for all 34 items and 24 imps, plus a rumour for each imp, in `content/flavour.json` with length limits and completeness checks. No numbers changed |
 | 2026-11-25 | #7 | NAS port changed to 8081 and time zone set to Asia/Singapore in compose.yaml and the guides |
 | 2026-11-25 | #6 | Save-file start-up fix: entrypoint repairs root-owned save files or falls back to root, server explains save-folder problems in plain words, smoke test covers locked save files |
 | 2026-11-25 | #4 | Start over: per-player wipe with a confirmation dialog, restart log (own and admin view); Invites tab renamed Admin |

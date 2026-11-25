@@ -1,6 +1,6 @@
 import type { Content } from './schema.js';
 
-/** Finds broken links between content files: unknown item ids, duplicate ids, unsorted ranks. */
+/** Finds broken links between content files: unknown item ids, duplicate ids, unsorted ranks, missing flavour text. */
 export function checkReferences(c: Content): string[] {
   const problems: string[] = [];
   const all = [
@@ -39,6 +39,13 @@ export function checkReferences(c: Content): string[] {
   if (!locIds.has(c.constants.startingLocation)) problems.push(`starting location "${c.constants.startingLocation}" is unknown`);
   for (const i of Object.keys(c.constants.startingItems)) need(i, 'startingItems');
   need(c.constants.rescue.item, 'rescue item');
+
+  for (const [kind, list] of Object.entries(c.items)) {
+    for (const i of list) if (!i.flavour) problems.push(`${kind} "${i.id}" has no text in flavour.json`);
+  }
+  for (const loc of c.locations) {
+    for (const imp of loc.imps) if (!imp.flavour) problems.push(`imp "${imp.id}" has no text in flavour.json`);
+  }
 
   c.ranks.forEach((r, i) => {
     if (r.rank !== i + 1) problems.push(`ranks must be numbered 1, 2, 3... in order (found ${r.rank} at position ${i + 1})`);
