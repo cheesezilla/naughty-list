@@ -18,6 +18,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Custom AI-generated PNGs for the rest of the game art (traps, bases, baits, charms, materials, trap types, brand, locations, map, how-to, remaining imps) — progress tracked in [ART_PROGRESS.md](ART_PROGRESS.md) | In progress | #14 |
 | New phone-first UI (layout D2): bottom menu, hunt log with events and full history, Arsenal, Elf Emporium, Santa's Workshop, More pages, open sign-up with admin switch | Done | #11 |
 | Intro letter from Santa: the game's backstory as the first hunt-log entry of every new game, and on How to play | In review | #12 |
+| Location objectives: a unique loop per location (Pantry bait ladder, Wrapping Room tangle meter, Toy Workshop order board, Stables sleigh run); see [Location objectives](#location-objectives-planned) | Planned (design only) | #PRNUM |
 | 5. Tune from play-test | Planned | |
 
 The server runs every hunt and saves each player in SQLite. To play locally, follow "Run it locally" below.
@@ -26,7 +27,7 @@ The server runs every hunt and saves each player in SQLite. To play locally, fol
 
 **The Naughty List** is an original Christmas trap-and-catch browser game for eddy and friends. Imps sent by Scrinch, ruler of the imps, are raiding Santa's secret lair at the North Pole and stealing toy supplies. Santa hires you as an imp hunter. You arm a trap, pick a bait, press Hunt, and the game rolls attraction and catch odds against the imp's power. There is no wait timer: every press is a hunt. Bait cost, not a clock, paces progress.
 
-v1 covers 5 ranks and 4 lair locations. Each location has 3 common imps, a rare imp, a mini boss and a local boss: 24 imps in all. Bosses drop the loot used to craft stronger gear. Expect roughly 1,400 hunts, or about 1 to 1.5 hours of active play, to reach the last v1 rank.
+v1 covers 5 ranks and 4 lair locations. Each location has 3 common imps, a rare imp, a mini boss and a local boss: 24 imps in all. Bosses drop the loot used to craft stronger gear. Each location will also have its own local objective (planned; see [Location objectives](#location-objectives-planned)). Expect roughly 1,400 hunts, or about 1 to 1.5 hours of active play, to reach the last v1 rank.
 
 The stack is one small Docker container (Node.js + SQLite) on the UGREEN NAS, with open sign-up (the admin can close it) and a leaderboard so friends can play. The stamina meter is built but switched off.
 
@@ -189,6 +190,93 @@ Jarbelly, Bow Burglar and Bell Thief steal an extra bait when they escape. Brims
 | Mistletoe Charm | +4 luck | 1 | 30 gold |
 | Jingle Bell Charm | +15% attraction | 2 | 25 gold |
 | Wind-up Key Charm | +20% power | 3 | 60 gold |
+
+## Location objectives (planned)
+
+**Rule (eddy, 25 Nov 2026):** every location has its own local objective, a loop that only exists there. Nothing in this section is built yet; the numbers are a first pass to check with the simulator when each loop is implemented. All four loops count in hunts and catches, never in minutes, so they work with no wait timer and behave the same with the stamina meter on or off (stamina only changes how fast a player can press Hunt in real time).
+
+**What the engine already does (checked on `main`):**
+
+| Piece | Status | Where |
+| --- | --- | --- |
+| Per-imp loot list with a chance and amount; loot can name any item, including a bait | Built | `imps[].loot`, `src/engine/hunt.ts` |
+| Bait changes which imps show up: `baitWeights` overrides an imp's weight for one bait, and a weight of 0 is allowed, so an imp can be locked behind a bait | Built, only used for Sugar Cookie → Chimney Soot Imp | `imps[].baitWeights`, `impWeights()` in `src/engine/odds.ts` |
+| Bait that raises rare, mini boss and boss odds | Built (Fruitcake, x2) | `baits[].rareMultiplier` |
+| Location that prefers one bait | Built (Reindeer Stables halves attraction without Hot Cocoa) | `preferredBait`, `otherBaitPenalty` |
+| Crafting a bait from drops | Built, one recipe (Fruitcake from Candied Peel and Cookie Tin) | `content/recipes.json` |
+| A chain of bait tiers where each tier's imps drop the next tier's ingredients and only the top tier draws the boss | Not built | |
+| Any per-player, per-location progress (meters, orders, countdowns) | Not built: the save has no place for it | `src/engine/player.ts` |
+| A location panel on the Hunt screen showing that progress | Not built | |
+
+So the Cookie Pantry loop is mostly content (new materials, baits, recipes and `baitWeights`); the other three need a small objective system in the engine.
+
+**Shared engine design (for when it's built).** Each location in `content/locations.json` gets an optional `objective` block with a `type` (`bait_ladder`, `tangle_meter`, `order_board`, `sleigh_run`) and its numbers. The save gets `objectives: { [locationId]: state }`, so old saves load with empty state. The hunt runs two hooks: one that adjusts imp weights and power before the imp is picked, and one that updates the state after the catch or escape. Objective changes go into the hunt's journal entry (for example "Tangle 45 → 50"), and the Hunt screen shows a small panel for the current location under the banner. Gear swaps stay free, as now. The simulator gets a strategy per objective so balance can be checked.
+
+### Cookie Pantry: the Bake-off Ladder (bait tiers)
+
+eddy's loop: common bait catches common imps, who drop tier 2 ingredients; tier 2 bait draws new imps, who drop tier 3 ingredients; tier 3 bait draws the boss, who drops trap parts and a little general help. It suits the first location because it teaches crafting, bait choice and the Workshop in the first hour.
+
+| Tier | Bait (how you get it) | Imps it draws (weight) | What they drop toward the next tier |
+| --- | --- | --- | --- |
+| 1 | Stale Cookie, Sugar Cookie (shop, as now) | `crumb_imp` 40, `sprinkle_snatcher` 30, `chimney_soot_imp` 21 (28 with Sugar Cookie). `gingerbread_imp`, `jarbelly` and `baron_crumblewick` 0 | `crumb_imp`: Butter Curl 25%. `sprinkle_snatcher`: Butter Curl 20% (keeps Candied Peel 10%). `chimney_soot_imp`: Oven Ember 30%. Any common: 2% for 1 Jam Drop outright |
+| 2 | **Jam Drop** (new bait, 80% attraction, not sold). Recipe: 2 Butter Curl + 1 Oven Ember + 20 gold → 3 Jam Drops | commons 50 in total, `gingerbread_imp` 30, `jarbelly` 20, `baron_crumblewick` 0 | `gingerbread_imp`: Sugar Glass 50% (as now). `jarbelly`: Cookie Tin 100% (as now) |
+| 3 | **Crown Shortbread** (new bait, 85% attraction, not sold). Recipe: 1 Sugar Glass + 1 Cookie Tin + 50 gold → 2 Crown Shortbread | commons 30, `gingerbread_imp` 10, `jarbelly` 10, `baron_crumblewick` 50 | `baron_crumblewick`: Brass Spring 100% (trap part, as now) and 25% for 5 Mistletoe Charms |
+
+- New ids (proposed): materials `butter_curl`, `oven_ember`; baits `jam_drop`, `crown_shortbread`; recipes `jam_drop_x3`, `crown_shortbread_x2`.
+- Sugar Cookie becomes the way to farm Oven Embers, which gives the shop's second bait a clear job.
+- Fruitcake uses the tier 1 weights in the Pantry, so it can't skip the ladder (2 x 0 is still 0). It keeps its effect in the other locations.
+- New trap part sink, so the boss matters at rank 1 to 2: **Rolling Pin Press** (`rolling_pin_press`, Clockwork, power 260, luck 2, rank 2), crafted from 3 Brass Spring + 1 Cookie Tin + 1,500 gold. Brass Spring is still used by Wreath of Thorns.
+- Rough pace with the meant-for gear: about 20 attracted hunts per 3 Jam Drops, about 11 Jam Drops per 2 Crown Shortbread, so about one Baron attempt every 60 hunts and one Baron catch every 120 or so. To be checked with the simulator.
+- Panel: three bait tiers with what you own of each, and the next recipe's have / need.
+
+### Wrapping Room: the Tangle Meter (push your luck)
+
+The room gets messier the longer you hunt, and a messy room pays better but is harder. The player chooses when to tidy up.
+
+- **Tangle** runs 0 to 100 and starts at 0. Each attracted hunt adds 5; an escape adds 5 more; catching a Ribbon Tangler adds 10.
+- **Tidying:** catching a Tape Biter cuts 15 (it chews through the knots; it is weak to Holly). New charm **Sharp Shears** (`sharp_shears_charm`, shop, 35 gold, rank 2) cuts 25 on each attracted hunt it is used. Catching Madame Shredwell resets Tangle to 0.
+
+| Band | Tangle | Imp power | Gold and points | Rare and mini boss weight | Madame Shredwell |
+| --- | --- | --- | --- | --- | --- |
+| Tidy | 0–39 | x1 | x1 | x1 | weight 0 |
+| Messy | 40–79 | x1.15 | x1.25 | x2 | weight 0 |
+| Knotted | 80–100 | x1.3 | x1.5 | x2 | weight 6 |
+
+- The choice: stay tidy for safe catches, or let it knot up for richer hunts and a chance at the boss, then cut back down with Holly or Shears.
+- Spoolwick (mini boss) drops Golden Ribbon as now; Madame Shredwell drops Enchanted Wrapping as now.
+- Panel: Tangle bar with the band name and what the band does.
+
+### Toy Workshop: the Order Board (trap-type puzzle)
+
+The elves pin toy orders to a board. Each order lists parts that must be caught with a given trap type, in order. It makes the player own and swap traps of all three types, which is the known gap from the simulator (nobody bought Snow Globe Prison or Wreath of Thorns).
+
+- **Order:** 3 slots, each a trap type (Clockwork, Holly or Frost), rolled by the server when the last order finishes. A catch with the trap type of the next slot fills it. Catches with another type don't count; escapes don't undo filled slots.
+- The puzzle is matching type to imp: the Stuffing Ripper resists Holly, the Wind-up Imp is immune to Frost, so a Frost slot is best filled on Paint Smudgers, Cog Pinchers or Stuffing Rippers.
+- **Order done:** a Toy Crate: 400 gold and one of Peppermint Bark x5, Wind-up Key Charm x3 or Sugar Glass x1.
+- **Inspection:** every 3rd finished order, the next attracted hunt is Hammerhand (mini boss; weight 0 otherwise). He drops Toymaker's Gear as now.
+- **Rush order:** after an Inspection, the player can take a 5-slot Rush order instead of a normal one. Finishing it makes the next attracted hunt Foreman Grimbolt (boss; weight 0 otherwise), who drops Clockwork Heart as now.
+- Panel: the order slots as type badges, filled or empty, and orders until the next Inspection.
+
+### Reindeer Stables: the Sleigh Run (countdown in hunts)
+
+Get the sleigh ready before the countdown runs out, while thieves undo your work. The countdown is a number of hunts, not a clock.
+
+- **Start a run** from the panel (free). The run lasts 40 hunts; every hunt counts, including quiet ones, so Hot Cocoa's better attraction matters more here.
+- **Readiness** 0 to 100: a common catch adds 4, the rare adds 10, Antler Ripper adds 20. A Bell Thief escape takes 8 (it runs off with the bells); a Harness Snipper escape takes 5.
+- Antler Ripper's weight is 0 below 50 Readiness and 6 from 50 up.
+- **Launch:** reaching 100 before the countdown ends launches the sleigh: 2,000 gold and 1 Silver Sleighbell, and Grizzlewick ambushes it, so the next attracted hunt is him (weight 0 otherwise). He drops Brimstone Coal as now.
+- **Run fails** when the countdown ends below 100: the player gets Readiness x 10 gold and can start another run straight away.
+- Outside a run the Stables hunt as now, without the mini boss and boss.
+- Panel: Readiness bar, hunts left, and a Start run button when no run is active.
+
+### Build order
+
+1. Cookie Pantry ladder (content plus a few `baitWeights`; small engine work for the panel).
+2. Objective system in the engine and save, then the Wrapping Room meter.
+3. Toy Workshop order board.
+4. Reindeer Stables sleigh run.
+
+Each step re-runs `npm run simulate` and updates the balance numbers in this file.
 
 ## Flavour text
 
@@ -355,10 +443,10 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 ## Changelog
 
-| 2026-11-25 | #15 | Added docs/ART_PROGRESS.md tracking which of the 56 remaining non-icon art assets still need custom AI-generated pictures (per slot, with ids), linked from docs/ART.md and docs/PLAN.md. No art files or game numbers changed |
-
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-25 | #PRNUM | Planned a unique local objective for each location: Cookie Pantry bait ladder (eddy's tiered bait-ingredient loop), Wrapping Room tangle meter, Toy Workshop order board, Reindeer Stables sleigh run; recorded what the engine already supports. Design only, no code or numbers changed |
+| 2026-11-25 | #15 | Added docs/ART_PROGRESS.md tracking which of the 56 remaining non-icon art assets still need custom AI-generated pictures (per slot, with ids), linked from docs/ART.md and docs/PLAN.md. No art files or game numbers changed |
 | 2026-11-25 | #14 | Custom PNG art for the 8 traps and 4 of 5 bases (`cardboard_box`, `gingerbread_slab`, `candy_cane_platform`, `ice_block`; `yule_log_base` still generated SVG), generated with Gemini on a plain background then cut out locally with `rembg`. Rest of the non-icon art (baits, charms, materials, trap types, brand, locations, map, how-to, remaining 15 imps) still queued, paused on Gemini's daily image-generation limit. No game numbers changed |
 | 2026-11-25 | #13 | Custom PNG portraits for all 10 cookie-pantry/wrapping-room/toy-workshop/reindeer-stables imps (`crumb_imp`, `gingerbread_imp`, `baron_crumblewick`, `glitter_imp`, `madame_shredwell`, `windup_imp`, `foreman_grimbolt`, `carrot_crook`, `grizzlewick`, `_locked`), generated with an AI image tool and dropped in per docs/ART.md; `npm run art` picked them up as custom and left the other 15 imps on generated SVG. No game numbers changed |
 | 2026-11-25 | #12 | Intro letter from Santa (`content/story.json`), logged as a Story event when a game starts (sign-up and Start over) and shown on How to play. No numbers changed |
