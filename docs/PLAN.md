@@ -190,7 +190,7 @@ Every trap, base, bait, charm, material and imp has text for its detail screen, 
 | Field | Who has it | Limit | Shown |
 | --- | --- | --- | --- |
 | `tagline` | Items and imps | 60 characters | Under the name on cards and detail screens |
-| `description` | Items and imps | 160 characters, 1 to 2 sentences | Detail screens and shop cards; says what the thing does |
+| `description` | Items and imps | 160 characters, 1 to 2 sentences | Detail screens and Elf Emporium (shop) cards; says what the thing does |
 | `backstory` | Items and imps | 400 characters, 3 to 4 sentences | Detail screens; for imps, only after the first catch |
 | `rumour` | Imps only | 100 characters | Before the first catch, in place of the portrait text |
 
