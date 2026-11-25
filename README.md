@@ -7,7 +7,8 @@ Design plan: [docs/PLAN.md](docs/PLAN.md) (updated with every PR)
 ## Status
 
 - Milestones 1 to 3 are in: hunt engine, v1 content (4 locations, 24 imps), balance simulator, invite-only accounts, server-side hunts and SQLite saves.
-- Next: leaderboard, catch feed and the NAS deploy with a public address for friends.
+- Deploys to a UGREEN NAS with Docker; see [docs/DEPLOY.md](docs/DEPLOY.md).
+- Next: leaderboard and catch feed.
 
 ## Run it
 
@@ -54,9 +55,7 @@ Edit, then run `npm run check-content` and `npm run simulate` to see the effect.
 
 ## Deploy on the UGREEN NAS
 
-Pushing to `main` builds `ghcr.io/cheesezilla/naughty-list:latest` (see `.github/workflows/docker.yml`). On the NAS, open the Docker app, create a project and paste `compose.yaml`. The game is then at `http://<nas-address>:8080`.
-
-The package is private by default: either make it public under the repository's Packages settings, or log the NAS in to ghcr.io with a read-only token.
+Follow [docs/DEPLOY.md](docs/DEPLOY.md). Pushing to `main` builds `ghcr.io/cheesezilla/naughty-list:latest`. In the NAS Docker app, create a project from `compose.yaml`, and the game is at `http://<nas-address>:8080`. An optional Cloudflare Tunnel in the same file lets friends play from anywhere.
 
 ## Layout
 
