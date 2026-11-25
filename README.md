@@ -43,6 +43,7 @@ All numbers live in `content/`:
 | `locations.json` | Locations, unlock costs and their imps (power, gold, points, weights, type matchups, loot) |
 | `items.json` | Traps, bases, baits, charms and materials |
 | `recipes.json` | Santa's Workshop crafting recipes |
+| `story.json` | Santa's intro letter, shown when a game starts |
 
 Edit, then run `npm run check-content` and `npm run simulate` to see the effect. The stamina meter (`constants.json` > `stamina.enabled`) is built but switched off.
 

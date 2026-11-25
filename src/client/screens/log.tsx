@@ -77,6 +77,7 @@ export function eventText(ev: GameEvent, itemName: (id: string) => string, locNa
     case 'buy': return <>Bought <b>{num(ev.amount)} {itemName(ev.item)}</b> for {num(ev.gold)} gold</>;
     case 'sell': return <>Sold <b>{num(ev.amount)} {itemName(ev.item)}</b> for {num(ev.gold)} gold</>;
     case 'craft': return <>Crafted <b>{ev.amount > 1 ? `${num(ev.amount)} ` : ''}{itemName(ev.item)}</b> for {num(ev.gold)} gold and materials</>;
+    case 'intro': return <>The story so far</>;
     case 'travel': return <>Travelled to the <b>{locName(ev.location)}</b>{ev.unlockCost > 0 && ` and unlocked it for ${num(ev.unlockCost)} gold`}</>;
     case 'equip':
       if (!ev.item) return <>Took off {ev.previous ? itemName(ev.previous) : 'your'} {ev.slot}</>;
@@ -85,7 +86,7 @@ export function eventText(ev: GameEvent, itemName: (id: string) => string, locNa
   }
 }
 
-const BADGE: Record<GameEvent['type'], string> = { buy: 'Buy', sell: 'Sell', craft: 'Craft', travel: 'Travel', equip: 'Gear' };
+const BADGE: Record<GameEvent['type'], string> = { buy: 'Buy', sell: 'Sell', craft: 'Craft', travel: 'Travel', equip: 'Gear', intro: 'Story' };
 
 function EventRow({ row }: { row: JournalRow & { kind: 'event' } }) {
   const { data } = useGame();
@@ -100,7 +101,30 @@ function EventRow({ row }: { row: JournalRow & { kind: 'event' } }) {
   );
 }
 
+/** Santa's intro letter (content/story.json). In the log it opens folded after the first paragraph. */
+export function StoryCard({ at, folded = true }: { at?: number; folded?: boolean }) {
+  const { content } = useGame();
+  const prefs = usePrefs();
+  const [open, setOpen] = useState(!folded);
+  const story = content.story?.intro;
+  if (!story) return null;
+  const paragraphs = open ? story.paragraphs : story.paragraphs.slice(0, 1);
+  return (
+    <div class="story-card">
+      <div class="story-head">
+        <Art slot="brand" id="icon" class="thumb small" />
+        <h3>{story.title}</h3>
+        {at !== undefined && <span class="row-time">{when(at, prefs.clock24)}</span>}
+      </div>
+      {paragraphs.map((p) => <p>{p}</p>)}
+      {open ? <p class="signoff">{story.signoff}</p>
+        : <button class="text-btn" onClick={() => setOpen(true)}>Read the whole letter</button>}
+    </div>
+  );
+}
+
 export function LogRow({ row }: { row: JournalRow }) {
+  if (row.kind === 'event' && row.entry.type === 'intro') return <StoryCard at={row.at} />;
   return row.kind === 'hunt' ? <HuntRow row={row} /> : <EventRow row={row} />;
 }
 

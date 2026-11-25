@@ -1,5 +1,5 @@
 import { useState } from 'preact/hooks';
-import type { JournalEntry, PlayerState } from '../../engine/index.js';
+import type { JournalEntry, JournalRow, PlayerState } from '../../engine/index.js';
 import { api } from '../api.js';
 import { useGame } from '../game.js';
 import { Art, artEntry, Icon } from '../lib/art.js';
@@ -7,7 +7,7 @@ import { ago, date, num, pct, plural, TIER_NAME, TIER_ORDER, when } from '../lib
 import { setPref, usePrefs } from '../lib/prefs.js';
 import { go } from '../lib/route.js';
 import { BackRow, Loading, MainScreen, Tabs, Toggle, useAsync } from '../ui.js';
-import { ImpThumb } from './log.js';
+import { ImpThumb, StoryCard } from './log.js';
 
 export function MoreMenu() {
   const { content, player, user, logout } = useGame();
@@ -228,6 +228,7 @@ export function HowToScreen() {
     <MainScreen tab="more">
       <BackRow to="more" title="How to play" sub="Short guide for new hunters" />
       <div class="pad stack">
+        <StoryCard />
         {HOWTO.map((h) => (
           <div class="card howto">
             <Art slot="howto" id={h.id} alt="" class="howto-art" />
@@ -362,9 +363,9 @@ export function AccountScreen() {
       {restarting && (
         <RestartDialog player={player} onCancel={() => setRestarting(false)} onConfirm={async () => {
           try {
-            const r = await api<{ player: PlayerState }>('POST', '/api/restart', { confirm: true });
+            const r = await api<{ player: PlayerState; journal: JournalRow[] }>('POST', '/api/restart', { confirm: true });
             setPlayer(r.player);
-            resetLog();
+            resetLog(r.journal);
             toast('Fresh start! Santa has handed you a new Stocking Snare and 100 Stale Cookies.', 'good');
             go('hunt');
           } catch (e) {

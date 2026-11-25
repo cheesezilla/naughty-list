@@ -4,6 +4,10 @@ import { mergeFlavour } from '../src/content/load.js';
 import { content } from './helpers.js';
 
 describe('content files', () => {
+  it("include Santa's intro letter", () => {
+    expect(content.story?.intro.paragraphs.length).toBeGreaterThan(0);
+  });
+
   it('load and pass reference checks', () => {
     expect(checkReferences(content)).toEqual([]);
   });
