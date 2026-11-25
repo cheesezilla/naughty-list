@@ -10,7 +10,8 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | 1. Skeleton: server, client, Docker image, CI | Done | #1 |
 | 2. Hunt engine, content files, tests, balance simulator | Done | #1 |
 | 3. Playable client on the server: accounts, invites, server-side hunts, SQLite saves | Done | #2 |
-| 4. Friends (leaderboard, catch feed) and NAS deploy | Next (crafting is already in) | |
+| 4a. NAS deploy: compose file, Cloudflare Tunnel option, deploy guide, image smoke test | Done | #3 |
+| 4b. Friends: leaderboard and catch feed | Next | |
 | 5. Tune from play-test | Planned | |
 
 The server runs every hunt and saves each player in SQLite. To play locally, follow "Run it locally" below.
@@ -258,9 +259,14 @@ The first account you create is the admin. Open the Invites tab to make codes fo
 
 The game ships as one Docker image (`ghcr.io/cheesezilla/naughty-list`), built and published by GitHub Actions on each push to `main`. The UGREEN DXP4800 has an Intel x86 processor, so the amd64 image works.
 
-1. On the NAS, open the Docker app, create a project and paste `compose.yaml` from the repo.
-2. Open `http://<nas-address>:8080` on your home network. Updating is pulling the new image and restarting the project.
-3. The package is private by default: make it public in the repository's Packages settings, or log the NAS in to ghcr.io with a read-only token.
+Step-by-step guide: [docs/DEPLOY.md](DEPLOY.md). In short:
+
+1. Make the GitHub package public once, or log the NAS in to ghcr.io with a `read:packages` token.
+2. In the UGOS Docker app, create a project from `compose.yaml`. Saves go to `/volume1/docker/naughty-list`.
+3. Open `http://<nas-address>:8080` and create the admin account.
+4. Optional: uncomment the `cloudflared` service and paste a tunnel token for a public HTTPS address.
+
+The container starts as root only to fix the save folder's ownership, then drops to the unprivileged `node` user (`docker/entrypoint.sh`). Pull requests build the image and smoke-test it with a root-owned save folder: sign up, hunt, restart, and check the save survived.
 
 **Letting friends in:** a Cloudflare Tunnel gives the game a public HTTPS address without opening router ports, as a second small container in the same Compose project. It needs a free Cloudflare account and a domain on Cloudflare. Tailscale is the alternative if every friend installs it.
 
@@ -268,16 +274,15 @@ The game ships as one Docker image (`ghcr.io/cheesezilla/naughty-list`), built a
 
 **Backups:** the save is one SQLite file (plus its `-wal` file) in the data folder; a UGOS scheduled backup of that folder is enough.
 
-**Folder permissions:** the container runs as an unprivileged user. If it logs that it can't write to `/data`, give the NAS folder read and write permission for everyone, or add `user: "0:0"` to the service in `compose.yaml`.
-
 ## Still to sort out
 
 - [ ] A domain on Cloudflare for the friends' address (or choose Tailscale), needed at milestone 4.
-- [ ] Make the GitHub package public, or give the NAS a read token.
+- [ ] Make the GitHub package public, or give the NAS a read token (DEPLOY.md part 1).
 
 ## Changelog
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-25 | #3 | NAS deploy: compose file with optional Cloudflare Tunnel, DEPLOY.md guide, entrypoint that fixes save-folder ownership, image smoke test in CI |
 | 2026-11-25 | #2 | Milestone 3: accounts (first one is admin), invite codes, server-side hunts with rate limit, SQLite saves, login screen and Invites tab; local run steps |
 | 2026-11-25 | #1 | Plan added to the repo; milestones 1 and 2 built; first simulator run recorded |

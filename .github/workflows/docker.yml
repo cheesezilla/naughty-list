@@ -19,15 +19,30 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      # Pull requests only check that the image builds; pushes to main publish it.
+      # Pull requests build and smoke-test the image; pushes to main publish it.
       - uses: docker/build-push-action@v6
         with:
           context: .
           platforms: linux/amd64
           push: ${{ github.event_name != 'pull_request' }}
+          load: ${{ github.event_name == 'pull_request' }}
           build-args: APP_VERSION=${{ github.sha }}
           tags: |
             ghcr.io/${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      - name: Smoke test (root-owned save folder, like a fresh NAS share)
+        if: github.event_name == 'pull_request'
+        run: |
+          sudo mkdir -p /tmp/nl-data && sudo chown root:root /tmp/nl-data && sudo chmod 755 /tmp/nl-data
+          docker run -d --name nl -p 8080:8080 -v /tmp/nl-data:/data ghcr.io/${{ github.repository }}:${{ github.sha }}
+          for i in $(seq 1 30); do curl -fs localhost:8080/api/health && break; sleep 1; done
+          curl -fs localhost:8080/api/setup-status | grep '"needsAdmin":true'
+          curl -fs -c jar -H 'content-type: application/json' -d '{"username":"smoke","password":"smoketest123"}' localhost:8080/api/auth/signup
+          curl -fs -b jar -X POST -H 'content-type: application/json' -d '{}' localhost:8080/api/hunt
+          docker restart nl
+          for i in $(seq 1 30); do curl -fs localhost:8080/api/health && break; sleep 1; done
+          curl -fs -b jar localhost:8080/api/me | grep '"hunts":1'
+          sudo ls -la /tmp/nl-data
+          docker logs nl

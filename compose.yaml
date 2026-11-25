@@ -1,12 +1,26 @@
-# Compose project for the UGREEN NAS (Docker app > Project > Create, paste this file).
+# The Naughty List on a UGREEN NAS.
+# Docker app > Project > Create, give it a name, and paste this file. See docs/DEPLOY.md.
 services:
   naughty-list:
     image: ghcr.io/cheesezilla/naughty-list:latest
     container_name: naughty-list
     ports:
-      - "8080:8080"
+      - "8080:8080"   # change the left number if 8080 is taken on the NAS
     volumes:
-      # Save data. Create this shared folder on the NAS first.
-      # If the log says it can't write to /data, add  user: "0:0"  under the service.
+      # Save data. Create the shared folder "docker" first; the naughty-list folder is made for you.
       - /volume1/docker/naughty-list:/data
+    environment:
+      - TZ=UTC   # optional: your time zone, for example Asia/Singapore or America/New_York
     restart: unless-stopped
+
+  # Optional: let friends play from anywhere through a Cloudflare Tunnel.
+  # Remove the # from the lines below and paste your tunnel token (docs/DEPLOY.md, part 3).
+  # cloudflared:
+  #   image: cloudflare/cloudflared:latest
+  #   container_name: naughty-list-tunnel
+  #   command: tunnel --no-autoupdate run
+  #   environment:
+  #     - TUNNEL_TOKEN=paste-your-token-here
+  #   depends_on:
+  #     - naughty-list
+  #   restart: unless-stopped
