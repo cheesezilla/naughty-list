@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { checkReferences } from '../src/content/check.js';
+import { mergeFlavour } from '../src/content/load.js';
 import { content } from './helpers.js';
 
 describe('content files', () => {
@@ -18,5 +19,23 @@ describe('content files', () => {
     const broken = structuredClone(content);
     broken.recipes[0]!.ingredients = { no_such_thing: 1 };
     expect(checkReferences(broken).join()).toMatch(/no_such_thing/);
+  });
+
+  it('give every item and imp a tagline, description and backstory, and every imp a rumour', () => {
+    const items = Object.values(content.items).flat();
+    for (const i of items) expect(i.flavour?.backstory, i.id).toBeTruthy();
+    for (const imp of content.locations.flatMap((l) => l.imps)) expect(imp.flavour?.rumour, imp.id).toBeTruthy();
+  });
+
+  it('report items with no flavour text', () => {
+    const broken = structuredClone(content);
+    delete broken.items.baits[0]!.flavour;
+    expect(checkReferences(broken).join()).toMatch(/stale_cookie" has no text/);
+  });
+
+  it('report flavour text for ids that do not exist', () => {
+    const text = { tagline: 'a', description: 'b', backstory: 'c' };
+    const problems = mergeFlavour({ traps: [] }, [{ imps: [] }], { items: { ghost_trap: text }, imps: { ghost_imp: { ...text, rumour: 'd' } } });
+    expect(problems.join()).toMatch(/ghost_trap.*ghost_imp/);
   });
 });

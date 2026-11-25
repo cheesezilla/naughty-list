@@ -1,0 +1,305 @@
+{
+  "items": {
+    "stocking_snare": {
+      "tagline": "A wool stocking, a holly drawstring and hope.",
+      "description": "Santa's starter trap: a darned stocking that cinches shut on a holly cord when something small climbs inside.",
+      "backstory": "Every new hunter gets one, fished from the lost-property basket by the big fireplace. The drawstring is a sprig from the first wreath the elves ever hung, and it still pricks anything that wriggles. It won't hold a big imp, but little ones can't resist crawling into something that smells of oranges and old presents."
+    },
+    "jack_in_the_box": {
+      "tagline": "Wind it up. Wait. Pop goes the imp.",
+      "description": "A crank-handled toy box whose clockwork lid slams shut the moment curious fingers lift the latch.",
+      "backstory": "The Toy Workshop made these by the thousand until one swallowed an elf's mitten. Rather than scrap the batch, the elves reversed the springs so the lid snaps shut instead of open. Imps simply cannot stand not knowing what is inside a box, which is the whole idea."
+    },
+    "holly_noose": {
+      "tagline": "Glossy, green and very, very grabby.",
+      "description": "A loop of enchanted holly vine that tightens as an imp struggles. Its berries glow red while it is set.",
+      "backstory": "The holly in Santa's greenhouse grows towards mischief the way other plants grow towards the sun. An elf gardener noticed it creeping after a raiding imp one night and had the clever idea of tying it in a loop. The vine has been happily strangling the sound of little feet ever since."
+    },
+    "icicle_jar": {
+      "tagline": "Cold glass, a sweet smell, a quick freeze.",
+      "description": "A jar grown from a single icicle. Its frosty sparkle lures imps in, and the lid freezes shut behind them.",
+      "backstory": "The icicles hanging from the lair's north eaves never melt, and nobody quite knows why. The elves found that one snapped off and hollowed out keeps whatever falls inside perfectly chilled. Imps think the glitter means treasure. They are wrong, and then they are cold."
+    },
+    "nutcracker_jaws": {
+      "tagline": "Tin soldier outside, steel jaws within.",
+      "description": "A towering nutcracker whose painted jaw is driven by a brass mainspring strong enough to crack a walnut, or an imp.",
+      "backstory": "This one stood guard by the Workshop doors for a hundred Christmases and never cracked a single nut. When the raids began, the elves rebuilt its innards with springs from Santa's sleigh. It still salutes politely before it bites, which the imps consider very unfair."
+    },
+    "wreath_of_thorns": {
+      "tagline": "Festive on the door, ferocious on the floor.",
+      "description": "A forged wreath of enchanted wrapping and brass-sprung thorns that snaps inward on anything that steps through.",
+      "backstory": "Santa's Workshop weaves it from the wrapping Madame Shredwell guarded and the springs Baron Crumblewick hoarded, which the elves find deeply satisfying. Hung on a door it looks like any other wreath. Laid flat on the floor, its thorns curl inward like fingers closing on a secret."
+    },
+    "snow_globe_prison": {
+      "tagline": "Shake it, and the imp sees only snow.",
+      "description": "A giant snow globe that swallows its catch whole and swirls it in a blizzard until it forgets which way is out.",
+      "backstory": "Santa keeps a shelf of snow globes, each holding a tiny winter that is really happening somewhere. This one holds no village, only a storm that never ends. The elves say an imp once spent three days inside it trying to build a snowman to climb out on."
+    },
+    "sleigh_bell_snapper": {
+      "tagline": "Hear the jingle? Too late.",
+      "description": "The finest trap in the lair: a sleigh-bell harness with a clockwork heart, built on the bones of a Nutcracker Jaws.",
+      "backstory": "Santa's Workshop rings silver sleighbells rescued from the Stables around a stolen clockwork heart, then fits the whole thing inside a sacrificed Nutcracker Jaws. The bells chime on their own when an imp comes close. Hunters swear it jingles a carol the moment it catches a boss, and only then."
+    },
+    "cardboard_box": {
+      "tagline": "Every great hunter started on a box.",
+      "description": "A flattened delivery box from the Wrapping Room. It keeps your trap off the cold floor and that is about all.",
+      "backstory": "The elves throw out a mountain of these every December, so the first one is free. Look closely and you can still read the shipping label: one rocking horse, to a house that no longer exists. It has carried better things than you, and it will carry you too."
+    },
+    "gingerbread_slab": {
+      "tagline": "Firm, fragrant and only slightly nibbled.",
+      "description": "A thick, oven-hard gingerbread board that steadies a trap and makes the whole set-up smell like a bakery.",
+      "backstory": "Mrs Claus bakes these as practice before the gingerbread houses, and they come out hard enough to stand on. The scent drifts through the lair and keeps imps coming back for one more sniff. Try not to eat it; hunters who do report the next night's hunt goes badly."
+    },
+    "candy_cane_platform": {
+      "tagline": "Striped, sturdy and sweet as a lure.",
+      "description": "Four giant candy canes lashed into a raft. The peppermint smell draws imps from further down the hall.",
+      "backstory": "These canes were too long to fit in any stocking, so the elves started building with them instead. The hooked ends make perfect handles for carrying a trap from room to room. Imps cannot resist licking the stripes, which is a good moment to be waiting nearby."
+    },
+    "ice_block": {
+      "tagline": "Cut from the oldest ice in the North.",
+      "description": "A clear block quarried from the glacier under the lair. It never melts and never wobbles, so your trap hits true.",
+      "backstory": "Deep under the lair is ice older than Christmas itself. The elves cut a few blocks a year with a saw that sings when it works. Look into one and you can sometimes see bubbles of very old air, and once, the elves insist, a perfectly preserved mince pie."
+    },
+    "yule_log_base": {
+      "tagline": "A hearth on four legs, warm and welcoming.",
+      "description": "A forged yule log that glows like embers. Its warmth draws imps from all over, and its gears keep your trap steady.",
+      "backstory": "Santa's Workshop fits a real yule log with toymaker's gears, ties it with golden ribbon and glazes it in sugar glass. It smoulders gently without ever burning down. Cold imps come for the warmth, stay for the smell of woodsmoke and cinnamon, and leave on The Naughty List."
+    },
+    "stale_cookie": {
+      "tagline": "Hard as a brick, but imps aren't fussy.",
+      "description": "Yesterday's cookies, swept up from the Pantry floor. Cheap, plentiful and good enough for most imps.",
+      "backstory": "Santa leaves no cookie behind. The ones that crack, crumble or get licked by a reindeer end up in a sack marked HUNTING. Imps have no taste to speak of and will chew through a stale cookie as happily as a fresh one, though they grumble about it afterwards."
+    },
+    "sugar_cookie": {
+      "tagline": "Fresh from the oven, still a little warm.",
+      "description": "A soft, frosted sugar cookie. It works anywhere, and the sweet smoke draws Chimney Soot Imps out of the Pantry flues.",
+      "backstory": "Mrs Claus's recipe calls for one pinch of snow from the roof, which may explain why the smell climbs straight up the chimneys. Soot imps living in the flues come tumbling down after it, coughing and delighted. Keep a few in your pocket whenever the Pantry fire is lit."
+    },
+    "peppermint_bark": {
+      "tagline": "Snaps loud, smells louder.",
+      "description": "Slabs of chocolate and crushed peppermint. Its sharp smell cuts through the noise of busy rooms.",
+      "backstory": "The Toy Workshop elves chew this to stay awake through the night shift, and it shows. The smell is so strong it can be tracked through three closed doors and a sleeping reindeer. Imps who catch the scent follow it in a dizzy straight line, which is very convenient for hunters."
+    },
+    "fruitcake": {
+      "tagline": "Heavy, dark and irresistible to big imps.",
+      "description": "A dense fruitcake crafted from candied peel and a Cookie Tin. Rare imps and bosses find it twice as tempting.",
+      "backstory": "Nobody at the North Pole will admit to liking fruitcake, so the elves bake it only for hunting. Common imps turn up their noses, but the bigger, greedier ones cannot resist anything that rare and that rich. One slice weighs about as much as a small elf."
+    },
+    "hot_cocoa": {
+      "tagline": "Steaming, chocolatey, adored by stable imps.",
+      "description": "A mug of thick hot cocoa. Stable imps come running for it; with any other bait they show up half as often.",
+      "backstory": "The stable hands drink cocoa all night to keep warm while the reindeer sleep, and the imps living in the hay learned to love it. Without a mug steaming nearby, they barely bother leaving the loft. With one, they forget every warning Scrinch ever gave them."
+    },
+    "mistletoe_charm": {
+      "tagline": "A little luck, tied with a red ribbon.",
+      "description": "A sprig of mistletoe that steadies the hunter's hand, adding a touch of luck to every hunt.",
+      "backstory": "Hang mistletoe over a doorway and something lucky is bound to happen under it. Hunters learned to pin a sprig to their traps instead. The elves craft them in bundles from a sliver of sugar glass, which keeps the leaves green for the whole season."
+    },
+    "jingle_bell_charm": {
+      "tagline": "One little bell, a lot of curiosity.",
+      "description": "A tiny brass bell that tinkles on its own. Imps can't resist investigating, so more of them come to your trap.",
+      "backstory": "These bells fall off reindeer harnesses by the dozen, and the elves gather them up each morning. Imps believe a ringing bell means a sleigh is loading presents nearby. They come sneaking to see, and find your trap waiting instead of a sack of toys."
+    },
+    "windup_key_charm": {
+      "tagline": "A few turns more and your trap bites harder.",
+      "description": "A brass wind-up key that slots into any trap and tightens every spring, adding a fifth to its power.",
+      "backstory": "Every toy in the Workshop has one, and the elves have more keys than toys. Somebody discovered that a key fits just as well into a trap, and that three extra turns make a lid slam twice as fast. The elves ask that you return them, and nobody ever does."
+    },
+    "candied_peel": {
+      "tagline": "Sticky, sugary and a little bitter.",
+      "description": "Strips of candied orange peel that imps carry as snacks. A key ingredient for fruitcake.",
+      "backstory": "Imps steal oranges from the stockings, eat the fruit and stuff the candied peel in their pockets for later. Catch one and the peel spills out everywhere. The Pantry elves will happily take it back to bake into fruitcake."
+    },
+    "sugar_glass": {
+      "tagline": "Clear as ice, sweet as candy.",
+      "description": "Shards of hardened sugar that rare imps chip from the lair's window panes. Prized by Santa's Workshop.",
+      "backstory": "Some windows in Santa's lair are made from boiled sugar, and rare imps cannot help licking and chipping at them. The shards they carry off still hold a little of the lair's magic. Santa's Workshop melts them down to glaze gear and craft charms."
+    },
+    "cookie_tin": {
+      "tagline": "Empty, alas. Jarbelly saw to that.",
+      "description": "A dented festive cookie tin dropped by Jarbelly the Glutton. Santa's Workshop uses it to bake fruitcake.",
+      "backstory": "Jarbelly never goes anywhere without a tin under each arm, and always empty by the time it's caught. The tins are the good old sort, pressed with snowflakes and robins and sealed tight enough to keep a fruitcake moist for a year."
+    },
+    "brass_spring": {
+      "tagline": "Coiled tight with stolen bounce.",
+      "description": "A heavy brass spring from Baron Crumblewick's coat. Santa's Workshop winds it into stronger traps.",
+      "backstory": "Baron Crumblewick hoards springs pulled from the Pantry's clockwork mixers and stitches them into the lining of his coat, which is why he bounces when he walks. Catch him and they come loose. Santa's Workshop has never had better springs."
+    },
+    "golden_ribbon": {
+      "tagline": "The ribbon reserved for the best presents.",
+      "description": "A spool of real gold ribbon carried by Spoolwick. Santa's Workshop uses it to bind crafted gear.",
+      "backstory": "Only one present a year is tied with golden ribbon, and nobody knows who gets it. Spoolwick has been stealing spools of it for years to wear as a cape. Bring it back and Santa's Workshop will use it to tie gear that never comes undone."
+    },
+    "enchanted_wrapping": {
+      "tagline": "Paper that wraps itself.",
+      "description": "A self-folding sheet of wrapping paper taken from Madame Shredwell. Woven into the Wreath of Thorns.",
+      "backstory": "The Wrapping Room's finest paper folds itself around anything placed on it, then ties its own bow. Madame Shredwell kept a roll to shred for sport but could never quite bring herself to. Elves in Santa's Workshop braid it into thorns that close on command."
+    },
+    "toymakers_gear": {
+      "tagline": "Cut by hand, never slips a tooth.",
+      "description": "A master gear Hammerhand pried from the Workshop's great machine. Santa's Workshop needs it for the Yule Log Base.",
+      "backstory": "The great toy machine in the Workshop runs on gears cut by Santa himself, one a year. Hammerhand has been prying them out to stop the line. Each one you bring back keeps a few hundred toys moving, and the spares become very fine gear."
+    },
+    "clockwork_heart": {
+      "tagline": "It ticks, and it remembers.",
+      "description": "Foreman Grimbolt's ticking heart of brass and glass. The core of the Sleigh-Bell Snapper.",
+      "backstory": "Grimbolt was once a clockwork toy, built to keep time for the elves. Scrinch swapped his heart for one that ticks to a different tune. Catch him and the stolen heart drops free, still ticking. Forged into a trap, it seems to want to catch the imps who changed it."
+    },
+    "silver_sleighbell": {
+      "tagline": "The sound of Christmas Eve.",
+      "description": "A real bell from Santa's sleigh harness, worn as a trophy by the Antler Ripper. Rung into the finest traps.",
+      "backstory": "Santa's sleigh carries exactly one hundred silver bells, and the Antler Ripper has been stealing them one by one to silence the sleigh. Each bell rings a different note. Bring three back and Santa's Workshop can tune them into a trap that sings."
+    },
+    "brimstone_coal": {
+      "tagline": "Hot to the touch, and it never goes out.",
+      "description": "A lump of devil's coal from Grizzlewick the Horned, smouldering with Scrinch's own fire. Saved for greater gear.",
+      "backstory": "Naughty children get coal. Scrinch's lieutenants carry it as a badge of rank, warmed by the fires under his throne. The elves keep every lump in an iron chest, because Santa's Workshop will one day need fire that hot to make the strongest gear of all."
+    }
+  },
+  "imps": {
+    "crumb_imp": {
+      "tagline": "Small, quick and covered in crumbs.",
+      "description": "The commonest imp in the lair. It nibbles every cookie it finds and leaves a trail you could follow blindfolded.",
+      "backstory": "Crumb Imps are the first creatures Scrinch sends through any crack in the walls. They are barely bigger than a teaspoon and about as brave. They never steal a whole cookie, just a bite from each one, so Santa ends up with jars full of nibbled biscuits and no idea who to blame.",
+      "rumour": "Something has been taking one bite from every cookie in the jar."
+    },
+    "sprinkle_snatcher": {
+      "tagline": "Every pocket stuffed with sprinkles.",
+      "description": "A jittery imp that strips the sprinkles off iced biscuits. Clockwork traps catch it off guard.",
+      "backstory": "Sprinkle Snatchers hoard sprinkles the way dragons hoard gold, sorting them by colour into tiny sacks. They twitch at every sound but have never learned what a ticking spring means. Catch one and you might find a pocket of candied peel too, stolen for the journey home.",
+      "rumour": "The iced biscuits are bare, and a trail of rainbow dots leads to the skirting board."
+    },
+    "chimney_soot_imp": {
+      "tagline": "Comes down the chimney, coughing.",
+      "description": "A sooty imp that lives in the Pantry flues. Its soot smothers holly traps, but sugar cookies lure it down.",
+      "backstory": "These imps were born in the fires under Scrinch's throne and miss the heat terribly. They nest in the Pantry chimneys and slide down whenever the oven is on. Their soot clogs holly vines so badly that the leaves go limp, so hunters bring springs or ice instead.",
+      "rumour": "Black handprints on the oven door, and the smell of burnt sugar."
+    },
+    "gingerbread_imp": {
+      "tagline": "Run, run, as fast as it can.",
+      "description": "A rare imp that disguises itself as a gingerbread biscuit. Cold makes its icing crack and gives it away.",
+      "backstory": "Gingerbread Imps bake themselves in stolen ovens until they look exactly like Mrs Claus's biscuits, then hide on the cooling racks. They pick the windows out of sugar-glass panes for icing. The only way to spot one is to chill the tray: real gingerbread doesn't shiver.",
+      "rumour": "One of the gingerbread men on the rack blinked."
+    },
+    "jarbelly": {
+      "tagline": "Ate the cookie jar. Then the jar.",
+      "description": "The Pantry's greedy mini boss. Jarbelly eats bait off traps and shrugs off holly, but springs make it jump.",
+      "backstory": "Jarbelly started as an ordinary Crumb Imp who never stopped eating. Now it is the size of a flour barrel and carries a cookie tin under each arm, always empty. It will lick your trap clean before you know it was there. Clockwork startles it; holly just tickles its belly.",
+      "rumour": "Cookies vanish from set traps without a single crumb left behind."
+    },
+    "baron_crumblewick": {
+      "tagline": "Lord of the larder, by his own decree.",
+      "description": "Scrinch's lieutenant in the Pantry, a pompous imp in a spring-lined coat. Clockwork outwits him; holly can't hold him.",
+      "backstory": "Baron Crumblewick declared himself ruler of the Pantry and wears a cookie crumb crown to prove it. He lines his coat with springs stolen from the mixers so he can bounce out of danger. He laughs at holly, but a clockwork trap ticking faster than his springs is his one real fear.",
+      "rumour": "Someone has been holding court on the top shelf, wearing a crown of crumbs."
+    },
+    "ribbon_tangler": {
+      "tagline": "Ties knots for the fun of it.",
+      "description": "A giggling imp that knots every ribbon it can find. Common in the Wrapping Room and easily distracted.",
+      "backstory": "Ribbon Tanglers can't leave a straight ribbon alone. They knot them, plait them and tie them to table legs, then sit back and watch the elves trip. They are not dangerous, only maddening, and the Wrapping Room loses a full day's work to them every week in December.",
+      "rumour": "All the ribbon spools have been tied into one enormous knot."
+    },
+    "tape_biter": {
+      "tagline": "Chews sticky tape like gum.",
+      "description": "An imp with a taste for sticky tape. It gets its teeth stuck in holly vines, which makes it easy to catch.",
+      "backstory": "Tape Biters chew through roll after roll of tape until their jaws are gummed together. They love the crunch but hate the sting of holly, which sticks to their tacky teeth and won't let go. The elves leave a sprig or two by the tape dispensers for exactly that reason.",
+      "rumour": "Every roll of tape has teeth marks, and none of it sticks any more."
+    },
+    "bow_burglar": {
+      "tagline": "Takes the bow, the bait and runs.",
+      "description": "A nimble thief that steals bows and bait alike. It slips straight past clockwork lids.",
+      "backstory": "Bow Burglars wear stolen bows like medals and are very proud of their collections. They have quick fingers and quicker feet, and they have learned to wait for a clockwork lid to snap before darting in for the bait. Some carry a stash of candied peel for the long trip back to Scrinch.",
+      "rumour": "Presents keep turning up wrapped but bow-less."
+    },
+    "glitter_imp": {
+      "tagline": "Sparkles everywhere it goes. Everywhere.",
+      "description": "A rare imp coated head to toe in glitter. Frost freezes its sparkle and slows it right down.",
+      "backstory": "Glitter Imps roll in the elves' glitter pots until they shine like baubles, then hide on the Christmas trees among the real ones. They nibble sugar glass to keep their sparkle bright. Cold makes the glitter clump into frost, and a frozen Glitter Imp can barely blink.",
+      "rumour": "One of the baubles on the Wrapping Room tree keeps moving."
+    },
+    "spoolwick": {
+      "tagline": "Wears stolen golden ribbon as a cape.",
+      "description": "The Wrapping Room's mini boss, wrapped in golden ribbon. Holly snags its cape and pulls it down.",
+      "backstory": "Spoolwick steals the one golden ribbon meant for the year's most special present and wears it like a royal cape. It rolls around the Wrapping Room on a giant spool, faster than any elf. Its long cape catches on holly thorns, though, and that has ended many of its escapes.",
+      "rumour": "A flash of gold rolling between the shelves, too fast to follow."
+    },
+    "madame_shredwell": {
+      "tagline": "Shreds paper, schedules and spirits.",
+      "description": "Scrinch's lieutenant in the Wrapping Room, with scissor fingers. She snips clockwork but tangles in holly.",
+      "backstory": "Madame Shredwell has scissors for fingers and a smile to match. She shreds wrapping paper into confetti and the elves' schedules along with it. She can snip through clockwork springs like thread, but holly vines grow back faster than she can cut them, and that drives her wild.",
+      "rumour": "Confetti everywhere, and a sound like scissors snipping in the dark."
+    },
+    "cog_pincher": {
+      "tagline": "Steals one cog. The whole toy stops.",
+      "description": "A sneaky imp that pockets small gears from half-built toys. Common across the Toy Workshop.",
+      "backstory": "A Cog Pincher only needs one gear from each toy to ruin it, and it always picks the smallest. It keeps them in a jangling pouch and sometimes trades them with other imps for cookies. The elves have learned to count every gear twice before closing a toy up.",
+      "rumour": "Wind-up toys keep stopping halfway across the bench."
+    },
+    "paint_smudger": {
+      "tagline": "Every rocking horse gets a moustache.",
+      "description": "A messy imp that ruins fresh paint jobs. Holly vines catch on its paint-stiff fur.",
+      "backstory": "Paint Smudgers dip their tails in paint pots and drag them across every finished toy. They think it is art. Their fur dries stiff and sticky, and holly catches it like velcro, so the painting elves keep a holly-hung trap behind the easels.",
+      "rumour": "Every doll in the Workshop has woken up with a painted moustache."
+    },
+    "stuffing_ripper": {
+      "tagline": "Teddy bears fear it.",
+      "description": "A sharp-clawed imp that tears stuffing out of soft toys. Frost slows its claws; holly it simply rips.",
+      "backstory": "Stuffing Rippers sleep in nests of cotton pulled from teddy bears and rag dolls. Their claws cut holly vines like paper, but they are thin-furred and hate the cold. A frosty trap leaves them sluggish and shivering long enough to catch.",
+      "rumour": "Teddy bears lying flat on the shelf, and tufts of white fluff on the floor."
+    },
+    "windup_imp": {
+      "tagline": "Wound up and never runs down.",
+      "description": "A rare clockwork imp that runs on a key in its back. Clockwork traps jam it; frost can't touch it.",
+      "backstory": "A Wind-up Imp is part toy, part imp, built by Scrinch's tinkers from Workshop scraps. Its spring-heated insides never freeze, so frost traps are useless against it. Its gears, though, mesh with a clockwork trap's gears and lock solid. It nibbles sugar glass to oil its joints.",
+      "rumour": "A ticking sound that walks around the Workshop at night, all by itself."
+    },
+    "hammerhand": {
+      "tagline": "One fist is a mallet. So is the other.",
+      "description": "The Workshop's mini boss, a hulking imp with hammer hands. Hot from the forge, it is weak to frost.",
+      "backstory": "Hammerhand was given his hammers by Scrinch to smash the great toy machine, and he has been prying out its master gears one by one. He works next to the Workshop forge and runs hot all the time. A blast of frost makes his hammers so cold they stick to whatever they touch.",
+      "rumour": "Thumps from inside the great toy machine, and a gear rolling out on the floor."
+    },
+    "foreman_grimbolt": {
+      "tagline": "Once a toy. Now Scrinch's foreman.",
+      "description": "Scrinch's lieutenant in the Workshop, a clockwork soldier with a stolen heart. Clockwork traps out-tick him.",
+      "backstory": "Grimbolt was built to march at the head of the Christmas parade. Scrinch stole him from the shelf, swapped his heart for one of brass and glass, and set him to run the raids in the Workshop. He gives orders in a clanking voice, and only a trap that ticks faster than his heart can hold him.",
+      "rumour": "Marching footsteps in perfect time, but the toy soldiers are all on their shelf."
+    },
+    "hay_hoarder": {
+      "tagline": "Sleeps in the reindeer's dinner.",
+      "description": "A drowsy imp that burrows into hay bales and eats the reindeer feed. Hot cocoa lures it out.",
+      "backstory": "Hay Hoarders dig tunnels through the stable hay and pull the best bits into their burrows to sleep on. The reindeer go hungry and grumpy. They are lazy creatures and only come out for something warm, which is why hunters in the Stables never go anywhere without a mug of cocoa.",
+      "rumour": "The hay bales are hollow, and one of them snores."
+    },
+    "bell_thief": {
+      "tagline": "Silent feet, jingling pockets.",
+      "description": "A stable imp that steals bells and bait. It slips through holly with ease, so bring something else.",
+      "backstory": "Bell Thieves wrap their feet in felt so they never make a sound, then fill their pockets with harness bells until they jingle. They are slippery and leave holly traps empty-handed, often taking the bait with them. They like hot cocoa almost as much as they like bells.",
+      "rumour": "The harness bells have gone quiet, because there are no bells left on them."
+    },
+    "harness_snipper": {
+      "tagline": "Snip, snip, there goes the sleigh.",
+      "description": "An imp with shears that cuts reindeer harnesses. Frost doesn't bother it at all; springs catch it well.",
+      "backstory": "Harness Snippers grew up in the frozen caves beyond the lair and feel no cold whatsoever. They cut harness straps at night so the sleigh can't be hitched. Their shears snag in clockwork gears, though, and a spring-loaded trap closes before they can cut free.",
+      "rumour": "Neat cuts in every harness strap, and frost-cold footprints in the straw."
+    },
+    "carrot_crook": {
+      "tagline": "Every carrot in the stable, gone.",
+      "description": "A rare imp that steals the reindeers' carrots. Clockwork traps catch it best; frost only slows it.",
+      "backstory": "A Carrot Crook can carry thirty carrots at once and still outrun a reindeer. It hides its haul behind the sugar-glass windows of the stable loft and chips at the glass while it waits. Frost only makes it grumble, but the whirr of a clockwork trap freezes it in its tracks.",
+      "rumour": "The reindeer are hungry and there is an orange stain leading up to the loft."
+    },
+    "antler_ripper": {
+      "tagline": "Wants antlers of its own.",
+      "description": "The Stables' mini boss, wearing stolen sleighbells. Clockwork catches it; holly barely slows it down.",
+      "backstory": "The Antler Ripper is jealous of reindeer and wears a pair of broken antlers lashed to its head. It steals Santa's silver sleighbells one at a time, hoping to silence the sleigh. Holly vines snap on its sharp antlers, but the precise snap of a clockwork trap is too quick for it.",
+      "rumour": "The sleigh is missing bells, and something with crooked antlers was seen in the loft."
+    },
+    "grizzlewick": {
+      "tagline": "Scrinch's right horn, and proud of it.",
+      "description": "The Stables' boss, Scrinch's fiercest lieutenant. Holly burns at his touch; clockwork is the only answer.",
+      "backstory": "Grizzlewick is the oldest of Scrinch's lieutenants and the only one trusted to carry brimstone coal from beneath the throne. His horns are scorched black and holly withers when he walks past. He wants the sleigh grounded before Christmas Eve, and only a trap with a ticking heart can hold him.",
+      "rumour": "Scorched hoof-prints by the sleigh, and the holly on the stable door has turned to ash."
+    }
+  }
+}
