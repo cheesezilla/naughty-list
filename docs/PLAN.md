@@ -18,7 +18,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Custom AI-generated PNGs for the rest of the game art (traps, bases, baits, charms, materials, trap types, brand, locations, map, how-to, remaining imps) — progress tracked in [ART_PROGRESS.md](ART_PROGRESS.md) | In progress | #14 |
 | New phone-first UI (layout D2): bottom menu, hunt log with events and full history, Arsenal, Elf Emporium, Santa's Workshop, More pages, open sign-up with admin switch | Done | #11 |
 | Intro letter from Santa: the game's backstory as the first hunt-log entry of every new game, and on How to play | In review | #12 |
-| Location objectives: a unique loop per location (Pantry bait ladder, Wrapping Room tangle meter, Toy Workshop order board, Stables sleigh run); see [Location objectives](#location-objectives-planned) | Planned (design only) | #16 |
+| Location objectives: a unique loop per location (Pantry bait ladder, Wrapping Room tangle meter, Toy Workshop order board, Stables sleigh run), plus first-visit intros, a hint button and a mechanic panel on each Hunt screen; see [Location objectives](#location-objectives-planned) | Planned (design only) | #16 |
 | 5. Tune from play-test | Planned | |
 
 The server runs every hunt and saves each player in SQLite. To play locally, follow "Run it locally" below.
@@ -269,12 +269,96 @@ Get the sleigh ready before the countdown runs out, while thieves undo your work
 - Outside a run the Stables hunt as now, without the mini boss and boss.
 - Panel: Readiness bar, hunts left, and a Start run button when no run is active.
 
+### Location screens (UI plan)
+
+eddy (25 Nov 2026): each location's Hunt screen should feel different. Three additions, all in the phone-first layout D2. **Status: planning; nothing is built until eddy signs off the UI.**
+
+**1. First-visit intro in the hunt log.** The first time a player arrives in a location, the hunt log gets an "Arrived: <location>" entry with a short intro to the area: what the room is, which imps raid it and what's different here. It shows folded after the first sentence, like Santa's letter. The Cookie Pantry intro is logged right after Santa's letter when a game starts (sign-up and Start over); the others are logged the first time the player travels there. It is a new journal event, `arrival`, logged once per location, tracked by a `visited` list in the save (old saves count their current location as visited, so they get intros only for new places). The Full history "Events" filter includes it.
+
+**2. Hint button.** A round "?" button on the location banner, next to Travel, opens a bottom sheet "How to clear <location>" with 2 to 4 short steps, the location's intro again (for players who skipped it) and a Close button. The hint never shows exact odds.
+
+**3. Mechanic panel.** A card between the gear stats and the hunt log, styled per location (its own colour and icon), showing the local objective's state. Tapping it opens the same sheet as the hint button. It updates after every hunt, and a hunt that changes the objective gets a one-line note in its log entry (for example "Tangle 45 → 50, now Messy").
+
+Text lives in a new `locations` block in `content/story.json`, keyed by location id: `intro` (up to 400 characters) and `hint` (up to 4 steps of up to 120 characters). Loading fails if a location has no intro or hint, like `flavour.json`. First drafts:
+
+| Location | Intro (first visit) | Hint steps |
+| --- | --- | --- |
+| Cookie Pantry | Santa's pantry: jars to the ceiling and a cold oven at the back. Crumb thieves raid it nightly, but the big eaters only come for proper baking. Bake your way up and Baron Crumblewick will come sniffing. | 1. Catch commons with cookies to collect Butter Curls and Oven Embers (Sugar Cookie draws more Soot Imps). 2. Bake Jam Drops in Santa's Workshop. 3. Jam Drops draw the Gingerbread Imp and Jarbelly: their drops bake Crown Shortbread. 4. Crown Shortbread is the only bait the Baron will take. |
+| Wrapping Room | Miles of ribbon, and every imp that runs through leaves it in knots. A knotted room hides bigger, richer imps, and Madame Shredwell only inspects a proper mess. | 1. Every hunt tangles the room. Messy and Knotted rooms pay more but the imps are tougher. 2. Let it reach Knotted (80+) to draw Madame Shredwell. 3. Catch Tape Biters (weak to Holly) or use Sharp Shears to tidy up when it gets too hard. |
+| Toy Workshop | The elves pin toy orders to the board, and each part must be caught with the right kind of trap. Finish enough orders and the bosses come to inspect. | 1. Check the order board: each slot needs a catch with that trap type, in order. 2. Swap traps to match, and pick imps that aren't immune. 3. Every 3rd order brings Hammerhand; then take a Rush order to bring Foreman Grimbolt. |
+| Reindeer Stables | The sleigh must be ready by Christmas Eve, and the stable imps keep pinching the bells and snipping the harness. Load it in time and Grizzlewick will try to stop the launch. | 1. Start a sleigh run: you have 40 hunts. 2. Catches build Readiness; escaped Bell Thieves and Harness Snippers take it away. 3. Hot Cocoa keeps imps coming, so fewer hunts are wasted. 4. Reach 100 to launch and face Grizzlewick. |
+
+**Hunt screen with the new parts (all locations):**
+
+```
+┌──────────────────────────────────┐
+│ [banner art]          [?] [Travel]│  ← "?" opens the hint sheet
+│ rank · name · points · gold       │
+├──────────────────────────────────┤
+│   trap on base     [bait] [charm] │
+│   Power 230 · Luck 3 · Attr 78%   │
+├──────────────────────────────────┤
+│ ┌ MECHANIC PANEL (per location) ┐ │  ← tap = hint sheet
+│ └────────────────────────────────┘ │
+├──────────────────────────────────┤
+│ Hunt log …                        │
+│  ★ Arrived: Wrapping Room  (more) │  ← first-visit intro entry
+├──────────────────────────────────┤
+│           [   HUNT   ]            │
+└──────────────────────────────────┘
+```
+
+**Mechanic panels, one per location:**
+
+Cookie Pantry, warm brown with a rolling-pin icon. Three tier steps; the armed tier is highlighted, and the next recipe shows have / need. A "Bake" link goes to that recipe in the Workshop.
+```
+┌ Bake-off Ladder ───────────────────┐
+│ ① Cookies ▸ ② Jam Drop ▸ ③ Crown  │
+│   owned 84     owned 2    owned 0  │
+│ Next: Crown Shortbread             │
+│ Sugar Glass 1/1 ✓  Cookie Tin 0/1 ✗│
+│ Baron: only comes for Crown  [Bake]│
+└────────────────────────────────────┘
+```
+
+Wrapping Room, ribbon red. A bar from 0 to 100 with Tidy, Messy and Knotted bands and a marker; the band's effect in one line.
+```
+┌ Tangle Meter ──────────── 55 Messy ┐
+│ [■■■■■■■■■■■░░░░░░░░░] Tidy|Messy|Knotted
+│ Imps +15% power · rewards +25%     │
+│ Madame Shredwell at Knotted (80)   │
+└────────────────────────────────────┘
+```
+
+Toy Workshop, workshop green. Order slots as trap-type badges in a row; the next slot glows, filled slots are ticked. Shows the armed trap's type and whether it matches.
+```
+┌ Order Board ─────── Order 2 of 3 ──┐
+│ [⚙ ✓] [🌿 ▸] [❄  ]                 │
+│ Next: Holly · your trap: Clockwork ✗│
+│ Inspection after this order        │
+└────────────────────────────────────┘
+```
+
+Reindeer Stables, frosty blue. Before a run: a "Start sleigh run" button. During a run: a Readiness bar and hunts left, with a small sleigh moving along the bar.
+```
+┌ Sleigh Run ──────── 23 hunts left ─┐
+│ Readiness [■■■■■■■■■■■■░░░░] 62/100 │
+│ Antler Ripper is about (50+)       │
+│ Last: Bell Thief escaped −8        │
+└────────────────────────────────────┘
+```
+
+A future location without a local objective shows no panel; the hint and intro are still required.
+
 ### Build order
 
-1. Cookie Pantry ladder (content plus a few `baitWeights`; small engine work for the panel).
-2. Objective system in the engine and save, then the Wrapping Room meter.
-3. Toy Workshop order board.
-4. Reindeer Stables sleigh run.
+Nothing is built until eddy has signed off the UI above.
+
+1. Location intros, hint button and the empty panel slot (shared by all locations).
+2. Cookie Pantry ladder (content plus a few `baitWeights`; small engine work for the panel).
+3. Objective system in the engine and save, then the Wrapping Room meter.
+4. Toy Workshop order board.
+5. Reindeer Stables sleigh run.
 
 Each step re-runs `npm run simulate` and updates the balance numbers in this file.
 
@@ -445,7 +529,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 | Date | PR | Change |
 | --- | --- | --- |
-| 2026-11-25 | #16 | Planned a unique local objective for each location: Cookie Pantry bait ladder (eddy's tiered bait-ingredient loop), Wrapping Room tangle meter, Toy Workshop order board, Reindeer Stables sleigh run; recorded what the engine already supports. Design only, no code or numbers changed |
+| 2026-11-25 | #16 | Planned a unique local objective for each location: Cookie Pantry bait ladder (eddy's tiered bait-ingredient loop), Wrapping Room tangle meter, Toy Workshop order board, Reindeer Stables sleigh run; first-visit intro log entries, a hint button and a mechanic panel per location (UI sketches and first-draft text); recorded what the engine already supports. Design only, no code or numbers changed |
 | 2026-11-25 | #15 | Added docs/ART_PROGRESS.md tracking which of the 56 remaining non-icon art assets still need custom AI-generated pictures (per slot, with ids), linked from docs/ART.md and docs/PLAN.md. No art files or game numbers changed |
 | 2026-11-25 | #14 | Custom PNG art for the 8 traps and 4 of 5 bases (`cardboard_box`, `gingerbread_slab`, `candy_cane_platform`, `ice_block`; `yule_log_base` still generated SVG), generated with Gemini on a plain background then cut out locally with `rembg`. Rest of the non-icon art (baits, charms, materials, trap types, brand, locations, map, how-to, remaining 15 imps) still queued, paused on Gemini's daily image-generation limit. No game numbers changed |
 | 2026-11-25 | #13 | Custom PNG portraits for all 10 cookie-pantry/wrapping-room/toy-workshop/reindeer-stables imps (`crumb_imp`, `gingerbread_imp`, `baron_crumblewick`, `glitter_imp`, `madame_shredwell`, `windup_imp`, `foreman_grimbolt`, `carrot_crook`, `grizzlewick`, `_locked`), generated with an AI image tool and dropped in per docs/ART.md; `npm run art` picked them up as custom and left the other 15 imps on generated SVG. No game numbers changed |
