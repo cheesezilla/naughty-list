@@ -271,7 +271,7 @@ Step-by-step guide: [docs/DEPLOY.md](DEPLOY.md). In short:
 3. Open `http://<nas-address>:8080` and create the admin account.
 4. Optional: uncomment the `cloudflared` service and paste a tunnel token for a public HTTPS address.
 
-The container starts as root only to fix the save folder's ownership, then drops to the unprivileged `node` user (`docker/entrypoint.sh`). Pull requests build the image and smoke-test it with a root-owned save folder: sign up, hunt, restart, and check the save survived.
+The container starts as root only to fix the save folder's ownership, then drops to the unprivileged `node` user (`docker/entrypoint.sh`). If the `node` user still can't write the folder or the save files, it keeps running as root and logs a warning. The server checks the save folder and files before opening them and prints a plain explanation (who owns what, which user the game runs as, how to fix it) instead of a raw SQLite error. Pull requests build the image and smoke-test it with a root-owned save folder: sign up, hunt, restart, and check the save survived.
 
 **Letting friends in:** a Cloudflare Tunnel gives the game a public HTTPS address without opening router ports, as a second small container in the same Compose project. It needs a free Cloudflare account and a domain on Cloudflare. Tailscale is the alternative if every friend installs it.
 
@@ -289,6 +289,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 | Date | PR | Change |
 | --- | --- | --- |
 | 2026-11-25 | #5 | Image also published as a downloadable file on the image-latest release for NASes that can't reach ghcr.io; DEPLOY.md connection checks |
+| 2026-11-25 | #6 | Save-file start-up fix: entrypoint repairs root-owned save files or falls back to root, server explains save-folder problems in plain words, smoke test covers locked save files |
 | 2026-11-25 | #4 | Start over: per-player wipe with a confirmation dialog, restart log (own and admin view); Invites tab renamed Admin |
 | 2026-11-25 | #3 | NAS deploy: compose file with optional Cloudflare Tunnel, DEPLOY.md guide, entrypoint that fixes save-folder ownership, image smoke test in CI |
 | 2026-11-25 | #2 | Milestone 3: accounts (first one is admin), invite codes, server-side hunts with rate limit, SQLite saves, login screen and Invites tab; local run steps |

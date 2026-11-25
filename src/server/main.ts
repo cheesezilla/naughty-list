@@ -1,8 +1,8 @@
-import { accessSync, constants, mkdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { loadContent } from '../content/load.js';
 import { buildApp } from './app.js';
 import { Store } from './db.js';
+import { checkSaveFolder, DB_NAME, explainOpenError } from './savecheck.js';
 
 // Paths are relative to the working directory: the repo root in development, /app in Docker.
 const contentDir = resolve(process.env.CONTENT_DIR ?? 'content');
@@ -10,19 +10,20 @@ const clientDir = resolve(process.env.CLIENT_DIR ?? 'dist/client');
 const dataDir = resolve(process.env.DATA_DIR ?? 'data');
 const port = Number(process.env.PORT ?? 8080);
 
-try {
-  mkdirSync(dataDir, { recursive: true });
-  accessSync(dataDir, constants.W_OK);
-} catch {
-  console.error(
-    `Can't write to the save folder ${dataDir}. On the NAS, give the folder mapped to /data read and write ` +
-    `permission for everyone, or add  user: "0:0"  to the service in compose.yaml.`,
-  );
+const problem = checkSaveFolder(dataDir);
+if (problem) {
+  console.error(problem);
   process.exit(1);
 }
 
 const content = loadContent(contentDir);
-const store = new Store(join(dataDir, 'naughty-list.db'));
+let store: Store;
+try {
+  store = new Store(join(dataDir, DB_NAME));
+} catch (e) {
+  console.error(explainOpenError(dataDir, e));
+  process.exit(1);
+}
 const app = await buildApp({ content, store, clientDir, version: process.env.APP_VERSION, logger: true });
 
 const shutdown = async () => {
