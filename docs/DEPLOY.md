@@ -62,6 +62,8 @@ Saves are kept, because they live in the shared folder rather than in the contai
 | Problem | Fix |
 | --- | --- |
 | Pulling the image fails with "denied" or "not found" | The package is still private. See part 1. |
+| `permission denied while trying to connect to the Docker daemon socket` | Your SSH user can't use Docker. Put `sudo` in front of the command. |
+| Pulling fails with "denied" even though the package is public | The NAS is sending an old or wrong GitHub login. Remove the ghcr.io entry under **Registry** in the UGOS Docker app, or run `sudo docker logout ghcr.io`, then pull again. A public image needs no login. |
 | Pulling the image times out | The NAS can't reach GitHub's registry. See "Checking the NAS connection" below. To skip the download entirely, import the image file (part 1). |
 | The page doesn't load | Check the container is running in **Container**. Open its log, which should end with `Server listening at http://0.0.0.0:8080`. Check that the port in the address matches the left number in `ports`. |
 | The log says it can't write to the save folder | Make sure `/volume1/docker` exists. The container fixes folder ownership itself on start, so redeploying usually clears this. |
