@@ -15,7 +15,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Flavour text for every item and imp | Done | #9 (shown in the UI since #11) |
 | Art for every UI slot: 97 original SVGs + manifest, named by game id | Done | #10 (shown in the UI since #11) |
 | Custom PNG portraits for all 10 cookie-pantry/wrapping-room/toy-workshop/reindeer-stables imps | Done | #13 |
-| Custom AI-generated PNGs for the rest of the game art (traps, bases, baits, charms, materials, trap types, brand, locations, map, how-to, remaining imps) | In progress | #14 |
+| Custom AI-generated PNGs for the rest of the game art (traps, bases, baits, charms, materials, trap types, brand, locations, map, how-to, remaining imps) — progress tracked in [ART_PROGRESS.md](ART_PROGRESS.md) | In progress | #14 |
 | New phone-first UI (layout D2): bottom menu, hunt log with events and full history, Arsenal, Elf Emporium, Santa's Workshop, More pages, open sign-up with admin switch | Done | #11 |
 | Intro letter from Santa: the game's backstory as the first hunt-log entry of every new game, and on How to play | In review | #12 |
 | 5. Tune from play-test | Planned | |
@@ -354,6 +354,8 @@ The container starts as root only to fix the save folder's ownership, then drops
 - [ ] Make the GitHub package public, or give the NAS a read token (DEPLOY.md part 1).
 
 ## Changelog
+
+| 2026-11-25 | #15 | Added docs/ART_PROGRESS.md tracking which of the 56 remaining non-icon art assets still need custom AI-generated pictures (per slot, with ids), linked from docs/ART.md and docs/PLAN.md. No art files or game numbers changed |
 
 | Date | PR | Change |
 | --- | --- | --- |
