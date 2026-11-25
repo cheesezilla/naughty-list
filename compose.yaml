@@ -1,0 +1,11 @@
+# Compose project for the UGREEN NAS (Docker app > Project > Create, paste this file).
+services:
+  naughty-list:
+    image: ghcr.io/cheesezilla/naughty-list:latest
+    container_name: naughty-list
+    ports:
+      - "8080:8080"
+    volumes:
+      # Save data (from milestone 3). Create this shared folder on the NAS first.
+      - /volume1/docker/naughty-list:/data
+    restart: unless-stopped
