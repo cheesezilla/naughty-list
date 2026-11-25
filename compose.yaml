@@ -5,12 +5,12 @@ services:
     image: ghcr.io/cheesezilla/naughty-list:latest
     container_name: naughty-list
     ports:
-      - "8080:8080"   # change the left number if 8080 is taken on the NAS
+      - "8081:8080"   # NAS port 8081; change the left number if it is taken
     volumes:
       # Save data. Create the shared folder "docker" first; the naughty-list folder is made for you.
       - /volume1/docker/naughty-list:/data
     environment:
-      - TZ=UTC   # optional: your time zone, for example Asia/Singapore or America/New_York
+      - TZ=Asia/Singapore   # time zone for the server's log; change to yours, for example America/New_York
     restart: unless-stopped
 
   # Optional: let friends play from anywhere through a Cloudflare Tunnel.

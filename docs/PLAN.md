@@ -268,7 +268,7 @@ Step-by-step guide: [docs/DEPLOY.md](DEPLOY.md). In short:
 
 1. Make the GitHub package public once, or log the NAS in to ghcr.io with a `read:packages` token.
 2. In the UGOS Docker app, create a project from `compose.yaml`. Saves go to `/volume1/docker/naughty-list`.
-3. Open `http://<nas-address>:8080` and create the admin account.
+3. Open `http://<nas-address>:8081` and create the admin account. The container listens on 8080; compose maps it to 8081 on the NAS.
 4. Optional: uncomment the `cloudflared` service and paste a tunnel token for a public HTTPS address.
 
 The container starts as root only to fix the save folder's ownership, then drops to the unprivileged `node` user (`docker/entrypoint.sh`). If the `node` user still can't write the folder or the save files, it keeps running as root and logs a warning. The server checks the save folder and files before opening them and prints a plain explanation (who owns what, which user the game runs as, how to fix it) instead of a raw SQLite error. Pull requests build the image and smoke-test it with a root-owned save folder: sign up, hunt, restart, and check the save survived.
@@ -288,6 +288,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-25 | #7 | NAS port changed to 8081 and time zone set to Asia/Singapore in compose.yaml and the guides |
 | 2026-11-25 | #6 | Save-file start-up fix: entrypoint repairs root-owned save files or falls back to root, server explains save-folder problems in plain words, smoke test covers locked save files |
 | 2026-11-25 | #4 | Start over: per-player wipe with a confirmation dialog, restart log (own and admin view); Invites tab renamed Admin |
 | 2026-11-25 | #3 | NAS deploy: compose file with optional Cloudflare Tunnel, DEPLOY.md guide, entrypoint that fixes save-folder ownership, image smoke test in CI |

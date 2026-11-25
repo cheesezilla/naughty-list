@@ -16,9 +16,9 @@ Every merge to `main` publishes the image `ghcr.io/cheesezilla/naughty-list:late
 1. In **File Manager**, make sure there is a shared folder called `docker` on volume 1. Create it if it's missing. The game creates its own `naughty-list` folder inside it.
 2. Open the **Docker** app, go to **Project** and choose **Create**.
 3. Name the project `naughty-list`, and paste in the contents of [`compose.yaml`](../compose.yaml) from this repo.
-4. Optional: change `TZ=UTC` to your time zone. If port 8080 is already used on the NAS, change the left number, for example `"8090:8080"`.
+4. Optional: `TZ=Asia/Singapore` sets the time zone for the server's log. Change it to yours if needed. The game uses port 8081 on the NAS. If that port is taken, change the left number, for example `"8090:8080"`.
 5. Choose **Deploy** (or **Create and start**). The first start downloads about 60 MB.
-6. Open `http://<your-NAS-address>:8080`, for example `http://192.168.1.50:8080`. You can find the address in UGOS under **Control Panel > Network**.
+6. Open `http://<your-NAS-address>:8081`, for example `http://192.168.1.50:8081`. You can find the address in UGOS under **Control Panel > Network**.
 7. Create your account. The first account on a new server becomes the admin.
 
 Saves live in `/volume1/docker/naughty-list/naughty-list.db`. Include that folder in your UGOS backups.
