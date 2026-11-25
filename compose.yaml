@@ -6,6 +6,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      # Save data (from milestone 3). Create this shared folder on the NAS first.
+      # Save data. Create this shared folder on the NAS first.
+      # If the log says it can't write to /data, add  user: "0:0"  under the service.
       - /volume1/docker/naughty-list:/data
     restart: unless-stopped

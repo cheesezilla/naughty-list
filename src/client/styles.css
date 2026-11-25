@@ -45,3 +45,7 @@ h2 { font-size: 1.1rem; margin: 16px 0 6px; color: var(--bg); }
 .naughty li { padding: 3px 0; }
 .naughty li.unknown { color: var(--muted); }
 footer { margin-top: 24px; font-size: 0.8rem; color: var(--muted); }
+.auth form { display: grid; gap: 10px; margin: 16px 0; }
+.auth label { display: flex; flex-direction: column; font-size: 0.9rem; color: var(--muted); gap: 4px; }
+.auth input { font: inherit; padding: 8px; border-radius: 8px; border: 1px solid #c9b79c; color: var(--ink); background: #fff; }
+.error { color: var(--red); font-weight: 600; }

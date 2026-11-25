@@ -9,11 +9,11 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | --- | --- | --- |
 | 1. Skeleton: server, client, Docker image, CI | Done | #1 |
 | 2. Hunt engine, content files, tests, balance simulator | Done | #1 |
-| 3. Playable client on the server: accounts, invites, server-side hunts, SQLite saves | Next | |
-| 4. Crafting, friends (leaderboard, catch feed) and NAS deploy | Planned (crafting already in the engine and prototype) | |
+| 3. Playable client on the server: accounts, invites, server-side hunts, SQLite saves | Done | #2 |
+| 4. Friends (leaderboard, catch feed) and NAS deploy | Next (crafting is already in) | |
 | 5. Tune from play-test | Planned | |
 
-Right now the web page is a prototype that runs the engine in the browser and saves to localStorage.
+The server runs every hunt and saves each player in SQLite. To play locally, follow "Run it locally" below.
 
 ## Summary
 
@@ -77,7 +77,7 @@ All constants live in `content/constants.json` and the other content files, so t
 - **Catch chance** = clamp((P x E + L^2) / (P x E + M), 0, 98%), where M is the imp's power. Luck only counts when E > 0.
   - Example: a 150 power Clockwork trap on a 20 power base with luck 2, against a normal 90 power imp: (170 + 4) / (170 + 90) = 67%.
 - **Rewards**: a catch pays the imp's gold and points and rolls its loot list; bosses always drop their crafting part. An escape pays nothing; some imps also steal one extra bait when they escape.
-- **RNG**: the engine takes a random source, so the simulator and tests replay exactly from a seed. From milestone 3 the server rolls every hunt, so results can't be edited in the browser.
+- **RNG**: the engine takes a random source, so the simulator and tests replay exactly from a seed. The server rolls every hunt with a cryptographic random source, so results can't be edited in the browser.
 
 ## Pacing without a cooldown
 
@@ -87,7 +87,7 @@ Bait is the clock. With no timer, progress is limited by gold: every attracted h
 - **Steep rank thresholds.** Points needed grow about 4x each rank, while points per catch grow about 2x per location.
 - **Bosses drive gear goals.** Mini bosses and bosses drop the parts for the next crafted item.
 - **No dead ends.** With no bait and under 50 gold, Mrs. Claus hands over 10 free Stale Cookies.
-- **Fair play limits.** From milestone 3 the server accepts at most 2 hunts a second per player.
+- **Fair play limits.** The server accepts at most 2 hunts a second per player; the page paces rapid clicks to match.
 
 **Optional stamina meter (built, switched off).** `constants.json` > `stamina.enabled`. When on, a Cocoa meter costs 1 per hunt, holds 100 and refills 1 per minute.
 
@@ -217,17 +217,42 @@ Gold comes in only from catches and sales, and goes out on bait, charms, gear, l
 | --- | --- |
 | Language | TypeScript everywhere; the engine is shared by server, client, tests and simulator |
 | Server | Node.js 22 + Fastify, serving the API and the built page |
-| Database | SQLite in the mounted `/data` folder (from milestone 3) |
+| Database | SQLite (Node's built-in `node:sqlite`) in the mounted `/data` folder |
 | Web client | Vite + Preact, plain CSS, mobile first (about 12 KB gzipped today) |
 | Game content | JSON in `content/`, validated against a schema and cross-checked at startup |
-| Accounts | Invite code to sign up, then username + password and a session cookie (milestone 3) |
+| Accounts | First account is the admin; everyone else signs up with an invite code, then username + password and a session cookie |
 | Tests | Vitest for engine and server; the simulator for balance |
 
-**API today:** `GET /api/health`, `GET /api/content`. **Milestone 3 adds:** sign up with invite, log in, get player state, change setup, hunt, buy, sell, craft, travel; admin invite codes.
+**API:**
+
+| Call | What it does |
+| --- | --- |
+| `GET /api/health`, `GET /api/content`, `GET /api/setup-status` | Public: health, game content, whether the admin account exists yet |
+| `POST /api/auth/signup` | Create an account. The very first account becomes the admin and needs no invite; every later one needs an unused invite code |
+| `POST /api/auth/login`, `POST /api/auth/logout` | Session cookie, 30 days, token stored hashed |
+| `GET /api/me` | User, player state and the last 50 journal entries |
+| `POST /api/hunt` | One hunt, rolled on the server; limited to `maxHuntsPerSecond` (2) per player |
+| `POST /api/setup`, `/api/buy`, `/api/sell`, `/api/craft`, `/api/travel` | Engine actions on the saved player |
+| `GET/POST /api/admin/invites`, `DELETE /api/admin/invites/:code` | Admin only: list, create and revoke invite codes |
+
+**Storage:** one SQLite file, `naughty-list.db`, in `DATA_DIR` (`/data` in Docker, `./data` locally), using Node's built-in `node:sqlite` so there are no native modules to compile. Tables: users, sessions, invites, players (state as JSON), journal (last 200 per player). Passwords are hashed with scrypt.
 
 **Data stored per player:** gold, points, rank, current location, unlocked locations, setup, inventory counts, the last 200 journal entries and lifetime catch counts per imp (for The Naughty List collection page).
 
 **Playing with friends:** eddy is the admin and creates invite codes. A leaderboard ranks players by points, with tabs for total catches and bosses caught. A shared feed shows notable catches. No trading in v1.
+
+## Run it locally
+
+Needs Node.js 22 or newer and git.
+
+```sh
+git clone https://github.com/cheesezilla/naughty-list
+cd naughty-list
+npm install
+npm run play        # builds, then serves on http://localhost:8080
+```
+
+The first account you create is the admin. Open the Invites tab to make codes for friends; a code link looks like `http://<address>:8080/?invite=SNOW-XXXX-XXXX`. Saves go to `./data/naughty-list.db`; delete that file to start over. For development with hot reload, use `npm run dev` and open http://localhost:5173.
 
 ## Deployment
 
@@ -241,7 +266,9 @@ The game ships as one Docker image (`ghcr.io/cheesezilla/naughty-list`), built a
 
 **Telegram mini app (later, optional):** needs the same public HTTPS address plus a bot from BotFather. The client is already a small mobile-first page, so it's about a day of work.
 
-**Backups:** the save will be one SQLite file in the data folder; a UGOS scheduled backup of that folder is enough.
+**Backups:** the save is one SQLite file (plus its `-wal` file) in the data folder; a UGOS scheduled backup of that folder is enough.
+
+**Folder permissions:** the container runs as an unprivileged user. If it logs that it can't write to `/data`, give the NAS folder read and write permission for everyone, or add `user: "0:0"` to the service in `compose.yaml`.
 
 ## Still to sort out
 
@@ -252,4 +279,5 @@ The game ships as one Docker image (`ghcr.io/cheesezilla/naughty-list`), built a
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-25 | #2 | Milestone 3: accounts (first one is admin), invite codes, server-side hunts with rate limit, SQLite saves, login screen and Invites tab; local run steps |
 | 2026-11-25 | #1 | Plan added to the repo; milestones 1 and 2 built; first simulator run recorded |
