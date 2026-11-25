@@ -11,10 +11,8 @@ let clock = 1_000_000;
 beforeEach(async () => {
   store = new Store(':memory:');
   clock = 1_000_000;
-  // attract, pick the first imp, catch, no loot: every hunt catches a Crumb Imp
-  let i = 0;
-  const seq = [0, 0, 0, 0.99];
-  app = await buildApp({ content, store, version: 'test', now: () => clock, rng: () => seq[i++ % seq.length]! });
+  // Every roll is 0: always attracted, always the first imp (Crumb Imp, which has no loot), always caught.
+  app = await buildApp({ content, store, version: 'test', now: () => clock, rng: () => 0 });
 });
 afterEach(async () => {
   await app.close();
@@ -106,6 +104,55 @@ describe('server', () => {
     expect(broke.statusCode).toBe(400);
     expect(broke.json().error).toMatch(/Not enough gold/);
     expect((await post('/api/travel', { location: 'wrapping_room' }, c)).statusCode).toBe(400);
+  });
+});
+
+describe('start over', () => {
+  it('needs an explicit confirm and a session', async () => {
+    expect((await post('/api/restart', { confirm: true })).statusCode).toBe(401);
+    const c = await signupAdmin();
+    const r = await post('/api/restart', {}, c);
+    expect(r.statusCode).toBe(400);
+    expect(r.json().error).toMatch(/confirm/);
+  });
+
+  it("wipes only that player's progress and journal, keeps the account and logs it", async () => {
+    const admin = await signupAdmin();
+    const { code } = (await post('/api/admin/invites', {}, admin)).json();
+    const sam = cookieOf(await post('/api/auth/signup', { username: 'sam', password: 'snowball99', invite: code }));
+
+    for (const c of [admin, sam]) {
+      expect((await post('/api/hunt', {}, c)).statusCode).toBe(200);
+      clock += 1000;
+    }
+    await post('/api/buy', { item: 'mistletoe_charm', amount: 2 }, sam);
+
+    const r = await post('/api/restart', { confirm: true }, sam);
+    expect(r.statusCode).toBe(200);
+    expect(r.json().player).toMatchObject({ gold: 300, points: 0, rank: 1, catches: {}, stats: { hunts: 0 } });
+
+    const samMe = (await get('/api/me', sam)).json();
+    expect(samMe.user.username).toBe('sam');
+    expect(samMe.player.gold).toBe(300);
+    expect(samMe.player.inventory.mistletoe_charm).toBeUndefined();
+    expect(samMe.journal).toHaveLength(0);
+
+    // the other player is untouched
+    const eddyMe = (await get('/api/me', admin)).json();
+    expect(eddyMe.player.gold).toBe(312);
+    expect(eddyMe.journal).toHaveLength(1);
+
+    // the restart is logged with what sam had, visible to sam and to the admin
+    const own = (await get('/api/restarts', sam)).json().restarts;
+    expect(own).toHaveLength(1);
+    expect(own[0]).toMatchObject({ username: 'sam', summary: { gold: 252, points: 20, hunts: 1, caught: 1, impsOnList: 1 } });
+    const all = (await get('/api/admin/restarts', admin)).json().restarts;
+    expect(all.map((x: { username: string }) => x.username)).toEqual(['sam']);
+    expect((await get('/api/admin/restarts', sam)).statusCode).toBe(403);
+
+    // and the player can play straight away
+    clock += 1000;
+    expect((await post('/api/hunt', {}, sam)).statusCode).toBe(200);
   });
 });
 

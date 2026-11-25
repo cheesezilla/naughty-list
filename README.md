@@ -21,7 +21,7 @@ npm install
 npm run play           # build and serve on http://localhost:8080
 ```
 
-The first account you create is the admin; use the Invites tab to make codes for friends. Saves live in `./data/naughty-list.db` (delete it to start over).
+The first account you create is the admin; use the Admin tab to make invite codes for friends. Saves live in `./data/naughty-list.db`. Any player can wipe their own progress with **Start over** at the bottom of the page.
 
 Other commands:
 

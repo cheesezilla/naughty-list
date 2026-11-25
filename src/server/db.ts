@@ -36,11 +36,20 @@ CREATE TABLE IF NOT EXISTS journal (
   entry TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS journal_user ON journal(user_id, id);
+CREATE TABLE IF NOT EXISTS restarts (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at INTEGER NOT NULL,
+  summary TEXT NOT NULL
+);
 `;
 
 export interface UserRow { id: number; username: string; password_hash: string; is_admin: number; created_at: number }
 export interface InviteRow { code: string; created_at: number; used_by: number | null; used_at: number | null; used_by_name: string | null }
 export interface JournalRow { n: number; at: number; entry: JournalEntry }
+/** What a player had when they restarted, kept in the restart log. */
+export interface RestartSummary { gold: number; points: number; rank: number; hunts: number; caught: number; impsOnList: number; location: string }
+export interface RestartRow { id: number; username: string; at: number; summary: RestartSummary }
 
 const JOURNAL_KEEP = 200;
 
@@ -140,5 +149,22 @@ export class Store {
     const rows = this.db.prepare('SELECT hunt_no, created_at, entry FROM journal WHERE user_id = ? ORDER BY id DESC LIMIT ?')
       .all(userId, limit) as { hunt_no: number; created_at: number; entry: string }[];
     return rows.map((r) => ({ n: r.hunt_no, at: r.created_at, entry: JSON.parse(r.entry) as JournalEntry }));
+  }
+
+  // ----- restarts -----
+  /** Replaces a player's progress with a fresh state, clears their journal and logs what they had. Atomic. */
+  restartPlayer(userId: number, fresh: PlayerState, summary: RestartSummary, now: number) {
+    this.tx(() => {
+      this.db.prepare('INSERT INTO restarts (user_id, created_at, summary) VALUES (?, ?, ?)').run(userId, now, JSON.stringify(summary));
+      this.db.prepare('DELETE FROM journal WHERE user_id = ?').run(userId);
+      this.savePlayer(userId, fresh, now);
+    });
+  }
+  restarts(userId?: number, limit = 100): RestartRow[] {
+    const rows = (userId === undefined
+      ? this.db.prepare('SELECT r.id, u.username, r.created_at, r.summary FROM restarts r JOIN users u ON u.id = r.user_id ORDER BY r.id DESC LIMIT ?').all(limit)
+      : this.db.prepare('SELECT r.id, u.username, r.created_at, r.summary FROM restarts r JOIN users u ON u.id = r.user_id WHERE r.user_id = ? ORDER BY r.id DESC LIMIT ?').all(userId, limit)
+    ) as { id: number; username: string; created_at: number; summary: string }[];
+    return rows.map((r) => ({ id: r.id, username: r.username, at: r.created_at, summary: JSON.parse(r.summary) as RestartSummary }));
   }
 }

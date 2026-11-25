@@ -53,6 +53,7 @@ function Game({ content, user, initialPlayer, initialJournal, onLogout }: {
   const [tab, setTab] = useState<Tab>('hunt');
   const [toast, setToast] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [confirmingRestart, setConfirmingRestart] = useState(false);
   const lastHuntAt = useRef(0);
 
   const act: Act = async (path, body, ok) => {
@@ -88,7 +89,7 @@ function Game({ content, user, initialPlayer, initialJournal, onLogout }: {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (tab === 'hunt' && (e.code === 'Space' || e.key === 'h') && !(e.target instanceof HTMLSelectElement)) { e.preventDefault(); doHunt(); }
+      if (!confirmingRestart && tab === 'hunt' && (e.code === 'Space' || e.key === 'h') && !(e.target instanceof HTMLSelectElement)) { e.preventDefault(); doHunt(); }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -117,7 +118,7 @@ function Game({ content, user, initialPlayer, initialJournal, onLogout }: {
       <nav>
         {(['hunt', 'shop', 'craft', 'travel', 'list', ...(user.isAdmin ? ['admin'] : [])] as Tab[]).map((t) => (
           <button class={tab === t ? 'on' : ''} onClick={() => setTab(t)}>
-            {{ hunt: 'Hunt', shop: 'Shop', craft: 'Forge', travel: 'Travel', list: 'List', admin: 'Invites' }[t]}
+            {{ hunt: 'Hunt', shop: 'Shop', craft: 'Forge', travel: 'Travel', list: 'List', admin: 'Admin' }[t]}
           </button>
         ))}
       </nav>
@@ -131,8 +132,29 @@ function Game({ content, user, initialPlayer, initialJournal, onLogout }: {
       {tab === 'list' && <ListTab content={content} player={player} />}
       {tab === 'admin' && user.isAdmin && <AdminTab />}
 
+      {confirmingRestart && (
+        <RestartDialog
+          player={player}
+          onCancel={() => setConfirmingRestart(false)}
+          onConfirm={async () => {
+            try {
+              const r = await api<{ player: PlayerState }>('POST', '/api/restart', { confirm: true });
+              setPlayer(r.player);
+              setJournal([]);
+              setTab('hunt');
+              setToast('Fresh start! Santa has handed you a new Stocking Snare and 100 Stale Cookies.');
+            } catch (e) {
+              setToast((e as Error).message);
+            } finally {
+              setConfirmingRestart(false);
+            }
+          }}
+        />
+      )}
+
       <footer>
-        Logged in as <b>{user.username}</b>.{' '}
+        <button class="link" onClick={() => setConfirmingRestart(true)}>Start over</button>
+        {' · '}Logged in as <b>{user.username}</b>.{' '}
         <button class="link" onClick={() => api('POST', '/api/auth/logout', {}).finally(onLogout)}>Log out</button>
       </footer>
     </main>
@@ -140,6 +162,29 @@ function Game({ content, user, initialPlayer, initialJournal, onLogout }: {
 }
 
 type Act = (path: string, body: object, ok?: string) => Promise<void>;
+function RestartDialog({ player, onCancel, onConfirm }: { player: PlayerState; onCancel: () => void; onConfirm: () => Promise<void> }) {
+  const [working, setWorking] = useState(false);
+  return (
+    <div class="overlay" role="dialog" aria-modal="true" aria-labelledby="restart-title" onClick={(e) => { if (e.target === e.currentTarget && !working) onCancel(); }}>
+      <div class="dialog">
+        <h2 id="restart-title">Start over?</h2>
+        <p>This wipes your progress for good. You'll lose:</p>
+        <ul>
+          <li>{num(player.gold)} gold and {num(player.points)} points</li>
+          <li>Your rank and every unlocked location</li>
+          <li>All gear, bait, charms and materials</li>
+          <li>Your journal and the {Object.keys(player.catches).length} imps on your Naughty List</li>
+        </ul>
+        <p>Your account stays, and you start again as a Snow Scout in the Cookie Pantry.</p>
+        <div class="actions">
+          <button disabled={working} onClick={onCancel}>Keep my progress</button>
+          <button class="danger" disabled={working} onClick={async () => { setWorking(true); await onConfirm(); }}>Yes, wipe and start over</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 interface TabProps { content: Content; player: PlayerState; act: Act }
 
 function HuntTab({ content, player, journal, onHunt, busy, act }: TabProps & { journal: Logged[]; onHunt: () => void; busy: boolean }) {
