@@ -1,18 +1,20 @@
-import { useEffect, useMemo, useState } from 'preact/hooks';
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { Content, Imp } from '../content/schema.js';
 import {
-  buy, count, craft, equip, gameData, hunt, huntOdds, newPlayer, sell, sellValue, travel,
-  type ActionResult, type JournalEntry, type PlayerState, type Setup,
+  count, gameData, huntOdds, sellValue,
+  type JournalEntry, type PlayerState, type Setup,
 } from '../engine/index.js';
+import { api, type User } from './api.js';
+import { AuthScreen } from './auth.js';
+import { AdminTab } from './admin.js';
 
-// Prototype: the whole game runs in the browser and saves to localStorage.
-// Milestone 3 moves hunts to the server with accounts; the engine stays the same.
-const SAVE_KEY = 'naughty-list-prototype-v1';
+// The server owns the game state: every hunt and purchase is an API call.
+// The engine is only used here to show odds, prices and the shop.
 const TIER_ICON: Record<Imp['tier'], string> = { common: '😈', rare: '✨', miniboss: '👹', boss: '👿' };
 const LOCATION_ICON: Record<string, string> = { cookie_pantry: '🍪', wrapping_room: '🎁', toy_workshop: '🧸', reindeer_stables: '🦌' };
 const TYPE_ICON: Record<string, string> = { clockwork: '⚙️', holly: '🌿', frost: '❄️' };
 
-type Tab = 'hunt' | 'shop' | 'craft' | 'travel' | 'list';
+type Tab = 'hunt' | 'shop' | 'craft' | 'travel' | 'list' | 'admin';
 interface Logged extends JournalEntry { n: number }
 
 const pct = (x: number) => `${Math.round(x * 100)}%`;
@@ -27,36 +29,61 @@ export function App() {
   }, []);
   if (error) return <main class="center">Couldn't load the game: {error}</main>;
   if (!content) return <main class="center">Loading Santa's lair…</main>;
-  return <Game content={content} />;
+  return <Session content={content} />;
 }
 
-function load(content: Content): { player: PlayerState; journal: Logged[] } {
-  try {
-    const raw = localStorage.getItem(SAVE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch { /* start fresh */ }
-  return { player: newPlayer(content, Date.now()), journal: [] };
+interface MeResponse { user: User; player: PlayerState; journal: { n: number; entry: JournalEntry }[] }
+const toLogged = (rows: MeResponse['journal']): Logged[] => rows.map((r) => ({ ...r.entry, n: r.n }));
+
+function Session({ content }: { content: Content }) {
+  const [me, setMe] = useState<MeResponse | null | undefined>(undefined);
+  const refresh = () => api<MeResponse>('GET', '/api/me').then(setMe).catch(() => setMe(null));
+  useEffect(() => { refresh(); }, []);
+  if (me === undefined) return <main class="center">Loading Santa's lair…</main>;
+  if (me === null) return <AuthScreen onDone={refresh} />;
+  return <Game content={content} user={me.user} initialPlayer={me.player} initialJournal={toLogged(me.journal)} onLogout={() => setMe(null)} />;
 }
 
-function Game({ content }: { content: Content }) {
+function Game({ content, user, initialPlayer, initialJournal, onLogout }: {
+  content: Content; user: User; initialPlayer: PlayerState; initialJournal: Logged[]; onLogout: () => void;
+}) {
   const data = useMemo(() => gameData(content), [content]);
-  const [{ player, journal }, setSave] = useState(() => load(content));
+  const [player, setPlayer] = useState(initialPlayer);
+  const [journal, setJournal] = useState(initialJournal);
   const [tab, setTab] = useState<Tab>('hunt');
   const [toast, setToast] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const lastHuntAt = useRef(0);
 
-  useEffect(() => { localStorage.setItem(SAVE_KEY, JSON.stringify({ player, journal })); }, [player, journal]);
-
-  const act = (r: ActionResult, ok?: string) => {
-    if (r.ok) { setSave((s) => ({ ...s, player: r.player })); if (ok) setToast(ok); }
-    else setToast(r.error);
+  const act: Act = async (path, body, ok) => {
+    try {
+      const r = await api<{ player: PlayerState }>('POST', path, body);
+      setPlayer(r.player);
+      if (ok) setToast(ok);
+    } catch (e) {
+      setToast((e as Error).message);
+    }
   };
 
-  const doHunt = () => {
-    const r = hunt(content, player, Math.random, Date.now());
-    if (!r.ok) { setToast(r.error); return; }
-    setSave((s) => ({ player: r.player, journal: [{ ...r.entry, n: r.player.stats.hunts }, ...s.journal].slice(0, 200) }));
-    if (r.entry.rankUp) setToast(`Rank up! You are now ${content.ranks[r.entry.rankUp - 1]!.name}.`);
-    else setToast(null);
+  const doHunt = async () => {
+    if (busy) return;
+    setBusy(true);
+    // The server allows a few hunts a second; pace rapid clicks instead of showing an error.
+    const gap = 1000 / content.constants.maxHuntsPerSecond + 20;
+    const wait = lastHuntAt.current + gap - Date.now();
+    if (wait > 0) await new Promise((r) => setTimeout(r, wait));
+    lastHuntAt.current = Date.now();
+    try {
+      const r = await api<{ player: PlayerState; entry: { n: number; entry: JournalEntry } }>('POST', '/api/hunt', {});
+      setPlayer(r.player);
+      setJournal((j) => [{ ...r.entry.entry, n: r.entry.n }, ...j].slice(0, 200));
+      const up = r.entry.entry.rankUp;
+      setToast(up ? `Rank up! You are now ${content.ranks[up - 1]!.name}.` : null);
+    } catch (e) {
+      setToast((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
   };
 
   useEffect(() => {
@@ -88,34 +115,34 @@ function Game({ content }: { content: Content }) {
       </header>
 
       <nav>
-        {(['hunt', 'shop', 'craft', 'travel', 'list'] as Tab[]).map((t) => (
+        {(['hunt', 'shop', 'craft', 'travel', 'list', ...(user.isAdmin ? ['admin'] : [])] as Tab[]).map((t) => (
           <button class={tab === t ? 'on' : ''} onClick={() => setTab(t)}>
-            {{ hunt: 'Hunt', shop: 'Shop', craft: 'Elf Forge', travel: 'Travel', list: 'Naughty List' }[t]}
+            {{ hunt: 'Hunt', shop: 'Shop', craft: 'Forge', travel: 'Travel', list: 'List', admin: 'Invites' }[t]}
           </button>
         ))}
       </nav>
 
       {toast && <p class="toast" onClick={() => setToast(null)}>{toast}</p>}
 
-      {tab === 'hunt' && <HuntTab content={content} player={player} journal={journal} onHunt={doHunt} act={act} />}
+      {tab === 'hunt' && <HuntTab content={content} player={player} journal={journal} onHunt={doHunt} busy={busy} act={act} />}
       {tab === 'shop' && <ShopTab content={content} player={player} act={act} />}
       {tab === 'craft' && <CraftTab content={content} player={player} act={act} />}
       {tab === 'travel' && <TravelTab content={content} player={player} act={act} />}
       {tab === 'list' && <ListTab content={content} player={player} />}
+      {tab === 'admin' && user.isAdmin && <AdminTab />}
 
       <footer>
-        Prototype: progress is saved in this browser only.{' '}
-        <button class="link" onClick={() => {
-          if (confirm('Start over? This wipes your progress in this browser.')) setSave({ player: newPlayer(content, Date.now()), journal: [] });
-        }}>Start over</button>
+        Logged in as <b>{user.username}</b>.{' '}
+        <button class="link" onClick={() => api('POST', '/api/auth/logout', {}).finally(onLogout)}>Log out</button>
       </footer>
     </main>
   );
 }
 
-interface TabProps { content: Content; player: PlayerState; act: (r: ActionResult, ok?: string) => void }
+type Act = (path: string, body: object, ok?: string) => Promise<void>;
+interface TabProps { content: Content; player: PlayerState; act: Act }
 
-function HuntTab({ content, player, journal, onHunt, act }: TabProps & { journal: Logged[]; onHunt: () => void }) {
+function HuntTab({ content, player, journal, onHunt, busy, act }: TabProps & { journal: Logged[]; onHunt: () => void; busy: boolean }) {
   const data = gameData(content);
   const odds = huntOdds(content, player.setup, player.location);
   const slot = (s: keyof Setup, kind: 'trap' | 'base' | 'bait' | 'charm', optional: boolean) => {
@@ -123,7 +150,7 @@ function HuntTab({ content, player, journal, onHunt, act }: TabProps & { journal
     return (
       <label>
         <span>{s[0]!.toUpperCase() + s.slice(1)}</span>
-        <select value={player.setup[s] ?? ''} onChange={(e) => act(equip(content, player, s, (e.target as HTMLSelectElement).value || null))}>
+        <select value={player.setup[s] ?? ''} onChange={(e) => act('/api/setup', { slot: s, item: (e.target as HTMLSelectElement).value || null })}>
           {optional && <option value="">None</option>}
           {owned.map((i) => (
             <option value={i.id}>
@@ -146,7 +173,7 @@ function HuntTab({ content, player, journal, onHunt, act }: TabProps & { journal
       <p class="odds">
         Power {num(odds.stats.power)} · Luck {odds.stats.luck} · Attraction {pct(odds.stats.attraction)} · Catch per hunt {pct(odds.catchPerHunt)}
       </p>
-      <button class="hunt" onClick={onHunt}>🎯 Hunt</button>
+      <button class="hunt" disabled={busy} onClick={onHunt}>🎯 Hunt</button>
       <p class="hint">Tip: press Space to hunt.</p>
       <ol class="journal">
         {journal.slice(0, 50).map((e) => {
@@ -179,7 +206,7 @@ function ShopTab({ content, player, act }: TabProps) {
               <td class="r">{num(i.price!)} 🪙<br /><small>own {count(player, i.id)}</small></td>
               <td class="r">
                 {i.rank > player.rank ? <small>rank {i.rank}</small> : packs.map((n) => (
-                  <button disabled={player.gold < i.price! * n} onClick={() => act(buy(content, player, i.id, n), `Bought ${n} ${i.name}.`)}>x{n}</button>
+                  <button disabled={player.gold < i.price! * n} onClick={() => act('/api/buy', { item: i.id, amount: n }, `Bought ${n} ${i.name}.`)}>x{n}</button>
                 ))}
               </td>
             </tr>
@@ -212,7 +239,7 @@ function ShopTab({ content, player, act }: TabProps) {
             <tr>
               <td><b>{item.name}</b> <small>x{n}</small></td>
               <td class="r">{sellValue(data, item)} 🪙 each</td>
-              <td class="r"><button onClick={() => act(sell(content, player, item.id, 1), `Sold ${item.name}.`)}>Sell 1</button></td>
+              <td class="r"><button onClick={() => act('/api/sell', { item: item.id, amount: 1 }, `Sold ${item.name}.`)}>Sell 1</button></td>
             </tr>
           ))}
         </tbody>
@@ -237,7 +264,7 @@ function CraftTab({ content, player, act }: TabProps) {
                   <small>{Object.entries(r.ingredients).map(([id, n]) => `${count(player, id)}/${n} ${data.items.get(id)?.name}`).join(', ')}, {num(r.gold)} gold</small>
                 </td>
                 <td class="r">
-                  {r.rank > player.rank ? <small>rank {r.rank}</small> : <button onClick={() => act(craft(content, player, r.id), `Crafted ${out.name}.`)}>Craft</button>}
+                  {r.rank > player.rank ? <small>rank {r.rank}</small> : <button onClick={() => act('/api/craft', { recipe: r.id }, `Crafted ${out.name}.`)}>Craft</button>}
                 </td>
               </tr>
             );
@@ -259,7 +286,7 @@ function TravelTab({ content, player, act }: TabProps) {
             <p>{l.description}</p>
             {l.id === player.location ? <b>You are here</b>
               : l.rank > player.rank ? <small>Opens at rank {l.rank} ({content.ranks[l.rank - 1]?.name})</small>
-              : <button onClick={() => act(travel(content, player, l.id), `Welcome to the ${l.name}.`)}>{open ? 'Go' : `Unlock for ${num(l.unlockCost)} gold`}</button>}
+              : <button onClick={() => act('/api/travel', { location: l.id }, `Welcome to the ${l.name}.`)}>{open ? 'Go' : `Unlock for ${num(l.unlockCost)} gold`}</button>}
           </div>
         );
       })}

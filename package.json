@@ -10,13 +10,15 @@
   "scripts": {
     "dev": "concurrently -k -n server,client \"tsx watch src/server/main.ts\" \"vite\"",
     "build": "vite build && node scripts/build-server.mjs",
-    "start": "node dist/server.js",
+    "start": "node --disable-warning=ExperimentalWarning dist/server.js",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "check-content": "tsx scripts/check-content.ts",
-    "simulate": "tsx scripts/simulate.ts"
+    "simulate": "tsx scripts/simulate.ts",
+    "play": "npm run build && npm start"
   },
   "dependencies": {
+    "@fastify/cookie": "^11.1.5",
     "@fastify/static": "^10.1.12",
     "fastify": "^5.12.8",
     "preact": "^11.2.0",

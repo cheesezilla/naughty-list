@@ -6,18 +6,29 @@ Design plan: [docs/PLAN.md](docs/PLAN.md) (updated with every PR)
 
 ## Status
 
-- Milestones 1 and 2 are in: project skeleton, Docker image, hunt engine, v1 content (4 locations, 24 imps) and the balance simulator.
-- The web page is a **prototype** that runs the engine in the browser and saves to localStorage. Accounts, server-side hunts, invites and the leaderboard come in milestone 3.
+- Milestones 1 to 3 are in: hunt engine, v1 content (4 locations, 24 imps), balance simulator, invite-only accounts, server-side hunts and SQLite saves.
+- Next: leaderboard, catch feed and the NAS deploy with a public address for friends.
 
 ## Run it
 
+Needs Node.js 22 or newer.
+
 ```sh
+git clone https://github.com/cheesezilla/naughty-list
+cd naughty-list
 npm install
-npm run dev            # server on :8080 and the Vite dev page on :5173
+npm run play           # build and serve on http://localhost:8080
+```
+
+The first account you create is the admin; use the Invites tab to make codes for friends. Saves live in `./data/naughty-list.db` (delete it to start over).
+
+Other commands:
+
+```sh
+npm run dev            # server on :8080 and the hot-reloading page on :5173
 npm test               # engine and server tests
 npm run simulate       # balance report (add -- --players 1000 --strict)
 npm run check-content  # validate content/*.json
-npm run build && npm start   # production build on :8080
 ```
 
 ## Tuning the game

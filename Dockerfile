@@ -8,13 +8,14 @@ RUN npm run check-content && npm test && npm run build
 
 FROM node:22-alpine
 WORKDIR /app
-ENV NODE_ENV=production PORT=8080
+ENV NODE_ENV=production PORT=8080 DATA_DIR=/data NODE_NO_WARNINGS=1
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 COPY --from=build /app/dist ./dist
 COPY content ./content
 ARG APP_VERSION=dev
 ENV APP_VERSION=$APP_VERSION
+RUN mkdir -p /data && chown node:node /data
 VOLUME /data
 EXPOSE 8080
 USER node
