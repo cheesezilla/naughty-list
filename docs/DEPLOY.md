@@ -34,7 +34,7 @@ A Cloudflare Tunnel gives the game a public `https://` address without opening a
    - Domain: your domain
    - Service: type **HTTP**, URL `naughty-list:8080`
 4. In the UGOS Docker app, edit the `naughty-list` project. Remove the `#` from the `cloudflared` lines at the bottom of the compose file, paste your token in place of `paste-your-token-here`, and redeploy.
-5. Open `https://naughtylist.<your-domain>`. Log in, go to the **Invites** tab, and create invite links from there. Links copy the address you're browsing from, so use the public address when inviting friends.
+5. Open `https://naughtylist.<your-domain>`. Log in, go to the **Admin** tab, and create invite links from there. Links copy the address you're browsing from, so use the public address when inviting friends.
 
 Tailscale is an alternative if you'd rather keep the game off the public internet. Every friend then has to install Tailscale and join your network.
 

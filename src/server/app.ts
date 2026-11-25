@@ -159,6 +159,25 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
       return { player: r.player, entry: { n: r.player.stats.hunts, at: t, entry: r.entry } };
     });
 
+    // Start over: wipes this player's progress and journal, keeps the account, and logs the restart.
+    // The client asks for confirmation first; the server also insists on an explicit confirm flag.
+    game.post('/api/restart', async (req, reply) => {
+      const body = (req.body ?? {}) as Record<string, unknown>;
+      if (body.confirm !== true) return reply.code(400).send({ error: 'Please confirm that you want to wipe your progress.' });
+      const userId = req.user!.id;
+      const old = loadPlayer(userId);
+      const t = now();
+      const fresh = newPlayer(content, t);
+      store.restartPlayer(userId, fresh, {
+        gold: old.gold, points: old.points, rank: old.rank, hunts: old.stats.hunts, caught: old.stats.caught,
+        impsOnList: Object.keys(old.catches).length, location: old.location,
+      }, t);
+      lastHunt.delete(userId);
+      req.log.info({ userId, username: req.user!.username }, 'player restarted');
+      return { player: fresh, journal: [] };
+    });
+    game.get('/api/restarts', async (req) => ({ restarts: store.restarts(req.user!.id) }));
+
     game.post('/api/setup', playerAction((p, b) => {
       const slot = str(b.slot) as keyof Setup;
       if (!['trap', 'base', 'bait', 'charm'].includes(slot)) return { ok: false, error: 'Unknown slot.' };
@@ -179,6 +198,7 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
       store.createInvite(code, req.user!.id, now());
       return { code };
     });
+    admin.get('/api/admin/restarts', async () => ({ restarts: store.restarts() }));
     admin.delete<{ Params: { code: string } }>('/api/admin/invites/:code', async (req, reply) => {
       if (!store.revokeInvite(req.params.code)) return reply.code(400).send({ error: 'That invite is already used or gone.' });
       return { ok: true };

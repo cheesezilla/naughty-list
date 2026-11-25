@@ -234,11 +234,16 @@ Gold comes in only from catches and sales, and goes out on bait, charms, gear, l
 | `GET /api/me` | User, player state and the last 50 journal entries |
 | `POST /api/hunt` | One hunt, rolled on the server; limited to `maxHuntsPerSecond` (2) per player |
 | `POST /api/setup`, `/api/buy`, `/api/sell`, `/api/craft`, `/api/travel` | Engine actions on the saved player |
+| `POST /api/restart` with `{"confirm": true}` | Start over: wipes this player's progress and journal, keeps the account, logs the restart |
+| `GET /api/restarts` | This player's own restart log |
 | `GET/POST /api/admin/invites`, `DELETE /api/admin/invites/:code` | Admin only: list, create and revoke invite codes |
+| `GET /api/admin/restarts` | Admin only: every player's restart log |
 
-**Storage:** one SQLite file, `naughty-list.db`, in `DATA_DIR` (`/data` in Docker, `./data` locally), using Node's built-in `node:sqlite` so there are no native modules to compile. Tables: users, sessions, invites, players (state as JSON), journal (last 200 per player). Passwords are hashed with scrypt.
+**Storage:** one SQLite file, `naughty-list.db`, in `DATA_DIR` (`/data` in Docker, `./data` locally), using Node's built-in `node:sqlite` so there are no native modules to compile. Tables: users, sessions, invites, players (state as JSON), journal (last 200 per player), restarts (one row per Start over, with the player's gold, points, rank, hunts, catches and Naughty List count at that moment; never deleted). Passwords are hashed with scrypt.
 
 **Data stored per player:** gold, points, rank, current location, unlocked locations, setup, inventory counts, the last 200 journal entries and lifetime catch counts per imp (for The Naughty List collection page).
+
+**Start over:** any player can wipe their own run from the **Start over** link at the bottom of the page. A confirmation dialog lists what will be lost, and nothing is wiped unless the player confirms; the server also refuses a restart without an explicit confirm flag. The wipe replaces that player's state with a fresh one and deletes their journal in one transaction. Their account, other players and the restart log are untouched. The admin sees every restart in the Admin tab.
 
 **Playing with friends:** eddy is the admin and creates invite codes. A leaderboard ranks players by points, with tabs for total catches and bosses caught. A shared feed shows notable catches. No trading in v1.
 
@@ -253,7 +258,7 @@ npm install
 npm run play        # builds, then serves on http://localhost:8080
 ```
 
-The first account you create is the admin. Open the Invites tab to make codes for friends; a code link looks like `http://<address>:8080/?invite=SNOW-XXXX-XXXX`. Saves go to `./data/naughty-list.db`; delete that file to start over. For development with hot reload, use `npm run dev` and open http://localhost:5173.
+The first account you create is the admin. Open the Admin tab to make invite codes for friends; a code link looks like `http://<address>:8080/?invite=SNOW-XXXX-XXXX`. Saves go to `./data/naughty-list.db`; deleting that file resets the whole server. For development with hot reload, use `npm run dev` and open http://localhost:5173.
 
 ## Deployment
 
@@ -283,6 +288,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-25 | #4 | Start over: per-player wipe with a confirmation dialog, restart log (own and admin view); Invites tab renamed Admin |
 | 2026-11-25 | #3 | NAS deploy: compose file with optional Cloudflare Tunnel, DEPLOY.md guide, entrypoint that fixes save-folder ownership, image smoke test in CI |
 | 2026-11-25 | #2 | Milestone 3: accounts (first one is admin), invite codes, server-side hunts with rate limit, SQLite saves, login screen and Invites tab; local run steps |
 | 2026-11-25 | #1 | Plan added to the repo; milestones 1 and 2 built; first simulator run recorded |
