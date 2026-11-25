@@ -1,0 +1,12 @@
+{
+  "startingGold": 300,
+  "startingItems": { "stale_cookie": 100 },
+  "startingSetup": { "trap": "stocking_snare", "base": "cardboard_box", "bait": "stale_cookie", "charm": null },
+  "startingLocation": "cookie_pantry",
+  "attractionCap": 0.95,
+  "catchCap": 0.98,
+  "sellBackRate": 0.4,
+  "rescue": { "maxGold": 50, "item": "stale_cookie", "amount": 10 },
+  "maxHuntsPerSecond": 2,
+  "stamina": { "enabled": false, "name": "Cocoa", "max": 100, "costPerHunt": 1, "refillPerMinute": 1, "buyPrice": 5 }
+}

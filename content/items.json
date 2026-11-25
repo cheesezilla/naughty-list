@@ -1,0 +1,43 @@
+{
+  "traps": [
+    { "id": "stocking_snare", "name": "Stocking Snare", "type": "holly", "power": 60, "luck": 0, "rank": 1, "price": null },
+    { "id": "jack_in_the_box", "name": "Jack-in-the-Box", "type": "clockwork", "power": 150, "luck": 1, "rank": 1, "price": 300 },
+    { "id": "holly_noose", "name": "Holly Noose", "type": "holly", "power": 300, "luck": 2, "rank": 2, "price": 1200 },
+    { "id": "icicle_jar", "name": "Icicle Jar", "type": "frost", "power": 500, "luck": 2, "attraction": 0.05, "rank": 2, "price": 3000 },
+    { "id": "nutcracker_jaws", "name": "Nutcracker Jaws", "type": "clockwork", "power": 900, "luck": 3, "rank": 3, "price": 9000 },
+    { "id": "wreath_of_thorns", "name": "Wreath of Thorns", "type": "holly", "power": 1400, "luck": 5, "attraction": 0.05, "rank": 3, "price": null },
+    { "id": "snow_globe_prison", "name": "Snow Globe Prison", "type": "frost", "power": 1800, "luck": 4, "rank": 4, "price": 25000 },
+    { "id": "sleigh_bell_snapper", "name": "Sleigh-Bell Snapper", "type": "clockwork", "power": 2600, "luck": 6, "attraction": 0.05, "rank": 4, "price": null }
+  ],
+  "bases": [
+    { "id": "cardboard_box", "name": "Cardboard Box", "power": 20, "luck": 0, "rank": 1, "price": null },
+    { "id": "gingerbread_slab", "name": "Gingerbread Slab", "power": 80, "luck": 1, "rank": 1, "price": 500 },
+    { "id": "candy_cane_platform", "name": "Candy Cane Platform", "power": 200, "luck": 1, "attraction": 0.05, "rank": 2, "price": 2500 },
+    { "id": "ice_block", "name": "Ice Block", "power": 400, "luck": 3, "rank": 3, "price": 8000 },
+    { "id": "yule_log_base", "name": "Yule Log Base", "power": 600, "luck": 5, "attraction": 0.1, "rank": 3, "price": null }
+  ],
+  "baits": [
+    { "id": "stale_cookie", "name": "Stale Cookie", "attraction": 0.7, "rank": 1, "price": 8 },
+    { "id": "sugar_cookie", "name": "Sugar Cookie", "attraction": 0.78, "rank": 1, "price": 20 },
+    { "id": "peppermint_bark", "name": "Peppermint Bark", "attraction": 0.82, "rank": 3, "price": 50 },
+    { "id": "fruitcake", "name": "Fruitcake", "attraction": 0.85, "rareMultiplier": 2, "rank": 2, "price": null },
+    { "id": "hot_cocoa", "name": "Hot Cocoa", "attraction": 0.88, "rank": 4, "price": 90 }
+  ],
+  "charms": [
+    { "id": "mistletoe_charm", "name": "Mistletoe Charm", "luck": 4, "rank": 1, "price": 30 },
+    { "id": "jingle_bell_charm", "name": "Jingle Bell Charm", "attraction": 0.15, "rank": 2, "price": 25 },
+    { "id": "windup_key_charm", "name": "Wind-up Key Charm", "powerBonus": 0.2, "rank": 3, "price": 60 }
+  ],
+  "materials": [
+    { "id": "candied_peel", "name": "Candied Peel", "sellPrice": 5 },
+    { "id": "sugar_glass", "name": "Sugar Glass", "sellPrice": 20 },
+    { "id": "cookie_tin", "name": "Cookie Tin", "sellPrice": 30 },
+    { "id": "brass_spring", "name": "Brass Spring", "sellPrice": 50 },
+    { "id": "golden_ribbon", "name": "Golden Ribbon", "sellPrice": 60 },
+    { "id": "enchanted_wrapping", "name": "Enchanted Wrapping", "sellPrice": 100 },
+    { "id": "toymakers_gear", "name": "Toymaker's Gear", "sellPrice": 120 },
+    { "id": "clockwork_heart", "name": "Clockwork Heart", "sellPrice": 200 },
+    { "id": "silver_sleighbell", "name": "Silver Sleighbell", "sellPrice": 200 },
+    { "id": "brimstone_coal", "name": "Brimstone Coal", "sellPrice": 200 }
+  ]
+}
