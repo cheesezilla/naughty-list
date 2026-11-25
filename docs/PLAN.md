@@ -18,7 +18,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Custom AI-generated PNGs for the rest of the game art (traps, bases, baits, charms, materials, trap types, brand, locations, map, how-to, remaining imps) — progress tracked in [ART_PROGRESS.md](ART_PROGRESS.md) | In progress | #14 |
 | New phone-first UI (layout D2): bottom menu, hunt log with events and full history, Arsenal, Elf Emporium, Santa's Workshop, More pages, open sign-up with admin switch | Done | #11 |
 | Intro letter from Santa: the game's backstory as the first hunt-log entry of every new game, and on How to play | In review | #12 |
-| Location objectives: a unique loop per location (Pantry bait ladder, Wrapping Room tangle meter, Toy Workshop order board, Stables sleigh run); see [Location objectives](#location-objectives-planned) | Planned (design only) | #PRNUM |
+| Location objectives: a unique loop per location (Pantry bait ladder, Wrapping Room tangle meter, Toy Workshop order board, Stables sleigh run); see [Location objectives](#location-objectives-planned) | Planned (design only) | #16 |
 | 5. Tune from play-test | Planned | |
 
 The server runs every hunt and saves each player in SQLite. To play locally, follow "Run it locally" below.
@@ -445,7 +445,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 | Date | PR | Change |
 | --- | --- | --- |
-| 2026-11-25 | #PRNUM | Planned a unique local objective for each location: Cookie Pantry bait ladder (eddy's tiered bait-ingredient loop), Wrapping Room tangle meter, Toy Workshop order board, Reindeer Stables sleigh run; recorded what the engine already supports. Design only, no code or numbers changed |
+| 2026-11-25 | #16 | Planned a unique local objective for each location: Cookie Pantry bait ladder (eddy's tiered bait-ingredient loop), Wrapping Room tangle meter, Toy Workshop order board, Reindeer Stables sleigh run; recorded what the engine already supports. Design only, no code or numbers changed |
 | 2026-11-25 | #15 | Added docs/ART_PROGRESS.md tracking which of the 56 remaining non-icon art assets still need custom AI-generated pictures (per slot, with ids), linked from docs/ART.md and docs/PLAN.md. No art files or game numbers changed |
 | 2026-11-25 | #14 | Custom PNG art for the 8 traps and 4 of 5 bases (`cardboard_box`, `gingerbread_slab`, `candy_cane_platform`, `ice_block`; `yule_log_base` still generated SVG), generated with Gemini on a plain background then cut out locally with `rembg`. Rest of the non-icon art (baits, charms, materials, trap types, brand, locations, map, how-to, remaining 15 imps) still queued, paused on Gemini's daily image-generation limit. No game numbers changed |
 | 2026-11-25 | #13 | Custom PNG portraits for all 10 cookie-pantry/wrapping-room/toy-workshop/reindeer-stables imps (`crumb_imp`, `gingerbread_imp`, `baron_crumblewick`, `glitter_imp`, `madame_shredwell`, `windup_imp`, `foreman_grimbolt`, `carrot_crook`, `grizzlewick`, `_locked`), generated with an AI image tool and dropped in per docs/ART.md; `npm run art` picked them up as custom and left the other 15 imps on generated SVG. No game numbers changed |
