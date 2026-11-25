@@ -44,5 +44,14 @@ jobs:
           docker restart nl
           for i in $(seq 1 30); do curl -fs localhost:8080/api/health && break; sleep 1; done
           curl -fs -b jar localhost:8080/api/me | grep '"hunts":1'
+          # Save files left owned by root with no access for others must be repaired on start.
+          docker stop nl
+          sudo chown root:root /tmp/nl-data /tmp/nl-data/* && sudo chmod 600 /tmp/nl-data/* && sudo chmod 700 /tmp/nl-data
+          docker start nl
+          for i in $(seq 1 30); do curl -fs localhost:8080/api/health && break; sleep 1; done
+          curl -fs -b jar localhost:8080/api/me | grep '"hunts":1'
           sudo ls -la /tmp/nl-data
           docker logs nl
+      - name: Container log
+        if: failure() && github.event_name == 'pull_request'
+        run: docker logs nl || true
