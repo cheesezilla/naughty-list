@@ -55,7 +55,7 @@ Edit, then run `npm run check-content` and `npm run simulate` to see the effect.
 
 ## Deploy on the UGREEN NAS
 
-Follow [docs/DEPLOY.md](docs/DEPLOY.md). Pushing to `main` builds `ghcr.io/cheesezilla/naughty-list:latest`. In the NAS Docker app, create a project from `compose.yaml`, and the game is at `http://<nas-address>:8080`. An optional Cloudflare Tunnel in the same file lets friends play from anywhere.
+Follow [docs/DEPLOY.md](docs/DEPLOY.md). Pushing to `main` builds `ghcr.io/cheesezilla/naughty-list:latest`. In the NAS Docker app, create a project from `compose.yaml`, and the game is at `http://<nas-address>:8081`. An optional Cloudflare Tunnel in the same file lets friends play from anywhere.
 
 ## Layout
 
