@@ -8,6 +8,20 @@ const id = z.string().regex(/^[a-z0-9_]+$/, 'ids are lowercase letters, digits a
 const chance = z.number().min(0).max(1);
 const price = z.number().int().positive().nullable();
 
+/** Text shown on item and imp detail screens. Limits match the UI layout's text slots. */
+export const Flavour = z.object({
+  tagline: z.string().min(1).max(60),
+  description: z.string().min(1).max(160),
+  backstory: z.string().min(1).max(400),
+});
+/** Imps also get a one-line rumour, shown before the first catch instead of the rest. */
+export const ImpFlavour = Flavour.extend({ rumour: z.string().min(1).max(100) });
+/** content/flavour.json: text keyed by item id and imp id, merged onto each entry at load. */
+export const FlavourFile = z.object({
+  items: z.record(id, Flavour),
+  imps: z.record(id, ImpFlavour),
+});
+
 export const Imp = z.object({
   id,
   name: z.string(),
@@ -20,6 +34,7 @@ export const Imp = z.object({
   effectiveness: z.partialRecord(PowerType, z.number().nonnegative()).optional(),
   loot: z.array(z.object({ item: id, chance, amount: z.number().int().positive().optional() })).optional(),
   stealsBait: z.boolean().optional(),
+  flavour: ImpFlavour.optional(),
 });
 
 export const Location = z.object({
@@ -37,22 +52,26 @@ export const Trap = z.object({
   id, name: z.string(), type: PowerType,
   power: z.number().nonnegative(), luck: z.number().nonnegative(),
   attraction: z.number().optional(), rank: z.number().int().positive(), price,
+  flavour: Flavour.optional(),
 });
 export const Base = z.object({
   id, name: z.string(),
   power: z.number().nonnegative(), luck: z.number().nonnegative(),
   attraction: z.number().optional(), rank: z.number().int().positive(), price,
+  flavour: Flavour.optional(),
 });
 export const Bait = z.object({
   id, name: z.string(), attraction: chance,
   rareMultiplier: z.number().positive().optional(), rank: z.number().int().positive(), price,
+  flavour: Flavour.optional(),
 });
 export const Charm = z.object({
   id, name: z.string(),
   power: z.number().optional(), powerBonus: z.number().optional(), luck: z.number().optional(), attraction: z.number().optional(),
   rank: z.number().int().positive(), price,
+  flavour: Flavour.optional(),
 });
-export const Material = z.object({ id, name: z.string(), sellPrice: z.number().int().nonnegative() });
+export const Material = z.object({ id, name: z.string(), sellPrice: z.number().int().nonnegative(), flavour: Flavour.optional() });
 
 export const Items = z.object({
   traps: z.array(Trap), bases: z.array(Base), baits: z.array(Bait), charms: z.array(Charm), materials: z.array(Material),
@@ -94,6 +113,9 @@ export const Content = z.object({
 
 export type PowerType = z.infer<typeof PowerType>;
 export type ImpTier = z.infer<typeof ImpTier>;
+export type Flavour = z.infer<typeof Flavour>;
+export type ImpFlavour = z.infer<typeof ImpFlavour>;
+export type FlavourFile = z.infer<typeof FlavourFile>;
 export type Imp = z.infer<typeof Imp>;
 export type Location = z.infer<typeof Location>;
 export type Trap = z.infer<typeof Trap>;
