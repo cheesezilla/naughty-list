@@ -15,7 +15,8 @@
     "typecheck": "tsc --noEmit",
     "check-content": "tsx scripts/check-content.ts",
     "simulate": "tsx scripts/simulate.ts",
-    "play": "npm run build && npm start"
+    "play": "npm run build && npm start",
+    "art": "tsx scripts/art/index.ts"
   },
   "dependencies": {
     "@fastify/cookie": "^11.1.5",
