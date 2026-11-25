@@ -1,6 +1,6 @@
 # Deploying The Naughty List on a UGREEN NAS
 
-These steps run the game on a UGREEN DXP4800 (UGOS Pro) with its Docker app. Part 1 and part 2 get it running on your home network. Part 3 is optional: it adds HTTPS and lets friends play from anywhere.
+These steps run the game on a UGREEN DXP4800 (UGOS Pro) with its Docker app. Part 1 and part 2 get it running on your home network. Part 3 is optional: it lets friends play from anywhere.
 
 Button names can differ a little between UGOS versions. If a label doesn't match, look for the closest one.
 
@@ -23,55 +23,20 @@ Every merge to `main` publishes the image `ghcr.io/cheesezilla/naughty-list:late
 
 Saves live in `/volume1/docker/naughty-list/naughty-list.db`. Include that folder in your UGOS backups.
 
-## Part 3 (optional): HTTPS, and letting friends play from anywhere
+## Part 3 (optional): let friends play from anywhere
 
-Browsers only trust an `https://` certificate for a real name, never for a bare address like `192.168.50.156`. A Cloudflare Tunnel gives the game a name such as `https://naughtylist.example.com` with a real certificate, without opening any ports on your router. Friends can use the same address from anywhere.
+A Cloudflare Tunnel gives the game a public `https://` address without opening any ports on your router. You need a free Cloudflare account and a domain whose DNS is managed by Cloudflare.
 
-You need a free Cloudflare account and a domain that Cloudflare manages. Cloudflare doesn't give out free domains. The simplest choice is to buy one through Cloudflare, which sells at cost, about US$10 a year for a `.com`. Other options are listed at the end of this part.
-
-### Step 1: get a domain on Cloudflare
-
-1. Sign up at [dash.cloudflare.com](https://dash.cloudflare.com) with a free account.
-2. Open **Domain Registration > Register Domains**, search for a name you like, and buy it. Turn on auto-renew so it doesn't lapse.
-3. The domain appears under **Websites** (or **Domains**) a few minutes later, already using Cloudflare's DNS. Nothing else to set up there.
-
-If you already own a domain elsewhere, add it to Cloudflare under **Add a domain**, pick the **Free** plan, and change the nameservers at your registrar to the two that Cloudflare shows. It's ready when Cloudflare emails you that the domain is active, usually within an hour.
-
-### Step 2: create the tunnel
-
-1. In the Cloudflare dashboard, open **Zero Trust**. The first time, it asks you to choose a team name and the **Free** plan. It may ask for a card, but the free plan isn't charged.
-2. Open **Networks > Tunnels** and choose **Create a tunnel**.
-3. Choose **Cloudflared**, name it `naughty-list`, and choose **Docker** as the environment. Copy the long token from the command shown. It's the part after `--token`. Don't run the command itself.
-4. Under **Public hostname** (called **Published application routes** in newer dashboards), add one:
+1. In the Cloudflare dashboard, open **Zero Trust**, then **Networks > Tunnels**, and choose **Create a tunnel**.
+2. Choose **Cloudflared**, name the tunnel `naughty-list`, and choose **Docker** as the environment. Copy the long token from the command shown. It's the part after `--token`.
+3. Under **Public hostname**, add one:
    - Subdomain: for example `naughtylist`
    - Domain: your domain
    - Service: type **HTTP**, URL `naughty-list:8080`
+4. In the UGOS Docker app, edit the `naughty-list` project. Remove the `#` from the `cloudflared` lines at the bottom of the compose file, paste your token in place of `paste-your-token-here`, and redeploy.
+5. Open `https://naughtylist.<your-domain>`. Log in, go to the **Admin** tab, and create invite links from there. Links copy the address you're browsing from, so use the public address when inviting friends.
 
-   Use 8080 here even though the NAS uses 8081. The tunnel talks to the game container directly, inside Docker, where the game listens on 8080.
-5. Save the tunnel.
-
-### Step 3: start the tunnel on the NAS
-
-1. In the UGOS Docker app, edit the `naughty-list` project.
-2. Remove the `#` from the `cloudflared` lines at the bottom of the compose file, so they line up with `naughty-list:` above. Paste your token in place of `paste-your-token-here`.
-3. Redeploy. A second container, `naughty-list-tunnel`, starts. Its log should say `Registered tunnel connection` within a few seconds, and the tunnel shows **Healthy** in the Cloudflare dashboard.
-4. Open `https://naughtylist.<your-domain>`. The padlock shows, with no warning.
-
-Log in, go to the **Admin** tab, and create invite links there. Links copy the address you're browsing from, so open the game through the `https://` address when you invite friends. You can still use `http://<NAS-address>:8081` at home, but the `https://` address works everywhere, so it's easiest to use it on every device.
-
-Keep the token private. Anyone with it can run your tunnel. If it leaks, delete the tunnel in Cloudflare and create a new one.
-
-### Other options
-
-- **Free subdomain services.** A few services give out free domains that can be moved to Cloudflare, such as [EU.org](https://nic.eu.org). Approval can take days or weeks, and they're less reliable than a bought domain.
-- **Try it now without a domain.** Add this service to the project, redeploy, and the tunnel container's log prints a random `https://….trycloudflare.com` address. The address changes every time the container restarts, so it's only good for a quick test, not for friends.
-
-  ```yaml
-    quick-tunnel:
-      image: cloudflare/cloudflared:latest
-      command: tunnel --no-autoupdate --url http://naughty-list:8080
-  ```
-- **Tailscale.** If you'd rather keep the game off the public internet, Tailscale gives a free `https://….ts.net` address with a real certificate. Every friend then has to install Tailscale and join your network.
+Tailscale is an alternative if you'd rather keep the game off the public internet. Every friend then has to install Tailscale and join your network.
 
 ## Updating to a new version
 
