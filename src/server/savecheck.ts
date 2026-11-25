@@ -7,7 +7,7 @@ const whoAmI = () => (process.getuid ? `user ${process.getuid()}` : 'this user')
 const describe = (st: Stats) => `owner user ${st.uid}, group ${st.gid}, mode ${(st.mode & 0o777).toString(8)}`;
 const FIX =
   'On the NAS, give the folder mapped to /data read and write permission for everyone, ' +
-  'or add  user: "0:0"  to the service in compose.yaml, then redeploy.';
+  'or remove any  user:  line from the service in compose.yaml so the container can fix the owner itself, then redeploy.';
 
 /**
  * Checks that the save folder and any existing save files can be read and written by this process.
