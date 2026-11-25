@@ -1,6 +1,6 @@
 # Deploying The Naughty List on a UGREEN NAS
 
-These steps run the game on a UGREEN DXP4800 (UGOS Pro) with its Docker app. Part 1 and part 2 get it running on your home network. Part 3 is optional: it lets friends play from anywhere.
+These steps run the game on a UGREEN DXP4800 (UGOS Pro) with its Docker app. Part 1 and part 2 get it running on your home network. Part 3 is optional: it gives the game a public HTTPS address through Cloudflare. To play away from home over a VPN instead, see "Playing away from home over a VPN".
 
 Button names can differ a little between UGOS versions. If a label doesn't match, look for the closest one.
 
@@ -23,7 +23,15 @@ Every merge to `main` publishes the image `ghcr.io/cheesezilla/naughty-list:late
 
 Saves live in `/volume1/docker/naughty-list/naughty-list.db`. Include that folder in your UGOS backups.
 
-## Part 3 (optional): let friends play from anywhere
+## Playing away from home over a VPN
+
+The game runs over plain `http://`. That's fine on your home network and over a VPN such as WireGuard, because the VPN already encrypts the traffic. Connect to the VPN, then open `http://<NAS-address>:8081`, for example `http://192.168.50.156:8081`. Friends who want to play need their own WireGuard profile on your VPN.
+
+Some browsers, especially Chrome on phones, try `https://` first and then show a warning or an error. If that happens, type the address with `http://` in full. If it still switches to `https://`, turn off **Always use secure connections** in Chrome's **Settings > Privacy and security**.
+
+Make invite links while browsing from the address your friends will use, because links copy the address you're on.
+
+## Part 3 (optional): public HTTPS address with Cloudflare
 
 A Cloudflare Tunnel gives the game a public `https://` address without opening any ports on your router. You need a free Cloudflare account and a domain whose DNS is managed by Cloudflare.
 
