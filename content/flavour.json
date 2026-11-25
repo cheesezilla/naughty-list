@@ -28,7 +28,7 @@
     "wreath_of_thorns": {
       "tagline": "Festive on the door, ferocious on the floor.",
       "description": "A forged wreath of enchanted wrapping and brass-sprung thorns that snaps inward on anything that steps through.",
-      "backstory": "The Elf Forge weaves it from the wrapping Madame Shredwell guarded and the springs Baron Crumblewick hoarded, which the elves find deeply satisfying. Hung on a door it looks like any other wreath. Laid flat on the floor, its thorns curl inward like fingers closing on a secret."
+      "backstory": "Santa's Workshop weaves it from the wrapping Madame Shredwell guarded and the springs Baron Crumblewick hoarded, which the elves find deeply satisfying. Hung on a door it looks like any other wreath. Laid flat on the floor, its thorns curl inward like fingers closing on a secret."
     },
     "snow_globe_prison": {
       "tagline": "Shake it, and the imp sees only snow.",
@@ -38,7 +38,7 @@
     "sleigh_bell_snapper": {
       "tagline": "Hear the jingle? Too late.",
       "description": "The finest trap in the lair: a sleigh-bell harness with a clockwork heart, built on the bones of a Nutcracker Jaws.",
-      "backstory": "The Forge rings silver sleighbells rescued from the Stables around a stolen clockwork heart, then fits the whole thing inside a sacrificed Nutcracker Jaws. The bells chime on their own when an imp comes close. Hunters swear it jingles a carol the moment it catches a boss, and only then."
+      "backstory": "Santa's Workshop rings silver sleighbells rescued from the Stables around a stolen clockwork heart, then fits the whole thing inside a sacrificed Nutcracker Jaws. The bells chime on their own when an imp comes close. Hunters swear it jingles a carol the moment it catches a boss, and only then."
     },
     "cardboard_box": {
       "tagline": "Every great hunter started on a box.",
@@ -63,7 +63,7 @@
     "yule_log_base": {
       "tagline": "A hearth on four legs, warm and welcoming.",
       "description": "A forged yule log that glows like embers. Its warmth draws imps from all over, and its gears keep your trap steady.",
-      "backstory": "The Forge fits a real yule log with toymaker's gears, ties it with golden ribbon and glazes it in sugar glass. It smoulders gently without ever burning down. Cold imps come for the warmth, stay for the smell of woodsmoke and cinnamon, and leave on The Naughty List."
+      "backstory": "Santa's Workshop fits a real yule log with toymaker's gears, ties it with golden ribbon and glazes it in sugar glass. It smoulders gently without ever burning down. Cold imps come for the warmth, stay for the smell of woodsmoke and cinnamon, and leave on The Naughty List."
     },
     "stale_cookie": {
       "tagline": "Hard as a brick, but imps aren't fussy.",
@@ -112,32 +112,32 @@
     },
     "sugar_glass": {
       "tagline": "Clear as ice, sweet as candy.",
-      "description": "Shards of hardened sugar that rare imps chip from the lair's window panes. Prized by the Elf Forge.",
-      "backstory": "Some windows in Santa's lair are made from boiled sugar, and rare imps cannot help licking and chipping at them. The shards they carry off still hold a little of the lair's magic. The Forge melts them down to glaze gear and craft charms."
+      "description": "Shards of hardened sugar that rare imps chip from the lair's window panes. Prized by Santa's Workshop.",
+      "backstory": "Some windows in Santa's lair are made from boiled sugar, and rare imps cannot help licking and chipping at them. The shards they carry off still hold a little of the lair's magic. Santa's Workshop melts them down to glaze gear and craft charms."
     },
     "cookie_tin": {
       "tagline": "Empty, alas. Jarbelly saw to that.",
-      "description": "A dented festive cookie tin dropped by Jarbelly the Glutton. The Forge uses it to bake fruitcake.",
+      "description": "A dented festive cookie tin dropped by Jarbelly the Glutton. Santa's Workshop uses it to bake fruitcake.",
       "backstory": "Jarbelly never goes anywhere without a tin under each arm, and always empty by the time it's caught. The tins are the good old sort, pressed with snowflakes and robins and sealed tight enough to keep a fruitcake moist for a year."
     },
     "brass_spring": {
       "tagline": "Coiled tight with stolen bounce.",
-      "description": "A heavy brass spring from Baron Crumblewick's coat. The Forge winds it into stronger traps.",
-      "backstory": "Baron Crumblewick hoards springs pulled from the Pantry's clockwork mixers and stitches them into the lining of his coat, which is why he bounces when he walks. Catch him and they come loose. The Forge has never had better springs."
+      "description": "A heavy brass spring from Baron Crumblewick's coat. Santa's Workshop winds it into stronger traps.",
+      "backstory": "Baron Crumblewick hoards springs pulled from the Pantry's clockwork mixers and stitches them into the lining of his coat, which is why he bounces when he walks. Catch him and they come loose. Santa's Workshop has never had better springs."
     },
     "golden_ribbon": {
       "tagline": "The ribbon reserved for the best presents.",
-      "description": "A spool of real gold ribbon carried by Spoolwick. The Forge uses it to bind crafted gear.",
-      "backstory": "Only one present a year is tied with golden ribbon, and nobody knows who gets it. Spoolwick has been stealing spools of it for years to wear as a cape. Bring it back and the Forge will use it to tie gear that never comes undone."
+      "description": "A spool of real gold ribbon carried by Spoolwick. Santa's Workshop uses it to bind crafted gear.",
+      "backstory": "Only one present a year is tied with golden ribbon, and nobody knows who gets it. Spoolwick has been stealing spools of it for years to wear as a cape. Bring it back and Santa's Workshop will use it to tie gear that never comes undone."
     },
     "enchanted_wrapping": {
       "tagline": "Paper that wraps itself.",
       "description": "A self-folding sheet of wrapping paper taken from Madame Shredwell. Woven into the Wreath of Thorns.",
-      "backstory": "The Wrapping Room's finest paper folds itself around anything placed on it, then ties its own bow. Madame Shredwell kept a roll to shred for sport but could never quite bring herself to. Elves at the Forge braid it into thorns that close on command."
+      "backstory": "The Wrapping Room's finest paper folds itself around anything placed on it, then ties its own bow. Madame Shredwell kept a roll to shred for sport but could never quite bring herself to. Elves in Santa's Workshop braid it into thorns that close on command."
     },
     "toymakers_gear": {
       "tagline": "Cut by hand, never slips a tooth.",
-      "description": "A master gear Hammerhand pried from the Workshop's great machine. The Forge needs it for the Yule Log Base.",
+      "description": "A master gear Hammerhand pried from the Workshop's great machine. Santa's Workshop needs it for the Yule Log Base.",
       "backstory": "The great toy machine in the Workshop runs on gears cut by Santa himself, one a year. Hammerhand has been prying them out to stop the line. Each one you bring back keeps a few hundred toys moving, and the spares become very fine gear."
     },
     "clockwork_heart": {
@@ -148,12 +148,12 @@
     "silver_sleighbell": {
       "tagline": "The sound of Christmas Eve.",
       "description": "A real bell from Santa's sleigh harness, worn as a trophy by the Antler Ripper. Rung into the finest traps.",
-      "backstory": "Santa's sleigh carries exactly one hundred silver bells, and the Antler Ripper has been stealing them one by one to silence the sleigh. Each bell rings a different note. Bring three back and the Forge can tune them into a trap that sings."
+      "backstory": "Santa's sleigh carries exactly one hundred silver bells, and the Antler Ripper has been stealing them one by one to silence the sleigh. Each bell rings a different note. Bring three back and Santa's Workshop can tune them into a trap that sings."
     },
     "brimstone_coal": {
       "tagline": "Hot to the touch, and it never goes out.",
       "description": "A lump of devil's coal from Grizzlewick the Horned, smouldering with Scrinch's own fire. Saved for greater gear.",
-      "backstory": "Naughty children get coal. Scrinch's lieutenants carry it as a badge of rank, warmed by the fires under his throne. The elves keep every lump in an iron chest, because the Forge will one day need fire that hot to make the strongest gear of all."
+      "backstory": "Naughty children get coal. Scrinch's lieutenants carry it as a badge of rank, warmed by the fires under his throne. The elves keep every lump in an iron chest, because Santa's Workshop will one day need fire that hot to make the strongest gear of all."
     }
   },
   "imps": {
