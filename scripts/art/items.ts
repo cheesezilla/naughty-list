@@ -284,6 +284,32 @@ export const bases: Record<string, () => string> = {
 // ---------------------------------------------------------------- baits (512 square)
 
 export const baits: Record<string, () => string> = {
+  ribbon_candy: () =>
+    g(
+      {},
+      shadow(256, 430, 160),
+      // a wrapped candy with twisted ends and ribbon stripes
+      path('M120 256 L60 196 L70 316 Z', ol(P.red)),
+      path('M392 256 L452 196 L442 316 Z', ol(P.red)),
+      ellipse(256, 256, 140, 96, ol(P.cream)),
+      ...[0, 1, 2, 3].map((i) => path(`M${170 + i * 56} 168 Q${150 + i * 56} 256 ${170 + i * 56} 344`, line(18, i % 2 ? P.holly : P.red))),
+      glint(210, 210, 0.9),
+    ),
+
+  golden_bow_bonbon: () =>
+    g(
+      {},
+      shadow(256, 430, 150),
+      circle(256, 290, 120, ol(P.cocoa)),
+      path('M150 250 Q256 200 362 250', line(10, P.goldBright)),
+      // golden bow on top
+      path('M256 170 C200 110 150 150 190 190 C210 210 240 196 256 176 Z', ol(P.goldBright)),
+      path('M256 170 C312 110 362 150 322 190 C302 210 272 196 256 176 Z', ol(P.goldBright)),
+      circle(256, 176, 18, ol(P.gold)),
+      path('M246 190 L220 250 M266 190 L292 250', line(10, P.goldBright)),
+      sparkle(360, 140, 18), sparkle(150, 330, 14),
+    ),
+
   stale_cookie: () =>
     g(
       {},
@@ -426,6 +452,17 @@ export const charms: Record<string, () => string> = {
 // ---------------------------------------------------------------- materials (512 square)
 
 export const materials: Record<string, () => string> = {
+  sugar_twist: () =>
+    g(
+      {},
+      shadow(256, 420, 150),
+      // a pulled-sugar curl
+      path('M140 360 C120 260 240 220 260 280 C280 340 170 340 200 260 C230 180 360 170 370 250 C380 330 290 340 300 270', { fill: 'none', stroke: P.ink, 'stroke-width': 46, 'stroke-linecap': 'round' }),
+      path('M140 360 C120 260 240 220 260 280 C280 340 170 340 200 260 C230 180 360 170 370 250 C380 330 290 340 300 270', { fill: 'none', stroke: P.pink, 'stroke-width': 30, 'stroke-linecap': 'round' }),
+      path('M140 360 C120 260 240 220 260 280 C280 340 170 340 200 260 C230 180 360 170 370 250', { fill: 'none', stroke: P.white, 'stroke-width': 8, 'stroke-linecap': 'round', 'stroke-dasharray': '18 26' }),
+      glint(330, 210, 0.8),
+    ),
+
   candied_peel: () =>
     g(
       {},

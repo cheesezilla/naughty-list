@@ -8,10 +8,9 @@
     "imps": [
       { "id": "crumb_imp", "name": "Crumb Imp", "tier": "common", "power": 40, "gold": 12, "points": 20, "weight": 40 },
       { "id": "sprinkle_snatcher", "name": "Sprinkle Snatcher", "tier": "common", "power": 70, "gold": 18, "points": 30, "weight": 30, "effectiveness": { "clockwork": 1.5 }, "loot": [{ "item": "candied_peel", "chance": 0.1 }] },
-      { "id": "chimney_soot_imp", "name": "Chimney Soot Imp", "tier": "common", "power": 100, "gold": 25, "points": 45, "weight": 21, "effectiveness": { "starlight": 0.5 }, "baitWeights": { "sugar_cookie": 28 } },
-      { "id": "gingerbread_imp", "name": "Gingerbread Imp", "tier": "rare", "power": 160, "gold": 60, "points": 100, "weight": 5, "effectiveness": { "frost": 1.5 }, "loot": [{ "item": "sugar_glass", "chance": 0.5 }] },
-      { "id": "jarbelly", "name": "Jarbelly the Glutton", "tier": "miniboss", "power": 300, "gold": 90, "points": 180, "weight": 3, "effectiveness": { "clockwork": 1.5, "starlight": 0.5 }, "loot": [{ "item": "cookie_tin", "chance": 1 }], "stealsBait": true },
-      { "id": "baron_crumblewick", "name": "Baron Crumblewick", "tier": "boss", "power": 450, "gold": 150, "points": 300, "weight": 1, "effectiveness": { "clockwork": 1.5, "starlight": 0.5 }, "loot": [{ "item": "brass_spring", "chance": 1 }] }
+      { "id": "chimney_soot_imp", "name": "Chimney Soot Imp", "tier": "uncommon", "power": 100, "gold": 25, "points": 45, "weight": 15, "effectiveness": { "starlight": 0.5 }, "baitWeights": { "sugar_cookie": 22 } },
+      { "id": "jarbelly", "name": "Jarbelly the Glutton", "tier": "uncommon", "power": 180, "gold": 40, "points": 70, "weight": 10, "effectiveness": { "clockwork": 1.5, "starlight": 0.5 }, "loot": [{ "item": "cookie_tin", "chance": 0.3 }], "pillage": { "chance": 1, "takes": ["bait"], "kinds": 1, "bait": [1, 1] } },
+      { "id": "gingerbread_imp", "name": "Gingerbread Imp", "tier": "rare", "power": 160, "gold": 60, "points": 100, "weight": 5, "effectiveness": { "frost": 1.5 }, "baitWeights": { "sugar_cookie": 8 }, "loot": [{ "item": "sugar_glass", "chance": 0.5 }, { "item": "brass_spring", "chance": 0.15 }] }
     ]
   },
   {
@@ -20,13 +19,22 @@
     "description": "Miles of ribbon and paper. Every roll is a hiding place.",
     "rank": 2,
     "unlockCost": 250,
+    "objective": {
+      "type": "bait_ladder",
+      "tiers": [
+        { "name": "Shop bait", "baits": ["stale_cookie", "sugar_cookie", "peppermint_bark", "hot_cocoa"] },
+        { "name": "Ribbon Candy", "baits": ["ribbon_candy"], "recipe": "ribbon_candy_x3" },
+        { "name": "Golden Bow Bonbon", "baits": ["golden_bow_bonbon"], "recipe": "golden_bow_bonbon_x2" }
+      ],
+      "boss": "madame_shredwell"
+    },
     "imps": [
-      { "id": "ribbon_tangler", "name": "Ribbon Tangler", "tier": "common", "power": 150, "gold": 40, "points": 60, "weight": 36 },
-      { "id": "tape_biter", "name": "Tape Biter", "tier": "common", "power": 220, "gold": 55, "points": 85, "weight": 30, "effectiveness": { "starlight": 1.5 } },
-      { "id": "bow_burglar", "name": "Bow Burglar", "tier": "common", "power": 280, "gold": 70, "points": 100, "weight": 25, "effectiveness": { "clockwork": 0.5 }, "loot": [{ "item": "candied_peel", "chance": 0.1 }], "stealsBait": true },
-      { "id": "glitter_imp", "name": "Glitter Imp", "tier": "rare", "power": 350, "gold": 110, "points": 160, "weight": 5, "effectiveness": { "frost": 1.5 }, "loot": [{ "item": "sugar_glass", "chance": 0.5 }] },
-      { "id": "spoolwick", "name": "Spoolwick", "tier": "miniboss", "power": 600, "gold": 160, "points": 300, "weight": 3, "effectiveness": { "starlight": 1.5 }, "loot": [{ "item": "golden_ribbon", "chance": 1 }] },
-      { "id": "madame_shredwell", "name": "Madame Shredwell", "tier": "boss", "power": 1100, "gold": 300, "points": 550, "weight": 1, "effectiveness": { "starlight": 1.5, "clockwork": 0.5 }, "loot": [{ "item": "enchanted_wrapping", "chance": 1 }] }
+      { "id": "ribbon_tangler", "name": "Ribbon Tangler", "tier": "common", "power": 150, "gold": 40, "points": 60, "weight": 36, "baitWeights": { "ribbon_candy": 20, "golden_bow_bonbon": 12 }, "loot": [{ "item": "sugar_twist", "chance": 0.25 }, { "item": "ribbon_candy", "chance": 0.02 }] },
+      { "id": "tape_biter", "name": "Tape Biter", "tier": "common", "power": 220, "gold": 55, "points": 85, "weight": 30, "effectiveness": { "starlight": 1.5 }, "baitWeights": { "ribbon_candy": 17, "golden_bow_bonbon": 10 }, "loot": [{ "item": "sugar_twist", "chance": 0.2 }, { "item": "ribbon_candy", "chance": 0.02 }] },
+      { "id": "bow_burglar", "name": "Bow Burglar", "tier": "common", "power": 280, "gold": 70, "points": 100, "weight": 25, "effectiveness": { "clockwork": 0.5 }, "loot": [{ "item": "candied_peel", "chance": 0.3 }, { "item": "ribbon_candy", "chance": 0.02 }], "pillage": { "chance": 1, "takes": ["bait"], "kinds": 1, "bait": [1, 1] }, "baitWeights": { "ribbon_candy": 13, "golden_bow_bonbon": 8 }},
+      { "id": "glitter_imp", "name": "Glitter Imp", "tier": "rare", "power": 350, "gold": 110, "points": 160, "weight": 0, "effectiveness": { "frost": 1.5 }, "loot": [{ "item": "sugar_glass", "chance": 0.5 }], "baitWeights": { "ribbon_candy": 30, "golden_bow_bonbon": 10 }},
+      { "id": "spoolwick", "name": "Spoolwick", "tier": "miniboss", "power": 600, "gold": 160, "points": 300, "weight": 0, "effectiveness": { "starlight": 1.5 }, "loot": [{ "item": "golden_ribbon", "chance": 1 }], "baitWeights": { "ribbon_candy": 20, "golden_bow_bonbon": 10 }},
+      { "id": "madame_shredwell", "name": "Madame Shredwell", "tier": "boss", "power": 1100, "gold": 300, "points": 550, "weight": 0, "effectiveness": { "starlight": 1.5, "clockwork": 0.5 }, "loot": [{ "item": "enchanted_wrapping", "chance": 1 }, { "item": "jingle_bell_charm", "chance": 0.25, "amount": 5 }], "baitWeights": { "ribbon_candy": 0, "golden_bow_bonbon": 50 }}
     ]
   },
   {
@@ -35,13 +43,18 @@
     "description": "Benches, gears and paint pots. The elves' busiest room, and the imps' favourite target.",
     "rank": 3,
     "unlockCost": 1500,
+    "objective": {
+      "type": "order_board", "slots": 3, "rushSlots": 5, "inspectionEvery": 3, "crateGold": 400,
+      "crateRewards": [{ "item": "peppermint_bark", "amount": 5 }, { "item": "windup_key_charm", "amount": 3 }, { "item": "sugar_glass", "amount": 1 }],
+      "miniboss": "hammerhand", "boss": "foreman_grimbolt"
+    },
     "imps": [
       { "id": "cog_pincher", "name": "Cog Pincher", "tier": "common", "power": 450, "gold": 140, "points": 150, "weight": 36 },
       { "id": "paint_smudger", "name": "Paint Smudger", "tier": "common", "power": 600, "gold": 180, "points": 190, "weight": 30, "effectiveness": { "starlight": 1.5 } },
       { "id": "stuffing_ripper", "name": "Stuffing Ripper", "tier": "common", "power": 750, "gold": 220, "points": 230, "weight": 25, "effectiveness": { "frost": 1.5, "starlight": 0.5 } },
       { "id": "windup_imp", "name": "Wind-up Imp", "tier": "rare", "power": 900, "gold": 300, "points": 320, "weight": 5, "effectiveness": { "clockwork": 1.5, "frost": 0 }, "loot": [{ "item": "sugar_glass", "chance": 0.5 }] },
-      { "id": "hammerhand", "name": "Hammerhand", "tier": "miniboss", "power": 1600, "gold": 400, "points": 650, "weight": 3, "effectiveness": { "frost": 1.5 }, "loot": [{ "item": "toymakers_gear", "chance": 1 }] },
-      { "id": "foreman_grimbolt", "name": "Foreman Grimbolt", "tier": "boss", "power": 2800, "gold": 700, "points": 1300, "weight": 1, "effectiveness": { "clockwork": 1.5 }, "loot": [{ "item": "clockwork_heart", "chance": 1 }] }
+      { "id": "hammerhand", "name": "Hammerhand", "tier": "miniboss", "power": 1600, "gold": 400, "points": 650, "weight": 0, "effectiveness": { "frost": 1.5 }, "loot": [{ "item": "toymakers_gear", "chance": 1 }] },
+      { "id": "foreman_grimbolt", "name": "Foreman Grimbolt", "tier": "boss", "power": 2800, "gold": 700, "points": 1300, "weight": 0, "effectiveness": { "clockwork": 1.5 }, "loot": [{ "item": "clockwork_heart", "chance": 1 }] }
     ]
   },
   {
@@ -52,13 +65,22 @@
     "unlockCost": 5000,
     "preferredBait": "hot_cocoa",
     "otherBaitPenalty": 0.5,
+    "objective": {
+      "type": "sleigh_run", "hunts": 40,
+      "gain": { "common": 5, "rare": 12, "miniboss": 20 },
+      "loss": { "bell_thief": 8, "harness_snipper": 5 },
+      "minibossFrom": 50, "minibossWeight": 6,
+      "launchGold": 2000, "launchItems": { "silver_sleighbell": 1 },
+      "failGoldPerReadiness": 10,
+      "miniboss": "antler_ripper", "boss": "grizzlewick"
+    },
     "imps": [
       { "id": "hay_hoarder", "name": "Hay Hoarder", "tier": "common", "power": 1000, "gold": 300, "points": 350, "weight": 36 },
-      { "id": "bell_thief", "name": "Bell Thief", "tier": "common", "power": 1300, "gold": 380, "points": 420, "weight": 30, "effectiveness": { "starlight": 0.5 }, "stealsBait": true },
+      { "id": "bell_thief", "name": "Bell Thief", "tier": "common", "power": 1300, "gold": 380, "points": 420, "weight": 30, "effectiveness": { "starlight": 0.5 }, "pillage": { "chance": 1, "takes": ["bait"], "kinds": 1, "bait": [1, 1] } },
       { "id": "harness_snipper", "name": "Harness Snipper", "tier": "common", "power": 1600, "gold": 450, "points": 480, "weight": 25, "effectiveness": { "clockwork": 1.5, "frost": 0 } },
       { "id": "carrot_crook", "name": "Carrot Crook", "tier": "rare", "power": 2000, "gold": 600, "points": 650, "weight": 5, "effectiveness": { "clockwork": 1.5, "frost": 0.5 }, "loot": [{ "item": "sugar_glass", "chance": 0.5 }] },
-      { "id": "antler_ripper", "name": "Antler Ripper", "tier": "miniboss", "power": 3500, "gold": 800, "points": 1200, "weight": 3, "effectiveness": { "clockwork": 1.5, "starlight": 0.5 }, "loot": [{ "item": "silver_sleighbell", "chance": 1 }] },
-      { "id": "grizzlewick", "name": "Grizzlewick the Horned", "tier": "boss", "power": 6000, "gold": 1500, "points": 3000, "weight": 1, "effectiveness": { "clockwork": 1.5, "starlight": 0 }, "loot": [{ "item": "brimstone_coal", "chance": 1 }] }
+      { "id": "antler_ripper", "name": "Antler Ripper", "tier": "miniboss", "power": 3500, "gold": 800, "points": 1200, "weight": 0, "effectiveness": { "clockwork": 1.5, "starlight": 0.5 }, "loot": [{ "item": "silver_sleighbell", "chance": 1 }] },
+      { "id": "grizzlewick", "name": "Grizzlewick the Horned", "tier": "boss", "power": 6000, "gold": 1500, "points": 3000, "weight": 0, "effectiveness": { "clockwork": 1.5, "starlight": 0 }, "loot": [{ "item": "brimstone_coal", "chance": 1 }] }
     ]
   }
 ]

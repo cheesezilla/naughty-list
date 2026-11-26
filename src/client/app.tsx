@@ -57,9 +57,10 @@ function Playing({ content, me, onLogout }: { content: Content; me: MeResponse; 
 
   const act: Game['act'] = async (path, body, ok) => {
     try {
-      const r = await api<{ player: PlayerState; log: JournalRow | null }>('POST', path, body);
+      const r = await api<{ player: PlayerState; log: JournalRow | null; logs?: JournalRow[] }>('POST', path, body);
       setPlayer(r.player);
-      if (r.log) setLog((l) => trimLog([r.log!, ...l]));
+      const rows = r.logs ?? (r.log ? [r.log] : []);
+      if (rows.length) setLog((l) => trimLog([...[...rows].reverse(), ...l]));
       if (ok) toast(ok, 'good');
       return true;
     } catch (e) {
@@ -91,6 +92,13 @@ function Playing({ content, me, onLogout }: { content: Content; me: MeResponse; 
           playSound(imp && (imp.tier === 'boss' || imp.tier === 'miniboss') ? 'boss' : 'catch');
         } else if (e.outcome === 'escape') playSound('escape');
         if (e.outcome === 'catch') buzz(imp?.tier === 'boss' ? 120 : 40);
+        if (e.pillage) {
+          document.body.classList.remove('pillaged');
+          void document.body.offsetWidth; // restart the animation on back-to-back pillages
+          document.body.classList.add('pillaged');
+          setTimeout(() => document.body.classList.remove('pillaged'), 1000);
+          buzz(80);
+        }
       }
     } catch (e) {
       toast((e as Error).message, 'bad');

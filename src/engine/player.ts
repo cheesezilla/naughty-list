@@ -1,5 +1,6 @@
 import type { Content } from '../content/schema.js';
 import { gameData, itemOfKind, priceOf, sellValue } from './data.js';
+import type { ObjectiveState } from './objectives.js';
 
 export interface Setup {
   trap: string;
@@ -22,8 +23,10 @@ export interface PlayerState {
   /** Lifetime encounters per imp id, caught or not. Missing in saves from before the new UI. */
   seen?: Record<string, number>;
   /** goldEarned counts gold from catches; missing in saves from before the new UI. */
-  stats: { hunts: number; attracted: number; caught: number; goldEarned?: number };
+  stats: { hunts: number; attracted: number; caught: number; goldEarned?: number; pillaged?: number };
   stamina: { value: number; updatedAt: number };
+  /** Progress on each location's own loop, by location id. Missing in older saves. */
+  objectives?: Record<string, ObjectiveState>;
 }
 
 export type ActionResult = { ok: true; player: PlayerState } | { ok: false; error: string };
@@ -45,7 +48,7 @@ export function newPlayer(content: Content, now = 0): PlayerState {
     inventory,
     catches: {},
     seen: {},
-    stats: { hunts: 0, attracted: 0, caught: 0, goldEarned: 0 },
+    stats: { hunts: 0, attracted: 0, caught: 0, goldEarned: 0, pillaged: 0 },
     stamina: { value: c.stamina.max, updatedAt: now },
   };
 }

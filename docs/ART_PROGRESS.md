@@ -31,6 +31,6 @@ daily quota): see the `gemini-art-generation` project memory.
 - **map** (1): `lair_map`
 - **imps** (15 of 25): `sprinkle_snatcher`, `chimney_soot_imp`, `jarbelly`, `ribbon_tangler`, `tape_biter`, `bow_burglar`, `spoolwick`, `cog_pincher`, `paint_smudger`, `stuffing_ripper`, `hammerhand`, `hay_hoarder`, `bell_thief`, `harness_snipper`, `antler_ripper`
 - **ranks** (5): `rank_1`, `rank_2`, `rank_3`, `rank_4`, `rank_5`
-- **howto** (7): `hunt`, `attraction`, `power`, `luck`, `trap_types`, `loot`, `ranks`
+- **howto** (8): `hunt`, `attraction`, `power`, `luck`, `trap_types`, `loot`, `pillage`, `ranks`
 
 59 pictures left (excluding icons). Each asset's `prompt` for regenerating it is in `art/manifest.json`.

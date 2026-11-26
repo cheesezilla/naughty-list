@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'preact/hooks';
-import type { GameEvent, JournalEntry, JournalRow } from '../../engine/index.js';
+import type { GameEvent, JournalEntry, JournalRow, Pillage } from '../../engine/index.js';
 import { api } from '../api.js';
 import { useGame } from '../game.js';
 import { Art } from '../lib/art.js';
@@ -18,6 +18,24 @@ export function ImpThumb({ id, size = 52 }: { id: string; size?: number }) {
   );
 }
 
+/** "−480 gold, −4 Golden Bow Bonbons, −180 points", plus a note when a safety rail stopped a loss. */
+export function pillageText(p: Pillage, itemName: (id: string) => string): string {
+  const parts: string[] = [];
+  if (p.gold > 0) parts.push(`−${num(p.gold)} gold`);
+  if (p.bait) parts.push(`−${num(p.bait.amount)} ${itemName(p.bait.item)}`);
+  if (p.points > 0) parts.push(`−${num(p.points)} points`);
+  const safe = p.safe ?? [];
+  if (safe.includes('points')) parts.push('your rank is safe');
+  if (safe.includes('gold')) parts.push('your gold is safe');
+  if (safe.includes('bait')) parts.push('no bait left to take');
+  return parts.join(', ') || 'nothing worth taking';
+}
+
+function ObjectiveNote({ o, itemName }: { o: NonNullable<JournalEntry['objective']>; itemName: (id: string) => string }) {
+  const reward = [o.gold ? `+${num(o.gold)} gold` : '', ...(o.items ?? []).map((i) => `+${num(i.amount)} ${itemName(i.item)}`)].filter(Boolean).join(', ');
+  return <div class="objective-note">{o.notes.join('. ')}{reward && `: ${reward}`}</div>;
+}
+
 function HuntRow({ row }: { row: JournalRow & { kind: 'hunt' } }) {
   const { data, content } = useGame();
   const prefs = usePrefs();
@@ -33,7 +51,7 @@ function HuntRow({ row }: { row: JournalRow & { kind: 'hunt' } }) {
       return (
         <div class="log-row quiet">
           <span class="empty-thumb" aria-hidden="true">empty</span>
-          <div class="row-body"><b>Quiet hunt</b><br />Nothing took the bait.{e.rescued && ' Mrs. Claus slipped you 10 Stale Cookies.'}</div>
+          <div class="row-body"><b>Quiet hunt</b><br />Nothing took the bait.{e.rescued && ' Mrs. Claus slipped you 10 Stale Cookies.'}{e.objective && <ObjectiveNote o={e.objective} itemName={itemName} />}</div>
           {time}
         </div>
       );
@@ -41,17 +59,21 @@ function HuntRow({ row }: { row: JournalRow & { kind: 'hunt' } }) {
     const loot = e.loot.map((l) => `${l.amount} ${itemName(l.item)}`);
     const caught = e.outcome === 'catch';
     return (
-      <button class={`log-row ${caught ? 'catch' : 'escape'} ${e.firstCatch ? 'first' : ''} tier-${imp.tier}`} onClick={() => go(`imp/${imp.id}`)}>
+      <button class={`log-row ${caught ? 'catch' : 'escape'} ${e.pillage ? 'pillaged' : ''} ${e.firstCatch ? 'first' : ''} tier-${imp.tier}`} onClick={() => go(`imp/${imp.id}`)}>
         <ImpThumb id={imp.id} />
         <div class="row-body">
           <div class="row-head">
             <b>{caught ? `Caught ${imp.name}` : imp.name}</b>
             <span class="tier">{TIER_NAME[imp.tier]}</span>
             {e.firstCatch && <span class="pill gold">Portrait unlocked</span>}
+            {e.pillage && <span class="pill red">Pillaged</span>}
           </div>
           {caught
             ? <>{e.firstCatch && 'First catch! '}+{num(e.gold)} gold, +{num(e.points)} points{loot.length > 0 && `, ${loot.join(', ')}`}</>
-            : <>Escaped{e.baitUsed > 1 ? ' and stole extra bait' : ''}. {pct(e.catchChance ?? 0)} chance</>}
+            : e.pillage
+              ? <>Escaped and pillaged you: {pillageText(e.pillage, itemName)}. {pct(e.catchChance ?? 0)} chance</>
+              : <>Escaped. {pct(e.catchChance ?? 0)} chance</>}
+          {e.objective && <ObjectiveNote o={e.objective} itemName={itemName} />}
         </div>
         {time}
       </button>
@@ -78,6 +100,8 @@ export function eventText(ev: GameEvent, itemName: (id: string) => string, locNa
     case 'sell': return <>Sold <b>{num(ev.amount)} {itemName(ev.item)}</b> for {num(ev.gold)} gold</>;
     case 'craft': return <>Crafted <b>{ev.amount > 1 ? `${num(ev.amount)} ` : ''}{itemName(ev.item)}</b> for {num(ev.gold)} gold and materials</>;
     case 'intro': return <>The story so far</>;
+    case 'arrival': return <>Arrived in the <b>{locName(ev.location)}</b></>;
+    case 'objective': return ev.action === 'start_run' ? <>Started a <b>sleigh run</b></> : <>Took a <b>Rush order</b></>;
     case 'travel': return <>Travelled to the <b>{locName(ev.location)}</b>{ev.unlockCost > 0 && ` and unlocked it for ${num(ev.unlockCost)} gold`}</>;
     case 'equip':
       if (!ev.item) return <>Took off {ev.previous ? itemName(ev.previous) : 'your'} {ev.slot}</>;
@@ -86,7 +110,7 @@ export function eventText(ev: GameEvent, itemName: (id: string) => string, locNa
   }
 }
 
-const BADGE: Record<GameEvent['type'], string> = { buy: 'Buy', sell: 'Sell', craft: 'Craft', travel: 'Travel', equip: 'Gear', intro: 'Story' };
+const BADGE: Record<GameEvent['type'], string> = { buy: 'Buy', sell: 'Sell', craft: 'Craft', travel: 'Travel', equip: 'Gear', intro: 'Story', arrival: 'Arrived', objective: 'Goal' };
 
 function EventRow({ row }: { row: JournalRow & { kind: 'event' } }) {
   const { data } = useGame();
@@ -123,14 +147,36 @@ export function StoryCard({ at, folded = true }: { at?: number; folded?: boolean
   );
 }
 
+/** First arrival in a location: its intro, folded after the first sentence. */
+export function ArrivalCard({ location, at }: { location: string; at: number }) {
+  const { content, data } = useGame();
+  const prefs = usePrefs();
+  const [open, setOpen] = useState(false);
+  const intro = content.story?.locations?.[location]?.intro ?? '';
+  const cut = intro.indexOf('. ');
+  const short = cut > 0 && cut < intro.length - 2 ? intro.slice(0, cut + 1) : intro;
+  return (
+    <div class="arrival-card">
+      <div class="story-head">
+        <span class="pill gold">Arrived</span>
+        <h3>{data.locations.get(location)?.name ?? location}</h3>
+        <span class="row-time">{when(at, prefs.clock24)}</span>
+      </div>
+      <p>{open ? intro : short}</p>
+      {!open && short !== intro && <button class="text-btn" onClick={() => setOpen(true)}>Read more</button>}
+    </div>
+  );
+}
+
 export function LogRow({ row }: { row: JournalRow }) {
   if (row.kind === 'event' && row.entry.type === 'intro') return <StoryCard at={row.at} />;
+  if (row.kind === 'event' && row.entry.type === 'arrival') return <ArrivalCard location={row.entry.location} at={row.at} />;
   return row.kind === 'hunt' ? <HuntRow row={row} /> : <EventRow row={row} />;
 }
 
-type Filter = 'all' | 'catches' | 'escapes' | 'events' | 'bosses';
+type Filter = 'all' | 'catches' | 'escapes' | 'pillaged' | 'events' | 'bosses';
 const FILTERS: { id: Filter; label: string }[] = [
-  { id: 'all', label: 'All' }, { id: 'catches', label: 'Catches' }, { id: 'escapes', label: 'Escapes' }, { id: 'events', label: 'Events' }, { id: 'bosses', label: 'Bosses' },
+  { id: 'all', label: 'All' }, { id: 'catches', label: 'Catches' }, { id: 'escapes', label: 'Escapes' }, { id: 'pillaged', label: 'Pillaged' }, { id: 'events', label: 'Events' }, { id: 'bosses', label: 'Bosses' },
 ];
 
 export function HistoryScreen() {

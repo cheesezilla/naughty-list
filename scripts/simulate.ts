@@ -10,6 +10,7 @@ import { loadContent } from '../src/content/load.js';
 import type { Content } from '../src/content/schema.js';
 import { gameData, priceOf } from '../src/engine/data.js';
 import { hunt } from '../src/engine/hunt.js';
+import { objectiveAction } from '../src/engine/objectives.js';
 import { huntOdds } from '../src/engine/odds.js';
 import { buy, count, craft, equip, newPlayer, travel, type PlayerState, type Setup } from '../src/engine/player.js';
 import { seededRng, type Rng } from '../src/engine/rng.js';
@@ -67,8 +68,10 @@ interface Log {
   rankAt: Record<number, number>;
   goldAtRank: Record<number, number>;
   purchases: { hunt: number; item: string }[];
-  byLocation: Record<string, { hunts: number; attracted: number; caught: number; gold: number; baitCost: number }>;
+  byLocation: Record<string, { hunts: number; attracted: number; caught: number; gold: number; baitCost: number; pillages: number; pillageCost: number }>;
   bossCatches: number;
+  bosses: Record<string, number>;
+  objectives: { runs: number; launches: number; orders: number };
   finished: boolean;
   hunts: number;
 }
@@ -145,22 +148,54 @@ function plan(p: PlayerState, log: Log, huntNo: number): PlayerState {
   return p;
 }
 
+/** Location goals: start sleigh runs, take Rush orders, and swap to the trap type the order board asks for. */
+function playObjective(p: PlayerState, rng: Rng, log: Log): PlayerState {
+  const loc = data.locations.get(p.location)!;
+  const s = p.objectives?.[loc.id];
+  if (loc.objective?.type === 'sleigh_run' && (!s || (s.type === 'sleigh_run' && !s.active && !s.forced))) {
+    const r = objectiveAction(content, p, 'start_run', rng);
+    if (r.ok) { p = r.player; log.objectives.runs++; }
+  }
+  if (s?.type === 'order_board') {
+    if (s.rushReady && !s.rush) {
+      const r = objectiveAction(content, p, 'rush_order', rng);
+      if (r.ok) p = r.player;
+    }
+    const s2 = p.objectives![loc.id];
+    const need = s2?.type === 'order_board' ? s2.slots[s2.filled] : undefined;
+    const trap = content.items.traps.filter((t) => t.type === need && count(p, t.id) > 0).sort((a, b) => b.power - a.power)[0];
+    if (trap && trap.id !== p.setup.trap) p = apply(p, equip(content, p, 'trap', trap.id));
+  }
+  return p;
+}
+
 function play(rng: Rng): Log {
   let p = newPlayer(content);
-  const log: Log = { rankAt: { 1: 0 }, goldAtRank: {}, purchases: [], byLocation: {}, bossCatches: 0, finished: false, hunts: 0 };
+  const log: Log = { rankAt: { 1: 0 }, goldAtRank: {}, purchases: [], byLocation: {}, bossCatches: 0, finished: false, hunts: 0, objectives: { runs: 0, launches: 0, orders: 0 }, bosses: {} };
   for (let n = 1; n <= MAX_HUNTS; n++) {
     if (n === 1 || n % 20 === 0 || !p.setup.bait || count(p, p.setup.bait) === 0) p = plan(p, log, n);
+    p = playObjective(p, rng, log);
     const loc = p.location;
     const baitBefore = p.setup.bait;
     const r = hunt(content, p, rng);
     if (!r.ok) { p = plan(p, log, n); continue; }
     p = r.player;
-    const L = (log.byLocation[loc] ??= { hunts: 0, attracted: 0, caught: 0, gold: 0, baitCost: 0 });
+    const L = (log.byLocation[loc] ??= { hunts: 0, attracted: 0, caught: 0, gold: 0, baitCost: 0, pillages: 0, pillageCost: 0 });
     L.hunts++;
     if (r.entry.outcome !== 'quiet') L.attracted++;
     if (r.entry.outcome === 'catch') { L.caught++; L.gold += r.entry.gold; }
-    if (r.entry.imp && data.imps.get(r.entry.imp)?.tier === 'boss' && r.entry.outcome === 'catch') log.bossCatches++;
+    const tier = r.entry.imp ? data.imps.get(r.entry.imp)?.tier : undefined;
+    if (tier === 'boss' && r.entry.outcome === 'catch') log.bossCatches++;
+    if ((tier === 'boss' || tier === 'miniboss') && r.entry.outcome === 'catch') log.bosses[r.entry.imp!] = (log.bosses[r.entry.imp!] ?? 0) + 1;
+    for (const note of r.entry.objective?.notes ?? []) {
+      if (note.startsWith('The sleigh launches')) log.objectives.launches++;
+      if (note.startsWith('Order done')) log.objectives.orders++;
+    }
     L.baitCost += r.entry.baitUsed * baitPrice(baitBefore ?? '');
+    if (r.entry.pillage) {
+      L.pillages++;
+      L.pillageCost += r.entry.pillage.gold + (r.entry.pillage.bait ? r.entry.pillage.bait.amount * baitPrice(r.entry.pillage.bait.item) : 0);
+    }
     if (r.entry.rankUp) { log.rankAt[r.entry.rankUp] = n; log.goldAtRank[r.entry.rankUp] = p.gold; }
     log.hunts = n;
     if (p.rank >= finalRank) { log.finished = true; break; }
@@ -198,11 +233,11 @@ for (const r of content.ranks.slice(0, -1)) {
   console.log(`${String(r.rank).padEnd(6)}${`${fmt(quant(spent, 0.1))} / ${fmt(med)} / ${fmt(quant(spent, 0.9))}`.padEnd(36)}${String(target ?? '').padEnd(9)}${status}`);
 }
 
-console.log('\nLocation           Hunts    Attract  Catch/attracted  Bait cost / gold');
+console.log('\nLocation           Hunts    Attract  Catch/attracted  Bait cost / gold  Pillages  Pillage cost / gold');
 for (const loc of content.locations) {
   const ls = logs.map((l) => l.byLocation[loc.id]).filter(Boolean) as Log['byLocation'][string][];
   const sum = (k: keyof Log['byLocation'][string]) => ls.reduce((s, x) => s + x[k], 0);
-  console.log(`${loc.name.padEnd(19)}${fmt(sum('hunts') / PLAYERS).padEnd(9)}${pct(sum('attracted') / sum('hunts')).padEnd(9)}${pct(sum('caught') / sum('attracted')).padEnd(17)}${pct(sum('baitCost') / sum('gold'))}`);
+  console.log(`${loc.name.padEnd(19)}${fmt(sum('hunts') / PLAYERS).padEnd(9)}${pct(sum('attracted') / sum('hunts')).padEnd(9)}${pct(sum('caught') / sum('attracted')).padEnd(17)}${pct(sum('baitCost') / sum('gold')).padEnd(18)}${fmt(sum('pillages') / PLAYERS).padEnd(10)}${pct(sum('pillageCost') / sum('gold'))}`);
 }
 
 console.log('\nGear bought or crafted (median hunt number, share of players)');
@@ -212,6 +247,9 @@ for (const [item, hunts] of [...items].sort((a, b) => quant(a[1], 0.5) - quant(b
   console.log(`  ${(data.items.get(item)?.name ?? item).padEnd(22)} hunt ${fmt(quant(hunts, 0.5)).padEnd(8)} ${pct(hunts.length / PLAYERS)}`);
 }
 console.log(`\nBoss catches per player: ${(logs.reduce((s, l) => s + l.bossCatches, 0) / PLAYERS).toFixed(1)}`);
+const per = (f: (l: Log) => number) => (logs.reduce((s, l) => s + f(l), 0) / PLAYERS).toFixed(1);
+console.log('Mini boss and boss catches per player: ' + content.locations.flatMap((l) => l.imps).filter((i) => i.tier === 'boss' || i.tier === 'miniboss').map((i) => `${i.name} ${per((l) => l.bosses[i.id] ?? 0)}`).join(', '));
+console.log(`Toy orders finished: ${per((l) => l.objectives.orders)}. Sleigh runs: ${per((l) => l.objectives.runs)}, launched: ${per((l) => l.objectives.launches)}`);
 
 if (VERBOSE) console.log(JSON.stringify(logs[0], null, 2));
 if (STRICT && misses > 0) {
