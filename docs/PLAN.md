@@ -20,6 +20,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Holly power type renamed Starlight; its three traps reworked (Starlit Stocking, Star Lantern, Constellation Wreath) with new text and SVG art, old saves migrated | In review | #17 |
 | Intro letter from Santa: the game's backstory as the first hunt-log entry of every new game, and on How to play | In review | #12 |
 | Location objectives: a simple Cookie Pantry start, then a unique loop per location (Wrapping Room bait ladder, Toy Workshop order board, Stables sleigh run), plus first-visit intros, a hint button and a mechanic panel on each Hunt screen; see [Location objectives](#location-objectives-planned) | Planned (design only) | #16 |
+| New bases: two tiers of power, attraction and luck bases; see [New bases](#new-bases-power-attraction-and-luck-planned) | Planned (design only) | #21 |
 | 5. Tune from play-test | Planned | |
 
 The server runs every hunt and saves each player in SQLite. To play locally, follow "Run it locally" below.
@@ -191,6 +192,62 @@ Jarbelly, Bow Burglar and Bell Thief steal an extra bait when they escape. Brims
 | Mistletoe Charm | +4 luck | 1 | 30 gold |
 | Jingle Bell Charm | +15% attraction | 2 | 25 gold |
 | Wind-up Key Charm | +20% power | 3 | 60 gold |
+
+## New bases: power, attraction and luck (planned)
+
+Design only, not built yet. Six new bases in two tiers. In each tier there is one base for each leaning, so a player picks a base to suit the job instead of always taking the newest one. The Yule Log Base stays the best all-rounder. Each new base beats it at one thing and is a little behind it overall.
+
+**What each leaning is for.** These follow from the catch formula C = (P·E + L²) / (P·E + M):
+
+- **Power** raises P. It helps most against tough imps with a high M, so it's the boss and mini boss pick, especially with a trap the imp is weak to (E = 1.5).
+- **Attraction** multiplies the bait's attraction, up to the 95% cap. More hunts end in an encounter, so it's the pick with cheap bait, and in the Reindeer Stables when you hunt without Hot Cocoa (other baits attract half as well there).
+- **Luck** adds L² and isn't scaled by the trap's type. It's the pick against imps that resist your trap (E = 0.5), and when you hunt with a trap that doesn't match the location.
+
+### The six bases
+
+| Base | Leaning | Power | Luck | Attraction | Rank | How to get it |
+| --- | --- | --- | --- | --- | --- | --- |
+| Toffee Anvil | Power | 350 | 0 | | 2 | 3,500 gold |
+| Chestnut Brazier | Attraction | 100 | 1 | +15% | 2 | 3,500 gold |
+| Wishbone Plinth | Luck | 60 | 8 | | 2 | 4,500 gold |
+| Sleigh Runner | Power | 1,300 | 2 | | 4 | Crafted: 2 Silver Sleighbell, 2 Toymaker's Gear, 12,000 gold |
+| Gingerbread Cottage | Attraction | 550 | 4 | +30% | 4 | Crafted: 3 Cookie Tin, 2 Golden Ribbon, 1 Candy Cane Platform, 8,000 gold |
+| Wishing Star Pedestal | Luck | 400 | 12 | | 4 | Crafted: 1 Clockwork Heart, 2 Enchanted Wrapping, 4 Sugar Glass, 12,000 gold |
+
+The rank 2 shop bases sit beside the Candy Cane Platform as sidegrades. The Wishbone Plinth costs more because luck is strong against the weak imps of the early areas. The rank 4 bases are crafted from loot of the mini bosses and bosses, so they come once a player has farmed the Toy Workshop and the Stables. All the materials already exist, and every one still drops after the Pantry changes in #18.
+
+Names are working titles. They follow the theme (toffee, roast chestnuts, the Christmas wishbone, the sleigh, a gingerbread house, the wishing star) and copy nothing from other games.
+
+### How they compare
+
+Worked out with `huntOdds`, with no charm. "Catch/hunt" is the average over the setups listed. "Resisted" is the catch chance against imps that resist the trap's type. "Cheap bait" is catches per hunt with a weaker bait (Stale Cookie in the Wrapping Room for rank 2; Peppermint Bark in the Stables, where it attracts half as well, for rank 4).
+
+Rank 2 tier. Setups: Jack-in-the-Box, Star Lantern and Icicle Jar in the Wrapping Room with Sugar Cookie, and Nutcracker Jaws in the Toy Workshop with Peppermint Bark.
+
+| Base | Catch/hunt | Boss catch | Resisted | Cheap bait |
+| --- | --- | --- | --- | --- |
+| Candy Cane Platform (today) | 0.574 | 33% | 27% | 0.593 |
+| Toffee Anvil | 0.580 | **37%** | **33%** | 0.586 |
+| Chestnut Brazier | 0.590 | 29% | 21% | **0.624** |
+| Wishbone Plinth | **0.600** | 33% | 32% | 0.621 |
+
+Rank 4 tier. Setups: Constellation Wreath in the Toy Workshop with Peppermint Bark, and Snow Globe Prison and Sleigh-Bell Snapper in the Stables with Hot Cocoa.
+
+| Base | Catch/hunt | Boss catch | Resisted | Cheap bait |
+| --- | --- | --- | --- | --- |
+| Yule Log Base (today) | **0.644** | 40% | 51% | 0.357 |
+| Sleigh Runner | 0.627 | **45%** | 56% | 0.336 |
+| Gingerbread Cottage | 0.637 | 39% | 50% | **0.415** |
+| Wishing Star Pedestal | 0.640 | 40% | **58%** | 0.339 |
+
+At rank 2, luck is still close to power against resisted imps, because the early imps are weak and L² is large next to their M. If play-testing shows the Wishbone Plinth is the only one people buy, the first change is to lower its luck to 7 (catch/hunt 0.572).
+
+### Building it
+
+1. Add the six bases to `content/items.json`, the three recipes to `content/recipes.json`, and flavour text to `content/flavour.json`.
+2. Add art for the six bases (600×450, standing on the y = 340 line like the other bases).
+3. Run `npm run check-content`, `npm test` and `npm run simulate`. Bases are optional sidegrades, so the time to reach each rank should barely move. Copy the new results here.
+4. Move this section into "v1 content" and update the status table.
 
 ## Location objectives (planned)
 
@@ -553,6 +610,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-26 | #21 | Plan for six new bases (design only): power, attraction and luck leanings at rank 2 (shop) and rank 4 (crafted), with catch numbers from `huntOdds`. No game numbers changed |
 | 2026-11-26 | #17 | Power type Holly renamed **Starlight** (Christmas-star magic, strong against shadowy imps). Its traps reworked: Stocking Snare -> Starlit Stocking (`starlit_stocking`), Holly Noose -> Star Lantern (`star_lantern`), Wreath of Thorns -> Constellation Wreath (`constellation_wreath`, recipe id too), with new flavour text and imp weakness hints. Simple generated SVGs for the three traps and the Starlight badge replace the old Holly PNGs/SVGs and are queued for Gemini in ART_PROGRESS.md. Saves and hunt-log entries with the old ids are rewritten when the server starts. No numbers changed; simulator run unchanged apart from names (100/100 reach rank 5) |
 | 2026-11-25 | #16 | Planned location objectives: Cookie Pantry becomes a simple start (common, uncommon and rare imps, no boss), Wrapping Room bait ladder (eddy's tiered bait-ingredient loop), Toy Workshop order board, Reindeer Stables sleigh run, Tangle Meter kept as a spare; first-visit intro log entries, a hint button and a mechanic panel per location (UI sketches, canvas mockups and first-draft text); recorded what the engine already supports. Design only, no code or numbers changed |
 | 2026-11-25 | #15 | Added docs/ART_PROGRESS.md tracking which of the 56 remaining non-icon art assets still need custom AI-generated pictures (per slot, with ids), linked from docs/ART.md and docs/PLAN.md. No art files or game numbers changed |
