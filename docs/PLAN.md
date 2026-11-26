@@ -19,11 +19,11 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | New phone-first UI (layout D2): bottom menu, hunt log with events and full history, Arsenal, Elf Emporium, Santa's Workshop, More pages, open sign-up with admin switch | Done | #11 |
 | Holly power type renamed Starlight; its three traps reworked (Starlit Stocking, Star Lantern, Constellation Wreath) with new text and SVG art, old saves migrated | In review | #17 |
 | Intro letter from Santa: the game's backstory as the first hunt-log entry of every new game, and on How to play | In review | #12 |
-| Location objectives: a simple Cookie Pantry start, then a unique loop per location (Wrapping Room bait ladder, Toy Workshop order board, Stables sleigh run), plus first-visit intros, a hint button and a mechanic panel on each Hunt screen; see [Location objectives](#location-objectives) | Done | #16 (plan), #18 (build); panel icons, sleigh marker and last-change line in #21 |
+| Location objectives: a simple Cookie Pantry start, then a unique loop per location (Wrapping Room bait ladder, Toy Workshop order board, Stables sleigh run), plus first-visit intros, a hint button and a mechanic panel on each Hunt screen; see [Location objectives](#location-objectives) | Done | #16 (plan), #18 (build); panel icons, sleigh marker and last-change line in #23 |
 | Pillage on escape: escaped imps may take gold, points and bait (bosses most, mini bosses less, others rarely), with safety rails; see [Pillage on escape](#pillage-on-escape) | Done | #18 |
-| Welcome popup: shown once when a new game starts (sign-up and Start over); see [Theme and setting](#theme-and-setting) | In review | #19 (plan), #21 (build) |
-| Achievements and badges: 55 achievements with Bronze, Silver, Gold and Secret badges, an earn popup and an Achievements tab in My profile; see [Achievements and badges](#achievements-and-badges) | In review | #19 (plan), #21 (build) |
-| Hunt screen gear card in a 2x2 grid (Trap and Bait over Base and Charm) and 3D medal icons for power types and the gold coin; see [User interface](#user-interface) | In review | #19 (plan), #21 (build) |
+| Welcome popup: shown once when a new game starts (sign-up and Start over); see [Theme and setting](#theme-and-setting) | In review | #19 (plan), #23 (build) |
+| Achievements and badges: 55 achievements with Bronze, Silver, Gold and Secret badges, an earn popup and an Achievements tab in My profile; see [Achievements and badges](#achievements-and-badges) | In review | #19 (plan), #23 (build) |
+| Hunt screen gear card in a 2x2 grid (Trap and Bait over Base and Charm) and 3D medal icons for power types and the gold coin; see [User interface](#user-interface) | In review | #19 (plan), #23 (build) |
 | 5. Tune from play-test | Planned | |
 
 The server runs every hunt and saves each player in SQLite. To play locally, follow "Run it locally" below.
@@ -48,7 +48,7 @@ The tone is a cheeky Christmas storybook. Every imp, place, trap, bait, rank and
 
 **Intro letter.** Every new game opens with "A letter from Santa" as the first entry in the hunt log: the lair, Scrinch and his imps, and the player's job as Santa's imp hunter. It is logged when an account is created and again after Start over, shows folded after the first paragraph with "Read the whole letter", and is also at the top of How to play, so players from before it was added can read it there. The text lives in `content/story.json` (title, up to 8 paragraphs of up to 500 characters, sign-off) and can be edited without code changes.
 
-**Welcome popup (eddy 26 Nov 2026, built in #21).** A one-time popup greets the player when a new game starts: right after creating an account, and again after Start over. It sits over the Hunt screen with the key art on top, the game icon, and:
+**Welcome popup (eddy 26 Nov 2026, built in #23).** A one-time popup greets the player when a new game starts: right after creating an account, and again after Start over. It sits over the Hunt screen with the key art on top, the game icon, and:
 
 > **Welcome to The Naughty List!**
 > Scrinch's imps are raiding Santa's secret lair, and Santa needs a hunter. Set your trap, catch every imp you can, and put them all on the Naughty List!
@@ -314,7 +314,7 @@ The room gets messier the longer you hunt, and a messy room pays better but is h
 
 ### Location screens (UI plan)
 
-eddy (25 Nov 2026): each location's Hunt screen should feel different. Three additions, all in the phone-first layout D2. **Status: built in #18.** An audit against this plan and the canvas in #21 added what was missing: each panel's icon in its title (Ribbon Candy, Toymaker's Gear, Silver Sleighbell), the small sleigh moving along the Readiness bar, and the "Last: Bell Thief escaped −8" line under it.
+eddy (25 Nov 2026): each location's Hunt screen should feel different. Three additions, all in the phone-first layout D2. **Status: built in #18.** An audit against this plan and the canvas in #23 added what was missing: each panel's icon in its title (Ribbon Candy, Toymaker's Gear, Silver Sleighbell), the small sleigh moving along the Readiness bar, and the "Last: Bell Thief escaped −8" line under it.
 
 **1. First-visit intro in the hunt log.** The first time a player arrives in a location, the hunt log gets an "Arrived: <location>" entry with a short intro to the area: what the room is, which imps raid it and what's different here. It shows folded after the first sentence, like Santa's letter. The Cookie Pantry intro is logged right after Santa's letter when a game starts (sign-up and Start over); the others are logged the first time the player travels there. It is a new journal event, `arrival`, logged when a location is first unlocked by travel, so old saves get intros only for new places. Changes from the panel (start a sleigh run, take a Rush order) are logged as an `objective` event. The Full history "Events" filter includes it.
 
@@ -443,7 +443,7 @@ The Full history gets a **Pillaged** filter. The Hunters catch feed adds boss pi
 
 ## Achievements and badges
 
-**Rules (eddy, 26 Nov 2026):** players earn achievements, each with its own badge. When one is earned, a popup shows the achievement's name, description and badge. Every achievement is listed on an Achievements screen in the player's profile: earned badges in colour, unearned badges greyed out. **Built in #21** (eddy, 26 Nov 2026: "include the achievements with game logic integrated"). The list lives in `content/achievements.json` and can be edited without code changes.
+**Rules (eddy, 26 Nov 2026):** players earn achievements, each with its own badge. When one is earned, a popup shows the achievement's name, description and badge. Every achievement is listed on an Achievements screen in the player's profile: earned badges in colour, unearned badges greyed out. **Built in #23** (eddy, 26 Nov 2026: "include the achievements with game logic integrated"). The list lives in `content/achievements.json` and can be edited without code changes.
 
 **Principles.**
 
@@ -620,7 +620,7 @@ The More menu's **My stats** becomes **My profile**, with two tabs: **Stats** (t
 
 **Visual mockups** of the popup, the toast, the Achievements screen and the badge detail sheet are on the UI canvas (https://claude.ai/artifact/7A6Y6w37aCDXneVGDSDCDs), in the row "Achievements and badges" (popup, quiet toast, Achievements tab, badge detail not earned and earned).
 
-### How it is built (#21)
+### How it is built (#23)
 
 - **Content:** `content/achievements.json`, one entry per achievement: `id`, `name`, `description`, `category`, `frame` (`bronze`, `silver`, `gold`), `secret`, `badge` (the art brief) and a `when` rule. `npm run check-content` checks ids and names (unique, names at most 30 characters, descriptions at most 100) and that each rule names real imps, items, ranks and locations.
 - **Rules** are a small set of types, so new achievements need no code: `stat` (a stat reaches `n`: `hunts`, `caught`, `escapes`, `goldEarned`, `bossesCaught`, `weaknessCatches`, `bought`, `crafted`, `newTrap`, `unlocked`, `pillaged`, `ordersDone`, `rushOrders`, `launches`, `expressLaunches`, `sleighFails`, `ladderBoss`, `starterBoss`, `catches_<type>` and the best `bestCatchStreak`, `bestEscapeStreak`, `bestQuietStreak`), `rank`, `catch` (an imp id or a tier), `collection` (every imp in a location, of a tier, or in the game), `craft` (an item id), `own_all_types` and `leaderboard`. Code: `src/engine/achievements.ts` (`checkAchievements`, `achievementProgress`, `statValue`).
@@ -806,7 +806,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 | Date | PR | Change |
 | --- | --- | --- |
-| 2026-11-26 | #21 | Built achievements: 55 in `content/achievements.json` with a rules engine (`src/engine/achievements.ts`), `achievements` and `tally` in the save, one-time backfill for old saves, an `achievement` hunt-log row, Silver, Gold and Secret badges in the Hunters feed, the earn popup and quiet toast (new setting), and My profile with Stats and Achievements tabs and a badge sheet; `GET /api/achievements`. Built the welcome popup (`welcome` in `story.json`, `welcomeSeen`, `POST /api/welcome`), the 2x2 gear card, and 3D CSS medals for badges, power types and the gold coin. Audit of the location screens against the plan: added panel icons, the sleigh on the Readiness bar and the last-change line. Simulator: unchanged balance (200/200 reach rank 5, median 1,503 hunts); median 42 of 55 badges |
+| 2026-11-26 | #23 | Built achievements: 55 in `content/achievements.json` with a rules engine (`src/engine/achievements.ts`), `achievements` and `tally` in the save, one-time backfill for old saves, an `achievement` hunt-log row, Silver, Gold and Secret badges in the Hunters feed, the earn popup and quiet toast (new setting), and My profile with Stats and Achievements tabs and a badge sheet; `GET /api/achievements`. Built the welcome popup (`welcome` in `story.json`, `welcomeSeen`, `POST /api/welcome`), the 2x2 gear card, and 3D CSS medals for badges, power types and the gold coin. Audit of the location screens against the plan: added panel icons, the sleigh on the Readiness bar and the last-change line. Simulator: unchanged balance (200/200 reach rank 5, median 1,503 hunts); median 42 of 55 badges |
 | 2026-11-26 | #19 | Planned a one-time welcome popup for new games and Start over, with its text and a canvas mockup. Design only |
 | 2026-11-26 | #19 | Player bar (eddy): gold reads "3,412 Gold" with the gold coin icon after it on every screen; canvas mockups updated. UI design only |
 | 2026-11-26 | #19 | Merged main after #18: location objectives and pillage on escape are built, so their 9 achievements count from the start (screen totals now 55) |
