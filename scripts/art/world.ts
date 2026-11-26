@@ -292,6 +292,20 @@ export const locations: Record<string, () => string> = {
       // carrot bucket
       g({}, path('M680 420 L700 340 L780 340 L800 420 Z', ol(P.silverDark, 7)), path('M708 340 L700 300 M740 340 L746 296 M770 340 L786 304', line(14, P.orange))),
     ]),
+  carol_loft: () =>
+    room('#d9c3a0', '#bfa57f', '#8a6a48', '#6e5136', 'loft', [
+      // rafters
+      ...[0, 1, 2, 3, 4].map((i) => path(`M${-40 + i * 300} 0 L${280 + i * 300} 330`, line(18, '#6e5136'))),
+      // round window with moonlight
+      circle(585, 120, 74, ol('#f0e6c8', 10)), circle(585, 120, 58, { fill: P.night }), circle(600, 108, 20, { fill: P.cream }), path('M585 62 L585 178 M527 120 L643 120', line(6, '#f0e6c8')),
+      // music stands with sheet music
+      ...([[250, 380], [900, 370]] as const).map(([x, y]) => g({}, path(`M${x} ${y} L${x} ${y - 190} M${x - 40} ${y} L${x} ${y - 40} L${x + 40} ${y}`, line(10, P.silverDark)), rect(x - 60, y - 270, 120, 90, ol(P.cream, 6), 4), path(`M${x - 48} ${y - 250} H${x + 48} M${x - 48} ${y - 230} H${x + 48} M${x - 48} ${y - 210} H${x + 48}`, line(3, P.ink)), circle(x - 20, y - 240, 6, { fill: P.ink }), circle(x + 18, y - 220, 6, { fill: P.ink }))),
+      // stack of old carol books
+      g({}, rect(1010, 380, 130, 28, ol(P.red, 6), 4), rect(1020, 352, 110, 28, ol(P.holly, 6), 4), rect(1030, 324, 90, 28, ol(P.gold, 6), 4)),
+      // tarnished horn on a hook
+      g({}, path('M90 160 L200 200 L90 240 Z', ol(P.goldDark)), circle(84, 200, 26, ol(P.goldDark))),
+      lantern(420, 110, 0.7),
+    ]),
 };
 
 // ---------------------------------------------------------------- travel map (1600 x 900)
@@ -302,6 +316,7 @@ export const MAP_PINS = {
   wrapping_room: { x: 1010, y: 650 },
   toy_workshop: { x: 640, y: 450 },
   reindeer_stables: { x: 1130, y: 380 },
+  carol_loft: { x: 1260, y: 700 },
 } satisfies Record<string, { x: number; y: number }>;
 
 export function travelMap() {
@@ -322,6 +337,7 @@ export function travelMap() {
     path(`M${MAP_PINS.cookie_pantry.x} ${MAP_PINS.cookie_pantry.y} Q750 720 ${MAP_PINS.wrapping_room.x} ${MAP_PINS.wrapping_room.y}`, line(40, '#121a33')),
     path(`M${MAP_PINS.cookie_pantry.x} ${MAP_PINS.cookie_pantry.y} Q520 550 ${MAP_PINS.toy_workshop.x} ${MAP_PINS.toy_workshop.y}`, line(40, '#121a33')),
     path(`M${MAP_PINS.toy_workshop.x} ${MAP_PINS.toy_workshop.y} Q900 380 ${MAP_PINS.reindeer_stables.x} ${MAP_PINS.reindeer_stables.y}`, line(40, '#121a33')),
+    path(`M${MAP_PINS.wrapping_room.x} ${MAP_PINS.wrapping_room.y} Q1150 700 ${MAP_PINS.carol_loft.x} ${MAP_PINS.carol_loft.y}`, line(40, '#121a33')),
     path(`M${MAP_PINS.cookie_pantry.x} ${MAP_PINS.cookie_pantry.y} Q750 720 ${MAP_PINS.wrapping_room.x} ${MAP_PINS.wrapping_room.y} M${MAP_PINS.cookie_pantry.x} ${MAP_PINS.cookie_pantry.y} Q520 550 ${MAP_PINS.toy_workshop.x} ${MAP_PINS.toy_workshop.y} M${MAP_PINS.toy_workshop.x} ${MAP_PINS.toy_workshop.y} Q900 380 ${MAP_PINS.reindeer_stables.x} ${MAP_PINS.reindeer_stables.y}`, { ...line(6, P.goldBright), 'stroke-dasharray': '4 18', opacity: 0.8 }),
     // chambers, each hinting at its room
     chamber(MAP_PINS.cookie_pantry.x, MAP_PINS.cookie_pantry.y, 150, 90, '#e9c891',
@@ -330,6 +346,8 @@ export function travelMap() {
       rect(MAP_PINS.wrapping_room.x - 80, MAP_PINS.wrapping_room.y + 4, 60, 44, ol(P.red, 6), 4) + rect(MAP_PINS.wrapping_room.x + 20, MAP_PINS.wrapping_room.y - 6, 60, 54, ol(P.gold, 6), 4)),
     chamber(MAP_PINS.toy_workshop.x, MAP_PINS.toy_workshop.y, 140, 84, '#8fb8a8',
       gear(MAP_PINS.toy_workshop.x - 50, MAP_PINS.toy_workshop.y + 10, 34, 9, P.brass, 6, 0.3) + gear(MAP_PINS.toy_workshop.x + 40, MAP_PINS.toy_workshop.y + 20, 26, 8, P.goldDark, 6, 0.3)),
+    chamber(MAP_PINS.carol_loft.x, MAP_PINS.carol_loft.y, 120, 74, '#d9c3a0',
+      path(`M${MAP_PINS.carol_loft.x - 50} ${MAP_PINS.carol_loft.y + 20} H${MAP_PINS.carol_loft.x + 50} M${MAP_PINS.carol_loft.x - 50} ${MAP_PINS.carol_loft.y + 36} H${MAP_PINS.carol_loft.x + 50}`, line(4, P.cocoa)) + circle(MAP_PINS.carol_loft.x - 14, MAP_PINS.carol_loft.y + 30, 8, { fill: P.ink })),
     chamber(MAP_PINS.reindeer_stables.x, MAP_PINS.reindeer_stables.y, 140, 84, '#7a5233',
       rect(MAP_PINS.reindeer_stables.x - 70, MAP_PINS.reindeer_stables.y + 6, 70, 40, ol(P.goldBright, 6), 6) + rect(MAP_PINS.reindeer_stables.x + 10, MAP_PINS.reindeer_stables.y + 6, 60, 40, ol(P.goldBright, 6), 6)),
     // the front door at the base

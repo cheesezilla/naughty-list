@@ -40,7 +40,7 @@ async function signupAdmin() {
 describe('server', () => {
   it('answers health and content without logging in', async () => {
     expect((await get('/api/health')).json()).toEqual({ ok: true, version: 'test' });
-    expect((await get('/api/content')).json().locations).toHaveLength(4);
+    expect((await get('/api/content')).json().locations).toHaveLength(5);
     expect((await get('/api/setup-status')).json()).toEqual({ needsAdmin: true, signupsOpen: true });
   });
 

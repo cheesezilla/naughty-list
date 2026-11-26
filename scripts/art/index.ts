@@ -75,18 +75,23 @@ const ITEM_LOOKS: Record<string, string> = {
   clockwork_heart: 'a red heart with a window showing turning brass gears inside',
   silver_sleighbell: 'a large silver sleigh bell on a stitched leather strap',
   brimstone_coal: 'a lump of coal with glowing orange cracks and a curl of smoke',
+  carol_horn: 'a flaring brass horn with a rose-pink ribbon and a gold music note rising from the bell',
+  hymn_reed: 'three thin pale reeds tied with a red thread, slightly bent',
+  carol_songsheet: 'a torn sheet of carol music with staff lines, a few notes in pencil and a pencilled note in the margin',
 };
 
 const TRAP_TYPE_LOOKS: Record<string, string> = {
   clockwork: 'a brass gear on a cream disc',
   starlight: 'a glowing gold five-point star with small sparkles on a night-blue disc',
   frost: 'a blue snowflake on an icy disc',
+  carol: 'a gold music note on a rose-pink disc',
 };
 
 const LOCATION_LOOKS: Record<string, string> = {
   cookie_pantry: "Santa's pantry: warm wooden walls, shelves of cookie jars and stacked cookies, milk churns, a snowy night window and a garland",
   wrapping_room: 'the wrapping room: purple walls, leaning rolls of patterned wrapping paper, a rack of ribbon spools, stacks of wrapped presents',
   toy_workshop: 'the toy workshop: green walls with brass gears, pegboards of tools, workbenches with a rocking horse, blocks, a wind-up soldier and paint pots, a hanging lantern',
+  carol_loft: 'the carol loft: a draughty attic with wooden rafters, a round window with moonlight, music stands with sheet music, a pile of old carol books and a tarnished brass horn',
   reindeer_stables: 'the reindeer stables: wooden stall doors, a harness of gold bells across the wall, lanterns, hay bales, loose straw and a bucket of carrots',
 };
 

@@ -12,18 +12,21 @@ describe('content files', () => {
     expect(checkReferences(content)).toEqual([]);
   });
 
-  it('give the Cookie Pantry commons, uncommons and a rare, and every other location 3 commons, a rare, a mini boss and a boss', () => {
+  it('give the Cookie Pantry commons, uncommons and a rare, a side area 3 commons, a rare and a mini boss, and every other location 3 commons, a rare, a mini boss and a boss', () => {
     for (const loc of content.locations) {
       const tiers = loc.imps.map((i) => i.tier).sort();
       if (loc.id === 'cookie_pantry') expect(tiers, loc.id).toEqual(['common', 'common', 'rare', 'uncommon', 'uncommon']);
+      else if (loc.side) expect(tiers, loc.id).toEqual(['common', 'common', 'common', 'miniboss', 'rare']);
       else expect(tiers, loc.id).toEqual(['boss', 'common', 'common', 'common', 'miniboss', 'rare']);
     }
   });
 
   it('put boss keys only on locations that have a boss and a next location to open', () => {
-    content.locations.forEach((l, i) => {
-      if (l.key) { expect(l.imps.some((m) => m.tier === 'boss'), l.id).toBe(true); expect(content.locations[i + 1], l.id).toBeDefined(); }
+    const chain = content.locations.filter((l) => !l.side);
+    chain.forEach((l, i) => {
+      if (l.key) { expect(l.imps.some((m) => m.tier === 'boss'), l.id).toBe(true); expect(chain[i + 1], l.id).toBeDefined(); }
     });
+    for (const l of content.locations.filter((x) => x.side)) expect(l.key, l.id).toBeUndefined();
     expect(new Set(content.locations.flatMap((l) => (l.key ? [l.key.id] : []))).size).toBe(2);
   });
 

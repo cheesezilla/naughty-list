@@ -155,6 +155,21 @@
       "description": "A lump of devil's coal broken from Cinderhoof's antlers, smouldering with Scrinch's own fire. Saved for greater gear.",
       "backstory": "Naughty children get coal. Scrinch's lieutenants carry it as a badge of rank, warmed by the fires under his throne. The elves keep every lump in an iron chest, because Santa's Workshop will one day need fire that hot to make the strongest gear of all."
     },
+    "carol_horn": {
+      "tagline": "One true note, held very loud.",
+      "description": "A Carol trap made in the Loft. Its song breaks the hex, and it has far more luck than power.",
+      "backstory": "The Choirmaster's songsheet and a handful of hymn reeds, bound in brass by Santa's Workshop. Blown once, it sings a carol so plainly kind that hexed elves stop to listen and walk into the trap. It is no match for a heavy trap on brute strength, but it rarely misses a small elf."
+    },
+    "hymn_reed": {
+      "tagline": "Thin, pale and a little bit musical.",
+      "description": "A reed from the carollers' pipes. Six of them are needed for a Carol Horn.",
+      "backstory": "Every hexed caroller in the Loft carries a reed, and every one is bent. Straightened and dried by the Workshop, they still hum faintly when the wind is right."
+    },
+    "carol_songsheet": {
+      "tagline": "The one tune the hex can't drown out.",
+      "description": "A torn sheet of carol music from Choirmaster Hollowvoice. It goes into a Carol Horn.",
+      "backstory": "The Choirmaster has sung the same flat note since the hex took hold, and he guards the real music so nobody can remind him how it goes. The notes on this sheet are in pencil, and someone has written please stop in the margin."
+    },
     "ribbon_candy": {
       "tagline": "Striped like the ribbons it was made beside.",
       "description": "A chewy candy bait made in Santa's Workshop. Draws the Wrapping Room's Glitterbug and Spoolwick, who ignore plain cookies.",
@@ -172,6 +187,36 @@
     }
   },
   "imps": {
+    "tin_whistler": {
+      "tagline": "Whistles through a dented tin pipe.",
+      "description": "A Loft common. It follows any clockwork sound across the rafters and can't resist a wound spring.",
+      "backstory": "The Tin Whistler once tuned the Workshop's music boxes. The hex left it with one dented pipe and a habit of whistling at the springs inside every toy. A wound spring makes it forget the tune and follow the ticking.",
+      "rumour": "A thin, wrong whistle from the rafters, always one note off."
+    },
+    "hoarse_caroller": {
+      "tagline": "Wrapped in three scarves and still croaking.",
+      "description": "A Loft common with a very sore throat. It heads for anything icy, and Frost soothes it long enough to catch.",
+      "backstory": "The Hoarse Caroller sang so many carols so badly that its voice gave out. Nothing helps except something cold on the throat, so the cold draws it down, and the cold is what catches it.",
+      "rumour": "A scratchy croak where a carol should be, near the cold window."
+    },
+    "mistletoe_mumbler": {
+      "tagline": "Mumbles into a sprig of mistletoe.",
+      "description": "A shy Loft common that hides in the dark. It squints at starlight and creeps closer for a better look.",
+      "backstory": "The Mumbler used to hang the mistletoe over Santa's doorways and now mumbles nonsense to it. It hates being looked at but loves a small bright star, so it creeps out of the shadows towards it.",
+      "rumour": "A mumbled, muffled tune from a dark corner, and a whiff of mistletoe."
+    },
+    "silver_piper": {
+      "tagline": "Plays a pipe made of cold silver.",
+      "description": "A rare Loft elf. Its pipe plays the hex's tune, but a Carol trap throws it off and it stumbles.",
+      "backstory": "The Silver Piper was the Choir's best player. The hex gave it a silver pipe that plays a note only elves can hear, and it has led more than one apprentice into the rafters. It is the first to lose its place when someone plays a carol true.",
+      "rumour": "A glint of silver and a note you feel in your teeth."
+    },
+    "choirmaster_hollowvoice": {
+      "tagline": "Conducts a choir that left long ago.",
+      "description": "The Loft's mini boss. A tall hexed conductor. A Carol trap makes him lose the beat, and clockwork ticks only annoy him.",
+      "backstory": "Choirmaster Hollowvoice still waves his baton at an empty loft and sings a flat note to nobody. His songsheet holds the last real carol in the lair, and he guards it from everyone, including himself. Springs and ticking spoil his beat, so Clockwork is useless against him, but the right tune will stop him dead.",
+      "rumour": "One enormous flat note, and a baton tapping on a music stand."
+    },
     "crumb_elf": {
       "tagline": "Small, quick and covered in crumbs.",
       "description": "A hexed baker's boy who nibbles every cookie it finds. It has no real weakness, so any trap will do.",
@@ -234,9 +279,9 @@
     },
     "madame_shredwell": {
       "tagline": "Shreds paper, schedules and spirits.",
-      "description": "Scrinch's lieutenant in the Wrapping Room, once its head wrapper, with scissor fingers. She snips clockwork but can't cut starlight.",
-      "backstory": "Madame Shredwell ran the Wrapping Room with a ruler and a stopwatch. Scrinch's soot turned her love of neat paper into a love of shredding it. She guards the enchanted wrapping meant for Santa's own sack, and only a Golden Bow Bonbon tempts her down. Her scissors make short work of springs, but starlight slips straight through the blades.",
-      "rumour": "Confetti everywhere, and a sound like scissors snipping in the dark."
+      "description": "Scrinch's lieutenant in the Wrapping Room, once its head wrapper, with scissor fingers. She snips clockwork, but a true carol stops her scissors.",
+      "backstory": "Madame Shredwell ran the Wrapping Room with a ruler and a stopwatch. Scrinch's soot turned her love of neat paper into a love of shredding it. She guards the enchanted wrapping meant for Santa's own sack, and only a Golden Bow Bonbon tempts her down. Her scissors make short work of springs, and starlight only glints off the blades. Only a carol sung true makes her drop them.",
+      "rumour": "Confetti everywhere, scissors snipping, and one hummed note she can't stand."
     },
     "cog_pincher": {
       "tagline": "Steals one cog. The whole toy stops.",

@@ -64,6 +64,11 @@ const SCENES: Record<string, { bg: string; motif: (seed: string) => string; skin
       return Array.from({ length: 4 }, () => gear(60 + r() * 392, 50 + r() * 260, 36 + r() * 30, 9, '#b5d1c3', 0, 0)).join('');
     },
   },
+  carol_loft: {
+    bg: '#e6d6bd',
+    skin: '#c0566f',
+    motif: () => [0, 1, 2, 3, 4].map((i) => path(`M0 ${90 + i * 22} H512`, line(3, '#cdb995'))).join('') + [[90, 124], [210, 168], [330, 112], [430, 150]].map(([x, y]) => circle(Number(x), Number(y), 9, { fill: '#cdb995' })).join(''),
+  },
   reindeer_stables: {
     bg: '#d9cfae',
     skin: '#a0483a',
@@ -289,6 +294,32 @@ const LOOKS: Record<string, (skin: string) => ImpLook> = {
       // cravat
       path('M226 420 L256 450 L286 420 L256 470 Z', ol(P.red, 7)) + circle(256, 446, 8, ol(P.goldBright, 4)),
     look: 'pompous boss imp in a black top hat with a red band, gold monocle, moustache made of cookie crumbs, green coat and red cravat',
+  }),
+  // ---- Carol Loft
+  tin_whistler: (skin) => ({
+    skin, r: 108, eyes: 'wide', mouth: 'open', body: '#8fa0aa',
+    front: () => rect(210, 372, 110, 24, ol(P.silver, 7), 10) + circle(234, 384, 4, { fill: P.ink }) + circle(262, 384, 4, { fill: P.ink }) + circle(290, 384, 4, { fill: P.ink }),
+    look: 'wide-eyed hexed elf in a rose pointed cap blowing a dented tin whistle, musical notes around its head',
+  }),
+  hoarse_caroller: (skin) => ({
+    skin, r: 112, eyes: 'squint', mouth: 'open', body: P.frostDark,
+    front: () => path('M150 400 Q256 450 362 400', line(34, P.ink)) + path('M150 400 Q256 450 362 400', line(22, P.red)) + path('M200 424 L190 484', line(26, P.ink)) + path('M200 424 L190 484', line(14, P.red)),
+    look: 'hexed elf in a rose pointed cap wrapped in a long red scarf, squinting with a sore throat and mouth open mid-croak',
+  }),
+  mistletoe_mumbler: (skin) => ({
+    skin, r: 110, eyes: 'sly', mouth: 'smirk', body: P.pine,
+    front: () => ([[190, 420], [236, 436], [282, 420]] as const).map(([x, y]) => ellipse(x, y, 30, 14, ol(P.holly, 6))).join('') + ([[226, 396], [250, 402], [238, 412]] as const).map(([x, y]) => circle(x, y, 8, ol(P.white, 4))).join(''),
+    look: 'shy hexed elf in a rose pointed cap holding a sprig of mistletoe with white berries up to its mouth, sly eyes',
+  }),
+  silver_piper: (skin) => ({
+    skin, r: 108, eyes: 'sly', mouth: 'grin', body: '#7b8794',
+    front: () => path('M120 470 L330 380', line(26, P.ink)) + path('M120 470 L330 380', line(14, P.silver)) + ([[190, 440], [230, 422], [270, 404]] as const).map(([x, y]) => circle(x, y, 5, { fill: P.ink })).join('') + sparkle(360, 360, 16, P.white),
+    look: 'rare hexed elf in a rose pointed cap playing a long silver pipe, sly eyes, silver glints in the air',
+  }),
+  choirmaster_hollowvoice: (skin) => ({
+    skin, r: 128, eyes: 'angry', mouth: 'open', body: '#3b3355',
+    front: () => path('M400 500 L440 300', line(14, P.ink)) + path('M400 500 L440 300', line(6, P.cream)) + path('M200 470 Q256 500 312 470', line(12, P.cream)) + circle(256, 484, 10, ol(P.goldBright, 4)),
+    look: "tall hexed choirmaster elf in a rose pointed cap with a long dark coat, white bow tie, mouth wide open holding one flat note and a conductor's baton",
   }),
   // ---- Wrapping Room
   ribbon_tangler: (skin) => ({

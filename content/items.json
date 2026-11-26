@@ -3,6 +3,7 @@
     { "id": "starlit_stocking", "name": "Starlit Stocking", "type": "starlight", "power": 60, "luck": 0, "rank": 1, "price": null },
     { "id": "jack_in_the_box", "name": "Jack-in-the-Box", "type": "clockwork", "power": 150, "luck": 1, "rank": 1, "price": 300 },
     { "id": "star_lantern", "name": "Star Lantern", "type": "starlight", "power": 300, "luck": 2, "rank": 2, "price": 1200 },
+    { "id": "carol_horn", "name": "Carol Horn", "type": "carol", "power": 600, "luck": 10, "rank": 2, "price": null },
     { "id": "icicle_jar", "name": "Icicle Jar", "type": "frost", "power": 500, "luck": 2, "attraction": 0.05, "rank": 2, "price": 3000 },
     { "id": "nutcracker_jaws", "name": "Nutcracker Jaws", "type": "clockwork", "power": 900, "luck": 3, "rank": 3, "price": 9000 },
     { "id": "constellation_wreath", "name": "Constellation Wreath", "type": "starlight", "power": 1400, "luck": 5, "attraction": 0.05, "rank": 3, "price": null },
@@ -41,6 +42,8 @@
     { "id": "toymakers_gear", "name": "Toymaker's Gear", "sellPrice": 120 },
     { "id": "clockwork_heart", "name": "Clockwork Heart", "sellPrice": 200 },
     { "id": "silver_sleighbell", "name": "Silver Sleighbell", "sellPrice": 200 },
-    { "id": "brimstone_coal", "name": "Brimstone Coal", "sellPrice": 200 }
+    { "id": "brimstone_coal", "name": "Brimstone Coal", "sellPrice": 200 },
+    { "id": "hymn_reed", "name": "Hymn Reed", "sellPrice": 25 },
+    { "id": "carol_songsheet", "name": "Carol Songsheet", "sellPrice": 150 }
   ]
 }

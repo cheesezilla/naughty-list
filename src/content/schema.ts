@@ -1,7 +1,9 @@
 import { z } from 'zod';
 
+/** The three core types: the order board asks for these and "own every type" counts them. */
 export const powerTypes = ['clockwork', 'starlight', 'frost'] as const;
-export const PowerType = z.enum(powerTypes);
+/** Every type. Carol is the side-area type (the Carol Loft) and is kept out of the core three. */
+export const PowerType = z.enum([...powerTypes, 'carol']);
 export const ImpTier = z.enum(['common', 'uncommon', 'rare', 'miniboss', 'boss']);
 
 const id = z.string().regex(/^[a-z0-9_]+$/, 'ids are lowercase letters, digits and underscores');
@@ -101,6 +103,10 @@ export const Location = z.object({
   description: z.string(),
   rank: z.number().int().positive(),
   unlockCost: z.number().int().nonnegative(),
+  /** A side area is off the boss-key chain: it needs no key and opens no later location. */
+  side: z.boolean().optional(),
+  /** Another location that must be unlocked first (side areas). */
+  after: id.optional(),
   /** Power types recommended here, shown on the location banner. */
   homeTypes: z.array(PowerType).default([]),
   preferredBait: id.optional(),
@@ -157,6 +163,8 @@ export const Constants = z.object({
   startingLocation: id,
   attractionCap: chance,
   catchCap: chance,
+  /** Luck: its bonus is `scale` x luck squared x the weight of the elf's tier, so luck helps most against common elves and least against bosses. */
+  luck: z.object({ scale: z.number().nonnegative(), tierWeight: z.object({ common: z.number(), uncommon: z.number(), rare: z.number(), miniboss: z.number(), boss: z.number() }) }),
   sellBackRate: chance,
   rescue: z.object({ maxGold: z.number().int().nonnegative(), item: id, amount: z.number().int().positive() }),
   maxHuntsPerSecond: z.number().positive(),
@@ -195,7 +203,7 @@ export const Story = z.object({
 export const achievementStats = [
   'hunts', 'caught', 'escapes', 'goldEarned', 'bossesCaught', 'weaknessCatches', 'bought', 'crafted', 'newTrap',
   'unlocked', 'pillaged', 'ordersDone', 'rushOrders', 'launches', 'expressLaunches', 'sleighFails', 'ladderBoss', 'starterBoss',
-  'catches_clockwork', 'catches_starlight', 'catches_frost', 'bestCatchStreak', 'bestEscapeStreak', 'bestQuietStreak',
+  'catches_clockwork', 'catches_starlight', 'catches_frost', 'catches_carol', 'bestCatchStreak', 'bestEscapeStreak', 'bestQuietStreak',
 ] as const;
 export const AchievementStat = z.enum(achievementStats);
 

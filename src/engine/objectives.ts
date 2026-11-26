@@ -32,7 +32,7 @@ export interface ObjectiveResult {
   items?: { item: string; amount: number }[];
 }
 
-const TYPE_NAME: Record<PowerType, string> = { clockwork: 'Clockwork', starlight: 'Starlight', frost: 'Frost' };
+const TYPE_NAME: Record<PowerType, string> = { clockwork: 'Clockwork', starlight: 'Starlight', frost: 'Frost', carol: 'Carol' };
 
 function rollOrder(n: number, rng: Rng): PowerType[] {
   return Array.from({ length: n }, () => powerTypes[Math.floor(rng() * powerTypes.length)]!);

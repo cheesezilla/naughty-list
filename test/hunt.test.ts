@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { hunt, rollPillage } from '../src/engine/hunt.js';
-import { newPlayer, buy, sell, craft, equip, travel, grantKeys, type PlayerState } from '../src/engine/player.js';
+import { newPlayer, buy, sell, craft, equip, travel, grantKeys, keyNeeded, type PlayerState } from '../src/engine/player.js';
 import { seededRng } from '../src/engine/rng.js';
+import { catchChance, effectiveness, luckFactor } from '../src/engine/odds.js';
 import { content, scripted, withConstants } from './helpers.js';
 
 const fresh = () => newPlayer(content);
@@ -228,5 +229,50 @@ describe('boss keys', () => {
     const none = fresh();
     grantKeys(content, none);
     expect(none.keys).toEqual([]);
+  });
+});
+
+describe('carol loft and luck', () => {
+  const rich = { ...fresh(), rank: 2, gold: 1e6 };
+
+  it('opens only once the Wrapping Room is unlocked, with no boss key', () => {
+    const blocked = travel(content, rich, 'carol_loft');
+    expect(blocked.ok).toBe(false);
+    if (!blocked.ok) expect(blocked.error).toMatch(/Wrapping Room/);
+    const open = travel(content, { ...rich, unlocked: ['cookie_pantry', 'wrapping_room'] }, 'carol_loft');
+    expect(open.ok).toBe(true);
+    expect(travel(content, { ...rich, rank: 1, unlocked: ['cookie_pantry', 'wrapping_room'] }, 'carol_loft').ok).toBe(false);
+  });
+
+  it('does not move the key chain: the Toy Workshop still needs the Wrapping Room boss key', () => {
+    expect(keyNeeded(content, 'toy_workshop')?.id).toBe('gift_tag_key');
+    expect(keyNeeded(content, 'carol_loft')).toBeUndefined();
+    const old = { ...fresh(), unlocked: ['cookie_pantry', 'wrapping_room', 'carol_loft'] };
+    grantKeys(content, old);
+    expect(old.keys).toEqual([]);
+  });
+
+  it('crafts the Carol Horn from Loft drops', () => {
+    const p = { ...rich, inventory: { ...rich.inventory, hymn_reed: 6, carol_songsheet: 1 } };
+    const r = craft(content, p, 'carol_horn');
+    if (!r.ok) throw new Error(r.error);
+    expect(r.player.inventory.carol_horn).toBe(1);
+  });
+
+  it('gives luck more say against commons than bosses, and power more against bosses', () => {
+    const luckBuild = { power: 1500, luck: 12, attraction: 1, type: 'carol' };
+    const powerBuild = { power: 1800, luck: 8, attraction: 1, type: 'carol' };
+    const all = content.locations.flatMap((l) => l.imps);
+    const get = (id: string) => all.find((i) => i.id === id)!;
+    const chance = (s: typeof luckBuild, id: string) => catchChance(s, get(id), 0.98, luckFactor(content.constants, get(id)));
+    expect(chance(luckBuild, 'paint_smudger')).toBeGreaterThan(chance(powerBuild, 'paint_smudger'));
+    expect(chance(powerBuild, 'general_grimbolt')).toBeGreaterThan(chance(luckBuild, 'general_grimbolt'));
+  });
+
+  it('makes Madame Shredwell weak to Carol, not Starlight', () => {
+    const boss = content.locations.flatMap((l) => l.imps).find((i) => i.id === 'madame_shredwell')!;
+    expect(effectiveness(boss, 'carol')).toBe(1.5);
+    expect(effectiveness(boss, 'starlight')).toBe(1);
+    expect(effectiveness(boss, 'frost')).toBe(1);
   });
 });
