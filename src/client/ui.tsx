@@ -15,30 +15,31 @@ const TABS: { id: Tab; label: string; icon: string; path: string }[] = [
   { id: 'more', label: 'More', icon: 'nav_more', path: 'more' },
 ];
 
-export function TitleStrip() {
-  return (
-    <div class="title-strip">
-      <Art slot="brand" id="icon" class="title-icon" />
-      <span class="title-text">The Naughty List</span>
-    </div>
-  );
-}
-
-/** Rank badge, username, rank and points, gold. `overlay` draws it over the location banner. */
-export function PlayerBar({ overlay = false }: { overlay?: boolean }) {
+/**
+ * The frozen top header: game icon and title, gold with the coin, the rank badge with username, rank and points,
+ * and the rank progress bar along its bottom edge. It sits outside the scrolling area, so it stays pinned.
+ */
+export function TopHeader() {
   const { content, user, player } = useGame();
   const rank = content.ranks[player.rank - 1]!;
   return (
-    <div class={`player-bar ${overlay ? 'on-banner' : ''}`}>
-      <button class="profile-link" onClick={() => go('more/profile')} aria-label="Open my profile">
-        <Art slot="ranks" id={`rank_${player.rank}`} alt={`Rank ${player.rank}`} class="rank-badge" />
-        <div class="who">
-          <b>{user.username}</b>
-          <span>{rank.name} · {num(player.points)} pts</span>
+    <header class="top-header">
+      <div class="th-main">
+        <Art slot="brand" id="icon" class="th-icon" />
+        <div class="th-col">
+          <div class="th-line">
+            <span class="title-text">The Naughty List</span>
+            <div class="gold">{num(player.gold)} Gold <GoldCoin size={24} /></div>
+          </div>
+          <button class="profile-link who" onClick={() => go('more/profile')} aria-label="Open my profile">
+            <Art slot="ranks" id={`rank_${player.rank}`} alt={`Rank ${player.rank}`} class="rank-badge" />
+            <b>{user.username}</b>
+            <span>{rank.name} · {num(player.points)} pts</span>
+          </button>
         </div>
-      </button>
-      <div class="gold">{num(player.gold)} Gold <GoldCoin size={24} /></div>
-    </div>
+      </div>
+      <RankProgress />
+    </header>
   );
 }
 
@@ -68,13 +69,12 @@ export function BottomNav({ tab }: { tab: Tab | null }) {
   );
 }
 
-/** A screen with the title strip, player bar and bottom nav. */
-export function MainScreen({ tab, children, bar = true, class: cls = '' }: { tab: Tab | null; children: ComponentChildren; bar?: boolean; class?: string }) {
+/** A screen with the frozen top header and the bottom nav; only the middle scrolls. */
+export function MainScreen({ tab, children, class: cls = '' }: { tab: Tab | null; children: ComponentChildren; class?: string }) {
   return (
     <div class="screen">
-      <TitleStrip />
+      <TopHeader />
       <div class={`scroll ${cls}`}>
-        {bar && <><PlayerBar /><RankProgress /></>}
         {children}
       </div>
       <BottomNav tab={tab} />

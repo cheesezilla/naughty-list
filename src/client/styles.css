@@ -38,18 +38,19 @@ small { font-size: 13px; }
 .pad { padding: 12px 14px 18px; }
 .stack { display: flex; flex-direction: column; gap: 10px; }
 
-.title-strip { display: flex; align-items: center; gap: 8px; padding: 6px 12px; padding-top: max(6px, env(safe-area-inset-top)); min-height: 42px; background: var(--pine-dark); border-bottom: 1px solid var(--pine-line); flex: none; }
-.title-icon { width: 30px; height: 30px; border-radius: 8px; }
-.title-text { font-family: var(--display); font-size: 21px; line-height: 1; color: var(--gold); letter-spacing: 0.3px; }
-
-.player-bar { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--pine-dark); border-bottom: 1px solid var(--pine-line); }
-.player-bar.on-banner { background: rgba(10, 45, 34, 0.88); border: 0; border-radius: 14px; padding: 6px 8px; }
-.rank-badge { width: 40px; height: 40px; flex: none; }
-.player-bar .who { flex: 1; min-width: 0; line-height: 1.25; display: flex; flex-direction: column; }
-.player-bar .who b { font-weight: 800; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.player-bar .who span { font-size: 13px; color: var(--mint); }
-.player-bar .gold { font-weight: 800; font-size: 15px; white-space: nowrap; display: flex; align-items: center; gap: 4px; color: var(--gold); }
-.rank-progress { height: 6px; background: var(--pine-line); flex: none; }
+/* The frozen top header: title, gold, player and the rank progress bar. It sits outside .scroll, so it stays put. */
+.top-header { flex: none; z-index: 5; background: linear-gradient(180deg, #08261d 0%, var(--pine-dark) 100%); border-bottom: 1px solid var(--pine-line); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35); padding-top: env(safe-area-inset-top); }
+.th-main { display: flex; align-items: center; gap: 10px; padding: 8px 12px 7px; }
+.th-icon { width: 46px; height: 46px; flex: none; border-radius: 12px; }
+.th-col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.th-line { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.title-text { font-family: var(--display); font-size: 20px; line-height: 1; color: var(--gold); letter-spacing: 0.3px; white-space: nowrap; }
+.rank-badge { width: 24px; height: 24px; flex: none; }
+.top-header .who { display: flex; align-items: center; gap: 6px; min-width: 0; font-size: 13px; line-height: 1.2; color: var(--mint); white-space: nowrap; }
+.top-header .who b { font-weight: 800; font-size: 14px; color: var(--cream); overflow: hidden; text-overflow: ellipsis; }
+.top-header .who span { overflow: hidden; text-overflow: ellipsis; }
+.top-header .gold { font-weight: 800; font-size: 15px; white-space: nowrap; display: flex; align-items: center; gap: 6px; color: var(--gold); }
+.rank-progress { height: 5px; background: var(--pine-line); flex: none; }
 .rank-progress div { height: 100%; background: var(--gold); transition: width 0.4s ease; }
 
 .bottom-nav { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); background: var(--pine-dark); border-top: 1px solid var(--pine-line); flex: none; padding-bottom: env(safe-area-inset-bottom); }
@@ -90,7 +91,7 @@ img.art { display: block; max-width: 100%; }
 /* A pillage flashes the gold and points red and shakes the Hunt button once. */
 @keyframes pillage-flash { 0%, 100% { color: inherit; } 20%, 60% { color: #ff6b5e; } }
 @keyframes pillage-shake { 0%, 100% { transform: none; } 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } }
-body.pillaged .player-bar .gold, body.pillaged .player-bar .who span { animation: pillage-flash 0.9s ease-in-out; }
+body.pillaged .top-header .gold, body.pillaged .top-header .who span { animation: pillage-flash 0.9s ease-in-out; }
 body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
 @media (prefers-reduced-motion: reduce) { body.pillaged .hunt-btn { animation: none; } }
 .pill.green { background: var(--green-soft); color: var(--green); }
@@ -120,9 +121,8 @@ body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
 .hunt-dock .hint { color: var(--mint-2); margin-top: 4px; }
 
 /* ---------- hunt screen ---------- */
-.banner { position: relative; aspect-ratio: 5 / 2; min-height: 158px; overflow: hidden; background: var(--pine-line); }
+.banner { position: relative; aspect-ratio: 5 / 2; min-height: 128px; overflow: hidden; background: var(--pine-line); }
 .banner-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.banner-top { position: absolute; top: 8px; left: 8px; right: 8px; }
 .banner-bottom { position: absolute; left: 14px; right: 14px; bottom: 10px; display: flex; justify-content: space-between; align-items: end; gap: 10px; }
 .banner-bottom h1 { font-size: 26px; color: var(--gold); text-shadow: 0 2px 0 var(--pine-dark), 0 0 12px rgba(0, 0, 0, 0.6); }
 .gear-card { display: flex; flex-direction: column; gap: 10px; }
@@ -414,7 +414,6 @@ body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
   background: linear-gradient(100deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0)); }
 @keyframes sweep { 0% { left: -60%; } 55%, 100% { left: 130%; } }
 @media (prefers-reduced-motion: reduce) { .medal.shine .face::after { animation: none; display: none; } }
-.player-bar .gold { gap: 6px; }
 .type-chip .medal { margin-right: 2px; }
 .order-slots .medal { margin-bottom: 2px; }
 
@@ -487,3 +486,27 @@ body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
 .objective-panel .panel-icon { width: 26px; height: 26px; margin-right: 6px; flex: none; }
 .readiness .sleigh { position: absolute; top: 2px; transform: translateX(-60%); transition: left 0.3s; line-height: 0; }
 .profile-link { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; border: 0; background: none; padding: 0; text-align: left; color: inherit; }
+
+/* New Catch popup */
+.newcatch { --tier: #2f7d4f; --tier-dark: #1f5a37; padding: 0 20px 14px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; overflow: hidden; max-height: 94vh; overflow-y: auto; }
+.newcatch.tier-uncommon { --tier: #0f7a8a; --tier-dark: #0a5763; }
+.newcatch.tier-rare { --tier: #5a2f96; --tier-dark: #43226f; }
+.newcatch.tier-miniboss { --tier: #d9731a; --tier-dark: #a8530a; }
+.newcatch.tier-boss { --tier: #d8a52a; --tier-dark: #8a6410; }
+.nc-ribbon { align-self: stretch; margin: 0 -20px; padding: 9px 12px; background: linear-gradient(var(--tier), var(--tier-dark)); color: #fff; font-weight: 800; font-size: 12px; letter-spacing: 1.6px; text-transform: uppercase; }
+.nc-frame { margin-top: 6px; padding: 5px; border-radius: 20px; background: linear-gradient(145deg, var(--tier), var(--tier-dark)); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3); }
+.nc-portrait { display: block; width: 168px; height: 168px; object-fit: cover; border-radius: 15px; background: var(--pine); }
+.nc-unlocked { margin-top: -2px; }
+.newcatch h2 { font-size: 28px; line-height: 1.1; color: var(--pine); }
+.nc-meta { font-size: 14px; color: var(--muted); }
+.nc-tier { font-weight: 800; color: var(--tier); }
+.nc-tagline { font-style: italic; font-size: 15px; line-height: 1.35; }
+.nc-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; }
+.nc-tiles > div { background: #f1e8d6; border-radius: 12px; padding: 8px 4px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.nc-tiles b { font-size: 20px; color: var(--pine); display: flex; gap: 3px; align-items: center; min-height: 26px; }
+.nc-tiles span { font-size: 11px; color: var(--muted); line-height: 1.2; }
+.nc-progress { width: 100%; display: flex; flex-direction: column; gap: 5px; text-align: left; font-size: 13px; }
+.nc-progress > div:not(.bar) { display: flex; justify-content: space-between; }
+.nc-progress .bar div { background: var(--tier); }
+.nc-all { color: var(--muted); }
+.nc-toast-art { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; }

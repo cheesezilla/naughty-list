@@ -11,7 +11,7 @@ import { go } from '../lib/route.js';
 import { Sheet, useAsync } from '../ui.js';
 
 /** Space, Enter and Esc close a popup, and the press never reaches the Hunt screen behind it. */
-function useCloseKeys(onClose: () => void) {
+export function useCloseKeys(onClose: () => void) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.code !== 'Space' && e.key !== 'Enter' && e.key !== 'Escape') return;
