@@ -49,6 +49,8 @@ function Playing({ content, me, onLogout }: { content: Content; me: MeResponse; 
   const [badges, setBadges] = useState<{ ids: string[]; backfill: boolean; quiet: boolean } | null>(
     me.backfill?.length ? { ids: me.backfill, backfill: true, quiet: false } : null);
   const [welcome, setWelcome] = useState(me.player.welcomeSeen === false);
+  // Start over gives a new game, and a new game opens with the welcome popup.
+  useEffect(() => { if (player.welcomeSeen === false) setWelcome(true); }, [player.welcomeSeen]);
   const lastHuntAt = useRef(0);
 
   const celebrate = useCallback((ids: string[], backfill = false) => {

@@ -51,9 +51,10 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
     let topHunter = false;
     if (afterHunt && achievementLeaderboard) {
       const others = store.players().filter((x) => x.id !== userId);
-      topHunter = p.points > 0 && others.every((x) => p.points > x.points);
+      // Only counts against at least one other hunter, so a lone player on a new server doesn't get it on hunt #1.
+      topHunter = p.points > 0 && others.length > 0 && others.every((x) => p.points > x.points);
     }
-    const ids = checkAchievements(content, p, t, { topHunter });
+    const ids = checkAchievements(content, p, t, { topHunter, hunt: afterHunt ? p.stats.hunts : undefined });
     return ids.length ? { type: 'achievement', ids } : null;
   }
   const lastHunt = new Map<number, number>();

@@ -6,6 +6,8 @@ import { count, type PlayerState } from './player.js';
 export interface AchievementContext {
   /** True when this player is first on the Hunters leaderboard by points. */
   topHunter?: boolean;
+  /** The hunt that earned these badges, when they come from a hunt. Shown as "on hunt #N". */
+  hunt?: number;
 }
 
 const sum = (xs: number[]) => xs.reduce((a, b) => a + b, 0);
@@ -84,6 +86,7 @@ export function checkAchievements(content: Content, p: PlayerState, now: number,
     const { have, need } = achievementProgress(content, p, a, ctx);
     if (have >= need) {
       earned[a.id] = now;
+      if (ctx.hunt) (p.achievementHunts ??= {})[a.id] = ctx.hunt;
       fresh.push(a.id);
     }
   }

@@ -132,7 +132,8 @@ export function Stepper({ value, onChange, min = 1, max = 9999, step = 10 }: { v
   );
 }
 
-export function Sheet({ title, onClose, children }: { title: string; onClose: () => void; children: ComponentChildren }) {
+/** A bottom sheet. `bare` drops the title row for a drag handle; the content then brings its own heading and Close button. */
+export function Sheet({ title, onClose, children, bare = false }: { title: string; onClose: () => void; children: ComponentChildren; bare?: boolean }) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', onKey);
@@ -141,7 +142,7 @@ export function Sheet({ title, onClose, children }: { title: string; onClose: ()
   return (
     <div class="sheet-backdrop" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div class="sheet" role="dialog" aria-modal="true" aria-label={title}>
-        <div class="sheet-head"><h2>{title}</h2><button class="text-btn" onClick={onClose}>Done</button></div>
+        {bare ? <div class="sheet-handle" aria-hidden="true" /> : <div class="sheet-head"><h2>{title}</h2><button class="text-btn" onClick={onClose}>Done</button></div>}
         {children}
       </div>
     </div>

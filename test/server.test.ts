@@ -316,15 +316,25 @@ describe('achievements and the welcome popup', () => {
     expect(me.backfill).toEqual([]);
     expect(me.player.welcomeSeen).toBe(false);
 
-    const h = (await post('/api/hunt', {}, cookie)).json();
-    expect(h.newAchievements).toEqual(['first_catch', 'secret_top_hunter']);
+    // Alone on the server, the first catch is not yet "top of the list".
+    let h = (await post('/api/hunt', {}, cookie)).json();
+    expect(h.newAchievements).toEqual(['first_catch']);
+    expect(h.player.achievementHunts).toEqual({ first_catch: 1 });
+    expect((await post('/api/auth/signup', { username: 'holly', password: 'candycane123' })).statusCode).toBe(200);
+
+    clock += 1000;
+    h = (await post('/api/hunt', {}, cookie)).json();
+    expect(h.newAchievements).toEqual(['secret_top_hunter']);
     expect(h.logs.map((r: { kind: string }) => r.kind)).toEqual(['hunt', 'event']);
-    expect(h.logs[1].entry).toEqual({ type: 'achievement', ids: ['first_catch', 'secret_top_hunter'] });
-    expect(h.player.achievements).toEqual({ first_catch: clock, secret_top_hunter: clock });
+    expect(h.logs[1].entry).toEqual({ type: 'achievement', ids: ['secret_top_hunter'] });
+    expect(h.player.achievements).toEqual({ first_catch: clock - 1000, secret_top_hunter: clock });
+    expect(h.player.achievementHunts).toEqual({ first_catch: 1, secret_top_hunter: 2 });
 
     clock += 1000;
     const b = (await post('/api/buy', { item: 'jack_in_the_box' }, cookie)).json();
     expect(b.newAchievements).toEqual(['first_purchase']);
+    // Badges from actions other than a hunt have no hunt number.
+    expect(b.player.achievementHunts.first_purchase).toBeUndefined();
     const e = (await post('/api/setup', { slot: 'trap', item: 'jack_in_the_box' }, cookie)).json();
     expect(e.newAchievements).toEqual(['first_upgrade']);
     // Badges never come twice.
@@ -334,7 +344,7 @@ describe('achievements and the welcome popup', () => {
     // Only the Silver, Gold and Secret badges go into the Hunters feed.
     const feed = (await get('/api/hunters', cookie)).json().feed;
     expect(feed.filter((f: { kind: string }) => f.kind === 'event').map((f: { entry: unknown }) => f.entry)).toEqual([{ type: 'achievement', ids: ['secret_top_hunter'] }]);
-    expect((await get('/api/achievements', cookie)).json()).toMatchObject({ hunters: 1, counts: { first_catch: 1, first_purchase: 1 } });
+    expect((await get('/api/achievements', cookie)).json()).toMatchObject({ hunters: 2, counts: { first_catch: 1, first_purchase: 1 } });
   });
 
   it('gives an old save everything it already qualifies for, once', async () => {

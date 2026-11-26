@@ -13,11 +13,15 @@ export function HintSheet({ location, onClose }: { location: Location; onClose: 
   const text = content.story?.locations?.[location.id];
   const ladder = location.objective?.type === 'bait_ladder';
   return (
-    <Sheet title={`How to clear the ${location.name}`} onClose={onClose}>
+    <Sheet title={`How to clear the ${location.name}`} onClose={onClose} bare>
       <div class={`hint-sheet loc-${location.id}`}>
+        <h2>How to clear the {location.name}</h2>
         <ol>{text?.hint.map((h) => <li>{h}</li>)}</ol>
         {text && <div class="hint-about"><b>About this room</b><p>{text.intro}</p></div>}
-        {ladder && <button class="outline-btn wide" onClick={() => { onClose(); go('workshop'); }}>Open Santa's Workshop</button>}
+        <div class="hint-buttons">
+          {ladder && <button class="outline-btn" onClick={() => { onClose(); go('workshop'); }}>Open Workshop</button>}
+          <button class="primary-btn" onClick={onClose}>Close</button>
+        </div>
       </div>
     </Sheet>
   );
