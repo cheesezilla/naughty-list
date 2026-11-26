@@ -179,6 +179,49 @@ export const Story = z.object({
     intro: z.string().min(1).max(400),
     hint: z.array(z.string().min(1).max(120)).min(1).max(4),
   })).optional(),
+  /** The one-time popup when a new game starts. */
+  welcome: z.object({
+    title: z.string().min(1).max(40),
+    text: z.string().min(1).max(200),
+    button: z.string().min(1).max(20),
+  }).optional(),
+});
+
+/** Stats an achievement can count. See `statValue()` in src/engine/achievements.ts. */
+export const achievementStats = [
+  'hunts', 'caught', 'escapes', 'goldEarned', 'bossesCaught', 'weaknessCatches', 'bought', 'crafted', 'newTrap',
+  'unlocked', 'pillaged', 'ordersDone', 'rushOrders', 'launches', 'expressLaunches', 'sleighFails', 'ladderBoss', 'starterBoss',
+  'catches_clockwork', 'catches_starlight', 'catches_frost', 'bestCatchStreak', 'bestEscapeStreak', 'bestQuietStreak',
+] as const;
+export const AchievementStat = z.enum(achievementStats);
+
+export const AchievementRule = z.discriminatedUnion('type', [
+  /** A stat reaches n. */
+  z.object({ type: z.literal('stat'), stat: AchievementStat, n: z.number().int().positive() }),
+  z.object({ type: z.literal('rank'), rank: z.number().int().positive() }),
+  /** Catch this imp, or any imp of this tier. */
+  z.object({ type: z.literal('catch'), imp: id.optional(), tier: ImpTier.optional() }),
+  /** Catch every imp of a location, of a tier, or (neither given) every imp in the game. */
+  z.object({ type: z.literal('collection'), location: id.optional(), tier: ImpTier.optional() }),
+  /** Craft this item at least once. */
+  z.object({ type: z.literal('craft'), item: id }),
+  /** Own a trap of every power type at once. */
+  z.object({ type: z.literal('own_all_types') }),
+  /** Be first on the Hunters leaderboard by points after a hunt (the server checks this). */
+  z.object({ type: z.literal('leaderboard') }),
+]);
+
+export const achievementCategories = ['first_steps', 'hunting', 'ranks', 'naughty_list', 'bosses', 'gear', 'objectives', 'secret'] as const;
+export const Achievement = z.object({
+  id,
+  name: z.string().min(1).max(30),
+  description: z.string().min(1).max(100),
+  category: z.enum(achievementCategories),
+  frame: z.enum(['bronze', 'silver', 'gold']),
+  secret: z.boolean().optional(),
+  /** Brief for the badge art (emblem only). */
+  badge: z.string().max(160).optional(),
+  when: AchievementRule,
 });
 
 export const Content = z.object({
@@ -188,6 +231,7 @@ export const Content = z.object({
   locations: z.array(Location).min(1),
   items: Items,
   recipes: z.array(Recipe),
+  achievements: z.array(Achievement).default([]),
 });
 
 export type PowerType = z.infer<typeof PowerType>;
@@ -210,3 +254,7 @@ export type Rank = z.infer<typeof Rank>;
 export type Constants = z.infer<typeof Constants>;
 export type Content = z.infer<typeof Content>;
 export type Story = z.infer<typeof Story>;
+export type Achievement = z.infer<typeof Achievement>;
+export type AchievementRule = z.infer<typeof AchievementRule>;
+export type AchievementStat = z.infer<typeof AchievementStat>;
+export type AchievementCategory = (typeof achievementCategories)[number];

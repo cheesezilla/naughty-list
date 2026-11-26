@@ -27,6 +27,14 @@ export interface PlayerState {
   stamina: { value: number; updatedAt: number };
   /** Progress on each location's own loop, by location id. Missing in older saves. */
   objectives?: Record<string, ObjectiveState>;
+  /** Earned achievements: id → time earned (ms). Missing in saves from before achievements. */
+  achievements?: Record<string, number>;
+  /** For badges earned by a hunt: that hunt's number. */
+  achievementHunts?: Record<string, number>;
+  /** Counters the achievements read (purchases, crafts, streaks, catches by trap type…). Missing in older saves. */
+  tally?: Record<string, number>;
+  /** False until the player closes the welcome popup of a new game. Missing (seen) in older saves. */
+  welcomeSeen?: boolean;
 }
 
 export type ActionResult = { ok: true; player: PlayerState } | { ok: false; error: string };
@@ -50,7 +58,16 @@ export function newPlayer(content: Content, now = 0): PlayerState {
     seen: {},
     stats: { hunts: 0, attracted: 0, caught: 0, goldEarned: 0, pillaged: 0 },
     stamina: { value: c.stamina.max, updatedAt: now },
+    achievements: {},
+    tally: {},
+    welcomeSeen: false,
   };
+}
+
+/** Adds to one of the achievement counters. */
+export function bump(p: PlayerState, key: string, n = 1): void {
+  const t = (p.tally ??= {});
+  t[key] = (t[key] ?? 0) + n;
 }
 
 export function count(p: PlayerState, itemId: string): number {
@@ -89,6 +106,7 @@ export function buy(content: Content, player: PlayerState, itemId: string, amoun
   const p = clone(player);
   p.gold -= cost;
   addItem(p, itemId, amount);
+  bump(p, 'bought');
   return { ok: true, player: p };
 }
 
@@ -127,6 +145,8 @@ export function craft(content: Content, player: PlayerState, recipeId: string): 
   p.gold -= recipe.gold;
   for (const [itemId, n] of Object.entries(recipe.ingredients)) addItem(p, itemId, -n);
   addItem(p, recipe.output.item, recipe.output.amount);
+  bump(p, 'crafted');
+  bump(p, `craft:${recipe.output.item}`);
   return { ok: true, player: p };
 }
 
@@ -143,6 +163,7 @@ export function equip(content: Content, player: PlayerState, slot: keyof Setup, 
   if (count(player, itemId) < 1) return fail(`You don't have ${item.name}.`);
   const p = clone(player);
   p.setup[slot] = itemId;
+  if (slot === 'trap' && itemId !== content.constants.startingSetup.trap) bump(p, 'newTrap');
   return { ok: true, player: p };
 }
 

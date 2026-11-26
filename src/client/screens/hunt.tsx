@@ -8,6 +8,8 @@ import { go } from '../lib/route.js';
 import { BottomNav, PlayerBar, RankProgress, Sheet, Tabs, TitleStrip } from '../ui.js';
 import { LogRow } from './log.js';
 import { HintSheet, ObjectivePanel } from './objective.js';
+import { TypeMedal } from '../lib/medal.js';
+import { TYPE_NAME } from '../lib/format.js';
 
 /** Catch chance once an imp is attracted, averaged over the imps this bait draws. */
 export function catchIfAttracted(odds: ReturnType<typeof huntOdds>) {
@@ -81,22 +83,26 @@ export function HuntScreen() {
         <RankProgress />
         <div class="pad stack">
           <div class="card gear-card">
-            <div class="gear">
-              <button class="trap-button" onClick={() => go('arsenal/trap')} aria-label={`Change trap and base. Now ${trap.name} on ${base.name}`}>
-                <TrapOnBase trap={trap.id} base={base.id} />
-                <span class="trap-caption"><b>{trap.name}</b><br />on {base.name}</span>
+            <button class="trap-button" onClick={() => go('arsenal/trap')} aria-label={`Change trap and base. Now ${trap.name} on ${base.name}`}>
+              <TrapOnBase trap={trap.id} base={base.id} />
+            </button>
+            <div class="gear-grid">
+              <button class="slot-btn" onClick={() => go('arsenal/trap')}>
+                {trap.kind === 'trap' ? <TypeMedal type={trap.type} size={38} /> : <span class="thumb small empty-thumb" />}
+                <span><small>Trap{trap.kind === 'trap' ? ` · ${TYPE_NAME[trap.type]}` : ''}</small><br /><b>{trap.name}</b></span>
               </button>
-              <div class="side-slots">
-                <button class="slot-btn" onClick={() => setSheet('bait')}>
-                  {bait ? <Art slot="baits" id={bait.id} class="thumb small" /> : <span class="thumb small empty-thumb">none</span>}
-                  <span><small>Bait</small><br /><b>{bait ? bait.name : 'No bait'}</b>{bait && ` ×${num(count(player, bait.id))}`}</span>
-                </button>
-                <button class="slot-btn" onClick={() => setSheet('charm')}>
-                  {charm ? <Art slot="charms" id={charm.id} class="thumb small" /> : <span class="thumb small empty-thumb">none</span>}
-                  <span><small>Charm</small><br /><b>{charm ? charm.name : 'No charm'}</b>{charm && ` ×${num(count(player, charm.id))}`}</span>
-                </button>
-                <p class="hint">Tap any item to change it</p>
-              </div>
+              <button class="slot-btn" onClick={() => setSheet('bait')}>
+                {bait ? <Art slot="baits" id={bait.id} class="thumb small" /> : <span class="thumb small empty-thumb">none</span>}
+                <span><small>Bait</small><br /><b>{bait ? bait.name : 'No bait'}</b>{bait && ` ×${num(count(player, bait.id))}`}</span>
+              </button>
+              <button class="slot-btn" onClick={() => go('arsenal/base')}>
+                <Art slot="bases" id={base.id} class="thumb small gear-thumb" />
+                <span><small>Base</small><br /><b>{base.name}</b></span>
+              </button>
+              <button class="slot-btn" onClick={() => setSheet('charm')}>
+                {charm ? <Art slot="charms" id={charm.id} class="thumb small" /> : <span class="thumb small empty-thumb">none</span>}
+                <span><small>Charm</small><br /><b>{charm ? charm.name : 'No charm'}</b>{charm && ` ×${num(count(player, charm.id))}`}</span>
+              </button>
             </div>
             <StatRow setup={player.setup} />
           </div>

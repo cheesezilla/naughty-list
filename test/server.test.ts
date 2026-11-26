@@ -13,7 +13,8 @@ beforeEach(async () => {
   store = new Store(':memory:');
   clock = 1_000_000;
   // Every roll is 0: always attracted, always the first imp (Crumb Imp, which has no loot), always caught.
-  app = await buildApp({ content, store, version: 'test', now: () => clock, rng: () => 0 });
+  // Achievements are off here so the log checks stay about one thing; they have their own tests below.
+  app = await buildApp({ content: { ...content, achievements: [] }, store, version: 'test', now: () => clock, rng: () => 0 });
 });
 afterEach(async () => {
   await app.close();
@@ -300,6 +301,75 @@ describe('store', () => {
       { type: 'equip', slot: 'trap', item: 'star_lantern', previous: 'starlit_stocking' },
     ]);
     s.close();
+  });
+});
+
+describe('achievements and the welcome popup', () => {
+  beforeEach(async () => {
+    await app.close();
+    app = await buildApp({ content, store, version: 'test', now: () => clock, rng: () => 0 });
+  });
+
+  it('awards badges after a hunt and an action, logs them and lists them in the feed when notable', async () => {
+    const cookie = await signupAdmin();
+    const me = (await get('/api/me', cookie)).json();
+    expect(me.backfill).toEqual([]);
+    expect(me.player.welcomeSeen).toBe(false);
+
+    // Alone on the server, the first catch is not yet "top of the list".
+    let h = (await post('/api/hunt', {}, cookie)).json();
+    expect(h.newAchievements).toEqual(['first_catch']);
+    expect(h.player.achievementHunts).toEqual({ first_catch: 1 });
+    expect((await post('/api/auth/signup', { username: 'holly', password: 'candycane123' })).statusCode).toBe(200);
+
+    clock += 1000;
+    h = (await post('/api/hunt', {}, cookie)).json();
+    expect(h.newAchievements).toEqual(['secret_top_hunter']);
+    expect(h.logs.map((r: { kind: string }) => r.kind)).toEqual(['hunt', 'event']);
+    expect(h.logs[1].entry).toEqual({ type: 'achievement', ids: ['secret_top_hunter'] });
+    expect(h.player.achievements).toEqual({ first_catch: clock - 1000, secret_top_hunter: clock });
+    expect(h.player.achievementHunts).toEqual({ first_catch: 1, secret_top_hunter: 2 });
+
+    clock += 1000;
+    const b = (await post('/api/buy', { item: 'jack_in_the_box' }, cookie)).json();
+    expect(b.newAchievements).toEqual(['first_purchase']);
+    // Badges from actions other than a hunt have no hunt number.
+    expect(b.player.achievementHunts.first_purchase).toBeUndefined();
+    const e = (await post('/api/setup', { slot: 'trap', item: 'jack_in_the_box' }, cookie)).json();
+    expect(e.newAchievements).toEqual(['first_upgrade']);
+    // Badges never come twice.
+    clock += 1000;
+    expect((await post('/api/hunt', {}, cookie)).json().newAchievements).toEqual([]);
+
+    // Only the Silver, Gold and Secret badges go into the Hunters feed.
+    const feed = (await get('/api/hunters', cookie)).json().feed;
+    expect(feed.filter((f: { kind: string }) => f.kind === 'event').map((f: { entry: unknown }) => f.entry)).toEqual([{ type: 'achievement', ids: ['secret_top_hunter'] }]);
+    expect((await get('/api/achievements', cookie)).json()).toMatchObject({ hunters: 2, counts: { first_catch: 1, first_purchase: 1 } });
+  });
+
+  it('gives an old save everything it already qualifies for, once', async () => {
+    const cookie = await signupAdmin();
+    const old = { ...newPlayer(content), rank: 2, points: 3000 } as PlayerState;
+    old.stats = { hunts: 120, attracted: 100, caught: 80, goldEarned: 2000 };
+    old.catches = { crumb_imp: 50, gingerbread_imp: 1 };
+    delete old.achievements;
+    delete old.tally;
+    delete old.welcomeSeen;
+    store.savePlayer(1, old, clock);
+    const me = (await get('/api/me', cookie)).json();
+    expect(me.backfill).toEqual(['first_catch', 'first_escape', 'hunts_100', 'catches_50', 'gold_1000', 'rank_2', 'first_rare']);
+    expect(me.journal[0].entry).toMatchObject({ type: 'achievement', backfill: true });
+    // No welcome for an existing player, and no second backfill.
+    expect(me.player.welcomeSeen).toBeUndefined();
+    expect((await get('/api/me', cookie)).json().backfill).toEqual([]);
+  });
+
+  it('shows the welcome popup once per game', async () => {
+    const cookie = await signupAdmin();
+    expect((await post('/api/welcome', {}, cookie)).json().player.welcomeSeen).toBe(true);
+    expect((await get('/api/me', cookie)).json().player.welcomeSeen).toBe(true);
+    await post('/api/restart', { confirm: true }, cookie);
+    expect((await get('/api/me', cookie)).json().player.welcomeSeen).toBe(false);
   });
 });
 

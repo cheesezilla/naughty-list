@@ -7,6 +7,7 @@ import { dayLabel, num, pct, TIER_NAME, when } from '../lib/format.js';
 import { usePrefs } from '../lib/prefs.js';
 import { go } from '../lib/route.js';
 import { BackRow, MainScreen, Tabs } from '../ui.js';
+import { BadgeMedal } from '../lib/medal.js';
 
 /** An imp's portrait, or the "?" card until this player has caught it once. */
 export function ImpThumb({ id, size = 52 }: { id: string; size?: number }) {
@@ -100,6 +101,7 @@ export function eventText(ev: GameEvent, itemName: (id: string) => string, locNa
     case 'sell': return <>Sold <b>{num(ev.amount)} {itemName(ev.item)}</b> for {num(ev.gold)} gold</>;
     case 'craft': return <>Crafted <b>{ev.amount > 1 ? `${num(ev.amount)} ` : ''}{itemName(ev.item)}</b> for {num(ev.gold)} gold and materials</>;
     case 'intro': return <>The story so far</>;
+    case 'achievement': return <>Achievement{ev.ids.length > 1 ? 's' : ''}</>;
     case 'arrival': return <>Arrived in the <b>{locName(ev.location)}</b></>;
     case 'objective': return ev.action === 'start_run' ? <>Started a <b>sleigh run</b></> : <>Took a <b>Rush order</b></>;
     case 'travel': return <>Travelled to the <b>{locName(ev.location)}</b>{ev.unlockCost > 0 && ` and unlocked it for ${num(ev.unlockCost)} gold`}</>;
@@ -110,7 +112,7 @@ export function eventText(ev: GameEvent, itemName: (id: string) => string, locNa
   }
 }
 
-const BADGE: Record<GameEvent['type'], string> = { buy: 'Buy', sell: 'Sell', craft: 'Craft', travel: 'Travel', equip: 'Gear', intro: 'Story', arrival: 'Arrived', objective: 'Goal' };
+const BADGE: Record<GameEvent['type'], string> = { buy: 'Buy', sell: 'Sell', craft: 'Craft', travel: 'Travel', equip: 'Gear', intro: 'Story', arrival: 'Arrived', objective: 'Goal', achievement: 'Badge' };
 
 function EventRow({ row }: { row: JournalRow & { kind: 'event' } }) {
   const { data } = useGame();
@@ -168,7 +170,26 @@ export function ArrivalCard({ location, at }: { location: string; at: number }) 
   );
 }
 
+/** Earned badges: one row with each badge, tap to open it on My profile. */
+function AchievementRow({ ids, at, backfill }: { ids: string[]; at: number; backfill?: boolean }) {
+  const { content } = useGame();
+  const prefs = usePrefs();
+  const list = ids.map((id) => content.achievements.find((a) => a.id === id)).filter((a) => !!a);
+  if (!list.length) return null;
+  return (
+    <button class="log-row event achievement-row" onClick={() => go(`more/profile/achievements/${list[0]!.id}`)}>
+      <BadgeMedal a={list[0]!} earned size={44} />
+      <div class="row-body">
+        {backfill ? <><b>Welcome back!</b> You've already earned {list.length} badge{list.length > 1 ? 's' : ''}: </> : <>🏅 Achievement: </>}
+        <b>{list.map((a) => a.name).join(', ')}</b>
+      </div>
+      <span class="row-time">{when(at, prefs.clock24)}</span>
+    </button>
+  );
+}
+
 export function LogRow({ row }: { row: JournalRow }) {
+  if (row.kind === 'event' && row.entry.type === 'achievement') return <AchievementRow ids={row.entry.ids} at={row.at} backfill={row.entry.backfill} />;
   if (row.kind === 'event' && row.entry.type === 'intro') return <StoryCard at={row.at} />;
   if (row.kind === 'event' && row.entry.type === 'arrival') return <ArrivalCard location={row.entry.location} at={row.at} />;
   return row.kind === 'hunt' ? <HuntRow row={row} /> : <EventRow row={row} />;

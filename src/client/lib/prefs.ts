@@ -7,8 +7,10 @@ export interface Prefs {
   confirmRareBait: boolean;
   clock24: boolean;
   spaceHunts: boolean;
+  /** Show a full popup for each achievement, or only a small toast. */
+  achievementPopups: boolean;
 }
-const DEFAULTS: Prefs = { sound: false, vibrate: true, confirmRareBait: true, clock24: false, spaceHunts: true };
+const DEFAULTS: Prefs = { sound: false, vibrate: true, confirmRareBait: true, clock24: false, spaceHunts: true, achievementPopups: true };
 const KEY = 'nl_prefs';
 const listeners = new Set<(p: Prefs) => void>();
 
@@ -40,11 +42,11 @@ export const getPrefs = () => current;
 
 let audio: AudioContext | undefined;
 /** A short synthesised jingle: no sound files needed. */
-export function playSound(kind: 'catch' | 'escape' | 'boss' | 'rank') {
+export function playSound(kind: 'catch' | 'escape' | 'boss' | 'rank' | 'badge') {
   if (!current.sound) return;
   try {
     audio ??= new AudioContext();
-    const notes = { catch: [784, 1047], escape: [330, 262], boss: [523, 659, 784, 1047], rank: [659, 784, 988, 1319] }[kind];
+    const notes = { catch: [784, 1047], escape: [330, 262], boss: [523, 659, 784, 1047], rank: [659, 784, 988, 1319], badge: [988, 1319, 1568] }[kind];
     notes.forEach((f, i) => {
       const o = audio!.createOscillator();
       const g = audio!.createGain();

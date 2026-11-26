@@ -1,5 +1,5 @@
 import { useState } from 'preact/hooks';
-import type { JournalEntry, JournalRow, PlayerState } from '../../engine/index.js';
+import type { GameEvent, JournalEntry, JournalRow, PlayerState } from '../../engine/index.js';
 import { api } from '../api.js';
 import { useGame } from '../game.js';
 import { Art, artEntry, Icon } from '../lib/art.js';
@@ -8,6 +8,8 @@ import { setPref, usePrefs } from '../lib/prefs.js';
 import { go } from '../lib/route.js';
 import { BackRow, Loading, MainScreen, Tabs, Toggle, useAsync } from '../ui.js';
 import { ImpThumb, StoryCard } from './log.js';
+import { AchievementsTab } from './achievements.js';
+import { BadgeMedal } from '../lib/medal.js';
 
 export function MoreMenu() {
   const { content, player, user, logout } = useGame();
@@ -26,7 +28,7 @@ export function MoreMenu() {
         <div class="menu">
           {item('menu_travel', 'Travel map', `${content.locations.length} lair locations, ${player.unlocked.length} unlocked`, 'more/travel')}
           {item('menu_hunters', 'Hunters', 'Leaderboard and catch feed', 'more/hunters')}
-          {item('menu_stats', 'My stats', `${num(player.stats.hunts)} hunts so far`, 'more/stats')}
+          {item('menu_stats', 'My profile', `${num(player.stats.hunts)} hunts, ${Object.keys(player.achievements ?? {}).length} of ${content.achievements.length} badges`, 'more/profile')}
           {item('menu_howto', 'How to play', 'Power, luck, bait and traps', 'more/howto')}
           {item('menu_settings', 'Settings', 'Sound, clock and shortcuts', 'more/settings')}
           {user.isAdmin && item('menu_admin', 'Admin', 'Only you can see this', 'more/admin')}
@@ -92,7 +94,7 @@ export function TravelScreen() {
 
 interface Hunters {
   players: { username: string; rank: number; points: number; impsOnList: number; you: boolean }[];
-  feed: { id: number; at: number; username: string; entry: JournalEntry }[];
+  feed: ({ id: number; at: number; username: string } & ({ kind: 'hunt'; entry: JournalEntry } | { kind: 'event'; entry: GameEvent }))[];
 }
 export function HuntersScreen() {
   const { content, data } = useGame();
@@ -120,6 +122,18 @@ export function HuntersScreen() {
         <h2 class="list-head">Catch feed: friends' big moments</h2>
         <div class="log">
           {r.data?.feed.map((f) => {
+            if (f.kind === 'event') {
+              if (f.entry.type !== 'achievement') return null;
+              const a = content.achievements.find((x) => x.id === (f.entry as { ids: string[] }).ids[0]);
+              if (!a) return null;
+              return (
+                <div class="log-row event feed">
+                  <BadgeMedal a={a} earned size={44} />
+                  <div class="row-body"><b>{f.username}</b> earned <b>{a.name}</b>{f.entry.ids.length > 1 && ` and ${f.entry.ids.length - 1} more`}</div>
+                  <span class="row-time">{when(f.at, prefs.clock24)}</span>
+                </div>
+              );
+            }
             const imp = f.entry.imp ? data.imps.get(f.entry.imp) : undefined;
             const rank = f.entry.rankUp ? content.ranks[f.entry.rankUp - 1] : undefined;
             const loc = imp ? data.locations.get(imp.location) : undefined;
@@ -139,7 +153,7 @@ export function HuntersScreen() {
               </div>
             );
           })}
-          {r.data && r.data.feed.length === 0 && <p class="muted">No big moments yet. Rare imps, bosses, boss pillages and rank-ups show up here.</p>}
+          {r.data && r.data.feed.length === 0 && <p class="muted">No big moments yet. Rare imps, bosses, boss pillages, rank-ups and Silver, Gold and Secret badges show up here.</p>}
         </div>
         <p class="small muted">Imps you haven't caught yourself still show as ?, so the feed doesn't spoil the portraits.</p>
       </div>
@@ -147,8 +161,22 @@ export function HuntersScreen() {
   );
 }
 
-export function StatsScreen() {
-  const { content, data, player, user } = useGame();
+/** My profile: Stats and Achievements tabs. */
+export function ProfileScreen({ tab, openId }: { tab: 'stats' | 'achievements'; openId?: string }) {
+  const { user } = useGame();
+  return (
+    <MainScreen tab="more">
+      <BackRow to="more" title="My profile" sub={user.createdAt ? `Since you joined on ${date(user.createdAt)}` : undefined} />
+      <div class="pad stack">
+        <Tabs label="Profile" tabs={[{ id: 'stats', label: 'Stats' }, { id: 'achievements', label: 'Achievements' }]} value={tab} onChange={(t) => go(`more/profile/${t}`, true)} />
+        {tab === 'achievements' ? <AchievementsTab openId={openId} /> : <StatsTab />}
+      </div>
+    </MainScreen>
+  );
+}
+
+function StatsTab() {
+  const { content, data, player } = useGame();
   const prefs = usePrefs();
   const r = useAsync(() => api<{ joinedAt: number; rankUps: { rank: number; at: number }[]; firstCatches: Record<string, number> }>('GET', '/api/stats'));
   const escapes = player.stats.attracted - player.stats.caught;
@@ -159,9 +187,7 @@ export function StatsScreen() {
   const tile = (value: string, label: string) => <div class="tile"><b>{value}</b><span>{label}</span></div>;
   const rankAt = (rank: number) => (rank === 1 ? r.data?.joinedAt : r.data?.rankUps.filter((x) => x.rank === rank).at(-1)?.at);
   return (
-    <MainScreen tab="more">
-      <BackRow to="more" title="My stats" sub={user.createdAt ? `Since you joined on ${date(user.createdAt)}` : undefined} />
-      <div class="pad stack">
+    <>
         <div class="tiles">
           {tile(num(player.stats.hunts), 'Hunts')}
           {tile(num(player.stats.caught), 'Catches')}
@@ -211,8 +237,7 @@ export function StatsScreen() {
             </div>
           )}
         </div>
-      </div>
-    </MainScreen>
+    </>
   );
 }
 
@@ -259,6 +284,7 @@ export function SettingsScreen() {
           <Toggle label="Ask before using rare bait" hint="Confirm before equipping Fruitcake and other crafted bait" checked={p.confirmRareBait} onChange={(v) => setPref('confirmRareBait', v)} />
           <Toggle label="24-hour clock" hint="For the times in your hunt log" checked={p.clock24} onChange={(v) => setPref('clock24', v)} />
           <Toggle label="Space bar hunts" hint="On a computer keyboard" checked={p.spaceHunts} onChange={(v) => setPref('spaceHunts', v)} />
+          <Toggle label="Achievement popups" hint="Off shows a small note at the top instead" checked={p.achievementPopups} onChange={(v) => setPref('achievementPopups', v)} />
         </div>
         <h2 class="list-head">Set by the admin</h2>
         <div class="card">

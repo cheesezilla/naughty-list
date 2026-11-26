@@ -5,8 +5,8 @@ import { existsSync } from 'node:fs';
 import { randomInt } from 'node:crypto';
 import type { Content } from '../content/schema.js';
 import {
-  buy, craft, equip, gameData, hunt, newPlayer, objectiveAction, sell, travel,
-  type ActionResult, type PlayerState, type Rng, type Setup,
+  buy, checkAchievements, craft, equip, gameData, hunt, newPlayer, objectiveAction, sell, travel,
+  type ActionResult, type JournalRow, type PlayerState, type Rng, type Setup,
 } from '../engine/index.js';
 import { Store, type GameEvent, type HistoryFilter, type UserRow } from './db.js';
 import { hashPassword, hashToken, newToken, validPassword, validUsername, verifyPassword } from './auth.js';
@@ -42,6 +42,21 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
   const bossIds = impsOfTier('miniboss', 'boss');
   const notableIds = impsOfTier('rare', 'miniboss', 'boss');
   const pillageFeedIds = impsOfTier('boss');
+  // Silver, Gold and Secret achievements go into the Hunters feed.
+  const feedAchievements = content.achievements.filter((a) => a.frame !== 'bronze' || a.secret).map((a) => a.id);
+  const achievementLeaderboard = content.achievements.some((a) => a.when.type === 'leaderboard');
+
+  /** Awards new achievements on `p` (in place) and returns the log event for them, or null. */
+  function awardAchievements(userId: number, p: PlayerState, t: number, afterHunt = false): GameEvent | null {
+    let topHunter = false;
+    if (afterHunt && achievementLeaderboard) {
+      const others = store.players().filter((x) => x.id !== userId);
+      // Only counts against at least one other hunter, so a lone player on a new server doesn't get it on hunt #1.
+      topHunter = p.points > 0 && others.length > 0 && others.every((x) => p.points > x.points);
+    }
+    const ids = checkAchievements(content, p, t, { topHunter, hunt: afterHunt ? p.stats.hunts : undefined });
+    return ids.length ? { type: 'achievement', ids } : null;
+  }
   const lastHunt = new Map<number, number>();
 
   const app = Fastify({ logger: opts.logger ?? false, trustProxy: true });
@@ -96,12 +111,14 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
       const t = now();
       const described = describe(before, r.player, body);
       const events = described === null ? [] : Array.isArray(described) ? described : [described];
+      const earned = awardAchievements(userId, r.player, t);
+      if (earned) events.push(earned);
       const logs = store.tx(() => {
         store.savePlayer(userId, r.player, t);
         return events.map((e) => store.addJournal(userId, r.player.stats.hunts, e, t, 'event'));
       });
       // `log` is the newest row (older clients); `logs` has every row in the order they were written.
-      return { player: r.player, log: logs.at(-1) ?? null, logs };
+      return { player: r.player, log: logs.at(-1) ?? null, logs, newAchievements: earned?.type === 'achievement' ? earned.ids : [] };
     };
   }
   const str = (v: unknown) => (typeof v === 'string' ? v : '');
@@ -160,12 +177,45 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
   app.register(async (game) => {
     game.addHook('preHandler', requireUser);
 
-    game.get('/api/me', async (req) => ({
-      user: { ...publicUser(req.user!), createdAt: req.user!.created_at },
-      player: loadPlayer(req.user!.id),
-      // The last 50 hunts plus the events between them.
-      journal: store.recentLog(req.user!.id, 50),
-    }));
+    game.get('/api/me', async (req) => {
+      const userId = req.user!.id;
+      const player = loadPlayer(userId);
+      // A save from before achievements gets everything it already qualifies for, once, in one log row.
+      let backfill: string[] = [];
+      if (player.achievements === undefined) {
+        const t = now();
+        backfill = checkAchievements(content, player, t);
+        store.tx(() => {
+          store.savePlayer(userId, player, t);
+          if (backfill.length) store.addJournal(userId, player.stats.hunts, { type: 'achievement', ids: backfill, backfill: true }, t, 'event');
+        });
+      }
+      return {
+        user: { ...publicUser(req.user!), createdAt: req.user!.created_at },
+        player,
+        // The last 50 hunts plus the events between them.
+        journal: store.recentLog(userId, 50),
+        backfill,
+      };
+    });
+
+    // How many hunters have earned each achievement, for "Earned by 2 of 5 hunters".
+    game.get('/api/achievements', async () => {
+      const counts: Record<string, number> = {};
+      const players = store.playerStates();
+      for (const st of players) for (const id of Object.keys(st.achievements ?? {})) counts[id] = (counts[id] ?? 0) + 1;
+      return { hunters: players.length, counts };
+    });
+
+    // The welcome popup of a new game was closed.
+    game.post('/api/welcome', async (req) => {
+      const p = loadPlayer(req.user!.id);
+      if (p.welcomeSeen === false) {
+        p.welcomeSeen = true;
+        store.savePlayer(req.user!.id, p, now());
+      }
+      return { player: p };
+    });
 
     game.get<{ Querystring: { before?: string; filter?: string; limit?: string } }>('/api/history', async (req) => {
       const filters: HistoryFilter[] = ['all', 'catches', 'escapes', 'pillaged', 'events', 'bosses'];
@@ -182,7 +232,13 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
     game.get('/api/hunters', async (req) => ({
       players: store.players().map((p) => ({ username: p.username, rank: p.rank, points: p.points, impsOnList: p.impsOnList, you: p.id === req.user!.id })),
       // A pillage shows who was hit, not how much they lost.
-      feed: store.feed(notableIds, 20, pillageFeedIds).map((r) => ({ id: r.id, at: r.at, username: r.username, entry: 'pillage' in r.entry && r.entry.pillage ? { ...r.entry, pillage: { gold: 0, points: 0 } } : r.entry })),
+      feed: store.feed(notableIds, 20, pillageFeedIds, feedAchievements).map((r) => ({
+        id: r.id, at: r.at, username: r.username, kind: r.kind,
+        entry: 'pillage' in r.entry && r.entry.pillage ? { ...r.entry, pillage: { gold: 0, points: 0 } }
+          // Only the feed-worthy badges of an achievement row.
+          : 'type' in r.entry && r.entry.type === 'achievement' ? { ...r.entry, ids: r.entry.ids.filter((id) => feedAchievements.includes(id)) }
+          : r.entry,
+      })),
     }));
 
     game.post('/api/account/password', async (req, reply) => {
@@ -202,11 +258,15 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
 
       const r = hunt(content, loadPlayer(userId), rng, t);
       if (!r.ok) return reply.code(400).send({ error: r.error });
-      const row = store.tx(() => {
+      const earned = awardAchievements(userId, r.player, t, true);
+      const rows = store.tx(() => {
         store.savePlayer(userId, r.player, t);
-        return store.addJournal(userId, r.player.stats.hunts, r.entry, t);
+        const out: JournalRow[] = [store.addJournal(userId, r.player.stats.hunts, r.entry, t)];
+        if (earned) out.push(store.addJournal(userId, r.player.stats.hunts, earned, t, 'event'));
+        return out;
       });
-      return { player: r.player, entry: row };
+      // `entry` is the hunt row; `logs` also holds the achievement row when one was earned.
+      return { player: r.player, entry: rows[0], logs: rows, newAchievements: earned?.type === 'achievement' ? earned.ids : [] };
     });
 
     // Start over: wipes this player's progress and journal, keeps the account, and logs the restart.

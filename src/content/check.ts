@@ -76,5 +76,20 @@ export function checkReferences(c: Content): string[] {
     if (i > 0 && r.points <= c.ranks[i - 1]!.points) problems.push(`rank ${r.rank} needs more points than rank ${r.rank - 1}`);
   });
   if (c.ranks[0]?.points !== 0) problems.push('rank 1 must need 0 points');
+
+  const achIds = new Set<string>();
+  const achNames = new Set<string>();
+  for (const a of c.achievements) {
+    if (achIds.has(a.id)) problems.push(`duplicate achievement id "${a.id}"`);
+    if (achNames.has(a.name)) problems.push(`duplicate achievement name "${a.name}"`);
+    achIds.add(a.id);
+    achNames.add(a.name);
+    const w = a.when;
+    if (w.type === 'rank' && !c.ranks.some((r) => r.rank === w.rank)) problems.push(`achievement ${a.id} needs unknown rank ${w.rank}`);
+    if ((w.type === 'catch' || w.type === 'collection') && 'imp' in w && w.imp && !impIds.has(w.imp)) problems.push(`achievement ${a.id} names unknown imp "${w.imp}"`);
+    if (w.type === 'collection' && w.location && !locIds.has(w.location)) problems.push(`achievement ${a.id} names unknown location "${w.location}"`);
+    if (w.type === 'catch' && !w.imp && !w.tier) problems.push(`achievement ${a.id} catch rule needs an imp or a tier`);
+    if (w.type === 'craft') need(w.item, `achievement ${a.id}`);
+  }
   return problems;
 }
