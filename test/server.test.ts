@@ -206,7 +206,7 @@ describe('server', () => {
 
   it('logs an arrival intro the first time a player reaches a location, and runs location goals', async () => {
     const c = await signupAdmin();
-    const rich: PlayerState = { ...newPlayer(content), rank: 4, points: 50_000, gold: 20_000 };
+    const rich: PlayerState = { ...newPlayer(content), rank: 4, points: 50_000, gold: 20_000, keys: ['gift_tag_key', 'cog_key'] };
     store.savePlayer(1, rich, clock);
     const first = (await post('/api/travel', { location: 'reindeer_stables' }, c)).json();
     expect(first.logs.map((r: { entry: { type: string } }) => r.entry.type)).toEqual(['travel', 'arrival']);

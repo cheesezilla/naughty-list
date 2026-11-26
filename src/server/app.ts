@@ -5,7 +5,7 @@ import { existsSync } from 'node:fs';
 import { randomInt } from 'node:crypto';
 import type { Content } from '../content/schema.js';
 import {
-  addItem, buy, checkAchievements, craft, equip, gameData, hunt, newPlayer, objectiveAction, rankFor, sell, travel,
+  addItem, buy, checkAchievements, craft, equip, gameData, grantKeys, hunt, newPlayer, objectiveAction, rankFor, sell, travel,
   type ActionResult, type JournalRow, type PlayerState, type Rng, type Setup,
 } from '../engine/index.js';
 import { Store, type GameEvent, type HistoryFilter, type UserRow } from './db.js';
@@ -76,7 +76,11 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
 
   function loadPlayer(userId: number): PlayerState {
     const p = store.player(userId);
-    if (p) return p;
+    if (p) {
+      // Saves from before boss keys get the keys they have already earned, once.
+      if (grantKeys(content, p)) store.savePlayer(userId, p, now());
+      return p;
+    }
     const fresh = newPlayer(content, now());
     store.savePlayer(userId, fresh, now());
     return fresh;
@@ -365,7 +369,10 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
           break;
         }
         case 'unlock':
-          for (const l of content.locations) if (!p.unlocked.includes(l.id)) p.unlocked.push(l.id);
+          for (const l of content.locations) {
+            if (!p.unlocked.includes(l.id)) p.unlocked.push(l.id);
+            if (l.key && !(p.keys ??= []).includes(l.key.id)) p.keys.push(l.key.id);
+          }
           break;
         case 'supplies':
           // 200 of every bait and charm, and 50 of every material, to try any setup or recipe.

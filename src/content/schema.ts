@@ -106,6 +106,8 @@ export const Location = z.object({
   preferredBait: id.optional(),
   otherBaitPenalty: chance.optional(),
   objective: Objective.optional(),
+  /** Dropped on the first catch of this location's boss. The next location in the list needs it to unlock. */
+  key: z.object({ id, name: z.string(), description: z.string() }).optional(),
   imps: z.array(Imp).min(1),
 });
 

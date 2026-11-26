@@ -21,6 +21,7 @@
     "description": "Miles of ribbon and paper. The hexed wrappers still can't resist anything that shines.",
     "rank": 2,
     "unlockCost": 250,
+    "key": { "id": "gift_tag_key", "name": "Gift-Tag Key", "description": "A brass key on a gift tag, dropped by Madame Shredwell. It opens the Toy Workshop." },
     "objective": {
       "type": "bait_ladder",
       "tiers": [
@@ -46,6 +47,7 @@
     "description": "Benches, gears and paint pots. The hexed toymakers can't keep their hands off a wind-up.",
     "rank": 3,
     "unlockCost": 1500,
+    "key": { "id": "cog_key", "name": "Cog Key", "description": "A key cut from a clockwork gear, dropped by General Grimbolt. It opens the Reindeer Stables." },
     "objective": {
       "type": "order_board", "slots": 3, "rushSlots": 5, "inspectionEvery": 3, "crateGold": 400,
       "crateRewards": [{ "item": "peppermint_bark", "amount": 5 }, { "item": "windup_key_charm", "amount": 3 }, { "item": "sugar_glass", "amount": 1 }],
