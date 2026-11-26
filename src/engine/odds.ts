@@ -60,13 +60,20 @@ export function catchChance(stats: SetupStats, imp: Imp, cap: number, luckMult =
   return Math.max(0, Math.min(cap, c));
 }
 
+/** Allure: the multiplier on rare, mini boss and boss weights, from the setup's attraction. */
+export function allureFactor(c: Content['constants'], attraction: number): number {
+  return attraction / c.allure.baseline;
+}
+
 /** Encounter weights for every imp in a location with a given bait. */
-export function impWeights(data: GameData, location: Location, baitId: string | null): number[] {
+export function impWeights(data: GameData, location: Location, baitId: string | null, allure = 1): number[] {
   const bait = itemOfKind(data, baitId, 'bait');
   const rare = bait?.rareMultiplier ?? 1;
   return location.imps.map((imp) => {
     const w = (baitId ? imp.baitWeights?.[baitId] : undefined) ?? imp.weight;
-    return imp.tier === 'common' ? w : w * rare;
+    if (imp.tier === 'common') return w;
+    const a = imp.tier === 'uncommon' ? 1 : allure;
+    return w * rare * a;
   });
 }
 
@@ -79,7 +86,7 @@ export interface ImpOdds {
 export interface HuntOdds {
   stats: SetupStats;
   imps: ImpOdds[];
-  /** Chance per hunt of a catch (attraction x encounter x catch, summed). */
+  /** Chance per hunt of a catch (encounter x catch, summed; every hunt meets an elf). */
   catchPerHunt: number;
   expectedGold: number;
   expectedPoints: number;
@@ -91,7 +98,7 @@ export function huntOdds(content: Content, setup: Setup, locationId: string): Hu
   const location = data.locations.get(locationId);
   if (!location) throw new Error(`unknown location ${locationId}`);
   const stats = setupStats(content, setup, location);
-  const weights = impWeights(data, location, setup.bait);
+  const weights = impWeights(data, location, setup.bait, allureFactor(content.constants, stats.attraction));
   const total = weights.reduce((s, w) => s + w, 0) || 1;
   const imps = location.imps.map((imp, i) => ({
     imp,
@@ -102,7 +109,7 @@ export function huntOdds(content: Content, setup: Setup, locationId: string): Hu
   let expectedGold = 0;
   let expectedPoints = 0;
   for (const o of imps) {
-    const p = stats.attraction * o.encounter * o.catchChance;
+    const p = o.encounter * o.catchChance;
     catchPerHunt += p;
     expectedGold += p * o.imp.gold;
     expectedPoints += p * o.imp.points;

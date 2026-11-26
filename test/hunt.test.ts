@@ -2,24 +2,37 @@ import { describe, expect, it } from 'vitest';
 import { hunt, rollPillage } from '../src/engine/hunt.js';
 import { newPlayer, buy, sell, craft, equip, travel, grantKeys, keyNeeded, type PlayerState } from '../src/engine/player.js';
 import { seededRng } from '../src/engine/rng.js';
-import { catchChance, effectiveness, luckFactor } from '../src/engine/odds.js';
+import { catchChance, effectiveness, huntOdds, luckFactor } from '../src/engine/odds.js';
 import { content, scripted, withConstants } from './helpers.js';
 
 const fresh = () => newPlayer(content);
 const fresh300 = () => ({ ...fresh(), gold: 300 });
 
 describe('hunt', () => {
-  it('uses no bait when nothing is attracted', () => {
+  it('every hunt meets an elf and uses bait: there are no quiet hunts', () => {
     const r = hunt(content, fresh(), scripted(0.99));
     if (!r.ok) throw new Error(r.error);
-    expect(r.entry.outcome).toBe('quiet');
-    expect(r.player.inventory.stale_cookie).toBe(100);
+    expect(r.entry.outcome).not.toBe('quiet');
+    expect(r.entry.imp).toBeDefined();
+    expect(r.player.inventory.stale_cookie).toBe(99);
     expect(r.player.stats.hunts).toBe(1);
   });
 
+  it('allure scales rare, mini boss and boss odds by attraction / baseline, and leaves commons alone', () => {
+    const setup = { trap: 'starlit_stocking', base: 'cardboard_box', bait: 'stale_cookie', charm: null };
+    const loc = 'cookie_pantry';
+    const a = huntOdds(content, setup, loc).stats.attraction;
+    const neutral = huntOdds(withConstants({ allure: { baseline: a } }), setup, loc);
+    const strong = huntOdds(withConstants({ allure: { baseline: a / 2 } }), setup, loc);
+    const rare = (o: typeof neutral) => o.imps.find((i) => i.imp.tier === 'rare')!.encounter;
+    const common = (o: typeof neutral) => o.imps.find((i) => i.imp.tier === 'common')!.encounter;
+    expect(rare(strong)).toBeGreaterThan(rare(neutral));
+    expect(common(strong)).toBeLessThan(common(neutral));
+  });
+
   it('catches: pays gold and points and uses one bait', () => {
-    // attract (0), pick first imp (0), catch (0), no loot needed
-    const r = hunt(content, fresh(), scripted(0, 0, 0, 0.99));
+    // pick first imp (0), catch (0), no loot needed
+    const r = hunt(content, fresh(), scripted(0, 0, 0.99));
     if (!r.ok) throw new Error(r.error);
     expect(r.entry).toMatchObject({ outcome: 'catch', imp: 'crumb_elf', gold: 12, points: 20, baitUsed: 1 });
     expect(r.player.gold).toBe(212);
@@ -29,7 +42,7 @@ describe('hunt', () => {
   });
 
   it('escapes: pays nothing and still uses bait', () => {
-    const r = hunt(content, fresh(), scripted(0, 0, 0.999));
+    const r = hunt(content, fresh(), scripted(0, 0.999));
     if (!r.ok) throw new Error(r.error);
     expect(r.entry.outcome).toBe('escape');
     expect(r.player.gold).toBe(200);
@@ -38,7 +51,7 @@ describe('hunt', () => {
 
   it('bait-stealing imps always pillage one bait when they escape', () => {
     // Jarbelly sits after weights 40+30+15 = 85 of 100
-    const r = hunt(content, fresh(), scripted(0, 0.9, 0.999));
+    const r = hunt(content, fresh(), scripted(0.9, 0.999));
     if (!r.ok) throw new Error(r.error);
     expect(r.entry.imp).toBe('jarbelly');
     expect(r.entry.baitUsed).toBe(1);
@@ -49,7 +62,7 @@ describe('hunt', () => {
 
   it('ranks up when points pass a threshold', () => {
     const p: PlayerState = { ...fresh(), points: 2490 };
-    const r = hunt(content, p, scripted(0, 0, 0, 0.99));
+    const r = hunt(content, p, scripted(0, 0, 0.99));
     if (!r.ok) throw new Error(r.error);
     expect(r.entry.rankUp).toBe(2);
     expect(r.player.rank).toBe(2);
@@ -67,14 +80,14 @@ describe('hunt', () => {
     const r = hunt(content, p, scripted(0.99));
     if (!r.ok) throw new Error(r.error);
     expect(r.entry.rescued).toBe(true);
-    expect(r.player.inventory.stale_cookie).toBe(10);
+    expect(r.player.inventory.stale_cookie).toBe(9);
   });
 
   it('uses and then unequips a charm when the last one is spent', () => {
     const p = fresh();
     p.inventory.mistletoe_charm = 1;
     p.setup.charm = 'mistletoe_charm';
-    const r = hunt(content, p, scripted(0, 0, 0, 0.99));
+    const r = hunt(content, p, scripted(0, 0, 0.99));
     if (!r.ok) throw new Error(r.error);
     expect(r.entry.charmUsed).toBe(true);
     expect(r.player.setup.charm).toBeNull();
