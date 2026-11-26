@@ -54,8 +54,9 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
       // Only counts against at least one other hunter, so a lone player on a new server doesn't get it on hunt #1.
       topHunter = p.points > 0 && others.length > 0 && others.every((x) => p.points > x.points);
     }
-    const ids = checkAchievements(content, p, t, { topHunter, hunt: afterHunt ? p.stats.hunts : undefined });
-    return ids.length ? { type: 'achievement', ids } : null;
+    const rewards: Record<string, number> = {};
+    const ids = checkAchievements(content, p, t, { topHunter, hunt: afterHunt ? p.stats.hunts : undefined, rewards });
+    return ids.length ? { type: 'achievement', ids, rewards } : null;
   }
   const lastHunt = new Map<number, number>();
 
@@ -188,10 +189,11 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
       let backfill: string[] = [];
       if (player.achievements === undefined) {
         const t = now();
-        backfill = checkAchievements(content, player, t);
+        const rewards: Record<string, number> = {};
+        backfill = checkAchievements(content, player, t, { rewards });
         store.tx(() => {
           store.savePlayer(userId, player, t);
-          if (backfill.length) store.addJournal(userId, player.stats.hunts, { type: 'achievement', ids: backfill, backfill: true }, t, 'event');
+          if (backfill.length) store.addJournal(userId, player.stats.hunts, { type: 'achievement', ids: backfill, backfill: true, rewards }, t, 'event');
         });
       }
       return {

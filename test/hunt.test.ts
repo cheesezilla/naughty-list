@@ -6,6 +6,7 @@ import { catchChance, effectiveness, luckFactor } from '../src/engine/odds.js';
 import { content, scripted, withConstants } from './helpers.js';
 
 const fresh = () => newPlayer(content);
+const fresh300 = () => ({ ...fresh(), gold: 300 });
 
 describe('hunt', () => {
   it('uses no bait when nothing is attracted', () => {
@@ -21,7 +22,7 @@ describe('hunt', () => {
     const r = hunt(content, fresh(), scripted(0, 0, 0, 0.99));
     if (!r.ok) throw new Error(r.error);
     expect(r.entry).toMatchObject({ outcome: 'catch', imp: 'crumb_elf', gold: 12, points: 20, baitUsed: 1 });
-    expect(r.player.gold).toBe(312);
+    expect(r.player.gold).toBe(212);
     expect(r.player.points).toBe(20);
     expect(r.player.catches.crumb_elf).toBe(1);
     expect(r.player.inventory.stale_cookie).toBe(99);
@@ -31,7 +32,7 @@ describe('hunt', () => {
     const r = hunt(content, fresh(), scripted(0, 0, 0.999));
     if (!r.ok) throw new Error(r.error);
     expect(r.entry.outcome).toBe('escape');
-    expect(r.player.gold).toBe(300);
+    expect(r.player.gold).toBe(200);
     expect(r.player.inventory.stale_cookie).toBe(99);
   });
 
@@ -109,7 +110,7 @@ describe('hunt', () => {
 
 describe('shop, crafting and travel', () => {
   it('buys and sells', () => {
-    const b = buy(content, fresh(), 'jack_in_the_box');
+    const b = buy(content, fresh300(), 'jack_in_the_box');
     if (!b.ok) throw new Error(b.error);
     expect(b.player.gold).toBe(0);
     expect(buy(content, b.player, 'jack_in_the_box').ok).toBe(false);
@@ -121,14 +122,14 @@ describe('shop, crafting and travel', () => {
   it('enforces rank on purchases and travel', () => {
     expect(buy(content, { ...fresh(), gold: 1e6 }, 'star_lantern').ok).toBe(false);
     expect(travel(content, { ...fresh(), gold: 1e6 }, 'wrapping_room').ok).toBe(false);
-    const t = travel(content, { ...fresh(), rank: 2 }, 'wrapping_room'); // the Pantry has no boss, so no key
+    const t = travel(content, { ...fresh300(), rank: 2 }, 'wrapping_room'); // the Pantry has no boss, so no key
     if (!t.ok) throw new Error(t.error);
     expect(t.player.gold).toBe(50);
     expect(t.player.unlocked).toContain('wrapping_room');
   });
 
   it('crafts Fruitcake from boss and common loot', () => {
-    const p = { ...fresh(), rank: 2, inventory: { ...fresh().inventory, candied_peel: 3, cookie_tin: 1 } };
+    const p = { ...fresh300(), rank: 2, inventory: { ...fresh().inventory, candied_peel: 3, cookie_tin: 1 } };
     const r = craft(content, p, 'fruitcake_x5');
     if (!r.ok) throw new Error(r.error);
     expect(r.player.inventory.fruitcake).toBe(5);

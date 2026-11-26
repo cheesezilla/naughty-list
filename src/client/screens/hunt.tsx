@@ -110,6 +110,7 @@ export function HuntScreen() {
           </div>
         </div>
         <div class="pad stack">
+          <TipBar onEquipCharm={() => setSheet('charm')} />
           <div class="card gear-card">
             <div class="trap-row">
               <button class="trap-button" onClick={() => go('arsenal/trap')} aria-label={`Change trap and base. Now ${trap.name} on ${base.name}`}>
@@ -163,6 +164,43 @@ export function HuntScreen() {
       <BottomNav tab="hunt" />
       {sheet && <BaitSheet initial={sheet} onClose={() => setSheet(null)} />}
       {hint && <HintSheet location={location} onClose={() => setHint(false)} />}
+    </div>
+  );
+}
+
+/** Seen tips are remembered on this device, per hunter. */
+const seenKey = (userId: number) => `nl_tips_${userId}`;
+function readSeen(userId: number): string[] {
+  try { return JSON.parse(localStorage.getItem(seenKey(userId)) ?? '[]') as string[]; } catch { return []; }
+}
+
+/** A light one-line tip for new hunters, shown once each and never over other popups. */
+function TipBar({ onEquipCharm }: { onEquipCharm: () => void }) {
+  const { content, data, player, user } = useGame();
+  const [seen, setSeen] = useState(() => readSeen(user.id));
+  const mark = (id: string) => {
+    const next = [...new Set([...readSeen(user.id), id])];
+    try { localStorage.setItem(seenKey(user.id), JSON.stringify(next)); } catch { /* private mode: hide for this visit */ }
+    setSeen(next);
+  };
+  const buyable = content.items.traps.filter((t) => t.price !== null && t.rank <= player.rank).sort((a, b) => a.price! - b.price!)[0];
+  const ownsNewTrap = content.items.traps.some((t) => t.id !== content.constants.startingSetup.trap && count(player, t.id) > 0);
+  const charm = content.items.charms.find((c) => count(player, c.id) > 0);
+  const tips: Record<string, { text: string; go: () => void; label: string } | null> = {
+    trap: buyable && !ownsNewTrap && player.gold >= buyable.price! && player.setup.trap === content.constants.startingSetup.trap
+      ? { text: `You can afford the ${buyable.name}! Buy it in the Elf Emporium, then equip it from the Arsenal to catch more elves.`, go: () => go('emporium/traps'), label: 'Open Emporium' } : null,
+    charm: charm && !player.setup.charm
+      ? { text: `You have a ${charm.name}! Equip it in the Charm slot to strengthen your trap.`, go: onEquipCharm, label: 'Equip charm' } : null,
+  };
+  const id = ['trap', 'charm'].find((k) => tips[k] && !seen.includes(k));
+  if (!id) return null;
+  const tip = tips[id]!;
+  return (
+    <div class="tip-bar" role="note">
+      <span aria-hidden="true">💡</span>
+      <p>{tip.text}</p>
+      <button class="outline-btn" onClick={() => { mark(id); tip.go(); }}>{tip.label}</button>
+      <button class="ach-close" aria-label="Dismiss tip" onClick={() => mark(id)}>✕</button>
     </div>
   );
 }

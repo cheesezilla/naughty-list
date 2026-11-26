@@ -1,6 +1,6 @@
 import { powerTypes, type Achievement, type AchievementStat, type Content } from '../content/schema.js';
 import { gameData } from './data.js';
-import { count, type PlayerState } from './player.js';
+import { addItem, count, type PlayerState } from './player.js';
 
 /** Things only the server knows, for rules like the leaderboard one. */
 export interface AchievementContext {
@@ -8,6 +8,8 @@ export interface AchievementContext {
   topHunter?: boolean;
   /** The hunt that earned these badges, when they come from a hunt. Shown as "on hunt #N". */
   hunt?: number;
+  /** Filled with the total free items granted by the badges awarded in this call (item id → amount). */
+  rewards?: Record<string, number>;
 }
 
 const sum = (xs: number[]) => xs.reduce((a, b) => a + b, 0);
@@ -88,6 +90,10 @@ export function checkAchievements(content: Content, p: PlayerState, now: number,
       earned[a.id] = now;
       if (ctx.hunt) (p.achievementHunts ??= {})[a.id] = ctx.hunt;
       fresh.push(a.id);
+      for (const [item, n] of Object.entries(a.reward ?? content.constants.achievementRewards[a.frame])) {
+        addItem(p, item, n);
+        if (ctx.rewards) ctx.rewards[item] = (ctx.rewards[item] ?? 0) + n;
+      }
     }
   }
   return fresh;

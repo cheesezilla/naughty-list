@@ -165,6 +165,8 @@ export const Constants = z.object({
   startingItems: z.record(id, z.number().int().nonnegative()),
   startingSetup: z.object({ trap: id, base: id, bait: id.nullable(), charm: id.nullable() }),
   startingLocation: id,
+  /** Free items for each badge frame (item id → amount), granted when a badge is earned unless the badge sets its own `reward`. */
+  achievementRewards: z.object({ bronze: z.record(id, z.number().int().positive()), silver: z.record(id, z.number().int().positive()), gold: z.record(id, z.number().int().positive()) }),
   attractionCap: chance,
   catchCap: chance,
   /** Luck: its bonus is `scale` x luck squared x the weight of the elf's tier, so luck helps most against common elves and least against bosses. */
@@ -237,6 +239,8 @@ export const Achievement = z.object({
   secret: z.boolean().optional(),
   /** Brief for the badge art (emblem only). */
   badge: z.string().max(160).optional(),
+  /** Overrides the frame's default reward (item id → amount). */
+  reward: z.record(id, z.number().int().positive()).optional(),
   when: AchievementRule,
 });
 
