@@ -69,20 +69,27 @@ export function AchievementPopup({ ids, backfill, onClose }: { ids: string[]; ba
   );
 }
 
-/** The quiet version: a small toast at the top for 3 seconds. */
-export function AchievementToast({ ids, onClose }: { ids: string[]; onClose: () => void }) {
+/** Every new badge: a banner under the header that never blocks the screen and leaves by itself. */
+export function AchievementBanner({ ids, onClose }: { ids: string[]; onClose: () => void }) {
   const { content } = useGame();
-  const a = content.achievements.find((x) => x.id === ids[0]);
-  useEffect(() => { const t = setTimeout(onClose, 3000); return () => clearTimeout(t); }, [ids]);
+  const [i, setI] = useState(0);
+  const a = content.achievements.find((x) => x.id === ids[i]);
+  const left = ids.length - i - 1;
+  useEffect(() => {
+    const t = setTimeout(() => (i + 1 < ids.length ? setI(i + 1) : onClose()), 4000);
+    return () => clearTimeout(t);
+  }, [i, ids.length]);
   if (!a) return null;
   return (
-    <button class="ach-toast" onClick={() => { onClose(); go(`more/profile/achievements/${a.id}`); }}>
-      <BadgeMedal a={a} earned size={44} />
+    <button class="ach-banner" key={a.id} onClick={() => { onClose(); go(`more/profile/achievements/${a.id}`); }}>
+      <BadgeMedal a={a} earned size={48} />
       <span>
-        <small class="kicker">Achievement earned{ids.length > 1 ? ` (+${ids.length - 1} more)` : ''}</small>
+        <small class="kicker">Achievement earned</small>
         <b>{a.name}</b>
         <small>{FRAME_NAME[a.frame]} · tap to view</small>
       </span>
+      {left > 0 && <em class="ach-more">+{left} more</em>}
+      <i class="ach-timer" aria-hidden="true" />
     </button>
   );
 }

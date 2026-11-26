@@ -284,7 +284,7 @@ export function SettingsScreen() {
           <Toggle label="Ask before using rare bait" hint="Confirm before equipping Fruitcake and other crafted bait" checked={p.confirmRareBait} onChange={(v) => setPref('confirmRareBait', v)} />
           <Toggle label="24-hour clock" hint="For the times in your hunt log" checked={p.clock24} onChange={(v) => setPref('clock24', v)} />
           <Toggle label="Space bar hunts" hint="On a computer keyboard" checked={p.spaceHunts} onChange={(v) => setPref('spaceHunts', v)} />
-          <Toggle label="Achievement popups" hint="Off shows a small note at the top instead" checked={p.achievementPopups} onChange={(v) => setPref('achievementPopups', v)} />
+          <Toggle label="New catch popups" hint="Off shows a small note at the top instead" checked={p.newCatchPopups} onChange={(v) => setPref('newCatchPopups', v)} />
         </div>
         <h2 class="list-head">Set by the admin</h2>
         <div class="card">
