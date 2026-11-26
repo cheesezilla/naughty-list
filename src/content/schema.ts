@@ -177,7 +177,7 @@ export const Story = z.object({
   /** Per location: the first-visit intro logged on arrival, and the how-to-clear steps behind the "?" button. */
   locations: z.record(id, z.object({
     intro: z.string().min(1).max(400),
-    hint: z.array(z.string().min(1).max(120)).min(1).max(4),
+    hint: z.array(z.string().min(1).max(120)).min(1).max(5),
   })).optional(),
   /** The one-time popup when a new game starts. */
   welcome: z.object({

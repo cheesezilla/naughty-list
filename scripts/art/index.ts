@@ -148,10 +148,10 @@ function main() {
     for (const imp of loc.imps) {
       const { body, look } = drawImp({ id: imp.id, name: imp.name, tier: imp.tier as Tier, location: loc.id });
       const tier = imp.tier === 'miniboss' ? 'mini boss' : imp.tier;
-      add({ id: imp.id, slot: 'imps', width: 512, height: 512, transparent: false, description: `${imp.name} (${tier}, ${loc.name}): ${look}`, look: `portrait of ${imp.name}, a ${tier} imp from the ${loc.name}: ${look}`, body, extra: { tier: imp.tier, location: loc.id } });
+      add({ id: imp.id, slot: 'imps', width: 512, height: 512, transparent: false, description: `${imp.name} (${tier}, ${loc.name}): ${look}`, look: `portrait of ${imp.name}, a ${tier} from the ${loc.name}: ${look}`, body, extra: { tier: imp.tier, location: loc.id } });
     }
   }
-  add({ id: '_locked', slot: 'imps', width: 512, height: 512, transparent: false, description: 'Uncaught imp: dark silhouette with a gold question mark', look: 'locked portrait card for an imp not caught yet: a dark navy imp silhouette with a big gold question mark', body: drawLockedImp() });
+  add({ id: '_locked', slot: 'imps', width: 512, height: 512, transparent: false, description: 'Uncaught elf: dark silhouette in a pointed cap with a gold question mark', look: 'locked portrait card for a hexed elf not caught yet: a dark navy elf silhouette in a pointed cap with a big gold question mark', body: drawLockedImp() });
 
   // ranks
   for (const r of content.ranks) {

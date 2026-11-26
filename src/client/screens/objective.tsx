@@ -112,7 +112,7 @@ function OrderPanel({ o, s, location }: { o: Orders; s?: Extract<ObjectiveState,
         ))}
       </ol>
       {s.forced
-        ? <p class="panel-line strong">{name(s.forced)} is coming! The next imp you attract here is them.</p>
+        ? <p class="panel-line strong">{name(s.forced)} is coming! The next elf you attract here is them.</p>
         : needed && <p class="panel-line">Next part needs <b>{TYPE_NAME[needed]}</b>. Your trap: {trap?.name} ({trapType ? TYPE_NAME[trapType] : 'none'}) <span class={trapType === needed ? 'ok' : 'no'}>{trapType === needed ? 'matches' : "doesn't match"}</span></p>}
       {!s.rush && !s.forced && <p class="panel-line">{untilInspection === 1 ? `${name(o.miniboss)} inspects after this order.` : `${name(o.miniboss)} inspects in ${untilInspection} orders.`} Each order pays {num(o.crateGold)} gold and a bonus.</p>}
       {s.rushReady && !s.rush && (
@@ -144,7 +144,7 @@ function SleighPanel({ o, s, location }: { o: Sleigh; s?: Extract<ObjectiveState
     return (
       <>
         <h3><Art slot="materials" id="silver_sleighbell" class="panel-icon" alt="" />Sleigh Run <small>Launched!</small></h3>
-        <p class="panel-line strong">{name(s.forced)} is attacking the sleigh. The next imp you attract here is them.</p>
+        <p class="panel-line strong">{name(s.forced)} is attacking the sleigh. The next elf you attract here is them.</p>
       </>
     );
   }

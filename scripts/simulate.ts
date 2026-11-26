@@ -116,6 +116,20 @@ function plan(p: PlayerState, log: Log, huntNo: number): PlayerState {
     }
   }
 
+  // 4a. The order board asks for every trap type: before hunting there, own one trap of each type
+  // (the cheapest one on sale), as a player reading the board would.
+  if (data.locations.get(p.location)?.objective?.type === 'order_board') {
+    for (const type of new Set(content.items.traps.map((t) => t.type))) {
+      if (content.items.traps.some((t) => t.type === type && count(p, t.id) > 0)) continue;
+      const cheapest = content.items.traps
+        .filter((t) => t.type === type && t.price !== null && t.rank <= p.rank)
+        .sort((a, b) => a.price! - b.price!)[0];
+      if (!cheapest) continue;
+      const r = buy(content, p, cheapest.id);
+      if (r.ok) { p = r.player; log.purchases.push({ hunt: huntNo, item: cheapest.id }); }
+    }
+  }
+
   // 4. Buy the gear upgrade that helps most here, keeping enough gold for ~60 baits.
   const current = bestSetup(p, p.location, true);
   const reserve = 60 * Math.max(8, baitPrice(current.setup.bait ?? ''));
