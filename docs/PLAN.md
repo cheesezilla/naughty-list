@@ -536,8 +536,8 @@ The More menu's **My stats** becomes **My profile**, with two tabs: **Stats** (t
 ┌────────────────────────────────────┐
 │ ‹ My profile                       │
 │   [ Stats ]  [ Achievements ]      │
-│  23 of 55 badges  ███████░░░░░ 42% │
-│  Bronze 15/24 · Silver 6/19 · Gold 2/12
+│  13 of 46 badges  ███░░░░░░░░░ 28% │
+│  Bronze 13/20 · Silver 0/16 · Gold 0/10
 │ (All)(First steps)(Hunting)(Ranks) │ ← filter chips, scroll sideways
 │ (Naughty List)(Bosses)(Gear)(Secret)
 │ ┌──────┐ ┌──────┐ ┌──────┐         │
@@ -564,7 +564,7 @@ The More menu's **My stats** becomes **My profile**, with two tabs: **Stats** (t
 - Achievements that wait on an unbuilt feature are left out until that feature ships, so the totals only count what can be earned.
 - Later: tapping a hunter on the Hunters page opens their profile with the same Achievements tab (their earned badges in colour, the rest greyed, their secrets still "?").
 
-**Visual mockups** of the popup, the toast, the Achievements screen and the badge detail sheet are on the UI canvas (https://claude.ai/artifact/7A6Y6w37aCDXneVGDSDCDs), in the row "Achievements".
+**Visual mockups** of the popup, the toast, the Achievements screen and the badge detail sheet are on the UI canvas (https://claude.ai/artifact/7A6Y6w37aCDXneVGDSDCDs), in the row "Achievements and badges" (popup, quiet toast, Achievements tab, badge detail not earned and earned).
 
 ### How it would be built
 
