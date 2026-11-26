@@ -1,5 +1,5 @@
 import { useState } from 'preact/hooks';
-import type { GameEvent, JournalEntry, JournalRow, PlayerState } from '../../engine/index.js';
+import { keyNeeded, type GameEvent, type JournalEntry, type JournalRow, type PlayerState } from '../../engine/index.js';
 import { api } from '../api.js';
 import { useGame } from '../game.js';
 import { Art, artEntry, Icon } from '../lib/art.js';
@@ -70,6 +70,9 @@ export function TravelScreen() {
           const open = player.unlocked.includes(l.id);
           const here = l.id === player.location;
           const rankName = content.ranks[l.rank - 1]?.name;
+          const needKey = keyNeeded(content, l.id);
+          const missingKey = !open && needKey && !(player.keys ?? []).includes(needKey.id) ? needKey : undefined;
+          const bossName = needKey ? content.locations.find((x) => x.key?.id === needKey.id)?.imps.find((m) => m.tier === 'boss')?.name : undefined;
           return (
             <div class={`card loc-card ${here ? 'here' : ''} ${l.rank > player.rank ? 'locked' : ''}`}>
               <Art slot="locations" id={l.id} class="loc-thumb" />
@@ -77,10 +80,12 @@ export function TravelScreen() {
                 <b>{l.name}</b>
                 <small>Rank {rankName} · unlock {l.unlockCost ? `${num(l.unlockCost)} gold` : 'free'}{' '}<span class={`pill ${open ? 'green' : ''}`}>{open ? 'Unlocked' : 'Locked'}</span></small>
                 <small class="desc">{l.description}</small>
+                {needKey && <small>{missingKey ? `Needs the ${needKey.name}: catch ${bossName} to get it.` : `${needKey.name} found.`}</small>}
                 <span class="weak-row"><small>Best traps</small>{l.homeTypes.map((t) => <TypeMedal type={t} size={22} />)}</span>
               </div>
               {here ? <span class="pill gold">You are here</span>
                 : l.rank > player.rank ? <span class="small muted">Needs {rankName}</span>
+                : missingKey ? <span class="small muted">Needs key</span>
                 : <button class="primary-btn" disabled={!open && player.gold < l.unlockCost}
                     onClick={async () => { if (await act('/api/travel', { location: l.id }, `Welcome to the ${l.name}.`)) go('hunt'); }}>
                     {open ? 'Go' : `Unlock ${num(l.unlockCost)}`}
@@ -382,6 +387,10 @@ export function AdminScreen() {
             ? <Toggle label="Allow new accounts" hint="Turn off once all your friends have joined" checked={settings.data.settings.allowSignups} onChange={setSignups} />
             : <Loading />}
           <Toggle label={`${content.constants.stamina.name} meter`} hint="Limits hunts with a cup that refills over time. Kept off for now; it is set in content/constants.json." checked={content.constants.stamina.enabled} onChange={() => {}} disabled />
+        </div>
+        <h2 class="list-head">Odds display (testing)</h2>
+        <div class="card toggles">
+          <Toggle label="Show exact attraction and catch rates" hint="Adds the real percentages next to the tier bars and on item cards (bait, charms, traps, shop). Admins only, this device only." checked={prefs.exactOdds} onChange={(v) => setPref('exactOdds', v)} />
         </div>
         <SpeedRun />
         <h2 class="list-head">Restart log</h2>

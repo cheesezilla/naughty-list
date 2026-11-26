@@ -9,8 +9,10 @@ export interface Prefs {
   spaceHunts: boolean;
   /** Show a full popup for a first catch, or only a small toast. */
   newCatchPopups: boolean;
+  /** Admins only: show exact attraction and catch percentages next to the tier bars. */
+  exactOdds: boolean;
 }
-const DEFAULTS: Prefs = { sound: false, vibrate: true, confirmRareBait: true, clock24: false, spaceHunts: true, newCatchPopups: true };
+const DEFAULTS: Prefs = { sound: false, vibrate: true, confirmRareBait: true, clock24: false, spaceHunts: true, newCatchPopups: true, exactOdds: false };
 const KEY = 'nl_prefs';
 const listeners = new Set<(p: Prefs) => void>();
 

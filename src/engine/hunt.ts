@@ -19,6 +19,8 @@ export interface JournalEntry {
   rescued?: boolean;
   /** True on the first ever catch of this imp: the Naughty List portrait unlocks. */
   firstCatch?: boolean;
+  /** Id of the boss key this catch dropped (first catch of a local boss). */
+  key?: string;
   /** Set when an escaped imp pillaged the player. */
   pillage?: Pillage;
   /** What the hunt did to the location's own loop (order board, sleigh run). */
@@ -142,6 +144,10 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0, b
     if (effectiveness(imp, stats.type) > 1) bump(p, 'weaknessCatches');
     if ((imp.tier === 'miniboss' || imp.tier === 'boss') && p.setup.trap === c.startingSetup.trap) bump(p, 'starterBoss');
     p.catches[imp.id] = (p.catches[imp.id] ?? 0) + 1;
+    if (imp.tier === 'boss' && location.key && !(p.keys ?? []).includes(location.key.id)) {
+      p.keys = [...(p.keys ?? []), location.key.id];
+      entry.key = location.key.id;
+    }
     for (const l of imp.loot ?? []) {
       if (boost?.odds || rng() < l.chance) {
         const amount = l.amount ?? 1;

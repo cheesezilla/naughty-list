@@ -5,25 +5,26 @@ import { num, pct, TYPE_NAME } from '../lib/format.js';
 import { go } from '../lib/route.js';
 import { BackRow, FullScreen, Tabs } from '../ui.js';
 import { TypeMedal } from '../lib/medal.js';
+import { useExactOdds, useRateText } from '../lib/effectiveness.js';
 import { catchIfAttracted, TrapOnBase } from './hunt.js';
 
 type Slot = keyof Setup;
 const SLOTS: { id: Slot; label: string }[] = [{ id: 'trap', label: 'Trap' }, { id: 'base', label: 'Base' }, { id: 'bait', label: 'Bait' }, { id: 'charm', label: 'Charm' }];
 
 /** One line of numbers for any item. */
-export function itemStats(item: AnyItem): string {
+export function itemStats(item: AnyItem, exact: boolean): string {
   const bits: string[] = [];
   if (item.kind === 'trap' || item.kind === 'base') {
     bits.push(`Power ${num(item.power)}`, `Luck ${item.luck}`);
-    if (item.attraction) bits.push(`+${pct(item.attraction)} attraction`);
+    if (exact && item.attraction) bits.push(`+${pct(item.attraction)} attraction`);
   } else if (item.kind === 'bait') {
-    bits.push(`${pct(item.attraction)} attraction`);
+    if (exact) bits.push(`${pct(item.attraction)} attraction`);
     if (item.rareMultiplier) bits.push(`rares ×${item.rareMultiplier}`);
   } else if (item.kind === 'charm') {
     if (item.luck) bits.push(`+${item.luck} luck`);
     if (item.power) bits.push(`+${item.power} power`);
     if (item.powerBonus) bits.push(`+${pct(item.powerBonus)} power`);
-    if (item.attraction) bits.push(`+${pct(item.attraction)} attraction`);
+    if (exact && item.attraction) bits.push(`+${pct(item.attraction)} attraction`);
   } else {
     bits.push(`Sells for ${num(item.sellPrice)} gold`);
   }
@@ -38,6 +39,7 @@ export function ItemThumb({ item, class: cls = 'thumb' }: { item: AnyItem; class
 
 function Compare({ setup }: { setup: Setup }) {
   const { content, player } = useGame();
+  const rateText = useRateText();
   const a = huntOdds(content, player.setup, player.location);
   const b = huntOdds(content, setup, player.location);
   const line = (label: string, x: number, y: number, f: (n: number) => string) => (
@@ -47,14 +49,15 @@ function Compare({ setup }: { setup: Setup }) {
     <div class="compare">
       {line('Power', a.stats.power, b.stats.power, num)}
       {line('Luck', a.stats.luck, b.stats.luck, num)}
-      {line('Attraction', a.stats.attraction, b.stats.attraction, pct)}
-      {line('Catch', catchIfAttracted(a), catchIfAttracted(b), pct)}
+      {line('Attraction', a.stats.attraction, b.stats.attraction, rateText)}
+      {line('Catch', catchIfAttracted(a), catchIfAttracted(b), rateText)}
     </div>
   );
 }
 
 export function ArsenalScreen({ slot, previewId }: { slot: Slot; previewId?: string }) {
   const { content, data, player, act } = useGame();
+  const exact = useExactOdds();
   const list = [...data.items.values()].filter((i) => i.kind === slot);
   const owned = list.filter((i) => count(player, i.id) > 0);
   const forSale = list.filter((i) => count(player, i.id) === 0 && priceOf(i) !== null);
@@ -86,7 +89,7 @@ export function ArsenalScreen({ slot, previewId }: { slot: Slot; previewId?: str
               <ItemThumb item={i} />
               <span class="item-main">
                 <b>{i.name}</b>{i.kind === 'trap' && <span class="type-chip"><TypeMedal type={i.type} size={20} />{TYPE_NAME[i.type]}</span>}
-                <br /><small>{itemStats(i)}{(i.kind === 'bait' || i.kind === 'charm') && ` · ×${num(count(player, i.id))}`}</small>
+                <br /><small>{itemStats(i, exact)}{(i.kind === 'bait' || i.kind === 'charm') && ` · ×${num(count(player, i.id))}`}</small>
               </span>
               {current === i.id ? <span class="pill green">Equipped</span> : previewing === i.id ? <span class="pill gold">Previewing</span> : null}
             </button>
@@ -100,7 +103,7 @@ export function ArsenalScreen({ slot, previewId }: { slot: Slot; previewId?: str
             return (
               <button class={`item-row ${previewing === i.id ? 'on' : ''} ${locked ? 'locked' : ''}`} onClick={() => pick(i.id)}>
                 <ItemThumb item={i} />
-                <span class="item-main"><b>{i.name}</b><br /><small>{itemStats(i)}</small></span>
+                <span class="item-main"><b>{i.name}</b><br /><small>{itemStats(i, exact)}</small></span>
                 <span class="price">{locked ? `Rank ${(i as { rank: number }).rank}` : `${num(priceOf(i)!)} gold`}</span>
               </button>
             );
@@ -129,6 +132,7 @@ export function ArsenalScreen({ slot, previewId }: { slot: Slot; previewId?: str
 
 export function ItemScreen({ id }: { id: string }) {
   const { content, data, player, act } = useGame();
+  const exact = useExactOdds();
   const item = data.items.get(id);
   if (!item) return <FullScreen><BackRow to="hunt" title="Not found" /></FullScreen>;
   const own = count(player, id);
@@ -152,9 +156,9 @@ export function ItemScreen({ id }: { id: string }) {
       <div class="pad stack">
         <p class="muted">You own {num(own)} · {where}</p>
         <div class="stat-row light">
-          {(item.kind === 'trap' || item.kind === 'base') && <>{big('Power', num(item.power))}{big('Luck', String(item.luck))}{big('Attraction', `+${pct(item.attraction ?? 0)}`)}</>}
-          {item.kind === 'bait' && <>{big('Attraction', pct(item.attraction))}{big('Rare elves', `×${item.rareMultiplier ?? 1}`)}{big('Rank', String(item.rank))}</>}
-          {item.kind === 'charm' && <>{big('Luck', `+${item.luck ?? 0}`)}{big('Power', item.powerBonus ? `+${pct(item.powerBonus)}` : `+${item.power ?? 0}`)}{big('Attraction', `+${pct(item.attraction ?? 0)}`)}</>}
+          {(item.kind === 'trap' || item.kind === 'base') && <>{big('Power', num(item.power))}{big('Luck', String(item.luck))}{exact && big('Attraction', `+${pct(item.attraction ?? 0)}`)}</>}
+          {item.kind === 'bait' && <>{exact && big('Attraction', pct(item.attraction))}{big('Rare elves', `×${item.rareMultiplier ?? 1}`)}{big('Rank', String(item.rank))}</>}
+          {item.kind === 'charm' && <>{big('Luck', `+${item.luck ?? 0}`)}{big('Power', item.powerBonus ? `+${pct(item.powerBonus)}` : `+${item.power ?? 0}`)}{exact && big('Attraction', `+${pct(item.attraction ?? 0)}`)}</>}
           {item.kind === 'material' && <>{big('Sells for', `${num(sellValue(data, item))}`)}{big('Used in', String(usedIn.length))}</>}
         </div>
         {item.flavour && (

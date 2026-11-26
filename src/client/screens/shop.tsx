@@ -6,6 +6,7 @@ import { num, TYPE_NAME } from '../lib/format.js';
 import { go } from '../lib/route.js';
 import { MainScreen, Stepper, Tabs } from '../ui.js';
 import { GoldCoin, TypeMedal } from '../lib/medal.js';
+import { useExactOdds } from '../lib/effectiveness.js';
 import { ItemThumb, itemStats } from './gear.js';
 
 type ShopTab = 'traps' | 'bases' | 'bait' | 'charms' | 'sell';
@@ -16,6 +17,7 @@ const KIND: Record<Exclude<ShopTab, 'sell'>, AnyItem['kind']> = { traps: 'trap',
 
 function BuyCard({ item }: { item: AnyItem }) {
   const { content, player, act } = useGame();
+  const exact = useExactOdds();
   const price = priceOf(item)!;
   // Start at a full pack, or as many as the player can afford.
   const [qty, setQty] = useState(() => Math.max(1, Math.min(item.kind === 'bait' ? 100 : 10, Math.floor(player.gold / price))));
@@ -32,7 +34,7 @@ function BuyCard({ item }: { item: AnyItem }) {
           <b>{item.name}</b>
           {item.kind === 'trap' && <span class="type-chip"><TypeMedal type={item.type} size={20} />{TYPE_NAME[item.type]}</span>}
         </div>
-        <small>{itemStats(item)}</small>
+        <small>{itemStats(item, exact)}</small>
         <span class="price-line"><b>{num(price)} gold</b>{stackable ? ' each' : ''} · you own {num(own)}</span>
         {item.flavour && <p class="small desc">{item.flavour.description}</p>}
         {locked ? <p class="small locked-note">Unlocks at {content.ranks[rank - 1]?.name} (rank {rank})</p>

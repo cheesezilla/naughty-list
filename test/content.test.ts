@@ -20,6 +20,13 @@ describe('content files', () => {
     }
   });
 
+  it('put boss keys only on locations that have a boss and a next location to open', () => {
+    content.locations.forEach((l, i) => {
+      if (l.key) { expect(l.imps.some((m) => m.tier === 'boss'), l.id).toBe(true); expect(content.locations[i + 1], l.id).toBeDefined(); }
+    });
+    expect(new Set(content.locations.flatMap((l) => (l.key ? [l.key.id] : []))).size).toBe(2);
+  });
+
   it('catch broken references', () => {
     const broken = structuredClone(content);
     broken.recipes[0]!.ingredients = { no_such_thing: 1 };
