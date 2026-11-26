@@ -27,6 +27,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Hunt screen gear card in a 2x2 grid (Trap and Bait over Base and Charm) and 3D medal icons for power types and the gold coin; see [User interface](#user-interface) | Done | #19 (plan), #23 (build) |
 | Frozen top header on every main screen, auto-scroll to the Hunt log when Hunt is pressed, and the New Catch popup for the first catch of each elf (with Quiet toast); achievements show as a non-blocking banner instead of a popup; see [User interface](#user-interface) | Done | #26 |
 | Admin speed-run tools for testing: on the Admin page, boost rewards (x1 to x200), always attract and catch with full loot, add gold, jump to a rank, unlock every location, stock up supplies; see [Admin speed-run tools](#admin-speed-run-tools) | Done | this PR |
+| Boss keys: the local boss drops a key on its first catch, and the next location needs it to unlock (existing saves are granted the keys they have earned); see [Progression](#progression) | In review | this PR |
 | 5. Tune from play-test | Planned | |
 
 The server runs every hunt and saves each player in SQLite. To play locally, follow "Run it locally" below.
@@ -141,6 +142,23 @@ Bait is the clock. With no timer, progress is limited by gold: every attracted h
 | 5 | Yule Marshal | 160,000 | End of v1 | |
 
 Ranks depend on points only. Location unlock fees are paid once; travel between unlocked locations is free.
+
+### Boss keys (eddy, 26 Nov 2026)
+
+To unlock a location the player needs three things: the rank, the gold fee **and the boss key** of the location before it. The first time a player catches a location's local boss (tier `boss`), it drops that location's key and the hunt log shows a "Key found" pill. Keys are never spent, and a location that is already unlocked stays open for good.
+
+| Location | Local boss | Key it drops | Opens |
+| --- | --- | --- | --- |
+| Cookie Pantry | none (simple start) | none | Wrapping Room needs only rank 2 and 250 gold |
+| Wrapping Room | Madame Shredwell | Gift-Tag Key | Toy Workshop |
+| Toy Workshop | General Grimbolt | Cog Key | Reindeer Stables |
+| Reindeer Stables | Cinderhoof | none (end of v1) | later location |
+
+- **Content:** an optional `key` block (`id`, `name`, `description`) on a location in `content/locations.json`. The key opens the next location in the list; a content test checks that only locations with a boss carry one. A new location only needs the previous location to carry a `key`.
+- **Save:** `keys: string[]` (missing in older saves). `travel()` refuses with "needs the Gift-Tag Key" when the location is locked and the key is missing. The Travel map shows which boss to catch.
+- **Existing saves:** on load the server calls `grantKeys()`, once. A player gets a key for every boss already caught, and also the key for any location they have already unlocked, so nobody is locked out of a room they have opened or loses progress.
+- **Speed-run tools:** "Unlock every location" now also grants every key, so it still skips the whole chain. "Always attract and catch" lets the admin earn a key honestly by catching the boss every time it is attracted (the Wrapping Room boss still needs the top bait of the bait ladder). Rank jumps and gold do not grant keys.
+- **Pacing:** the old gates were rank and gold, so a player could be rich and ranked and walk straight in. Now they must beat the boss first. The boss only shows up under each location's own objective, so the key is what the objective is for.
 
 ## v1 content
 
@@ -679,7 +697,7 @@ For eddy's own testing of later zones. A "Speed run (testing)" card on the Admin
 | Gold and points x1 / 10 / 50 / 200 | Multiplies the gold and points of each catch (any whole number 1 to 1000 via the API). |
 | +1,000 / 10,000 / 100,000 gold | Adds gold. |
 | Jump to rank | Raises points to that rank's threshold; never lowers them. |
-| Unlock every location | Skips rank and gold requirements. |
+| Unlock every location | Skips rank, gold and boss key requirements, and grants every boss key. |
 | Stock up | Tops every bait and charm up to 200 and every material up to 50. |
 
 Rules: all tools change only the calling admin's own save (`POST /api/admin/speedrun`, behind the admin check, so non-admins get 403). The boost setting is stored on that save as `speedRun` and `/api/hunt` only honours it when the logged-in user is an admin. The simulator and normal balance numbers are unaffected. Start over also clears it.
@@ -727,7 +745,9 @@ Gold comes in only from catches and sales, and goes out on bait, charms, gear, l
 
 **How we check it:** `npm run simulate` plays virtual hunters through v1 with the real engine and content, reports hunts per rank, catch rates and bait cost per location, and with `--strict` fails if a rank target is missed by more than 25%.
 
-**Latest simulator run (hexed elves and home power types, 200 players):** all reached rank 5, median 1,403 hunts (1,503 before). Median hunts in ranks 1 to 4: 166, 288, 457, 497 (targets 150, 250, 400, 600, all within 25%, so no power or price retune was needed). Pillages per player by location: 8, 33, 13, 60, costing 5%, 6%, 14% and 10% of the gold earned there. Mini boss and boss catches per player: Spoolwick 1.8, Madame Shredwell 0.3, Hammerhand 3.9, General Grimbolt 2.2, Antler Ripper 2.4, Cinderhoof 1.4. Toy orders 34.8 per player; sleigh runs 13.3, 3.7 launched. Every player buys the Icicle Jar (for the order board) and 94% buy Snow Globe Prison, which nobody bought before; Sleigh-Bell Snapper is crafted by 81% (was 41%). Median 44 of 55 badges. Known gap: Constellation Wreath is still rarely crafted (1%). The simulated player now buys the cheapest trap of any power type it lacks before hunting at the order board.
+**Latest simulator run (boss keys, 200 players):** all reached rank 5, median 1,447 hunts. Median hunts in ranks 1 to 4: 166, 288, 487, 515 (targets 150, 250, 400, 600). The simulated player now stays in a location until it has caught the boss and got the key, so Madame Shredwell catches per player rose from 0.3 to 1.4 and General Grimbolt from 2.2 to 1.9. Median 47 of 55 badges.
+
+Previous run (hexed elves and home power types, 200 players): all reached rank 5, median 1,403 hunts (1,503 before). Median hunts in ranks 1 to 4: 166, 288, 457, 497 (targets 150, 250, 400, 600, all within 25%, so no power or price retune was needed). Pillages per player by location: 8, 33, 13, 60, costing 5%, 6%, 14% and 10% of the gold earned there. Mini boss and boss catches per player: Spoolwick 1.8, Madame Shredwell 0.3, Hammerhand 3.9, General Grimbolt 2.2, Antler Ripper 2.4, Cinderhoof 1.4. Toy orders 34.8 per player; sleigh runs 13.3, 3.7 launched. Every player buys the Icicle Jar (for the order board) and 94% buy Snow Globe Prison, which nobody bought before; Sleigh-Bell Snapper is crafted by 81% (was 41%). Median 44 of 55 badges. Known gap: Constellation Wreath is still rarely crafted (1%). The simulated player now buys the cheapest trap of any power type it lacks before hunting at the order board.
 
 Before the home types, with the old buying rule, the simulator never bought a Frost trap for the Workshop and finished only 0.5 toy orders per player; that was a gap in the simulated player, not in the game, and the buying rule above fixed it.
 
@@ -864,6 +884,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 | 2026-11-26 | #26 | Planned a New Catch popup for the first catch of each elf (portrait unlocked, tier colours, tiles, Naughty List progress, Open file and Keep hunting), with a canvas mockup. Design only |
 | 2026-11-26 | #26 | Frozen top header (eddy): title and player bar merged into one header pinned at the top of every screen, with the rank progress bar on its bottom edge; the location banner moves below it and no longer carries the player bar. Canvas mockups updated. UI design only |
 | 2026-11-26 | #26 | Built: `TopHeader` pinned outside the scrolling area on all main screens (replaces the title strip and player bar); pressing Hunt (button or Space) smooth-scrolls so the Hunt log heading sits at the top of the list (instant with reduced motion); New Catch popup (`newcatch.tsx`, tier colours, power, weaknesses, points, Naughty List progress via `listProgress`, Open file and Keep hunting; Quiet toast when achievement popups are off) shown before achievement popups. No game numbers changed |
+| 2026-11-26 | this PR | **Boss keys (eddy).** Unlocking a location now also needs the boss key of the location before it: the local boss drops it on the first catch (Madame Shredwell: Gift-Tag Key for the Toy Workshop; General Grimbolt: Cog Key for the Reindeer Stables; the Pantry has no boss, so the Wrapping Room needs only rank and gold). `key` block in `content/locations.json`, `keys` in the save, `grantKeys()` migration on load for old saves, "Key found" pill in the hunt log, key hints on the Travel map, speed-run Unlock grants keys. Simulator: 200/200 reach rank 5, median 1,447 hunts |
 | 2026-11-26 | this PR | **Hexed elves and home power types (eddy).** New story: Scrinch took over the lair and hexed Santa's elves, who replace the imps; catching them goes on The Naughty List and Mrs. Claus's cocoa brings them round. Renamed Crumb Elf, Sootcap, Gingerbread Rascal, Glitterbug, Wind-up Elf and General Grimbolt (a hexed nutcracker soldier), with new ids; the Stables boss is now Cinderhoof, an original hexed reindeer (no Rudolph: trademarked), and Grizzlewick is parked. Rank 3 is Hex Tracker. Power types by location: Wrapping Room weak to Starlight / resists Clockwork, Toy Workshop weak to Clockwork / resists Frost, Reindeer Stables weak to Frost / resists Starlight, Pantry a teaching room; 16 elves' weaknesses changed (table above). All elf text rewritten (flavour, letter, welcome, location intros and hints with the room's type, achievements, screens, How to play); hint sheets allow 5 steps. Simple generated SVG portraits for all 23 elves and the "?" card; the old imp PNGs moved to `art-archive/imps/`, other custom art kept; new elf portraits, the icon and key art added to the art backlog. Saves, badges and log entries with old ids are rewritten on start. Simulator: buys one trap of each type before the order board; 200/200 reach rank 5, median 1,403 hunts (was 1,503), Snow Globe Prison now bought by 94% |
 | 2026-11-26 | #24 | Design pass against every phone screen on the UI canvas. Fixed: the welcome popup now shows again after Start over without a reload; each of the 55 badges has its own emblem (the feed no longer shows "?" for an earned secret); progress reads `312 / 500 hunts` and `Best run 7 / 10`; the badge sheet says which hunt earned a badge (`achievementHunts` in the save) and has a handle and a Close button; the quiet toast shows the frame and "tap to view"; the hint sheet has its title in the location's colour and Open Workshop and Close buttons. Top of the List now needs at least one other hunter, so a lone player doesn't get it on hunt #1. No game numbers changed |
 | 2026-11-26 | #23 | Built achievements: 55 in `content/achievements.json` with a rules engine (`src/engine/achievements.ts`), `achievements` and `tally` in the save, one-time backfill for old saves, an `achievement` hunt-log row, Silver, Gold and Secret badges in the Hunters feed, the earn popup and quiet toast (new setting), and My profile with Stats and Achievements tabs and a badge sheet; `GET /api/achievements`. Built the welcome popup (`welcome` in `story.json`, `welcomeSeen`, `POST /api/welcome`), the 2x2 gear card, and 3D CSS medals for badges, power types and the gold coin. Audit of the location screens against the plan: added panel icons, the sleigh on the Readiness bar and the last-change line. Simulator: unchanged balance (200/200 reach rank 5, median 1,503 hunts); median 42 of 55 badges |

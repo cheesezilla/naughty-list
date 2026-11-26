@@ -35,6 +35,8 @@ export interface PlayerState {
   tally?: Record<string, number>;
   /** False until the player closes the welcome popup of a new game. Missing (seen) in older saves. */
   welcomeSeen?: boolean;
+  /** Boss keys found (location key ids). Missing in saves from before keys; the server fills it in on load. */
+  keys?: string[];
   /** Admin speed-run settings. Only honoured for admin accounts, and only the admin endpoint sets it. */
   speedRun?: { reward: number; odds: boolean };
 }
@@ -169,6 +171,28 @@ export function equip(content: Content, player: PlayerState, slot: keyof Setup, 
   return { ok: true, player: p };
 }
 
+/** The key a location needs before it can be unlocked: the one its predecessor's boss drops. */
+export function keyNeeded(content: Content, locationId: string) {
+  const i = content.locations.findIndex((l) => l.id === locationId);
+  return i > 0 ? content.locations[i - 1]!.key : undefined;
+}
+
+/**
+ * Gives every key the player has earned: one per boss already caught, plus the key to any location
+ * already unlocked (so saves from before keys lose nothing). Returns true when something was added.
+ */
+export function grantKeys(content: Content, p: PlayerState): boolean {
+  p.keys ??= [];
+  let added = false;
+  content.locations.forEach((l, i) => {
+    if (!l.key || p.keys!.includes(l.key.id)) return;
+    const boss = l.imps.find((m) => m.tier === 'boss');
+    const next = content.locations[i + 1];
+    if ((boss && p.catches[boss.id]) || (next && p.unlocked.includes(next.id))) { p.keys!.push(l.key.id); added = true; }
+  });
+  return added;
+}
+
 export function travel(content: Content, player: PlayerState, locationId: string): ActionResult {
   const data = gameData(content);
   const loc = data.locations.get(locationId);
@@ -176,6 +200,8 @@ export function travel(content: Content, player: PlayerState, locationId: string
   const p = clone(player);
   if (!p.unlocked.includes(locationId)) {
     if (loc.rank > p.rank) return fail(`${loc.name} opens at rank ${loc.rank}.`);
+    const key = keyNeeded(content, locationId);
+    if (key && !(p.keys ?? []).includes(key.id)) return fail(`${loc.name} needs the ${key.name}. Catch the local boss to get it.`);
     if (p.gold < loc.unlockCost) return fail(`Unlocking ${loc.name} costs ${loc.unlockCost} gold.`);
     p.gold -= loc.unlockCost;
     p.unlocked.push(locationId);

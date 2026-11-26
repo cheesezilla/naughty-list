@@ -43,6 +43,7 @@ function HuntRow({ row }: { row: JournalRow & { kind: 'hunt' } }) {
   const e: JournalEntry = row.entry;
   const imp = e.imp ? data.imps.get(e.imp) : undefined;
   const itemName = (id: string) => data.items.get(id)?.name ?? id;
+  const keyName = (id: string) => content.locations.find((l) => l.key?.id === id)?.key?.name ?? id;
   const time = <span class="row-time">#{num(row.n)}<br />{when(row.at, prefs.clock24)}</span>;
   const rankUp = e.rankUp ? content.ranks[e.rankUp - 1] : undefined;
   const nextLoc = rankUp ? content.locations.find((l) => l.rank === rankUp.rank) : undefined;
@@ -67,10 +68,11 @@ function HuntRow({ row }: { row: JournalRow & { kind: 'hunt' } }) {
             <b>{caught ? `Caught ${imp.name}` : imp.name}</b>
             <span class="tier">{TIER_NAME[imp.tier]}</span>
             {e.firstCatch && <span class="pill gold">Portrait unlocked</span>}
+            {e.key && <span class="pill gold">Key found</span>}
             {e.pillage && <span class="pill red">Pillaged</span>}
           </div>
           {caught
-            ? <>{e.firstCatch && 'First catch! '}+{num(e.gold)} gold, +{num(e.points)} points{loot.length > 0 && `, ${loot.join(', ')}`}</>
+            ? <>{e.firstCatch && 'First catch! '}+{num(e.gold)} gold, +{num(e.points)} points{loot.length > 0 && `, ${loot.join(', ')}`}{e.key && <>. The boss dropped a key: <b>{keyName(e.key)}</b></>}</>
             : e.pillage
               ? <>Escaped and pillaged you: {pillageText(e.pillage, itemName)}. {pct(e.catchChance ?? 0)} chance</>
               : <>Escaped. {pct(e.catchChance ?? 0)} chance</>}

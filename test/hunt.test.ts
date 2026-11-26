@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { hunt, rollPillage } from '../src/engine/hunt.js';
-import { newPlayer, buy, sell, craft, equip, travel, type PlayerState } from '../src/engine/player.js';
+import { newPlayer, buy, sell, craft, equip, travel, grantKeys, type PlayerState } from '../src/engine/player.js';
 import { seededRng } from '../src/engine/rng.js';
 import { content, scripted, withConstants } from './helpers.js';
 
@@ -120,7 +120,7 @@ describe('shop, crafting and travel', () => {
   it('enforces rank on purchases and travel', () => {
     expect(buy(content, { ...fresh(), gold: 1e6 }, 'star_lantern').ok).toBe(false);
     expect(travel(content, { ...fresh(), gold: 1e6 }, 'wrapping_room').ok).toBe(false);
-    const t = travel(content, { ...fresh(), rank: 2 }, 'wrapping_room');
+    const t = travel(content, { ...fresh(), rank: 2 }, 'wrapping_room'); // the Pantry has no boss, so no key
     if (!t.ok) throw new Error(t.error);
     expect(t.player.gold).toBe(50);
     expect(t.player.unlocked).toContain('wrapping_room');
@@ -189,5 +189,44 @@ describe('pillage on escape', () => {
     const out = rollPillage(content, p, imp('spoolwick'), 'stale_cookie', scripted(0, 0, 0, 0))!;
     const kinds = [out.gold > 0, !!out.bait, out.points > 0].filter(Boolean).length;
     expect(kinds).toBe(2);
+  });
+});
+
+describe('boss keys', () => {
+  it('needs the previous boss key (not just rank and gold) to unlock a location', () => {
+    const rich = { ...fresh(), rank: 4, gold: 1e6 };
+    const blocked = travel(content, rich, 'toy_workshop');
+    expect(blocked.ok).toBe(false);
+    if (!blocked.ok) expect(blocked.error).toMatch(/Gift-Tag Key/);
+    expect(travel(content, { ...rich, keys: ['gift_tag_key'] }, 'toy_workshop').ok).toBe(true);
+    // Already-unlocked rooms stay open without the key.
+    expect(travel(content, { ...rich, unlocked: ['cookie_pantry', 'toy_workshop'] }, 'toy_workshop').ok).toBe(true);
+  });
+
+  it('drops the key on the first catch of the local boss only', () => {
+    const p: PlayerState = { ...fresh(), location: 'wrapping_room', rank: 2, gold: 1e6 };
+    p.inventory.golden_bow_bonbon = 5000; // the boss only shows for the top bait
+    p.setup.bait = 'golden_bow_bonbon';
+    const rng = seededRng(3);
+    let first: string | undefined;
+    let cur = p;
+    for (let i = 0; i < 3000 && !first; i++) {
+      const r = hunt(content, cur, rng, 0, { reward: 1, odds: true });
+      if (!r.ok) throw new Error(r.error);
+      cur = r.player;
+      if (r.entry.imp === 'madame_shredwell' && r.entry.outcome === 'catch') first = r.entry.key;
+    }
+    expect(first).toBe('gift_tag_key');
+    expect(cur.keys).toEqual(['gift_tag_key']);
+  });
+
+  it('migrates old saves: keys for caught bosses and already-unlocked locations', () => {
+    const old = { ...fresh(), catches: { madame_shredwell: 2 }, unlocked: ['cookie_pantry', 'wrapping_room', 'toy_workshop', 'reindeer_stables'] };
+    expect(grantKeys(content, old)).toBe(true);
+    expect(old.keys).toEqual(['gift_tag_key', 'cog_key']);
+    expect(grantKeys(content, old)).toBe(false);
+    const none = fresh();
+    grantKeys(content, none);
+    expect(none.keys).toEqual([]);
   });
 });
