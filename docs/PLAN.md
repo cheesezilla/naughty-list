@@ -25,7 +25,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Welcome popup: shown once when a new game starts (sign-up and Start over); see [Theme and setting](#theme-and-setting) | Done | #19 (plan), #23 (build), #24 (shows again after Start over) |
 | Achievements and badges: 55 achievements with Bronze, Silver, Gold and Secret badges, an earn popup and an Achievements tab in My profile; see [Achievements and badges](#achievements-and-badges) | Done | #19 (plan), #23 (build), #24 (design pass) |
 | Hunt screen gear card in a 2x2 grid (Trap and Bait over Base and Charm) and 3D medal icons for power types and the gold coin; see [User interface](#user-interface) | Done | #19 (plan), #23 (build) |
-| Frozen top header on every main screen, auto-scroll to the Hunt log when Hunt is pressed, and the New Catch popup for the first catch of each elf (with Quiet toast); see [User interface](#user-interface) | Done | #26 |
+| Frozen top header on every main screen, auto-scroll to the Hunt log when Hunt is pressed, and the New Catch popup for the first catch of each elf (with Quiet toast); achievements show as a non-blocking banner instead of a popup; see [User interface](#user-interface) | Done | #26 |
 | 5. Tune from play-test | Planned | |
 
 The server runs every hunt and saves each player in SQLite. To play locally, follow "Run it locally" below.
@@ -62,7 +62,7 @@ The tone is a cheeky Christmas storybook. Every elf, place, trap, bait, rank and
 - three small tiles: power, the power type it is weak to (as a medal icon, or "No weakness" if it has none), and the points it gave;
 - progress on the Naughty List: this location (for example 4 of 5) with a bar, and all locations (9 of 23).
 
-Buttons: **Open file** closes the popup and opens the elf's file; **Keep hunting** closes it. Esc, Enter and Space also close it, and the first Space press never hunts behind it. The hunt log still gets its usual "Portrait unlocked" mark on that catch. If the same catch also earns achievements, the New Catch popup comes first and the achievement popups follow it. There is no new save field: "first catch" is already known from the elf's catch count going from 0 to 1 in that hunt. The setting **Achievement popups: Quiet** also applies here, turning this into a small toast with the portrait thumbnail and name. Mockup: the UI canvas, row "Achievements and badges", artboard "New Catch popup".
+Buttons: **Open file** closes the popup and opens the elf's file; **Keep hunting** closes it. Esc, Enter and Space also close it, and the first Space press never hunts behind it. The hunt log still gets its usual "Portrait unlocked" mark on that catch. If the same catch also earns achievements, the New Catch popup comes first and the achievement banners drop in over it without blocking it. There is no new save field: "first catch" is already known from the elf's catch count going from 0 to 1 in that hunt. The setting **New catch popups** (On by default; it replaced Achievement popups) turns this into a small toast when Off, with the portrait thumbnail and name. Mockup: the UI canvas, row "Achievements and badges", artboard "New Catch popup".
 
 > **Welcome to The Naughty List!**
 > Scrinch's elves are raiding Santa's secret lair, and Santa needs a hunter. Set your trap, catch every elf you can, and put them all on the Naughty List!
@@ -583,7 +583,11 @@ Ids are proposed. Badge concepts are briefs for the badge art (emblem only; the 
 
 That is 55 achievements: 24 Bronze, 19 Silver and 12 Gold, including 6 secret and 7 for the location objectives. With today's content, a player who reaches rank 5 (a median 1,503 hunts in the latest simulator run) should hold roughly 30 to 35 of them; the rest are for completionists. The simulator will report how many each strategy earns when this is built.
 
-### Earn popup
+### Earn banner (eddy, 26 Nov 2026: too many popups at the start)
+
+Early in a game the first catch, the New Catch popup and a handful of easy Bronze badges all land in the first few hunts, so achievements no longer open a popup. Each one shows a **banner** instead: it drops in under the pinned header on whatever screen the player is on, never dims or blocks the screen, and leaves by itself after 4 seconds (a thin bar runs down). Hunt, Space and every button keep working while it shows; the first Space press is no longer swallowed. It shows the badge (48 px, in its frame), "ACHIEVEMENT EARNED", the name and the frame, and tapping it opens that badge. Several at once show the first with a "+2 more" pill, then the rest follow one after another. Sound and vibration still play if on. The old full-card popup, described below, now appears only as the one-time **Welcome back** for old saves.
+
+### Earn popup (Welcome back only)
 
 Shown on whatever screen the player is on, as soon as the server says an achievement was earned (after the hunt result, purchase, craft or travel that earned it).
 
@@ -607,8 +611,8 @@ Shown on whatever screen the player is on, as soon as the server says an achieve
 - A centred card over a dimmed screen, with a short confetti burst in the frame's colour, the achievement sound and a vibration if those settings are on.
 - **Nice!** (or tapping outside, Enter, Esc or Space) closes it. **View badges** opens the Achievements screen with that badge's detail open.
 - Several achievements at once (for example a first catch that is also a first rare) queue in one card with "1 of 2 ›"; Nice! moves to the next.
-- Space bar hunting: the first Space press closes the popup instead of hunting, so a player hammering Space can't miss it or hunt by accident behind it.
-- Setting **Achievement popups**: On (default) or Quiet. Quiet shows a small toast at the top of the screen for 3 seconds with the badge thumbnail and name; tapping it opens the badge detail.
+- Space bar hunting: the first Space press closes the popup instead of hunting. Banners do not do this.
+- Setting: the old **Achievement popups** toggle is now **New catch popups** in Settings (On = popup, Off = small note); achievements have no setting because the banner is already non-blocking.
 - Every earned achievement is also a hunt-log event, "🏅 Achievement: Caught One!" with the badge thumbnail, so nothing is lost if the popup is closed fast. Silver, Gold and Secret achievements also go into the Hunters feed ("eddy earned Grounded").
 
 ### Achievements screen (player profile)
@@ -647,7 +651,7 @@ The More menu's **My stats** becomes **My profile**, with two tabs: **Stats** (t
 - Achievements for a feature that isn't built yet are left out until it ships, so the totals only count what can be earned (today that is all 55).
 - Later: tapping a hunter on the Hunters page opens their profile with the same Achievements tab (their earned badges in colour, the rest greyed, their secrets still "?").
 
-**Visual mockups** of the popup, the toast, the Achievements screen and the badge detail sheet are on the UI canvas (https://claude.ai/artifact/7A6Y6w37aCDXneVGDSDCDs), in the row "Achievements and badges" (popup, quiet toast, Achievements tab, badge detail not earned and earned).
+**Visual mockups** of the Welcome back popup, the banner, the Achievements screen and the badge detail sheet are on the UI canvas (https://claude.ai/artifact/7A6Y6w37aCDXneVGDSDCDs), in the row "Achievements and badges" (popup, quiet toast, Achievements tab, badge detail not earned and earned).
 
 ### How it is built (#23)
 
@@ -656,7 +660,7 @@ The More menu's **My stats** becomes **My profile**, with two tabs: **Stats** (t
 - **Save:** `achievements: { [id]: earnedAtMs }`, `achievementHunts: { [id]: huntNumber }` for badges a hunt earned (the badge sheet says "Earned 4:18 AM on hunt #1") and a `tally` of counters the engine bumps (purchases, crafts, a non-starter trap equipped, catches by trap type, catches against a weakness, streaks, the ladder boss attracted, a boss caught with the starter trap, Rush orders, express launches and failed runs). Hunts, catches, gold, ranks, collections, orders, launches and pillages are read from the save itself, so old saves count them too.
 - **Server:** after every hunt and every buy, sell, craft, equip, travel and objective action, the server checks achievements, writes one `achievement` row to the hunt log for whatever was earned, and returns `newAchievements`. The leaderboard rule is checked after hunts: there must be at least one other hunter, and the player must have more points than every one of them.
 - **Old saves:** the first `GET /api/me` for a save without achievements awards everything it already qualifies for in one log row marked `backfill`, and the client shows "Welcome back! You've already earned N badges" in the popup.
-- **Client:** the earn popup (or a toast with **Achievement popups** off in Settings), the hunt-log row, the Hunters feed entry (Silver, Gold and Secret only), and **My profile** with Stats and Achievements tabs and the badge sheet. Code: `src/client/screens/achievements.tsx`, `src/client/lib/medal.tsx`.
+- **Client:** the earn banner (the full popup only for Welcome back), the hunt-log row, the Hunters feed entry (Silver, Gold and Secret only), and **My profile** with Stats and Achievements tabs and the badge sheet. Code: `src/client/screens/achievements.tsx`, `src/client/lib/medal.tsx`.
 - **Badge look (eddy, 26 Nov 2026): a 3D medal**, drawn in CSS: a brushed-metal rim in the frame's metal (a conic gradient in light, mid and dark bronze, silver or gold), a dashed inner ring, a recessed cream face with an inner shadow, the emblem embossed into it (a light and a dark drop shadow), a glossy highlight across the top and a drop shadow under it. Gold medals glow softly, a light sweep runs across the face in the earn popup, and unearned badges are greyscale at 45% opacity. Secret badges are a dark iron medal with an embossed "?". No WebGL, so it stays light on phones. The same medal draws the three **power type icons** (Clockwork: brass rim, gold face, gear; Starlight: blue rim, night-blue face, gold star; Frost: icy rim, pale ice face, snowflake) on the Hunt screen gear card, the trap type chips and the order board, and the **gold coin** (gold rim with a dotted edge, a star over a smile-shaped laurel) in the player bar and Santa's Workshop ingredient rows.
 - **Badge emblems:** every badge has its own line emblem, embossed on the medal (#24), following the canvas mockups: a net for Caught One!, footprints for Slippery Little Thing, a shopping bag, a trap, a hammer, a door, a mitten, a moon, a mug, a basket, a sack, coins, a ledger, a shield with one, two or three chevrons for the ranks, gems, a cookie jar, a gift, a horseshoe, a crown, scissors, a wrench, a bell, a trophy, a candy, a ladder, a clipboard, a stopwatch, a sleigh and a podium. Secret badges stay "?" until earned. Painted per-badge art (`art/badges/<id>`) from the badge briefs is still to do, with the Gemini art backlog.
 - **Progress text:** the grid shows `312 / 500` (streaks: `Best run 7 / 10`); the badge sheet adds the unit, `312 / 500 hunts`.
@@ -838,6 +842,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-26 | #27 | Achievements now show a 4-second non-blocking banner (with "+N more") instead of a popup, because early games had too many popups; the full popup stays only for Welcome back. The Achievement popups setting became New catch popups (default On). Canvas mockups updated |
 | 2026-11-26 | #26 | Planned a New Catch popup for the first catch of each elf (portrait unlocked, tier colours, tiles, Naughty List progress, Open file and Keep hunting), with a canvas mockup. Design only |
 | 2026-11-26 | #26 | Frozen top header (eddy): title and player bar merged into one header pinned at the top of every screen, with the rank progress bar on its bottom edge; the location banner moves below it and no longer carries the player bar. Canvas mockups updated. UI design only |
 | 2026-11-26 | #26 | Built: `TopHeader` pinned outside the scrolling area on all main screens (replaces the title strip and player bar); pressing Hunt (button or Space) smooth-scrolls so the Hunt log heading sits at the top of the list (instant with reduced motion); New Catch popup (`newcatch.tsx`, tier colours, power, weaknesses, points, Naughty List progress via `listProgress`, Open file and Keep hunting; Quiet toast when achievement popups are off) shown before achievement popups. No game numbers changed |
