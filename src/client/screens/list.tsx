@@ -36,14 +36,14 @@ export function NaughtyListScreen() {
             const s = seen[imp.id] ?? 0;
             const weak = Object.entries(imp.effectiveness ?? {}).filter(([, e]) => e > 1).map(([t]) => t as PowerType);
             return (
-              <button class={`portrait-card ${n ? '' : 'locked'}`} onClick={() => go(`imp/${imp.id}`)}>
+              <button class={`portrait-card tier-${imp.tier} ${n ? '' : 'locked'}`} onClick={() => go(`imp/${imp.id}`)}>
                 <Art slot="imps" id={n ? imp.id : '_locked'} alt={n ? imp.name : 'Not caught yet'} class="portrait" />
                 <b>{n ? imp.name : '???'}</b>
                 <span class="weak-row" aria-label={weak.length ? `Weak to ${weak.map((t) => TYPE_NAME[t]).join(' and ')}` : 'No weakness'}>
                   <small>Weak to</small>
                   {weak.length ? weak.map((t) => <TypeMedal type={t} size={22} />) : <small>none</small>}
                 </span>
-                <small>{TIER_NAME[imp.tier]} · {n ? `caught ${num(n)}` : s ? `seen ${s === 1 ? 'once' : `${num(s)} times`}, never caught` : 'not seen yet'}</small>
+                <small><span class="tier-label">{TIER_NAME[imp.tier]}</span> · {n ? `caught ${num(n)}` : s ? `seen ${s === 1 ? 'once' : `${num(s)} times`}, never caught` : 'not seen yet'}</small>
               </button>
             );
           })}

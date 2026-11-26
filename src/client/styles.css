@@ -241,7 +241,34 @@ body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
 .portrait-card { border: 0; background: var(--cream); color: var(--ink); border-radius: 16px; padding: 8px; display: flex; flex-direction: column; gap: 4px; text-align: center; line-height: 1.2; }
 .portrait-card .portrait { width: 100%; aspect-ratio: 1; border-radius: 12px; }
 .portrait-card small { color: var(--muted); }
-.portrait-card.locked { background: #e9dfcd; }
+.portrait-card { --tier: #2f7d4f; --tier-dark: #1f5a37; --tier-bg: #eaf4e8; background: var(--tier-bg); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--tier) 35%, transparent); position: relative; overflow: hidden; }
+.portrait-card.tier-uncommon { --tier: #0f7a8a; --tier-dark: #0a5763; --tier-bg: #e1f2f4; }
+.portrait-card.tier-rare { --tier: #5a2f96; --tier-dark: #43226f; --tier-bg: #ece3f7; }
+.portrait-card.tier-miniboss { --tier: #d9731a; --tier-dark: #a8530a; --tier-bg: #fdebd6; }
+.portrait-card.tier-boss { --tier: #d8a52a; --tier-dark: #8a6410; --tier-bg: #fff3c9; }
+.portrait-card .portrait { border: 3px solid var(--tier); box-sizing: border-box; object-fit: cover; }
+.portrait-card.tier-uncommon .portrait { border-width: 3px; box-shadow: 0 0 6px color-mix(in srgb, var(--tier) 45%, transparent); }
+.portrait-card.tier-rare .portrait { border: 4px solid var(--tier); box-shadow: 0 0 12px color-mix(in srgb, var(--tier) 70%, transparent); }
+.portrait-card.tier-miniboss .portrait { border: 4px solid var(--tier); box-shadow: 0 0 0 2px #fff3dd, 0 0 16px 2px color-mix(in srgb, var(--tier) 80%, transparent); }
+.portrait-card.tier-boss .portrait { border: 5px solid transparent; background: linear-gradient(#fff3c9, #fff3c9) padding-box, linear-gradient(135deg, #fff1a8, #d8a52a 40%, #8a6410 60%, #ffe27a) border-box; box-shadow: 0 0 0 2px #fff8dc, 0 0 20px 4px rgba(216, 165, 42, 0.8); }
+.portrait-card.tier-miniboss, .portrait-card.tier-boss { box-shadow: inset 0 0 0 3px var(--tier); }
+.portrait-card.tier-rare { box-shadow: inset 0 0 0 2px var(--tier); }
+.portrait-card.tier-boss { background: linear-gradient(160deg, #fff8dc, #ffe9a0); }
+.portrait-card.tier-miniboss { background: linear-gradient(160deg, #fff1de, #fbd5a6); }
+.portrait-card.tier-boss::after, .portrait-card.tier-miniboss::after, .portrait-card.tier-rare::after { content: ''; position: absolute; top: 0; bottom: 0; left: -60%; width: 40%; background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.55), transparent); transform: skewX(-18deg); animation: tier-shine 4.5s ease-in-out infinite; pointer-events: none; }
+.portrait-card.tier-rare::after { animation-duration: 7s; opacity: 0.6; }
+.portrait-card.tier-miniboss::after { animation-duration: 5.5s; }
+.tier-label { font-weight: 800; color: var(--tier-dark); text-transform: uppercase; letter-spacing: 0.6px; font-size: 11px; }
+.portrait-card.tier-boss .tier-label { background: linear-gradient(90deg, #8a6410, #d8a52a, #8a6410); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.portrait-card.tier-boss .tier-label::before { content: '★ '; }
+.portrait-card.tier-miniboss .tier-label::before { content: '◆ '; }
+.portrait-card.tier-rare .tier-label::before { content: '✦ '; }
+@keyframes tier-shine { 0%, 60% { left: -60%; } 100% { left: 130%; } }
+@media (prefers-reduced-motion: reduce) { .portrait-card::after { animation: none !important; display: none; } }
+.portrait-card.locked, .portrait-card.locked.tier-uncommon, .portrait-card.locked.tier-rare, .portrait-card.locked.tier-miniboss, .portrait-card.locked.tier-boss { background: #e9dfcd; box-shadow: none; }
+.portrait-card.locked::after { display: none; }
+.portrait-card.locked .portrait { border: 3px dashed #b9ab92; box-shadow: none; background: none; }
+.portrait-card.locked .tier-label { color: var(--tier-dark); opacity: 0.75; background: none; -webkit-background-clip: border-box; background-clip: border-box; }
 
 /* ---------- emporium and workshop ---------- */
 .shop-card { display: flex; gap: 10px; align-items: flex-start; }
