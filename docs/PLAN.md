@@ -234,7 +234,7 @@ The first location teaches the basic loop and nothing else: catch imps, earn gol
 | `gingerbread_imp` | Rare | 160 | 5 | 8 | Sugar Glass 50% (as now), Brass Spring 15% (new) |
 
 - **New tier, uncommon.** The engine, the content schema, the hunt log and the Naughty List gain an `uncommon` tier between common and rare, with its own portrait frame. Fruitcake doubles every tier above common.
-- **Baron Crumblewick leaves the Pantry** and is parked for a later location or event; his art and text stay. His Brass Spring now comes from the Gingerbread Imp, so Wreath of Thorns can still be crafted.
+- **Baron Crumblewick leaves the Pantry** and is parked for a later location or event; his art and text stay. His Brass Spring now comes from the Gingerbread Imp, so Constellation Wreath can still be crafted.
 - **Sugar Cookie** is the "better bait" step: more uncommon and rare imps for 20 gold instead of 8.
 - No panel on the Hunt screen. The hint and first-visit intro still apply.
 - Gold and points are unchanged, so the rank 1 pace should hold; the simulator checks it when this is built.
@@ -247,7 +247,7 @@ eddy's loop, starting in the second location: common bait catches common imps, w
 | --- | --- | --- | --- |
 | 1 | Any shop bait (Stale Cookie, Sugar Cookie, later Peppermint Bark) | `ribbon_tangler` 36, `tape_biter` 30, `bow_burglar` 25. `glitter_imp`, `spoolwick` and `madame_shredwell` 0 | `ribbon_tangler`: Sugar Twist 25%. `tape_biter`: Sugar Twist 20%. `bow_burglar`: Candied Peel 30% (was 10%). Any common: 2% for 1 Ribbon Candy outright |
 | 2 | **Ribbon Candy** (new bait, 82% attraction, not sold). Recipe: 2 Sugar Twist + 1 Candied Peel + 30 gold → 3 Ribbon Candy | commons 50 in total, `glitter_imp` 30, `spoolwick` 20, `madame_shredwell` 0 | `glitter_imp`: Sugar Glass 50% (as now). `spoolwick`: Golden Ribbon 100% (as now) |
-| 3 | **Golden Bow Bonbon** (new bait, 86% attraction, not sold). Recipe: 1 Sugar Glass + 1 Golden Ribbon + 100 gold → 2 Bonbons | commons 30, `glitter_imp` 10, `spoolwick` 10, `madame_shredwell` 50 | `madame_shredwell`: Enchanted Wrapping 100% (trap part for Wreath of Thorns, as now) and 25% for 5 Jingle Bell Charms |
+| 3 | **Golden Bow Bonbon** (new bait, 86% attraction, not sold). Recipe: 1 Sugar Glass + 1 Golden Ribbon + 100 gold → 2 Bonbons | commons 30, `glitter_imp` 10, `spoolwick` 10, `madame_shredwell` 50 | `madame_shredwell`: Enchanted Wrapping 100% (trap part for Constellation Wreath, as now) and 25% for 5 Jingle Bell Charms |
 
 - New ids (proposed): material `sugar_twist`; baits `ribbon_candy`, `golden_bow_bonbon`; recipes `ribbon_candy_x3`, `golden_bow_bonbon_x2`.
 - Fruitcake uses the tier 1 weights here, so it can't skip the ladder (2 x 0 is still 0).
@@ -257,10 +257,10 @@ eddy's loop, starting in the second location: common bait catches common imps, w
 
 ### Toy Workshop: the Order Board (trap-type puzzle)
 
-The elves pin toy orders to a board. Each order lists parts that must be caught with a given trap type, in order. It makes the player own and swap traps of all three types, which is the known gap from the simulator (nobody bought Snow Globe Prison or Wreath of Thorns).
+The elves pin toy orders to a board. Each order lists parts that must be caught with a given trap type, in order. It makes the player own and swap traps of all three types, which is the known gap from the simulator (nobody bought Snow Globe Prison or Constellation Wreath).
 
-- **Order:** 3 slots, each a trap type (Clockwork, Holly or Frost), rolled by the server when the last order finishes. A catch with the trap type of the next slot fills it. Catches with another type don't count; escapes don't undo filled slots.
-- The puzzle is matching type to imp: the Stuffing Ripper resists Holly, the Wind-up Imp is immune to Frost, so a Frost slot is best filled on Paint Smudgers, Cog Pinchers or Stuffing Rippers.
+- **Order:** 3 slots, each a trap type (Clockwork, Starlight or Frost), rolled by the server when the last order finishes. A catch with the trap type of the next slot fills it. Catches with another type don't count; escapes don't undo filled slots.
+- The puzzle is matching type to imp: the Stuffing Ripper resists Starlight, the Wind-up Imp is immune to Frost, so a Frost slot is best filled on Paint Smudgers, Cog Pinchers or Stuffing Rippers.
 - **Order done:** a Toy Crate: 400 gold and one of Peppermint Bark x5, Wind-up Key Charm x3 or Sugar Glass x1.
 - **Inspection:** every 3rd finished order, the next attracted hunt is Hammerhand (mini boss; weight 0 otherwise). He drops Toymaker's Gear as now.
 - **Rush order:** after an Inspection, the player can take a 5-slot Rush order instead of a normal one. Finishing it makes the next attracted hunt Foreman Grimbolt (boss; weight 0 otherwise), who drops Clockwork Heart as now.
@@ -285,7 +285,7 @@ Parked on 26 Nov 2026, when the Cookie Pantry became a simple start and the bait
 The room gets messier the longer you hunt, and a messy room pays better but is harder. The player chooses when to tidy up.
 
 - **Tangle** runs 0 to 100 and starts at 0. Each attracted hunt adds 5; an escape adds 5 more; catching a Ribbon Tangler adds 10.
-- **Tidying:** catching a Tape Biter cuts 15 (it chews through the knots; it is weak to Holly). New charm **Sharp Shears** (`sharp_shears_charm`, shop, 35 gold, rank 2) cuts 25 on each attracted hunt it is used. Catching Madame Shredwell resets Tangle to 0.
+- **Tidying:** catching a Tape Biter cuts 15 (it chews through the knots; it is weak to Starlight). New charm **Sharp Shears** (`sharp_shears_charm`, shop, 35 gold, rank 2) cuts 25 on each attracted hunt it is used. Catching Madame Shredwell resets Tangle to 0.
 
 | Band | Tangle | Imp power | Gold and points | Rare and mini boss weight | Madame Shredwell |
 | --- | --- | --- | --- | --- | --- |
@@ -293,7 +293,7 @@ The room gets messier the longer you hunt, and a messy room pays better but is h
 | Messy | 40–79 | x1.15 | x1.25 | x2 | weight 0 |
 | Knotted | 80–100 | x1.3 | x1.5 | x2 | weight 6 |
 
-- The choice: stay tidy for safe catches, or let it knot up for richer hunts and a chance at the boss, then cut back down with Holly or Shears.
+- The choice: stay tidy for safe catches, or let it knot up for richer hunts and a chance at the boss, then cut back down with Starlight or Shears.
 - Spoolwick (mini boss) drops Golden Ribbon as now; Madame Shredwell drops Enchanted Wrapping as now.
 - Panel: Tangle bar with the band name and what the band does.
 
@@ -355,7 +355,7 @@ Toy Workshop, workshop green. Order slots as trap-type badges in a row; the next
 ```
 ┌ Order Board ─────── Order 2 of 3 ──┐
 │ [⚙ ✓] [🌿 ▸] [❄  ]                 │
-│ Next: Holly · your trap: Clockwork ✗│
+│ Next: Starlight · your trap: Clockwork ✗│
 │ Inspection after this order        │
 └────────────────────────────────────┘
 ```
