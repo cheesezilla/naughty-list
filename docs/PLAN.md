@@ -12,15 +12,16 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | 3. Playable client on the server: accounts, invites, server-side hunts, SQLite saves | Done | #2 |
 | 4a. NAS deploy: compose file, Cloudflare Tunnel option, deploy guide, image smoke test | Done | #3 |
 | 4b. Friends: leaderboard and catch feed | Done | #11 |
-| Flavour text for every item and imp | Done | #9 (shown in the UI since #11) |
+| Flavour text for every item and elf | Done | #9 (shown in the UI since #11) |
 | Art for every UI slot: 97 original SVGs + manifest, named by game id | Done | #10 (shown in the UI since #11) |
-| Custom PNG portraits for all 10 cookie-pantry/wrapping-room/toy-workshop/reindeer-stables imps | Done | #13 |
-| Custom AI-generated PNGs for the rest of the game art (traps, bases, baits, charms, materials, trap types, brand, locations, map, how-to, remaining imps) — progress tracked in [ART_PROGRESS.md](ART_PROGRESS.md) | In progress | #14 |
+| Custom PNG portraits for all 10 cookie-pantry/wrapping-room/toy-workshop/reindeer-stables elves | Done | #13 |
+| Custom AI-generated PNGs for the rest of the game art (traps, bases, baits, charms, materials, trap types, brand, locations, map, how-to, remaining elves) — progress tracked in [ART_PROGRESS.md](ART_PROGRESS.md) | In progress | #14 |
 | New phone-first UI (layout D2): bottom menu, hunt log with events and full history, Arsenal, Elf Emporium, Santa's Workshop, More pages, open sign-up with admin switch | Done | #11 |
 | Holly power type renamed Starlight; its three traps reworked (Starlit Stocking, Star Lantern, Constellation Wreath) with new text and SVG art, old saves migrated | In review | #17 |
 | Intro letter from Santa: the game's backstory as the first hunt-log entry of every new game, and on How to play | In review | #12 |
 | Location objectives: a simple Cookie Pantry start, then a unique loop per location (Wrapping Room bait ladder, Toy Workshop order board, Stables sleigh run), plus first-visit intros, a hint button and a mechanic panel on each Hunt screen; see [Location objectives](#location-objectives) | Done | #16 (plan), #18 (build); panel icons, sleigh marker and last-change line in #23 |
-| Pillage on escape: escaped imps may take gold, points and bait (bosses most, mini bosses less, others rarely), with safety rails; see [Pillage on escape](#pillage-on-escape) | Done | #18 |
+| Pillage on escape: escaped elves may take gold, points and bait (bosses most, mini bosses less, others rarely), with safety rails; see [Pillage on escape](#pillage-on-escape) | Done | #18 |
+| Hexed elves: new backstory (Scrinch hexed Santa's elves), 6 renamed elves, General Grimbolt and the new Stables boss Cinderhoof, home power types per location, simple SVG elf portraits, old saves migrated; see [Theme and setting](#theme-and-setting) and [Power types by location](#power-types-by-location) | In review | this PR |
 | Welcome popup: shown once when a new game starts (sign-up and Start over); see [Theme and setting](#theme-and-setting) | Done | #19 (plan), #23 (build), #24 (shows again after Start over) |
 | Achievements and badges: 55 achievements with Bronze, Silver, Gold and Secret badges, an earn popup and an Achievements tab in My profile; see [Achievements and badges](#achievements-and-badges) | Done | #19 (plan), #23 (build), #24 (design pass) |
 | Hunt screen gear card in a 2x2 grid (Trap and Bait over Base and Charm) and 3D medal icons for power types and the gold coin; see [User interface](#user-interface) | Done | #19 (plan), #23 (build) |
@@ -30,9 +31,9 @@ The server runs every hunt and saves each player in SQLite. To play locally, fol
 
 ## Summary
 
-**The Naughty List** is an original Christmas trap-and-catch browser game for eddy and friends. Imps sent by Scrinch, ruler of the imps, are raiding Santa's secret lair at the North Pole and stealing toy supplies. Santa hires you as an imp hunter. You arm a trap, pick a bait, press Hunt, and the game rolls attraction and catch odds against the imp's power. There is no wait timer: every press is a hunt. Bait cost, not a clock, paces progress.
+**The Naughty List** is an original Christmas trap-and-catch browser game for eddy and friends. Scrinch, a horned devil, has taken over Santa's secret lair at the North Pole and hexed Santa's own elves, who now raid it for him. Santa hires you as an elf hunter. You arm a trap, pick a bait, press Hunt, and the game rolls attraction and catch odds against the hexed elf's power. There is no wait timer: every press is a hunt. Bait cost, not a clock, paces progress.
 
-v1 covers 5 ranks and 4 lair locations: 23 imps in all (Baron Crumblewick is parked). The Cookie Pantry is a simple start with common, uncommon and rare imps. Each later location has 3 common imps, a rare imp, a mini boss and a local boss, and its own local objective that decides when the mini boss and boss come (see [Location objectives](#location-objectives)). Bosses drop the loot used to craft stronger gear. Expect roughly 1,500 hunts, or about 1 to 1.5 hours of active play, to reach the last v1 rank.
+v1 covers 5 ranks and 4 lair locations: 23 hexed elves and bosses in all (Baron Crumblewick and Grizzlewick are parked). The Cookie Pantry is a simple start with common, uncommon and rare elves. Each later location has 3 common elves, a rare elf, a mini boss and a local boss, and its own local objective that decides when the mini boss and boss come (see [Location objectives](#location-objectives)). Bosses drop the loot used to craft stronger gear. Expect roughly 1,500 hunts, or about 1 to 1.5 hours of active play, to reach the last v1 rank.
 
 The stack is one small Docker container (Node.js + SQLite) on the UGREEN NAS, with open sign-up (the admin can close it) and a leaderboard so friends can play. The stamina meter is built but switched off.
 
@@ -40,18 +41,20 @@ The stack is one small Docker container (Node.js + SQLite) on the UGREEN NAS, wi
 
 ## Theme and setting
 
-Scrinch, a horned devil who rules the imps, wants Christmas cancelled. His imps sneak into Santa's secret lair under the North Pole, wreck the workshops and steal the cookies, paper, toy parts and reindeer gear that Santa needs. Santa hires you as an imp hunter. Every imp you catch goes on The Naughty List.
+**Hexed elves (eddy, 26 Nov 2026).** Scrinch, a horned devil who wants Christmas cancelled, crept into Santa's secret lair under the North Pole on the longest night and blew brimstone soot through the vents. Every elf who breathed it turned **hexed**: sour, sneaky and loyal to Scrinch. They wreck the workshops and steal the cookies, paper, toy parts and reindeer gear Santa needs. Santa, Mrs. Claus and the few elves the soot missed (the loyal elves who run Santa's Workshop and the Elf Emporium) escaped to the old ice cellar, and Santa hires you as an elf hunter. Every hexed elf you catch goes on The Naughty List, and Mrs. Claus's cocoa slowly brings them back to their old selves, so catching is also rescuing. This replaced the first story, where Scrinch sent his own imps.
 
-You start in the Cookie Pantry and work deeper into the lair as you rank up. Each location has its own imps: 3 common kinds, a rare imp, a mini boss and a local boss who is one of Scrinch's lieutenants. Bosses drop the parts Santa's elves use to craft you stronger traps.
+You start in the Cookie Pantry and work deeper into the lair as you rank up. Each room's elves did that room's job before the hex (bakers, wrappers, toymakers, stable hands), and each location has 3 common kinds, a rare one, a mini boss and a local boss who is one of Scrinch's lieutenants. Some bosses are dark takes on familiar Christmas figures, always in our own design: the Gingerbread Rascal (a gingerbread man the hex brought to life; a public-domain folk character), General Grimbolt (a hexed nutcracker soldier; from a public-domain story) and **Cinderhoof**, an original soot-black reindeer with ember antlers that Scrinch hexed to pull his sleigh. Cinderhoof replaces the idea of an evil Rudolph, which is a trademarked and copyrighted character, to keep the game original. Bosses drop the parts the loyal elves use to craft you stronger traps.
 
-The tone is a cheeky Christmas storybook. Every imp, place, trap, bait, rank and material name is invented for this game. Art is original vector art in one storybook style, generated by `scripts/art/` and named by game id so any picture can be regenerated or swapped; see [Art](#art).
+**Names in code.** Game data still calls them imps: the `imps` list in `content/locations.json`, the `Imp` type, the `imps` art slot and `imp` in hunt-log entries. Only player-facing text says elves. Six ids changed with their names (`crumb_imp` → `crumb_elf`, `chimney_soot_imp` → `sootcap`, `gingerbread_imp` → `gingerbread_rascal`, `glitter_imp` → `glitterbug`, `windup_imp` → `windup_elf`, `foreman_grimbolt` → `general_grimbolt`) and the Stables boss became `cinderhoof`; Grizzlewick the Horned is parked in `content/parked/grizzlewick.json` for Scrinch's own lair after v1. Saves, badges and hunt-log entries with the old ids are rewritten when the server starts (`RENAMED_ITEMS` in `src/server/db.ts`), so old catches of Grizzlewick count as Cinderhoof.
 
-**Intro letter.** Every new game opens with "A letter from Santa" as the first entry in the hunt log: the lair, Scrinch and his imps, and the player's job as Santa's imp hunter. It is logged when an account is created and again after Start over, shows folded after the first paragraph with "Read the whole letter", and is also at the top of How to play, so players from before it was added can read it there. The text lives in `content/story.json` (title, up to 8 paragraphs of up to 500 characters, sign-off) and can be edited without code changes.
+The tone is a cheeky Christmas storybook. Every elf, place, trap, bait, rank and material name is invented for this game. Art is original vector art in one storybook style, generated by `scripts/art/` and named by game id so any picture can be regenerated or swapped; see [Art](#art).
+
+**Intro letter.** Every new game opens with "A letter from Santa" as the first entry in the hunt log: the lair, Scrinch and his elves, and the player's job as Santa's elf hunter. It is logged when an account is created and again after Start over, shows folded after the first paragraph with "Read the whole letter", and is also at the top of How to play, so players from before it was added can read it there. The text lives in `content/story.json` (title, up to 8 paragraphs of up to 500 characters, sign-off) and can be edited without code changes.
 
 **Welcome popup (eddy 26 Nov 2026, built in #23).** A one-time popup greets the player when a new game starts: right after creating an account, and again after Start over. It sits over the Hunt screen with the key art on top, the game icon, and:
 
 > **Welcome to The Naughty List!**
-> Scrinch's imps are raiding Santa's secret lair, and Santa needs a hunter. Set your trap, catch every imp you can, and put them all on the Naughty List!
+> Scrinch's elves are raiding Santa's secret lair, and Santa needs a hunter. Set your trap, catch every elf you can, and put them all on the Naughty List!
 
 Buttons: **Start hunting** closes it; **Read Santa's letter** closes it and opens the intro letter in the hunt log. Space, Enter and Esc also close it, and the first Space press never hunts behind it. The save gets `welcomeSeen: true` once it is closed, so it shows once per game; Start over clears the flag. Old saves load with the flag set, so existing players don't see it. The text is a `welcome` block in `content/story.json` (`title` up to 40 characters, `text` up to 200, `button` up to 20) and is checked by `npm run check-content`. Mockup: the UI canvas, row "Achievements and badges", artboard "Welcome popup".
 
@@ -67,23 +70,23 @@ The player spends gold on bait and gear, hunts to earn gold, points and material
 | --- | --- | --- |
 | Trap | Power, power type, luck, attraction bonus | No |
 | Base | Power, luck, attraction bonus | No |
-| Bait | Attraction rate, changes which imps show up | 1 per attracted hunt |
+| Bait | Attraction rate, changes which elves show up | 1 per attracted hunt |
 | Charm (optional) | A bonus such as +luck or +power % | 1 per attracted hunt |
 
 **One hunt, step by step:**
 
 1. **Attraction roll.** If nothing is attracted, no bait is used and the journal says nothing took the bait.
-2. **Imp pick.** An imp is drawn from the location's table, weighted by the bait in use.
-3. **Catch roll.** Trap power and luck are compared with the imp's power.
+2. **Elf pick.** An elf is drawn from the location's table, weighted by the bait in use.
+3. **Catch roll.** Trap power and luck are compared with the elf's power.
 4. **Catch:** gold, points and a chance at loot. **Escape:** nothing gained. Bait is used either way.
 
 ```mermaid
 flowchart LR
   H[Press Hunt] --> A{Attracted?}
   A -- no --> Q[Nothing shows up<br/>no bait used]
-  A -- yes --> P[Pick imp by bait] --> C{Caught?}
+  A -- yes --> P[Pick elf by bait] --> C{Caught?}
   C -- yes --> W[Catch: gold, points, loot<br/>bait used]
-  C -- no --> E[Imp escapes<br/>bait used, nothing gained]
+  C -- no --> E[Elf escapes<br/>bait used, nothing gained]
 ```
 
 Each hunt is written to the hunt log, the main feedback screen, together with the player's buys, sales, crafts, gear changes and travel. See [User interface](#user-interface).
@@ -94,11 +97,11 @@ All constants live in `content/constants.json` and the other content files, so t
 
 - **Power** = (trap + base + charm power) x (1 + charm power bonus). **Luck** = trap + base + charm luck.
 - **Attraction** = min(95%, bait attraction x (1 + trap, base and charm attraction bonuses)). In the Reindeer Stables it is halved unless the bait is Hot Cocoa.
-- **Imp pick**: chance of imp i = its weight / sum of weights for that bait. A location's 3 commons share about 91%, the rare imp 5%, the mini boss 3% and the boss 1%. Fruitcake doubles the rare, mini boss and boss weights.
-- **Effectiveness** E of the trap's power type against an imp: 0 (immune), 0.5 (resists), 1 (normal) or 1.5 (weak). Types: Clockwork (toy machines), Starlight (Christmas-star magic, strong against shadowy imps; called Holly before PR #17), Frost (ice magic).
-- **Catch chance** = clamp((P x E + L^2) / (P x E + M), 0, 98%), where M is the imp's power. Luck only counts when E > 0.
-  - Example: a 150 power Clockwork trap on a 20 power base with luck 2, against a normal 90 power imp: (170 + 4) / (170 + 90) = 67%.
-- **Rewards**: a catch pays the imp's gold and points and rolls its loot list; bosses always drop their crafting part. An escape pays nothing and may pillage gold, bait and points (bosses most); see [Pillage on escape](#pillage-on-escape).
+- **Elf pick**: chance of elf i = its weight / sum of weights for that bait. A location's 3 commons share about 91%, the rare elf 5%, the mini boss 3% and the boss 1%. Fruitcake doubles the rare, mini boss and boss weights.
+- **Effectiveness** E of the trap's power type against an elf: 0 (immune), 0.5 (resists), 1 (normal) or 1.5 (weak). Types: Clockwork (toy machines), Starlight (Christmas-star magic, strong against shadowy elves; called Holly before PR #17), Frost (ice magic). From the Wrapping Room on, each location has a home type and a rival type; see [Power types by location](#power-types-by-location).
+- **Catch chance** = clamp((P x E + L^2) / (P x E + M), 0, 98%), where M is the elf's power. Luck only counts when E > 0.
+  - Example: a 150 power Clockwork trap on a 20 power base with luck 2, against a normal 90 power elf: (170 + 4) / (170 + 90) = 67%.
+- **Rewards**: a catch pays the elf's gold and points and rolls its loot list; bosses always drop their crafting part. An escape pays nothing and may pillage gold, bait and points (bosses most); see [Pillage on escape](#pillage-on-escape).
 - **RNG**: the engine takes a random source, so the simulator and tests replay exactly from a seed. The server rolls every hunt with a cryptographic random source, so results can't be edited in the browser.
 
 ## Pacing without a cooldown
@@ -121,7 +124,7 @@ Bait is the clock. With no timer, progress is limited by gold: every attracted h
 | --- | --- | --- | --- | --- |
 | 1 | Snow Scout | 0 | Cookie Pantry, starter gear | 150 |
 | 2 | Elf Deputy | 2,500 | Wrapping Room (250 gold to unlock) | 250 |
-| 3 | Imp Tracker | 12,000 | Toy Workshop (1,500 gold), Nutcracker Jaws trap | 400 |
+| 3 | Hex Tracker | 12,000 | Toy Workshop (1,500 gold), Nutcracker Jaws trap | 400 |
 | 4 | Frost Warden | 46,000 | Reindeer Stables (5,000 gold), rank 4 crafting | 600 |
 | 5 | Yule Marshal | 160,000 | End of v1 | |
 
@@ -131,35 +134,50 @@ Ranks depend on points only. Location unlock fees are paid once; travel between 
 
 The numbers below mirror `content/*.json`. Types: C = Clockwork, S = Starlight, F = Frost; unlisted types are normal (x1).
 
-**Imps**
+**Elves**
 
-| Location | Imp | Tier | Power | Gold | Points | Weak (x1.5) | Resists (x0.5) / immune (x0) | Drops |
+| Location | Elf | Tier | Power | Gold | Points | Weak (x1.5) | Resists (x0.5) / immune (x0) | Drops |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Cookie Pantry | Crumb Imp | Common | 40 | 12 | 20 | | | |
+| Cookie Pantry | Crumb Elf | Common | 40 | 12 | 20 | | | |
 | Cookie Pantry | Sprinkle Snatcher | Common | 70 | 18 | 30 | C | | Candied Peel 10% |
-| Cookie Pantry | Chimney Soot Imp | Uncommon | 100 | 25 | 45 | | S | |
-| Cookie Pantry | Jarbelly the Glutton | Uncommon | 180 | 40 | 70 | C | S | Cookie Tin 30% |
-| Cookie Pantry | Gingerbread Imp | Rare | 160 | 60 | 100 | F | | Sugar Glass 50%, Brass Spring 15% |
-| Wrapping Room | Ribbon Tangler | Common | 150 | 40 | 60 | | | Sugar Twist 25%, Ribbon Candy 2% |
+| Cookie Pantry | Sootcap | Uncommon | 100 | 25 | 45 | S | | |
+| Cookie Pantry | Jarbelly the Glutton | Uncommon | 180 | 40 | 70 | C | | Cookie Tin 30% |
+| Cookie Pantry | Gingerbread Rascal | Rare | 160 | 60 | 100 | F | | Sugar Glass 50%, Brass Spring 15% |
+| Wrapping Room | Ribbon Tangler | Common | 150 | 40 | 60 | F | | Sugar Twist 25%, Ribbon Candy 2% |
 | Wrapping Room | Tape Biter | Common | 220 | 55 | 85 | S | | Sugar Twist 20%, Ribbon Candy 2% |
-| Wrapping Room | Bow Burglar | Common | 280 | 70 | 100 | | C | Candied Peel 30%, Ribbon Candy 2% |
-| Wrapping Room | Glitter Imp | Rare | 350 | 110 | 160 | F | | Sugar Glass 50% |
-| Wrapping Room | Spoolwick | Mini boss | 600 | 160 | 300 | S | | Golden Ribbon 100% |
+| Wrapping Room | Bow Burglar | Common | 280 | 70 | 100 | S | C | Candied Peel 30%, Ribbon Candy 2% |
+| Wrapping Room | Glitterbug | Rare | 350 | 110 | 160 | S | C | Sugar Glass 50% |
+| Wrapping Room | Spoolwick | Mini boss | 600 | 160 | 300 | S | C | Golden Ribbon 100% |
 | Wrapping Room | Madame Shredwell | Boss | 1,100 | 300 | 550 | S | C | Enchanted Wrapping 100%, Jingle Bell Charm x5 25% |
-| Toy Workshop | Cog Pincher | Common | 450 | 140 | 150 | | | |
+| Toy Workshop | Cog Pincher | Common | 450 | 140 | 150 | C | | |
 | Toy Workshop | Paint Smudger | Common | 600 | 180 | 190 | S | | |
-| Toy Workshop | Stuffing Ripper | Common | 750 | 220 | 230 | F | S | |
-| Toy Workshop | Wind-up Imp | Rare | 900 | 300 | 320 | C | F immune | Sugar Glass 50% |
+| Toy Workshop | Stuffing Ripper | Common | 750 | 220 | 230 | C | F | |
+| Toy Workshop | Wind-up Elf | Rare | 900 | 300 | 320 | C | F immune | Sugar Glass 50% |
 | Toy Workshop | Hammerhand | Mini boss | 1,600 | 400 | 650 | F | | Toymaker's Gear 100% |
-| Toy Workshop | Foreman Grimbolt | Boss | 2,800 | 700 | 1,300 | C | | Clockwork Heart 100% |
-| Reindeer Stables | Hay Hoarder | Common | 1,000 | 300 | 350 | | | |
-| Reindeer Stables | Bell Thief | Common | 1,300 | 380 | 420 | | S | |
-| Reindeer Stables | Harness Snipper | Common | 1,600 | 450 | 480 | C | F immune | |
-| Reindeer Stables | Carrot Crook | Rare | 2,000 | 600 | 650 | C | F | Sugar Glass 50% |
-| Reindeer Stables | Antler Ripper | Mini boss | 3,500 | 800 | 1,200 | C | S | Silver Sleighbell 100% |
-| Reindeer Stables | Grizzlewick the Horned | Boss | 6,000 | 1,500 | 3,000 | C | S immune | Brimstone Coal 100% |
+| Toy Workshop | General Grimbolt | Boss | 2,800 | 700 | 1,300 | C | F | Clockwork Heart 100% |
+| Reindeer Stables | Hay Hoarder | Common | 1,000 | 300 | 350 | F | | |
+| Reindeer Stables | Bell Thief | Common | 1,300 | 380 | 420 | F | S | |
+| Reindeer Stables | Harness Snipper | Common | 1,600 | 450 | 480 | C | S | |
+| Reindeer Stables | Carrot Crook | Rare | 2,000 | 600 | 650 | F | S | Sugar Glass 50% |
+| Reindeer Stables | Antler Ripper | Mini boss | 3,500 | 800 | 1,200 | F | S | Silver Sleighbell 100% |
+| Reindeer Stables | Cinderhoof | Boss | 6,000 | 1,500 | 3,000 | F | S immune | Brimstone Coal 100% |
 
-Baron Crumblewick, the old Pantry boss, is parked in `content/parked/baron_crumblewick.json` (not loaded) for a later location or event. Imp weights and which imps a bait draws are in `content/locations.json`; the Wrapping Room's rare, mini boss and boss come only for ladder baits, and the Toy Workshop and Stables mini bosses and bosses only through their objective (weight 0 otherwise). Jarbelly, Bow Burglar and Bell Thief always pillage one bait when they escape; other imps pillage by tier (see [Pillage on escape](#pillage-on-escape)). Brimstone Coal has no use in v1; it is saved for later recipes, including The Naughty List.
+Baron Crumblewick, the old Pantry boss, is parked in `content/parked/baron_crumblewick.json` and Grizzlewick the Horned, the old Stables boss, in `content/parked/grizzlewick.json` (not loaded) for a later location or event. Elf weights and which elves a bait draws are in `content/locations.json`; the Wrapping Room's rare, mini boss and boss come only for ladder baits, and the Toy Workshop and Stables mini bosses and bosses only through their objective (weight 0 otherwise). Jarbelly, Bow Burglar and Bell Thief always pillage one bait when they escape; other elves pillage by tier (see [Pillage on escape](#pillage-on-escape)). Brimstone Coal has no use in v1; it is saved for later recipes, including The Naughty List.
+
+### Power types by location
+
+**Rule (eddy, 26 Nov 2026):** the elves you meet should suit the room, and their weaknesses should make sense from their story, so early players can reason about which trap to bring. Not a hard rule: every location keeps one or two exceptions, so players still read each elf's text, the Toy Workshop order board can fill every slot type, and the Clockwork capstone keeps a job in the Stables.
+
+From the Wrapping Room on, each location has a **home type** most of its elves are weak to (x1.5) and a **rival type** they resist (x0.5). The three types rotate, and each home type arrives with the trap you can buy or craft at that rank.
+
+| Location | Home type (weak) | Rival type (resists) | Why, in the story | Trap that arrives with it | Exceptions |
+| --- | --- | --- | --- | --- | --- |
+| Cookie Pantry | none, a teaching room | none | Each elf teaches one rule with an obvious tell, using the two types a rank 1 player can own | Starlit Stocking, Jack-in-the-Box | Gingerbread Rascal is weak to Frost (warm from the oven), a reason to come back later |
+| Wrapping Room | Starlight | Clockwork | The wrappers spent years making presents shine and can't look away from a star; ribbon and scissors jam springs | Star Lantern (rank 2) | Ribbon Tangler is weak to Frost (its ribbons freeze stiff), so the Icicle Jar has a use |
+| Toy Workshop | Clockwork | Frost | The toymakers can't keep their hands off a wind-up; tin, wood and wool don't feel the cold | Nutcracker Jaws (rank 3) | Paint Smudger is weak to Starlight (works in the dark); Hammerhand is weak to Frost (forge-hot) |
+| Reindeer Stables | Frost | Starlight | The hex left the stable hands craving warmth, so they bolt from the cold; they squint away the snow glare | Snow Globe Prison (rank 4) | Harness Snipper is weak to Clockwork (its shears snag in springs) |
+
+Each elf's description in `content/flavour.json` names its weakness, and each location's hint sheet in `content/story.json` names the room's home type and exceptions.
 
 **Traps**
 
@@ -189,11 +207,11 @@ Baron Crumblewick, the old Pantry boss, is parked in `content/parked/baron_crumb
 | Bait | Attraction | Effect | Rank | Price |
 | --- | --- | --- | --- | --- |
 | Stale Cookie | 70% | Works everywhere | 1 | 8 gold |
-| Sugar Cookie | 78% | Draws more Chimney Soot Imps in the Pantry | 1 | 20 gold |
+| Sugar Cookie | 78% | Draws more Sootcaps in the Pantry | 1 | 20 gold |
 | Peppermint Bark | 82% | | 3 | 50 gold |
 | Fruitcake | 85% | Doubles uncommon, rare, mini boss and boss odds (cannot skip the Wrapping Room ladder) | 2 | Crafted |
-| Hot Cocoa | 88% | Stable imps show up at half rate with any other bait | 4 | 90 gold |
-| Ribbon Candy | 82% | Wrapping Room tier 2: draws the Glitter Imp and Spoolwick | 2 | Crafted |
+| Hot Cocoa | 88% | Stable elves show up at half rate with any other bait | 4 | 90 gold |
+| Ribbon Candy | 82% | Wrapping Room tier 2: draws the Glitterbug and Spoolwick | 2 | Crafted |
 | Golden Bow Bonbon | 86% | Wrapping Room tier 3: the only bait Madame Shredwell takes | 2 | Crafted |
 
 **Charms** (one used per attracted hunt)
@@ -221,51 +239,51 @@ The Tangle Meter, first planned for the Wrapping Room, is kept as a spare loop f
 
 | Piece | Status | Where |
 | --- | --- | --- |
-| Per-imp loot list with a chance and amount; loot can name any item, including a bait | Built | `imps[].loot`, `src/engine/hunt.ts` |
-| Bait changes which imps show up: `baitWeights` overrides an imp's weight for one bait, and a weight of 0 is allowed, so an imp can be locked behind a bait | Built, only used for Sugar Cookie → Chimney Soot Imp | `imps[].baitWeights`, `impWeights()` in `src/engine/odds.ts` |
+| Per-elf loot list with a chance and amount; loot can name any item, including a bait | Built | `imps[].loot`, `src/engine/hunt.ts` |
+| Bait changes which elves show up: `baitWeights` overrides an elf's weight for one bait, and a weight of 0 is allowed, so an elf can be locked behind a bait | Built, only used for Sugar Cookie → Sootcap | `imps[].baitWeights`, `impWeights()` in `src/engine/odds.ts` |
 | Bait that raises rare, mini boss and boss odds | Built (Fruitcake, x2) | `baits[].rareMultiplier` |
 | Location that prefers one bait | Built (Reindeer Stables halves attraction without Hot Cocoa) | `preferredBait`, `otherBaitPenalty` |
 | Crafting a bait from drops | Built, one recipe (Fruitcake from Candied Peel and Cookie Tin) | `content/recipes.json` |
-| A chain of bait tiers where each tier's imps drop the next tier's ingredients and only the top tier draws the boss | Not built | |
+| A chain of bait tiers where each tier's elves drop the next tier's ingredients and only the top tier draws the boss | Not built | |
 | Any per-player, per-location progress (meters, orders, countdowns) | Not built: the save has no place for it | `src/engine/player.ts` |
 | A location panel on the Hunt screen showing that progress | Not built | |
 
 So the bait ladder is mostly content (new materials, baits, recipes and `baitWeights`); the order board and sleigh run need a small objective system in the engine.
 
-**Shared engine design (built).** Each location in `content/locations.json` gets an optional `objective` block with a `type` (`bait_ladder`, `order_board`, `sleigh_run`, and later `tangle_meter`) and its numbers. The save gets `objectives: { [locationId]: state }`, created lazily on the first hunt or action there, so old saves load unchanged. The hunt runs two hooks: `objectiveWeights()` adjusts imp weights before the imp is picked (a forced next imp, and imps that only come at certain moments), and `afterHunt()` updates the state after a quiet hunt, catch or escape and pays rewards. Objective changes go into the hunt's journal entry (for example "Readiness 58 → 62"), and the Hunt screen shows a small panel for the current location under the banner. Gear swaps stay free, as now. The simulator gets a strategy per objective so balance can be checked.
+**Shared engine design (built).** Each location in `content/locations.json` gets an optional `objective` block with a `type` (`bait_ladder`, `order_board`, `sleigh_run`, and later `tangle_meter`) and its numbers. The save gets `objectives: { [locationId]: state }`, created lazily on the first hunt or action there, so old saves load unchanged. The hunt runs two hooks: `objectiveWeights()` adjusts elf weights before the elf is picked (a forced next elf, and elves that only come at certain moments), and `afterHunt()` updates the state after a quiet hunt, catch or escape and pays rewards. Objective changes go into the hunt's journal entry (for example "Readiness 58 → 62"), and the Hunt screen shows a small panel for the current location under the banner. Gear swaps stay free, as now. The simulator gets a strategy per objective so balance can be checked.
 
 ### Cookie Pantry: a simple start (no local objective)
 
-The first location teaches the basic loop and nothing else: catch imps, earn gold, buy a better trap, base and bait in the Elf Emporium, rank up and unlock the Wrapping Room. It has common, uncommon and rare imps and no mini boss or boss.
+The first location teaches the basic loop and nothing else: catch elves, earn gold, buy a better trap, base and bait in the Elf Emporium, rank up and unlock the Wrapping Room. It has common, uncommon and rare elves and no mini boss or boss.
 
-| Imp | Tier | Power | Weight (Stale Cookie) | Weight (Sugar Cookie) | Drops |
+| Elf | Tier | Power | Weight (Stale Cookie) | Weight (Sugar Cookie) | Drops |
 | --- | --- | --- | --- | --- | --- |
-| `crumb_imp` | Common | 40 | 40 | 40 | |
+| `crumb_elf` | Common | 40 | 40 | 40 | |
 | `sprinkle_snatcher` | Common | 70 | 30 | 30 | Candied Peel 10% (as now) |
-| `chimney_soot_imp` | Uncommon (was common) | 100 | 15 | 22 | |
+| `sootcap` | Uncommon (was common) | 100 | 15 | 22 | |
 | `jarbelly` | Uncommon (was mini boss) | 180 (was 300) | 10 | 10 | Cookie Tin 30% (was 100%); gold 40 and points 70; always pillages a bait on escape |
-| `gingerbread_imp` | Rare | 160 | 5 | 8 | Sugar Glass 50% (as now), Brass Spring 15% (new) |
+| `gingerbread_rascal` | Rare | 160 | 5 | 8 | Sugar Glass 50% (as now), Brass Spring 15% (new) |
 
 - **New tier, uncommon.** The engine, the content schema, the hunt log and the Naughty List gain an `uncommon` tier between common and rare, with its own portrait frame. Fruitcake doubles every tier above common.
-- **Baron Crumblewick leaves the Pantry** and is parked for a later location or event; his art and text stay. His Brass Spring now comes from the Gingerbread Imp, so Constellation Wreath can still be crafted.
-- **Sugar Cookie** is the "better bait" step: more uncommon and rare imps for 20 gold instead of 8.
+- **Baron Crumblewick leaves the Pantry** and is parked for a later location or event; his art and text stay. His Brass Spring now comes from the Gingerbread Rascal, so Constellation Wreath can still be crafted.
+- **Sugar Cookie** is the "better bait" step: more uncommon and rare elves for 20 gold instead of 8.
 - No panel on the Hunt screen. The hint and first-visit intro still apply.
-- Rank 1 took a median 181 hunts in the simulator (target 150, within 25%).
+- Rank 1 took a median 166 hunts in the simulator (target 150, within 25%).
 
 ### Wrapping Room: the Bait Ladder (bait tiers)
 
-eddy's loop, starting in the second location: common bait catches common imps, who drop tier 2 ingredients; tier 2 bait draws new imps, who drop tier 3 ingredients; tier 3 bait draws the boss, who drops trap parts and a little general help. It reuses the Wrapping Room's existing drops where it can.
+eddy's loop, starting in the second location: common bait catches common elves, who drop tier 2 ingredients; tier 2 bait draws new elves, who drop tier 3 ingredients; tier 3 bait draws the boss, who drops trap parts and a little general help. It reuses the Wrapping Room's existing drops where it can.
 
-| Tier | Bait (how you get it) | Imps it draws (weight) | What they drop toward the next tier |
+| Tier | Bait (how you get it) | Elves it draws (weight) | What they drop toward the next tier |
 | --- | --- | --- | --- |
-| 1 | Any shop bait (Stale Cookie, Sugar Cookie, later Peppermint Bark) | `ribbon_tangler` 36, `tape_biter` 30, `bow_burglar` 25. `glitter_imp`, `spoolwick` and `madame_shredwell` 0 | `ribbon_tangler`: Sugar Twist 25%. `tape_biter`: Sugar Twist 20%. `bow_burglar`: Candied Peel 30% (was 10%). Any common: 2% for 1 Ribbon Candy outright |
-| 2 | **Ribbon Candy** (new bait, 82% attraction, not sold). Recipe: 2 Sugar Twist + 1 Candied Peel + 30 gold → 3 Ribbon Candy | commons 50 in total, `glitter_imp` 30, `spoolwick` 20, `madame_shredwell` 0 | `glitter_imp`: Sugar Glass 50% (as now). `spoolwick`: Golden Ribbon 100% (as now) |
-| 3 | **Golden Bow Bonbon** (new bait, 86% attraction, not sold). Recipe: 1 Sugar Glass + 1 Golden Ribbon + 100 gold → 2 Bonbons | commons 30, `glitter_imp` 10, `spoolwick` 10, `madame_shredwell` 50 | `madame_shredwell`: Enchanted Wrapping 100% (trap part for Constellation Wreath, as now) and 25% for 5 Jingle Bell Charms |
+| 1 | Any shop bait (Stale Cookie, Sugar Cookie, later Peppermint Bark) | `ribbon_tangler` 36, `tape_biter` 30, `bow_burglar` 25. `glitterbug`, `spoolwick` and `madame_shredwell` 0 | `ribbon_tangler`: Sugar Twist 25%. `tape_biter`: Sugar Twist 20%. `bow_burglar`: Candied Peel 30% (was 10%). Any common: 2% for 1 Ribbon Candy outright |
+| 2 | **Ribbon Candy** (new bait, 82% attraction, not sold). Recipe: 2 Sugar Twist + 1 Candied Peel + 30 gold → 3 Ribbon Candy | commons 50 in total, `glitterbug` 30, `spoolwick` 20, `madame_shredwell` 0 | `glitterbug`: Sugar Glass 50% (as now). `spoolwick`: Golden Ribbon 100% (as now) |
+| 3 | **Golden Bow Bonbon** (new bait, 86% attraction, not sold). Recipe: 1 Sugar Glass + 1 Golden Ribbon + 100 gold → 2 Bonbons | commons 30, `glitterbug` 10, `spoolwick` 10, `madame_shredwell` 50 | `madame_shredwell`: Enchanted Wrapping 100% (trap part for Constellation Wreath, as now) and 25% for 5 Jingle Bell Charms |
 
 - New ids: material `sugar_twist`; baits `ribbon_candy`, `golden_bow_bonbon`; recipes `ribbon_candy_x3`, `golden_bow_bonbon_x2`.
 - Fruitcake uses the tier 1 weights here, so it can't skip the ladder (2 x 0 is still 0).
 - Candied Peel and Golden Ribbon are also used by Fruitcake and the Yule Log Base, so players choose between bait and gear.
-- Simulator: a simulated player catches Spoolwick 1.8 times and Madame Shredwell 0.4 times on average before moving on; most players rank up before reaching the top of the ladder.
+- Simulator: a simulated player catches Spoolwick 1.8 times and Madame Shredwell 0.3 times on average before moving on; most players rank up before reaching the top of the ladder.
 - Panel: three bait tiers with what you own of each, and the next recipe's have / need.
 
 ### Toy Workshop: the Order Board (trap-type puzzle)
@@ -273,12 +291,12 @@ eddy's loop, starting in the second location: common bait catches common imps, w
 The elves pin toy orders to a board. Each order lists parts that must be caught with a given trap type, in order. It makes the player own and swap traps of all three types, which is the known gap from the simulator (nobody bought Snow Globe Prison or Constellation Wreath).
 
 - **Order:** 3 slots, each a trap type (Clockwork, Starlight or Frost), rolled by the server when the last order finishes. A catch with the trap type of the next slot fills it. Catches with another type don't count; escapes don't undo filled slots.
-- The puzzle is matching type to imp: the Stuffing Ripper resists Starlight, the Wind-up Imp is immune to Frost, so a Frost slot is best filled on Paint Smudgers, Cog Pinchers or Stuffing Rippers.
+- The puzzle is matching type to elf: most Workshop elves are weak to Clockwork and resist Frost (the Wind-up Elf is immune), so Clockwork slots are easy, Starlight slots go best on Paint Smudgers, and Frost slots on Cog Pinchers or Paint Smudgers. Owning a trap of each type is part of the job here.
 - **Order done:** a Toy Crate: 400 gold and one of Peppermint Bark x5, Wind-up Key Charm x3 or Sugar Glass x1.
 - **Inspection:** every 3rd finished order, the next attracted hunt is Hammerhand (mini boss; weight 0 otherwise). He drops Toymaker's Gear as now.
-- **Rush order:** after an Inspection, the player can take a 5-slot Rush order instead of a normal one. Finishing it makes the next attracted hunt Foreman Grimbolt (boss; weight 0 otherwise), who drops Clockwork Heart as now.
+- **Rush order:** after an Inspection, the player can take a 5-slot Rush order instead of a normal one. Finishing it makes the next attracted hunt General Grimbolt (boss; weight 0 otherwise), who drops Clockwork Heart as now.
 - Panel: the order slots as type badges, filled or empty, and orders until the next Inspection.
-- Simulator: about 30 orders per player, 3.4 Hammerhand and 2.3 Foreman Grimbolt catches.
+- Simulator: about 35 orders per player, 3.9 Hammerhand and 2.2 General Grimbolt catches. The simulated player buys the cheapest trap of any type it lacks before hunting here.
 
 ### Reindeer Stables: the Sleigh Run (countdown in hunts)
 
@@ -287,22 +305,22 @@ Get the sleigh ready before the countdown runs out, while thieves undo your work
 - **Start a run** from the panel (free). The run lasts 40 hunts; every hunt counts, including quiet ones, so Hot Cocoa's better attraction matters more here.
 - **Readiness** 0 to 100: a common catch adds 5, the rare adds 12, Antler Ripper adds 20 (first pass was 4 and 10; tuned in the simulator). A Bell Thief escape takes 8 (it runs off with the bells); a Harness Snipper escape takes 5.
 - Antler Ripper's weight is 0 below 50 Readiness and 6 from 50 up.
-- **Launch:** reaching 100 before the countdown ends launches the sleigh: 2,000 gold and 1 Silver Sleighbell, and Grizzlewick ambushes it, so the next attracted hunt is him (weight 0 otherwise). He drops Brimstone Coal as now.
+- **Launch:** reaching 100 before the countdown ends launches the sleigh: 2,000 gold and 1 Silver Sleighbell, and Cinderhoof ambushes it, so the next attracted hunt is Cinderhoof (weight 0 otherwise). It drops Brimstone Coal as now.
 - **Run fails** when the countdown ends below 100: the player gets Readiness x 10 gold and can start another run straight away.
 - Outside a run the Stables hunt as now, without the mini boss and boss.
 - Panel: Readiness bar, hunts left, and a Start run button when no run is active.
-- Simulator: about 14 runs per player, 2.1 of them launched; 2.1 Antler Ripper and 0.8 Grizzlewick catches.
+- Simulator: about 13 runs per player, 3.7 of them launched; 2.4 Antler Ripper and 1.4 Cinderhoof catches.
 
 ### Spare loop for a later location: the Tangle Meter (push your luck)
 
-Parked on 26 Nov 2026, when the Cookie Pantry became a simple start and the bait ladder moved to the Wrapping Room. It is still written with the Wrapping Room's imps, as a ready design to re-skin for a later location and its own imps and boss.
+Parked on 26 Nov 2026, when the Cookie Pantry became a simple start and the bait ladder moved to the Wrapping Room. It is still written with the Wrapping Room's elves, as a ready design to re-skin for a later location and its own elves and boss.
 
 The room gets messier the longer you hunt, and a messy room pays better but is harder. The player chooses when to tidy up.
 
 - **Tangle** runs 0 to 100 and starts at 0. Each attracted hunt adds 5; an escape adds 5 more; catching a Ribbon Tangler adds 10.
 - **Tidying:** catching a Tape Biter cuts 15 (it chews through the knots; it is weak to Starlight). New charm **Sharp Shears** (`sharp_shears_charm`, shop, 35 gold, rank 2) cuts 25 on each attracted hunt it is used. Catching Madame Shredwell resets Tangle to 0.
 
-| Band | Tangle | Imp power | Gold and points | Rare and mini boss weight | Madame Shredwell |
+| Band | Tangle | Elf power | Gold and points | Rare and mini boss weight | Madame Shredwell |
 | --- | --- | --- | --- | --- | --- |
 | Tidy | 0–39 | x1 | x1 | x1 | weight 0 |
 | Messy | 40–79 | x1.15 | x1.25 | x2 | weight 0 |
@@ -316,20 +334,20 @@ The room gets messier the longer you hunt, and a messy room pays better but is h
 
 eddy (25 Nov 2026): each location's Hunt screen should feel different. Three additions, all in the phone-first layout D2. **Status: built in #18.** An audit against this plan and the canvas in #23 added what was missing: each panel's icon in its title (Ribbon Candy, Toymaker's Gear, Silver Sleighbell), the small sleigh moving along the Readiness bar, and the "Last: Bell Thief escaped −8" line under it.
 
-**1. First-visit intro in the hunt log.** The first time a player arrives in a location, the hunt log gets an "Arrived: <location>" entry with a short intro to the area: what the room is, which imps raid it and what's different here. It shows folded after the first sentence, like Santa's letter. The Cookie Pantry intro is logged right after Santa's letter when a game starts (sign-up and Start over); the others are logged the first time the player travels there. It is a new journal event, `arrival`, logged when a location is first unlocked by travel, so old saves get intros only for new places. Changes from the panel (start a sleigh run, take a Rush order) are logged as an `objective` event. The Full history "Events" filter includes it.
+**1. First-visit intro in the hunt log.** The first time a player arrives in a location, the hunt log gets an "Arrived: <location>" entry with a short intro to the area: what the room is, which elves raid it and what's different here. It shows folded after the first sentence, like Santa's letter. The Cookie Pantry intro is logged right after Santa's letter when a game starts (sign-up and Start over); the others are logged the first time the player travels there. It is a new journal event, `arrival`, logged when a location is first unlocked by travel, so old saves get intros only for new places. Changes from the panel (start a sleigh run, take a Rush order) are logged as an `objective` event. The Full history "Events" filter includes it.
 
-**2. Hint button.** A round "?" button next to Travel, opens a bottom sheet "How to clear <location>" with 2 to 4 short steps, the location's intro again (for players who skipped it) and a Close button. The hint never shows exact odds.
+**2. Hint button.** A round "?" button next to Travel, opens a bottom sheet "How to clear <location>" with 2 to 5 short steps, the location's intro again (for players who skipped it) and a Close button. The hint never shows exact odds.
 
 **3. Mechanic panel.** From the second location on, a card between the gear stats and the hunt log, styled per location (its own colour and icon), showing the local objective's state. Its "How does this work?" link opens the same sheet as the hint button. It updates after every hunt, and a hunt that changes the objective gets a one-line note in its log entry (for example "Readiness 58 → 62").
 
-Text lives in a new `locations` block in `content/story.json`, keyed by location id: `intro` (up to 400 characters) and `hint` (up to 4 steps of up to 120 characters). `npm run check-content` fails if a location has no intro or hint, or names an unknown location. Texts as first drafted (the built text is in `story.json`):
+Text lives in a new `locations` block in `content/story.json`, keyed by location id: `intro` (up to 400 characters) and `hint` (up to 5 steps of up to 120 characters). `npm run check-content` fails if a location has no intro or hint, or names an unknown location. Texts as first drafted (the built text is in `story.json`):
 
 | Location | Intro (first visit) | Hint steps |
 | --- | --- | --- |
-| Cookie Pantry | Santa's pantry: jars to the ceiling and crumbs on every shelf. Small-time imps raid it all night. Catch them, earn your pay, and kit yourself out before heading deeper into the lair. | 1. Hunt here to earn gold and points. 2. Buy a better trap and base in the Elf Emporium as soon as you can afford them. 3. Sugar Cookies draw more uncommon and rare imps. 4. Reach Elf Deputy to unlock the Wrapping Room. |
-| Wrapping Room | Miles of ribbon and paper. The common imps here grab anything, but the Glitter Imp and Spoolwick only come for proper sweets, and Madame Shredwell only for the finest. Bake your way up. | 1. Catch commons with shop bait to collect Sugar Twists and Candied Peel. 2. Make Ribbon Candy in Santa's Workshop. 3. Ribbon Candy draws the Glitter Imp and Spoolwick: their drops make Golden Bow Bonbons. 4. Bonbons are the only bait Madame Shredwell will take. |
-| Toy Workshop | The elves pin toy orders to the board, and each part must be caught with the right kind of trap. Finish enough orders and the bosses come to inspect. | 1. Check the order board: each slot needs a catch with that trap type, in order. 2. Swap traps to match, and pick imps that aren't immune. 3. Every 3rd order brings Hammerhand; then take a Rush order to bring Foreman Grimbolt. |
-| Reindeer Stables | The sleigh must be ready by Christmas Eve, and the stable imps keep pinching the bells and snipping the harness. Load it in time and Grizzlewick will try to stop the launch. | 1. Start a sleigh run: you have 40 hunts. 2. Catches build Readiness; escaped Bell Thieves and Harness Snippers take it away. 3. Hot Cocoa keeps imps coming, so fewer hunts are wasted. 4. Reach 100 to launch and face Grizzlewick. |
+| Cookie Pantry | Santa's pantry: jars to the ceiling and crumbs on every shelf. The hexed baker elves raid it all night. Catch them, earn your pay, and kit yourself out before heading deeper into the lair. | 1. Hunt here to earn gold and points. 2. Each elf's description hints at the trap type it is weak to. Sootcap hides in shadow; Jarbelly can't resist a box. 3. Buy a better trap and base in the Elf Emporium as soon as you can afford them. 4. Sugar Cookies draw more uncommon and rare elves. 5. Reach Elf Deputy to unlock the Wrapping Room. |
+| Wrapping Room | Miles of ribbon and paper. The hexed wrappers still can't resist anything that shines, so Starlight traps work best here. The commons grab anything, but Glitterbug and Spoolwick only come for proper sweets, and Madame Shredwell only for the finest. Bake your way up. | 1. Most elves here are weak to Starlight and dodge Clockwork. Ribbon Tanglers freeze stiff in Frost. 2. Catch commons with shop bait to collect Sugar Twists and Candied Peel. 3. Make Ribbon Candy in Santa's Workshop. 4. Ribbon Candy draws Glitterbug and Spoolwick. Their drops make Golden Bow Bonbons. 5. Bonbons are the only bait Madame Shredwell will take. |
+| Toy Workshop | The hexed toymakers can't keep their hands off a wind-up, so Clockwork traps work best here. The loyal elves pin toy orders to the board, and each part must be caught with the right kind of trap. Finish enough orders and the bosses come to inspect. | 1. Most elves here are weak to Clockwork and shrug off Frost. Paint Smudgers fear Starlight; Hammerhand is forge-hot. 2. Check the order board: each slot needs a catch with that trap type, in order. 3. Swap traps to match, and pick elves that aren't immune to that type. 4. Every 3rd order brings Hammerhand. Then take a Rush order to bring General Grimbolt. |
+| Reindeer Stables | The sleigh must be ready by Christmas Eve, and the hexed stable hands keep pinching the bells and snipping the harness. They crave warmth and bolt from the cold, so Frost traps work best here. Load the sleigh in time and Cinderhoof will try to stop the launch. | 1. Most elves here are weak to Frost and squint away Starlight. Harness Snippers snag in Clockwork. 2. Start a sleigh run: you have 40 hunts, quiet ones included. 3. Catches build Readiness. Escaped Bell Thieves and Harness Snippers take it away. 4. Hot Cocoa keeps elves coming, so fewer hunts are wasted. 5. Reach 100 to launch the sleigh and face Cinderhoof. |
 
 **Hunt screen with the new parts (all locations):**
 
@@ -393,7 +411,7 @@ The Cookie Pantry, and any future location without a local objective, shows no p
 All five steps were built in #18.
 
 1. Location intros, hint button and the empty panel slot (shared by all locations).
-2. Cookie Pantry simple start: the uncommon tier and the new imp table.
+2. Cookie Pantry simple start: the uncommon tier and the new elf table.
 3. Objective system in the engine and save, and the Wrapping Room bait ladder (content plus `baitWeights`).
 4. Toy Workshop order board.
 5. Reindeer Stables sleigh run.
@@ -402,31 +420,31 @@ Each step re-runs `npm run simulate` and updates the balance numbers in this fil
 
 ## Pillage on escape
 
-**Rule (eddy, 26 Nov 2026):** an imp that escapes may pillage the player, taking gold, points and/or bait. Bosses pillage more than mini bosses, and regular imps only rarely. Built in #18. Code: `rollPillage()` in `src/engine/hunt.ts`; numbers in `content/constants.json` > `pillage`.
+**Rule (eddy, 26 Nov 2026):** an elf that escapes may pillage the player, taking gold, points and/or bait. Bosses pillage more than mini bosses, and regular elves only rarely. Built in #18. Code: `rollPillage()` in `src/engine/hunt.ts`; numbers in `content/constants.json` > `pillage`.
 
-**When it happens.** Only after an escape: an imp was attracted, the bait was used, and the catch roll failed. Quiet hunts and catches never pillage. The server rolls a pillage chance for the imp's tier; on a hit it rolls what is taken. Like everything else it counts hunts, not time, so it works the same with the stamina meter on or off.
+**When it happens.** Only after an escape: an elf was attracted, the bait was used, and the catch roll failed. Quiet hunts and catches never pillage. The server rolls a pillage chance for the elf's tier; on a hit it rolls what is taken. Like everything else it counts hunts, not time, so it works the same with the stamina meter on or off.
 
 | Tier | Chance on escape | What it takes |
 | --- | --- | --- |
-| Common | 3% | One of: 1 of the armed bait, or gold equal to the imp's gold reward |
-| Uncommon | 5% | One of: 1 to 2 of the armed bait, or gold equal to 1.5 x the imp's gold reward (added with the uncommon tier) |
-| Rare | 8% | One of: 1 to 2 of the armed bait, or gold equal to 2 x the imp's gold reward |
+| Common | 3% | One of: 1 of the armed bait, or gold equal to the elf's gold reward |
+| Uncommon | 5% | One of: 1 to 2 of the armed bait, or gold equal to 1.5 x the elf's gold reward (added with the uncommon tier) |
+| Rare | 8% | One of: 1 to 2 of the armed bait, or gold equal to 2 x the elf's gold reward |
 | Mini boss | 35% | Two of: 5% of your gold (at most 10 x its gold reward), 2 to 3 of the armed bait, 1% of your points (at most 2 x its points reward) |
 | Boss | 60% | All three: 8% of your gold (at most 15 x its gold reward), 3 to 5 of the armed bait, 2% of your points (at most 3 x its points reward) |
 
 Example: Madame Shredwell (gold 300, points 550) escapes from a player with 6,000 gold, 20 Golden Bow Bonbons and 9,000 points. If she pillages: −480 gold (8%, under the 4,500 cap), −4 Bonbons, −180 points (2%, under the 1,650 cap).
 
-**Bait thieves.** The old rule "some imps steal one extra bait when they escape" becomes part of pillage: Jarbelly, Bow Burglar and Bell Thief keep a guaranteed 1-bait pillage on every escape (`pillage: { chance: 1, bait: [1, 1] }` on the imp), shown and logged the same way as any other pillage. That rule replaces their tier's roll.
+**Bait thieves.** The old rule "some elves steal one extra bait when they escape" becomes part of pillage: Jarbelly, Bow Burglar and Bell Thief keep a guaranteed 1-bait pillage on every escape (`pillage: { chance: 1, bait: [1, 1] }` on the elf), shown and logged the same way as any other pillage. That rule replaces their tier's roll.
 
 **Safety rails** (so it stings but never dead-ends a player):
 - Gold never drops below 100 from a pillage.
 - Points never drop below the current rank's threshold, so a pillage can't take a rank away. Rank 1 players lose no points.
-- When a rail stops a loss the imp still counts as having pillaged, and the log says what was safe.
+- When a rail stops a loss the elf still counts as having pillaged, and the log says what was safe.
 - Only the armed bait is taken, never more than is owned. Charms, gear and materials are never taken.
 - Mrs. Claus's free Stale Cookies (no bait and under 50 gold) are unchanged and still catch anyone who runs dry.
 - With the gold floor at 100, a player can always buy bait again (Stale Cookie is 8 gold).
 
-**Content.** `content/constants.json` > `pillage` has `goldFloor` (100) and one rule per tier: `chance`, `takes` (the kinds it picks from), `kinds` (how many it takes), `goldPct` and `goldCap` (gold = goldPct of the player's gold, at most goldCap x the imp's gold; without goldPct, goldCap x the imp's gold), `bait` ([min, max]), `pointsPct` and `pointsCap`. An imp's own `pillage` field replaces its tier rule; `stealsBait` is gone. The player's `stats.pillaged` counts pillages. The simulator reports pillages and the gold and bait they cost per location (see Economy).
+**Content.** `content/constants.json` > `pillage` has `goldFloor` (100) and one rule per tier: `chance`, `takes` (the kinds it picks from), `kinds` (how many it takes), `goldPct` and `goldCap` (gold = goldPct of the player's gold, at most goldCap x the elf's gold; without goldPct, goldCap x the elf's gold), `bait` ([min, max]), `pointsPct` and `pointsCap`. An elf's own `pillage` field replaces its tier rule; `stealsBait` is gone. The player's `stats.pillaged` counts pillages. The simulator reports pillages and the gold and bait they cost per location (see Economy).
 
 **Hunt log.** An escape that pillages gets a red border, a "Pillaged" pill and the losses on one line:
 - Common: "Bow Burglar escaped and pillaged you: −1 Sugar Cookie."
@@ -436,7 +454,7 @@ The Full history gets a **Pillaged** filter. The Hunters catch feed adds boss pi
 
 **On screen.**
 - The gold and points in the player bar flash red when a pillage lands, the Hunt button shakes once (not with reduced motion) and the phone buzzes if vibration is on.
-- Caught imps' files show a "Pillage risk" line: Rarely, Sometimes, Often or Very often with the chance, or "always steals a bait" for the three thieves.
+- Caught elves' files show a "Pillage risk" line: Rarely, Sometimes, Often or Very often with the chance, or "always steals a bait" for the three thieves.
 - How to play has a "Pillage" section with its own diagram (`howto/pillage.svg`, queued for a custom picture).
 
 **Fits with the location objectives.** Pillaged bait counts against the bait ladder (losing crafted Ribbon Candy or Bonbons hurts, which makes a stronger trap worth it before trying for Madame Shredwell). In the Sleigh Run, Bell Thief and Harness Snipper escapes still take Readiness as planned, separately from pillage.
@@ -461,8 +479,8 @@ Ids are proposed. Badge concepts are briefs for the badge art (emblem only; the 
 
 | Id | Name | How to earn | Frame | Badge concept |
 | --- | --- | --- | --- | --- |
-| `first_catch` | Caught One! | Catch your first imp | Bronze | A jingle-bell net with one small imp tail poking out |
-| `first_escape` | Slippery Little Thing | An imp escapes your trap for the first time | Bronze | Tiny clawed footprints running off the edge of the badge through snow |
+| `first_catch` | Caught One! | Catch your first elf | Bronze | A jingle-bell net with one small pointed elf hat poking out |
+| `first_escape` | Slippery Little Thing | An elf escapes your trap for the first time | Bronze | Tiny pointed-boot footprints running off the edge of the badge through snow |
 | `first_purchase` | Elf Emporium Regular | Buy your first item in the Elf Emporium | Bronze | A red-and-white striped shopping bag with an elf hat on top |
 | `first_upgrade` | New Trap Smell | Equip a trap other than the starter Starlit Stocking | Bronze | A trap with a gift tag and a little sparkle |
 | `first_craft` | Workshop Apprentice | Craft your first item in Santa's Workshop | Bronze | A small mallet resting on a half-wrapped present |
@@ -476,11 +494,11 @@ Ids are proposed. Badge concepts are briefs for the badge art (emblem only; the 
 | `hunts_500` | Night Shift | Hunt 500 times | Silver | A crescent moon over a frosted workshop window |
 | `hunts_1500` | Tireless Hunter | Hunt 1,500 times | Silver | A steaming cocoa mug with a tally of marks on the side |
 | `hunts_5000` | Never Sleeps | Hunt 5,000 times | Gold | An alarm clock buried in snow, ringing, with a nightcap hung on it |
-| `catches_50` | Pocketful of Imps | Catch 50 imps | Bronze | A coat pocket bulging, three imp tails sticking out |
-| `catches_250` | Sackful of Imps | Catch 250 imps | Silver | A drawstring sack wriggling with imps |
-| `catches_1000` | Sleighload of Imps | Catch 1,000 imps | Gold | A small sleigh piled high with a tied-down, wriggling sack |
-| `streak_10` | On a Roll | Catch 10 imps in a row (quiet hunts don't break the run, escapes do) | Silver | A snowball rolling downhill, growing, with "10" on it |
-| `streak_25` | Unstoppable | Catch 25 imps in a row | Gold | A huge snowball flattening a fence, "25" on it |
+| `catches_50` | Pocketful of Elves | Catch 50 elves | Bronze | A coat pocket bulging, three pointed elf hats sticking out |
+| `catches_250` | Sackful of Elves | Catch 250 elves | Silver | A drawstring sack wriggling with hexed elves |
+| `catches_1000` | Sleighload of Elves | Catch 1,000 elves | Gold | A small sleigh piled high with a tied-down, wriggling sack |
+| `streak_10` | On a Roll | Catch 10 elves in a row (quiet hunts don't break the run, escapes do) | Silver | A snowball rolling downhill, growing, with "10" on it |
+| `streak_25` | Unstoppable | Catch 25 elves in a row | Gold | A huge snowball flattening a fence, "25" on it |
 | `gold_1000` | Pocket Money | Earn 1,000 gold from catches | Bronze | Three gold coins with holly on them |
 | `gold_25000` | Stocking Stuffed | Earn 25,000 gold from catches | Silver | A stocking overflowing with gold coins |
 | `gold_250000` | Santa's Treasurer | Earn 250,000 gold from catches | Gold | A brass-bound treasure chest with a candy-cane lock |
@@ -490,7 +508,7 @@ Ids are proposed. Badge concepts are briefs for the badge art (emblem only; the 
 | Id | Name | How to earn | Frame | Badge concept |
 | --- | --- | --- | --- | --- |
 | `rank_2` | Deputised | Reach Elf Deputy (rank 2) | Bronze | The rank 2 badge art on a red ribbon |
-| `rank_3` | On the Trail | Reach Imp Tracker (rank 3) | Bronze | The rank 3 badge art on a green ribbon |
+| `rank_3` | On the Trail | Reach Hex Tracker (rank 3) | Bronze | The rank 3 badge art on a green ribbon |
 | `rank_4` | Keeper of the Cold | Reach Frost Warden (rank 4) | Silver | The rank 4 badge art on an icy blue ribbon |
 | `rank_5` | Marshal of Yule | Reach Yule Marshal (rank 5, end of v1) | Gold | The rank 5 badge art on a gold ribbon with a star |
 
@@ -498,35 +516,35 @@ Ids are proposed. Badge concepts are briefs for the badge art (emblem only; the 
 
 | Id | Name | How to earn | Frame | Badge concept |
 | --- | --- | --- | --- | --- |
-| `first_uncommon` | A Bit Unusual | Catch your first uncommon imp | Bronze | A magnifying glass over a single odd-coloured footprint |
-| `first_rare` | Rare Find | Catch your first rare imp | Bronze | A glass bauble with a tiny imp trapped inside |
-| `all_rares` | Rare Collector | Catch every rare imp in v1 | Silver | A shelf of four baubles, each with an imp inside |
-| `list_cookie_pantry` | Pantry Swept Clean | Catch every Cookie Pantry imp at least once | Bronze | A cookie jar with a lid and a tick mark |
-| `list_wrapping_room` | All Wrapped Up | Catch every Wrapping Room imp at least once | Silver | A tied ribbon bow with a tick mark in the knot |
-| `list_toy_workshop` | Every Last Cog | Catch every Toy Workshop imp at least once | Silver | A brass cog with a tick mark cut out of its centre |
-| `list_reindeer_stables` | Stable Hand | Catch every Reindeer Stables imp at least once | Silver | A horseshoe hung over a stable door, with a tick |
-| `list_all` | Checked Every Name | Catch every imp in v1 at least once (a full Naughty List) | Gold | A long scroll unrolled, every line ticked, a wax seal at the bottom |
+| `first_uncommon` | A Bit Unusual | Catch your first uncommon elf | Bronze | A magnifying glass over a single odd-coloured footprint |
+| `first_rare` | Rare Find | Catch your first rare elf | Bronze | A glass bauble with a tiny hexed elf trapped inside |
+| `all_rares` | Rare Collector | Catch every rare elf in v1 | Silver | A shelf of four baubles, each with a hexed elf inside |
+| `list_cookie_pantry` | Pantry Swept Clean | Catch every Cookie Pantry elf at least once | Bronze | A cookie jar with a lid and a tick mark |
+| `list_wrapping_room` | All Wrapped Up | Catch every Wrapping Room elf at least once | Silver | A tied ribbon bow with a tick mark in the knot |
+| `list_toy_workshop` | Every Last Cog | Catch every Toy Workshop elf at least once | Silver | A brass cog with a tick mark cut out of its centre |
+| `list_reindeer_stables` | Stable Hand | Catch every Reindeer Stables elf at least once | Silver | A horseshoe hung over a stable door, with a tick |
+| `list_all` | Checked Every Name | Catch every elf in v1 at least once (a full Naughty List) | Gold | A long scroll unrolled, every line ticked, a wax seal at the bottom |
 
 **Bosses**
 
 | Id | Name | How to earn | Frame | Badge concept |
 | --- | --- | --- | --- | --- |
-| `first_miniboss` | Big Trouble | Catch your first mini boss | Bronze | A cracked cage with one big horn showing |
+| `first_miniboss` | Big Trouble | Catch your first mini boss | Bronze | A cracked cage with one big pointed boot showing |
 | `first_boss` | Boss Hunter | Catch your first local boss | Silver | A small crown with horns, lying in a trap |
 | `boss_madame_shredwell` | Unwrapped | Catch Madame Shredwell | Silver | A pair of shears snapped in half over torn wrapping paper |
-| `boss_foreman_grimbolt` | Clocked Out | Catch Foreman Grimbolt | Silver | A workshop time-card stamped "OUT" |
-| `boss_grizzlewick` | Grounded | Catch Grizzlewick the Horned | Gold | A curled horn tied down with sleigh-bell harness |
+| `boss_general_grimbolt` | At Ease | Catch General Grimbolt | Silver | A nutcracker soldier's shako hat knocked off, with a dent in it |
+| `boss_cinderhoof` | Grounded | Catch Cinderhoof | Gold | An ember antler doused in a puff of frost, tied with sleigh-bell harness |
 | `bosses_10` | Bigger They Come | Catch 10 mini bosses or bosses in total | Gold | A stack of three tiny horned crowns |
 
 **Power types and gear**
 
 | Id | Name | How to earn | Frame | Badge concept |
 | --- | --- | --- | --- | --- |
-| `type_clockwork_25` | Tick-Tock Trapper | Catch 25 imps with a Clockwork trap | Bronze | A brass gear with a key in its side |
-| `type_starlight_25` | Wish Upon a Trap | Catch 25 imps with a Starlight trap | Bronze | A five-pointed star with a soft glow and a tiny net |
-| `type_frost_25` | Cold Snap | Catch 25 imps with a Frost trap | Bronze | A snowflake with an icicle hanging from each point |
+| `type_clockwork_25` | Tick-Tock Trapper | Catch 25 elves with a Clockwork trap | Bronze | A brass gear with a key in its side |
+| `type_starlight_25` | Wish Upon a Trap | Catch 25 elves with a Starlight trap | Bronze | A five-pointed star with a soft glow and a tiny net |
+| `type_frost_25` | Cold Snap | Catch 25 elves with a Frost trap | Bronze | A snowflake with an icicle hanging from each point |
 | `type_all_owned` | Three of a Kind | Own a trap of every power type at once | Silver | The three power-type symbols in a triangle |
-| `weakness_100` | Know Thy Imp | Catch 100 imps with a trap type they are weak to | Silver | An open field guide with a pointing finger on one entry |
+| `weakness_100` | Know Thy Elf | Catch 100 elves with a trap type they are weak to | Silver | An open field guide with a pointing finger on one entry |
 | `craft_capstone` | Ring the Bells | Craft the Sleigh-Bell Snapper | Gold | Two crossed sleigh bells with a brass jaw beneath |
 
 **Location objectives** (see [Location objectives](#location-objectives))
@@ -545,10 +563,10 @@ Ids are proposed. Badge concepts are briefs for the badge art (emblem only; the 
 
 | Id | Name | How to earn | Frame | Badge concept |
 | --- | --- | --- | --- | --- |
-| `secret_butterfingers` | Butterfingers | 5 escapes in a row | Bronze | A slippery bar of soap with an imp riding on it |
-| `secret_silent_night` | Silent Night | 4 hunts in a row with no imp attracted | Bronze | A sleeping trap with a nightcap and "zzz" |
-| `secret_robbed` | Robbed Blind | Be pillaged by an escaping imp for the first time (see [Pillage on escape](#pillage-on-escape)) | Bronze | An empty sack turned inside out, one coin falling |
-| `secret_boss_starter` | Lucky Stocking | Catch a mini boss or boss with the starter Starlit Stocking | Gold | A worn old stocking with a big horn sticking out of it |
+| `secret_butterfingers` | Butterfingers | 5 escapes in a row | Bronze | A slippery bar of soap with a hexed elf riding on it |
+| `secret_silent_night` | Silent Night | 4 hunts in a row with nothing attracted | Bronze | A sleeping trap with a nightcap and "zzz" |
+| `secret_robbed` | Robbed Blind | Be pillaged by an escaping elf for the first time (see [Pillage on escape](#pillage-on-escape)) | Bronze | An empty sack turned inside out, one coin falling |
+| `secret_boss_starter` | Lucky Stocking | Catch a mini boss or boss with the starter Starlit Stocking | Gold | A worn old stocking with a big boot sticking out of it |
 | `secret_top_hunter` | Top of the List | Be first on the Hunters leaderboard by points after a hunt | Silver | A podium with a candy-cane "1" |
 | `secret_sleigh_fail` | Grounded Again | Reindeer Stables: let the countdown run out on a sleigh run | Bronze | A sleigh nose-down in a snowdrift |
 
@@ -567,7 +585,7 @@ Shown on whatever screen the player is on, as soon as the server says an achieve
 │           │    art)    │    pops in with a shine sweep
 │           ╰────────────╯           │
 │            Caught One!             │  ← name, Lilita One
-│      Catch your first imp.         │  ← description
+│      Catch your first elf.         │  ← description
 │        Bronze · First steps        │
 │                                    │
 │   [ View badges ]     [ Nice! ]    │
@@ -605,7 +623,7 @@ The More menu's **My stats** becomes **My profile**, with two tabs: **Stats** (t
 │ │ grey │ │  ?   │ │ grey │         │
 │ └──────┘ └──────┘ └──────┘         │
 │ Night    Secret   Sackful          │
-│ Shift             of Imps          │
+│ Shift             of Elves          │
 │ 312/500           188/250          │
 └────────────────────────────────────┘
 ```
@@ -622,8 +640,8 @@ The More menu's **My stats** becomes **My profile**, with two tabs: **Stats** (t
 
 ### How it is built (#23)
 
-- **Content:** `content/achievements.json`, one entry per achievement: `id`, `name`, `description`, `category`, `frame` (`bronze`, `silver`, `gold`), `secret`, `badge` (the art brief) and a `when` rule. `npm run check-content` checks ids and names (unique, names at most 30 characters, descriptions at most 100) and that each rule names real imps, items, ranks and locations.
-- **Rules** are a small set of types, so new achievements need no code: `stat` (a stat reaches `n`: `hunts`, `caught`, `escapes`, `goldEarned`, `bossesCaught`, `weaknessCatches`, `bought`, `crafted`, `newTrap`, `unlocked`, `pillaged`, `ordersDone`, `rushOrders`, `launches`, `expressLaunches`, `sleighFails`, `ladderBoss`, `starterBoss`, `catches_<type>` and the best `bestCatchStreak`, `bestEscapeStreak`, `bestQuietStreak`), `rank`, `catch` (an imp id or a tier), `collection` (every imp in a location, of a tier, or in the game), `craft` (an item id), `own_all_types` and `leaderboard`. Code: `src/engine/achievements.ts` (`checkAchievements`, `achievementProgress`, `statValue`).
+- **Content:** `content/achievements.json`, one entry per achievement: `id`, `name`, `description`, `category`, `frame` (`bronze`, `silver`, `gold`), `secret`, `badge` (the art brief) and a `when` rule. `npm run check-content` checks ids and names (unique, names at most 30 characters, descriptions at most 100) and that each rule names real elves, items, ranks and locations.
+- **Rules** are a small set of types, so new achievements need no code: `stat` (a stat reaches `n`: `hunts`, `caught`, `escapes`, `goldEarned`, `bossesCaught`, `weaknessCatches`, `bought`, `crafted`, `newTrap`, `unlocked`, `pillaged`, `ordersDone`, `rushOrders`, `launches`, `expressLaunches`, `sleighFails`, `ladderBoss`, `starterBoss`, `catches_<type>` and the best `bestCatchStreak`, `bestEscapeStreak`, `bestQuietStreak`), `rank`, `catch` (an elf id or a tier), `collection` (every elf in a location, of a tier, or in the game), `craft` (an item id), `own_all_types` and `leaderboard`. Code: `src/engine/achievements.ts` (`checkAchievements`, `achievementProgress`, `statValue`).
 - **Save:** `achievements: { [id]: earnedAtMs }`, `achievementHunts: { [id]: huntNumber }` for badges a hunt earned (the badge sheet says "Earned 4:18 AM on hunt #1") and a `tally` of counters the engine bumps (purchases, crafts, a non-starter trap equipped, catches by trap type, catches against a weakness, streaks, the ladder boss attracted, a boss caught with the starter trap, Rush orders, express launches and failed runs). Hunts, catches, gold, ranks, collections, orders, launches and pillages are read from the save itself, so old saves count them too.
 - **Server:** after every hunt and every buy, sell, craft, equip, travel and objective action, the server checks achievements, writes one `achievement` row to the hunt log for whatever was earned, and returns `newAchievements`. The leaderboard rule is checked after hunts: there must be at least one other hunter, and the player must have more points than every one of them.
 - **Old saves:** the first `GET /api/me` for a save without achievements awards everything it already qualifies for in one log row marked `backfill`, and the client shows "Welcome back! You've already earned N badges" in the popup.
@@ -633,26 +651,26 @@ The More menu's **My stats** becomes **My profile**, with two tabs: **Stats** (t
 - **Progress text:** the grid shows `312 / 500` (streaks: `Best run 7 / 10`); the badge sheet adds the unit, `312 / 500 hunts`.
 - **Simulator:** reports how many achievements players hold at the end, by frame, and with `--badges` the share of players and median hunt for each one.
 
-**Simulator (200 players, to rank 5):** median 42 of 55 badges (p10 39, p90 47): Bronze 24 of 24, Silver 14 of 19, Gold 4 of 12. That is more than the 30 to 35 first guessed. Easy ones worth a look: Butterfingers (5 escapes in a row) and Robbed Blind come for every player in the first 70 hunts, and Rush Job (Gold) for every player at a median hunt 666. Never earned by the simulated players: Never Sleeps, Sleighload of Imps and Santa's Treasurer (past the end of v1, as meant) and Top of the List (needs other players).
+**Simulator (200 players, to rank 5):** median 42 of 55 badges (p10 39, p90 47): Bronze 24 of 24, Silver 14 of 19, Gold 4 of 12. That is more than the 30 to 35 first guessed. Easy ones worth a look: Butterfingers (5 escapes in a row) and Robbed Blind come for every player in the first 70 hunts, and Rush Job (Gold) for every player at a median hunt 666. Never earned by the simulated players: Never Sleeps, Sleighload of Elves and Santa's Treasurer (past the end of v1, as meant) and Top of the List (needs other players).
 
 ## Flavour text
 
-Every trap, base, bait, charm, material and imp has text for its detail screen, in `content/flavour.json`, keyed by id. At load the text is copied onto each entry as a `flavour` field, so `GET /api/content` already returns it. The slots and limits come from the phone-first UI layout (option D):
+Every trap, base, bait, charm, material and elf has text for its detail screen, in `content/flavour.json`, keyed by id. At load the text is copied onto each entry as a `flavour` field, so `GET /api/content` already returns it. The slots and limits come from the phone-first UI layout (option D):
 
 | Field | Who has it | Limit | Shown |
 | --- | --- | --- | --- |
-| `tagline` | Items and imps | 60 characters | Under the name on cards and detail screens |
-| `description` | Items and imps | 160 characters, 1 to 2 sentences | Detail screens and Elf Emporium (shop) cards; says what the thing does |
-| `backstory` | Items and imps | 400 characters, 3 to 4 sentences | Detail screens; for imps, only after the first catch |
-| `rumour` | Imps only | 100 characters | Before the first catch, in place of the portrait text |
+| `tagline` | Items and elves | 60 characters | Under the name on cards and detail screens |
+| `description` | Items and elves | 160 characters, 1 to 2 sentences | Detail screens and Elf Emporium (shop) cards; says what the thing does |
+| `backstory` | Items and elves | 400 characters, 3 to 4 sentences | Detail screens; for elves, only after the first catch |
+| `rumour` | Elves only | 100 characters | Before the first catch, in place of the portrait text |
 
-Imp descriptions and rumours hint at each imp's weaknesses and resistances, so players can work out the right trap type from the text. Loading fails if any item or imp has no text, if text names an unknown id, or if a field is over its limit. The text is a first pass; edit `flavour.json` freely, no numbers live there.
+Elf descriptions and rumours hint at each elf's weaknesses and resistances, so players can work out the right trap type from the text. Loading fails if any item or elf has no text, if text names an unknown id, or if a field is over its limit. The text is a first pass; edit `flavour.json` freely, no numbers live there.
 
 ## Economy
 
 Gold comes in only from catches and sales, and goes out on bait, charms, gear, location unlocks and crafting fees.
 
-- **Sources:** 300 starting gold and 100 Stale Cookies; imp gold on each catch; selling materials (5 to 200 gold each; the new Sugar Twist sells for 8) and gear (40% of its price).
+- **Sources:** 300 starting gold and 100 Stale Cookies; elf gold on each catch; selling materials (5 to 200 gold each; the new Sugar Twist sells for 8) and gear (40% of its price).
 - **Sinks:** bait and charms every attracted hunt; gear; one-time unlock fees; crafting fees.
 
 **Santa's Workshop recipes**
@@ -672,17 +690,19 @@ Gold comes in only from catches and sales, and goes out on bait, charms, gear, l
 | Location | Meant-for gear | Bait cost / gold per attracted hunt | Catch rate (commons) |
 | --- | --- | --- | --- |
 | Cookie Pantry | Jack-in-the-Box + Gingerbread Slab | about 60% | 60 to 70% |
-| Wrapping Room | Star Lantern or Icicle Jar + Candy Cane Platform | about 50% | 55 to 65% |
+| Wrapping Room | Star Lantern + Candy Cane Platform | about 50% | 55 to 65% |
 | Toy Workshop | Nutcracker Jaws + Ice Block | about 45% | 55 to 65% |
-| Reindeer Stables | Nutcracker Jaws or Snow Globe Prison + Yule Log Base | about 45% | 45 to 55% |
+| Reindeer Stables | Snow Globe Prison or Sleigh-Bell Snapper + Yule Log Base | about 45% | 45 to 55% |
 
 **How we check it:** `npm run simulate` plays virtual hunters through v1 with the real engine and content, reports hunts per rank, catch rates and bait cost per location, and with `--strict` fails if a rank target is missed by more than 25%.
 
-**Latest simulator run (PR #18, 200 players, with pillage and the location objectives):** all reached rank 5, median 1,503 hunts (1,398 with pillage only, 1,357 before). Median hunts in ranks 1 to 4: 181, 298, 474, 556 (targets 150, 250, 400, 600, all within 25%). Pillages per player by location: 10, 38, 13, 74, costing 7%, 6%, 12% and 11% of the gold earned there. Mini boss and boss catches per player: Spoolwick 1.8, Madame Shredwell 0.4, Hammerhand 3.4, Foreman Grimbolt 2.3, Antler Ripper 2.1, Grizzlewick 0.8. Toy orders 30.3 per player; sleigh runs 14.1, 2.1 launched. Sleigh-Bell Snapper crafted by 41% of players, Constellation Wreath by 1%. Known gaps: Constellation Wreath and Snow Globe Prison are still rarely used.
+**Latest simulator run (hexed elves and home power types, 200 players):** all reached rank 5, median 1,403 hunts (1,503 before). Median hunts in ranks 1 to 4: 166, 288, 457, 497 (targets 150, 250, 400, 600, all within 25%, so no power or price retune was needed). Pillages per player by location: 8, 33, 13, 60, costing 5%, 6%, 14% and 10% of the gold earned there. Mini boss and boss catches per player: Spoolwick 1.8, Madame Shredwell 0.3, Hammerhand 3.9, General Grimbolt 2.2, Antler Ripper 2.4, Cinderhoof 1.4. Toy orders 34.8 per player; sleigh runs 13.3, 3.7 launched. Every player buys the Icicle Jar (for the order board) and 94% buy Snow Globe Prison, which nobody bought before; Sleigh-Bell Snapper is crafted by 81% (was 41%). Median 44 of 55 badges. Known gap: Constellation Wreath is still rarely crafted (1%). The simulated player now buys the cheapest trap of any power type it lacks before hunting at the order board.
+
+Before the home types, with the old buying rule, the simulator never bought a Frost trap for the Workshop and finished only 0.5 toy orders per player; that was a gap in the simulated player, not in the game, and the buying rule above fixed it.
 
 ## Art
 
-Every picture has a fixed name, `src/client/public/art/<slot>/<id>.<ext>`, where the id is the game-data id (`traps/jack_in_the_box.svg`, `imps/crumb_imp.svg`, `locations/cookie_pantry.svg`). `art/manifest.json` lists each one with its size, a description and a prompt for regenerating it with an image tool. Full rules, sizes and how to swap in a PNG: [docs/ART.md](ART.md).
+Every picture has a fixed name, `src/client/public/art/<slot>/<id>.<ext>`, where the id is the game-data id (`traps/jack_in_the_box.svg`, `imps/crumb_elf.svg`, `locations/cookie_pantry.svg`). `art/manifest.json` lists each one with its size, a description and a prompt for regenerating it with an image tool. Full rules, sizes and how to swap in a PNG: [docs/ART.md](ART.md).
 
 | Slot | Count | Size (px) | Notes |
 | --- | --- | --- | --- |
@@ -692,12 +712,12 @@ Every picture has a fixed name, `src/client/public/art/<slot>/<id>.<ext>`, where
 | `trap_types` | 3 | 256² | Clockwork, Starlight, Frost badges |
 | `locations` | 4 | 1170×470 | Hunt banners; centre floor left clear for the trap |
 | `map` | 1 | 1600×900 | Travel map; manifest has pin positions per location |
-| `imps` | 24 + `_locked` | 512² | Portrait cards; frame shows tier (common, uncommon, rare, mini boss, boss); `_locked` is the "?" card |
+| `imps` | 23 + `_locked` | 512² | Hexed-elf portrait cards (the slot keeps its old name); frame shows tier (common, uncommon, rare, mini boss, boss); `_locked` is the "?" card. Since the hexed-elves story these are simple generated SVGs; the old custom imp PNGs are kept in `art-archive/imps/` and new custom portraits are in the art backlog ([ART_PROGRESS.md](ART_PROGRESS.md)) |
 | `ranks` | 5 | 256², transparent | `rank_1` … `rank_5` |
 | `icons` | 19 | 24², `currentColor` | Bottom nav, More menu, stat labels |
 | `howto` | 8 | 640×360 | One diagram per How-to-play section |
 
-`npm run art` regenerates the SVGs and the manifest. It never overwrites a custom file (a PNG/WebP/JPG with the same name, or an SVG without the generator's marker comment). `npm test` fails if any item, imp, location or rank has no picture. The client loads `/art/manifest.json` at start and looks every picture up by slot and id, so a PNG that replaces an SVG shows up after `npm run art` and a rebuild, with no code change.
+`npm run art` regenerates the SVGs and the manifest. It never overwrites a custom file (a PNG/WebP/JPG with the same name, or an SVG without the generator's marker comment). `npm test` fails if any item, elf, location or rank has no picture. The client loads `/art/manifest.json` at start and looks every picture up by slot and id, so a PNG that replaces an SVG shows up after `npm run art` and a rebuild, with no code change.
 
 ## User interface
 
@@ -708,16 +728,16 @@ Phone first (layout D2, chosen by eddy on 25 Nov 2026; mockups: https://claude.a
 | Screen | What it shows |
 | --- | --- |
 | Hunt | Location banner with the player bar on top and a Travel button. Trap art drawn standing on its base, centred at the top of the gear card with no names on the art (tap for the Arsenal). Under it, four boxes in a 2x2 grid, Trap and Bait on the top row and Base and Charm below: **Trap** (icon is the trap's power type, Clockwork, Starlight or Frost, with the type and trap name), **Bait** (thumbnail, name and amount), **Base** (base thumbnail and name) and **Charm** (thumbnail, name and amount). Trap and Base open the Arsenal; Bait and Charm open the quick sheet. Power, luck, attraction and catch chance under the gear. The hunt log, then a sticky Hunt button. Space bar hunts on a computer |
-| Hunt log | Starts with Santa's intro letter. Then the last 50 hunts plus the events between them: buy, sell, craft, gear change (equip or swap), travel and unlock, and rank-ups. Hunts show their number and time, events their time, in the viewer's own time zone. Uncaught imps show the "?" card; a first catch is marked "Portrait unlocked". Tapping an imp opens its file |
+| Hunt log | Starts with Santa's intro letter. Then the last 50 hunts plus the events between them: buy, sell, craft, gear change (equip or swap), travel and unlock, and rank-ups. Hunts show their number and time, events their time, in the viewer's own time zone. Uncaught elves show the "?" card; a first catch is marked "Portrait unlocked". Tapping an elf opens its file |
 | Full history | Every saved row, newest first, grouped by day, with filters All, Catches, Escapes, Events, Bosses, and Load older |
 | Quick bait and charm sheet | Owned bait or charms as picture cards, a preview of catch chance and attraction before and after, Use. Crafted bait asks once more if the setting is on |
 | Arsenal | Full screen with Trap, Base, Bait, Charm tabs. Tap an item to preview the setup and power, luck, attraction and catch before → after, then Equip. Unowned shop items are listed with their price |
 | Item details | Picture, stats, how you get it, tagline, description and backstory from `flavour.json`, Compare and Equip |
-| Naughty List | Portrait grid per location with caught counts. Uncaught imps show "?" and "seen N times, never caught" |
-| Imp file | Caught: portrait, power, gold, points, catches, weaknesses, drops, first-catch time, tagline, description, backstory. Not caught: "?", only the rumour and "File sealed" |
+| Naughty List | Portrait grid per location with caught counts. Uncaught elves show "?" and "seen N times, never caught" |
+| Elf file | Caught: portrait, power, gold, points, catches, weaknesses, drops, first-catch time, tagline, description, backstory. Not caught: "?", only the rumour and "File sealed" |
 | Elf Emporium | Traps, Bases, Bait, Charms, Sell tabs. Cards with thumbnail, stats, description, price and amount owned. Bait and charms have an amount picker and "Buy for N"; gear is bought once. Next-rank items are greyed with the rank that unlocks them |
 | Santa's Workshop | Type filters with counts and "Only show what I can craft now". Each recipe: result, amount, owned, rank needed, ingredient thumbnails with have / need (green or red), gold fee, and a button that says what is missing or "Craft ×N" |
-| More | Travel map (lair map with pins, unlock and go), Hunters (leaderboard by points or Naughty List size, and a feed of rare and boss catches and rank-ups; imps the viewer hasn't caught stay "?"), My profile (Stats and Achievements tabs; tapping your rank badge or name in the player bar opens it too), How to play (one picture per topic), Settings, Admin (admin only), Account, Log out |
+| More | Travel map (lair map with pins, unlock and go), Hunters (leaderboard by points or Naughty List size, and a feed of rare and boss catches and rank-ups; elves the viewer hasn't caught stay "?"), My profile (Stats and Achievements tabs; tapping your rank badge or name in the player bar opens it too), How to play (one picture per topic), Settings, Admin (admin only), Account, Log out |
 | Settings | Kept on the device: sound effects (synthesised, no sound files), vibrate on a catch, ask before using rare bait, 24-hour clock, Space bar hunts. Shows whether the Cocoa meter is on |
 | Admin | Players with rank, hunts, points and last active; **Allow new accounts** switch; Cocoa meter (shown, kept off: it is set in `constants.json`); restart log |
 | Account | Change password, Start over (with the confirmation dialog), Log out |
@@ -760,7 +780,7 @@ Phone first (layout D2, chosen by eddy on 25 Nov 2026; mockups: https://claude.a
 
 **Storage:** one SQLite file, `naughty-list.db`, in `DATA_DIR` (`/data` in Docker, `./data` locally), using Node's built-in `node:sqlite` so there are no native modules to compile. Tables: users, sessions, settings (`allowSignups`), players (state as JSON), journal (the hunt log: hunts and events, marked by a `kind` column, up to 10,000 rows per player, pruned every 100 hunts), restarts (one row per Start over, with the player's gold, points, rank, hunts, catches and Naughty List count at that moment; never deleted). Passwords are hashed with scrypt. The old invites table is left in place, unused, so saves from earlier versions open unchanged; the server adds the journal's `kind` column to old saves on start.
 
-**Data stored per player:** gold, points, rank, current location, unlocked locations, setup, inventory counts, the hunt log, lifetime catch counts per imp (the Naughty List), lifetime encounters per imp (`seen`, for "seen, never caught") and gold earned from catches, progress on each location's objective (`objectives`) a pillage count (`stats.pillaged`), earned achievements with their times (`achievements`), the counters they read (`tally`: purchases, crafts, catches by trap type, weakness catches, streaks, Rush orders, express launches and failed runs) and `welcomeSeen`. `seen` and gold earned start counting from this version for older saves.
+**Data stored per player:** gold, points, rank, current location, unlocked locations, setup, inventory counts, the hunt log, lifetime catch counts per elf (the Naughty List), lifetime encounters per elf (`seen`, for "seen, never caught") and gold earned from catches, progress on each location's objective (`objectives`) a pillage count (`stats.pillaged`), earned achievements with their times (`achievements`), the counters they read (`tally`: purchases, crafts, catches by trap type, weakness catches, streaks, Rush orders, express launches and failed runs) and `welcomeSeen`. `seen` and gold earned start counting from this version for older saves.
 
 **Start over:** any player can wipe their own run from **More > Account > Start over**. A confirmation dialog lists what will be lost, and nothing is wiped unless the player confirms; the server also refuses a restart without an explicit confirm flag. The wipe replaces that player's state with a fresh one and deletes their journal in one transaction. Their account, other players and the restart log are untouched. The admin sees every restart on the Admin page.
 
@@ -807,6 +827,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-26 | this PR | **Hexed elves and home power types (eddy).** New story: Scrinch took over the lair and hexed Santa's elves, who replace the imps; catching them goes on The Naughty List and Mrs. Claus's cocoa brings them round. Renamed Crumb Elf, Sootcap, Gingerbread Rascal, Glitterbug, Wind-up Elf and General Grimbolt (a hexed nutcracker soldier), with new ids; the Stables boss is now Cinderhoof, an original hexed reindeer (no Rudolph: trademarked), and Grizzlewick is parked. Rank 3 is Hex Tracker. Power types by location: Wrapping Room weak to Starlight / resists Clockwork, Toy Workshop weak to Clockwork / resists Frost, Reindeer Stables weak to Frost / resists Starlight, Pantry a teaching room; 16 elves' weaknesses changed (table above). All elf text rewritten (flavour, letter, welcome, location intros and hints with the room's type, achievements, screens, How to play); hint sheets allow 5 steps. Simple generated SVG portraits for all 23 elves and the "?" card; the old imp PNGs moved to `art-archive/imps/`, other custom art kept; new elf portraits, the icon and key art added to the art backlog. Saves, badges and log entries with old ids are rewritten on start. Simulator: buys one trap of each type before the order board; 200/200 reach rank 5, median 1,403 hunts (was 1,503), Snow Globe Prison now bought by 94% |
 | 2026-11-26 | #24 | Design pass against every phone screen on the UI canvas. Fixed: the welcome popup now shows again after Start over without a reload; each of the 55 badges has its own emblem (the feed no longer shows "?" for an earned secret); progress reads `312 / 500 hunts` and `Best run 7 / 10`; the badge sheet says which hunt earned a badge (`achievementHunts` in the save) and has a handle and a Close button; the quiet toast shows the frame and "tap to view"; the hint sheet has its title in the location's colour and Open Workshop and Close buttons. Top of the List now needs at least one other hunter, so a lone player doesn't get it on hunt #1. No game numbers changed |
 | 2026-11-26 | #23 | Built achievements: 55 in `content/achievements.json` with a rules engine (`src/engine/achievements.ts`), `achievements` and `tally` in the save, one-time backfill for old saves, an `achievement` hunt-log row, Silver, Gold and Secret badges in the Hunters feed, the earn popup and quiet toast (new setting), and My profile with Stats and Achievements tabs and a badge sheet; `GET /api/achievements`. Built the welcome popup (`welcome` in `story.json`, `welcomeSeen`, `POST /api/welcome`), the 2x2 gear card, and 3D CSS medals for badges, power types and the gold coin. Audit of the location screens against the plan: added panel icons, the sleigh on the Readiness bar and the last-change line. Simulator: unchanged balance (200/200 reach rank 5, median 1,503 hunts); median 42 of 55 badges |
 | 2026-11-26 | #22 | Custom PNG art for the remaining 15 imp portraits (`sprinkle_snatcher`, `chimney_soot_imp`, `jarbelly`, `ribbon_tangler`, `tape_biter`, `bow_burglar`, `spoolwick`, `cog_pincher`, `paint_smudger`, `stuffing_ripper`, `hammerhand`, `hay_hoarder`, `bell_thief`, `harness_snipper`, `antler_ripper`), generated with Gemini. All 24 imps (`baron_crumblewick` parked in the location rework) are now custom art. No game numbers changed |

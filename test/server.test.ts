@@ -4,6 +4,7 @@ import { buildApp } from '../src/server/app.js';
 import { Store } from '../src/server/db.js';
 import { newPlayer, type PlayerState } from '../src/engine/player.js';
 import { content, scripted } from './helpers.js';
+import type { JournalEntry } from '../src/engine/hunt.js';
 
 let app: FastifyInstance;
 let store: Store;
@@ -12,7 +13,7 @@ let clock = 1_000_000;
 beforeEach(async () => {
   store = new Store(':memory:');
   clock = 1_000_000;
-  // Every roll is 0: always attracted, always the first imp (Crumb Imp, which has no loot), always caught.
+  // Every roll is 0: always attracted, always the first imp (Crumb Elf, which has no loot), always caught.
   // Achievements are off here so the log checks stay about one thing; they have their own tests below.
   app = await buildApp({ content: { ...content, achievements: [] }, store, version: 'test', now: () => clock, rng: () => 0 });
 });
@@ -99,14 +100,14 @@ describe('server', () => {
     const c = await signupAdmin();
     const r = await post('/api/hunt', {}, c);
     expect(r.statusCode).toBe(200);
-    expect(r.json().entry.entry).toMatchObject({ outcome: 'catch', imp: 'crumb_imp' });
+    expect(r.json().entry.entry).toMatchObject({ outcome: 'catch', imp: 'crumb_elf' });
     const me = (await get('/api/me', c)).json();
     expect(me.player.gold).toBe(312);
     expect(me.journal).toHaveLength(3);
     expect(me.journal[0]).toMatchObject({ n: 1, kind: 'hunt', entry: { firstCatch: true } });
     expect(me.journal[1]).toMatchObject({ n: 0, kind: 'event', entry: { type: 'arrival', location: 'cookie_pantry' } });
     expect(me.journal[2]).toMatchObject({ n: 0, kind: 'event', entry: { type: 'intro' } });
-    expect(me.player.seen).toEqual({ crumb_imp: 1 });
+    expect(me.player.seen).toEqual({ crumb_elf: 1 });
     expect(me.player.stats.goldEarned).toBe(12);
   });
 
@@ -302,6 +303,26 @@ describe('store', () => {
     ]);
     s.close();
   });
+
+  it('renames the old imp ids and boss badges in saves and log entries', () => {
+    const s = new Store(':memory:');
+    const id = s.createUser('a', 'x', false, 0);
+    const old: PlayerState = {
+      ...newPlayer(content, 0),
+      catches: { crumb_imp: 4, grizzlewick: 1, foreman_grimbolt: 2 },
+      seen: { glitter_imp: 1 },
+      achievements: { boss_grizzlewick: 5 },
+    };
+    s.savePlayer(id, old, 0);
+    s.addJournal(id, 0, { outcome: 'catch', imp: 'grizzlewick' } as unknown as JournalEntry, 0, 'hunt');
+    (s as unknown as { migrate(): void }).migrate();
+    const p = s.player(id)!;
+    expect(p.catches).toEqual({ crumb_elf: 4, cinderhoof: 1, general_grimbolt: 2 });
+    expect(p.seen).toEqual({ glitterbug: 1 });
+    expect(p.achievements).toEqual({ boss_cinderhoof: 5 });
+    expect(s.journal(id)[0]!.entry).toEqual({ outcome: 'catch', imp: 'cinderhoof' });
+    s.close();
+  });
 });
 
 describe('achievements and the welcome popup', () => {
@@ -351,7 +372,7 @@ describe('achievements and the welcome popup', () => {
     const cookie = await signupAdmin();
     const old = { ...newPlayer(content), rank: 2, points: 3000 } as PlayerState;
     old.stats = { hunts: 120, attracted: 100, caught: 80, goldEarned: 2000 };
-    old.catches = { crumb_imp: 50, gingerbread_imp: 1 };
+    old.catches = { crumb_elf: 50, gingerbread_rascal: 1 };
     delete old.achievements;
     delete old.tally;
     delete old.welcomeSeen;

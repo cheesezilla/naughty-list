@@ -115,7 +115,7 @@ export function HuntersScreen() {
               <span class="place">{i + 1}</span>
               <Art slot="ranks" id={`rank_${p.rank}`} class="thumb small" />
               <span class="lb-name"><b>{p.username}{p.you && ' (you)'}</b><small>{content.ranks[p.rank - 1]?.name}</small></span>
-              <b class="lb-score">{by === 'points' ? num(p.points) : `${p.impsOnList} imps`}</b>
+              <b class="lb-score">{by === 'points' ? num(p.points) : `${p.impsOnList} elves`}</b>
             </li>
           ))}
         </ol>
@@ -153,9 +153,9 @@ export function HuntersScreen() {
               </div>
             );
           })}
-          {r.data && r.data.feed.length === 0 && <p class="muted">No big moments yet. Rare imps, bosses, boss pillages, rank-ups and Silver, Gold and Secret badges show up here.</p>}
+          {r.data && r.data.feed.length === 0 && <p class="muted">No big moments yet. Rare elves, bosses, boss pillages, rank-ups and Silver, Gold and Secret badges show up here.</p>}
         </div>
-        <p class="small muted">Imps you haven't caught yourself still show as ?, so the feed doesn't spoil the portraits.</p>
+        <p class="small muted">Elves you haven't caught yourself still show as ?, so the feed doesn't spoil the portraits.</p>
       </div>
     </MainScreen>
   );
@@ -193,7 +193,7 @@ function StatsTab() {
           {tile(num(player.stats.caught), 'Catches')}
           {tile(player.stats.attracted ? pct(player.stats.caught / player.stats.attracted) : '–', 'Catch rate')}
           {tile(num(player.stats.goldEarned ?? 0), 'Gold earned')}
-          {tile(`${Object.keys(player.catches).length} / ${total}`, 'Imps on list')}
+          {tile(`${Object.keys(player.catches).length} / ${total}`, 'Elves on list')}
           {tile(num(escapes), 'Escapes')}
         </div>
         {player.stats.goldEarned === undefined || (player.stats.goldEarned === 0 && player.stats.caught > 0)
@@ -242,13 +242,13 @@ function StatsTab() {
 }
 
 const HOWTO: { id: string; title: string; text: string }[] = [
-  { id: 'hunt', title: 'Hunt', text: 'Press Hunt as often as you like: there is no timer. Each time an imp shows up it eats one bait, and your trap tries to catch it.' },
-  { id: 'attraction', title: 'Attraction', text: 'Your bait sets how often an imp shows up. Better bait, plus attraction bonuses from gear, means fewer quiet hunts. Quiet hunts cost nothing.' },
-  { id: 'power', title: 'Power', text: "Your trap, base and charm add up to your power. The higher it is compared with the imp's power, the better your catch chance." },
-  { id: 'luck', title: 'Luck', text: 'Luck gives a bonus that matters most against strong imps. Charms are the easiest way to get more.' },
-  { id: 'trap_types', title: 'Trap types', text: 'Clockwork, Starlight and Frost. Some imps are weak to a type (×1.5 power) and some resist it (×0.5) or are immune. Their imp file and rumour hint at which.' },
-  { id: 'loot', title: "Loot and Santa's Workshop", text: "Rare imps and bosses drop materials. Craft them in Santa's Workshop into gear and bait you can't buy." },
-  { id: 'pillage', title: 'Pillage', text: 'An imp that escapes may pillage you, taking gold, bait or points. Bosses do it most and take the most; ordinary imps only rarely. A pillage never takes your gold below 100 or costs you a rank.' },
+  { id: 'hunt', title: 'Hunt', text: 'Press Hunt as often as you like: there is no timer. Each time a hexed elf shows up it eats one bait, and your trap tries to catch it.' },
+  { id: 'attraction', title: 'Attraction', text: 'Your bait sets how often an elf shows up. Better bait, plus attraction bonuses from gear, means fewer quiet hunts. Quiet hunts cost nothing.' },
+  { id: 'power', title: 'Power', text: "Your trap, base and charm add up to your power. The higher it is compared with the elf's power, the better your catch chance." },
+  { id: 'luck', title: 'Luck', text: 'Luck gives a bonus that matters most against strong elves. Charms are the easiest way to get more.' },
+  { id: 'trap_types', title: 'Trap types', text: "Clockwork, Starlight and Frost. Some elves are weak to a type (×1.5 power) and some resist it (×0.5) or are immune. Each room's elves mostly share one weakness: Starlight in the Wrapping Room, Clockwork in the Toy Workshop, Frost in the Reindeer Stables. An elf's file and rumour hint at it." },
+  { id: 'loot', title: "Loot and Santa's Workshop", text: "Rare elves and bosses drop materials. Craft them in Santa's Workshop into gear and bait you can't buy." },
+  { id: 'pillage', title: 'Pillage', text: 'An elf that escapes may pillage you, taking gold, bait or points. Bosses do it most and take the most; ordinary elves only rarely. A pillage never takes your gold below 100 or costs you a rank.' },
   { id: 'ranks', title: 'Ranks', text: 'Catches earn points. New ranks open new rooms of the lair and new gear in the Elf Emporium.' },
 ];
 export function HowToScreen() {
@@ -338,7 +338,7 @@ export function AdminScreen() {
           {restarts.data?.restarts.map((r) => (
             <div class="admin-row">
               <span><b>{r.username}</b><small>{when(r.at, prefs.clock24)}</small></span>
-              <small class="r">rank {r.summary.rank} · {num(r.summary.points)} pts · {num(r.summary.gold)} gold<br />{num(r.summary.hunts)} hunts · {num(r.summary.caught)} caught · {r.summary.impsOnList} imps</small>
+              <small class="r">rank {r.summary.rank} · {num(r.summary.points)} pts · {num(r.summary.gold)} gold<br />{num(r.summary.hunts)} hunts · {num(r.summary.caught)} caught · {r.summary.impsOnList} elves</small>
             </div>
           ))}
         </div>
@@ -420,7 +420,7 @@ function RestartDialog({ player, onCancel, onConfirm }: { player: PlayerState; o
           <li>{num(player.gold)} gold and {num(player.points)} points</li>
           <li>Your rank and every unlocked location</li>
           <li>All gear, bait, charms and materials</li>
-          <li>Your hunt log and the {Object.keys(player.catches).length} imps on your Naughty List</li>
+          <li>Your hunt log and the {Object.keys(player.catches).length} elves on your Naughty List</li>
         </ul>
         <p>Your account stays, and you start again as a {content.ranks[0]!.name} in the {content.locations[0]!.name}.</p>
         <div class="actions">

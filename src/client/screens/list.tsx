@@ -20,7 +20,7 @@ export function NaughtyListScreen() {
       <div class="pad stack">
         <div>
           <h1 class="screen-title">Naughty List</h1>
-          <p class="sub">{caught} of {total} portraits unlocked. Catch an imp once to reveal it.</p>
+          <p class="sub">{caught} of {total} portraits unlocked. Catch an elf once to reveal it.</p>
         </div>
         <Tabs
           label="Location"
@@ -97,7 +97,7 @@ export function ImpScreen({ id }: { id: string }) {
             {imp.flavour && <div class="flavour"><p class="label">Rumour</p><p class="tagline">{imp.flavour.rumour}</p></div>}
             <div class="sealed">
               <b>File sealed</b>
-              <p>Catch this imp once to unlock its portrait, description and backstory.</p>
+              <p>Catch this elf once to unlock its portrait, description and backstory.</p>
             </div>
             {!player.unlocked.includes(location.id) && <p class="small muted">Found in the {location.name}, which opens at {content.ranks[location.rank - 1]?.name}.</p>}
           </>

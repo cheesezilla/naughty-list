@@ -43,7 +43,7 @@ export function AuthScreen({ onDone }: { onDone: () => void }) {
         <div class="auth-brand">
           <Art slot="brand" id="icon" alt="" class="auth-icon" />
           <h1>The Naughty List</h1>
-          <p>Scrinch's imps are raiding Santa's lair. Santa needs an imp hunter.</p>
+          <p>Scrinch has hexed Santa's elves and taken over the lair. Santa needs an elf hunter.</p>
         </div>
         <form class="auth-card" onSubmit={submit}>
           <h2>{mode === 'login' ? 'Log in' : status?.needsAdmin ? 'Create the admin account' : 'Create account'}</h2>

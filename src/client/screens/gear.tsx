@@ -138,7 +138,7 @@ export function ItemScreen({ id }: { id: string }) {
   const slot = item.kind === 'material' ? null : item.kind;
   const equipped = slot ? player.setup[slot] === id : false;
   const kindName = { trap: 'Trap', base: 'Base', bait: 'Bait', charm: 'Charm', material: 'Material' }[item.kind];
-  const where = price !== null ? `from the Elf Emporium, ${num(price)} gold` : recipe ? "crafted in Santa's Workshop" : item.kind === 'material' ? 'dropped by imps' : 'starter gear from Santa';
+  const where = price !== null ? `from the Elf Emporium, ${num(price)} gold` : recipe ? "crafted in Santa's Workshop" : item.kind === 'material' ? 'dropped by hexed elves' : 'starter gear from Santa';
   const big = (label: string, value: string) => <div><b>{value}</b><span>{label}</span></div>;
 
   return (
@@ -153,7 +153,7 @@ export function ItemScreen({ id }: { id: string }) {
         <p class="muted">You own {num(own)} · {where}</p>
         <div class="stat-row light">
           {(item.kind === 'trap' || item.kind === 'base') && <>{big('Power', num(item.power))}{big('Luck', String(item.luck))}{big('Attraction', `+${pct(item.attraction ?? 0)}`)}</>}
-          {item.kind === 'bait' && <>{big('Attraction', pct(item.attraction))}{big('Rare imps', `×${item.rareMultiplier ?? 1}`)}{big('Rank', String(item.rank))}</>}
+          {item.kind === 'bait' && <>{big('Attraction', pct(item.attraction))}{big('Rare elves', `×${item.rareMultiplier ?? 1}`)}{big('Rank', String(item.rank))}</>}
           {item.kind === 'charm' && <>{big('Luck', `+${item.luck ?? 0}`)}{big('Power', item.powerBonus ? `+${pct(item.powerBonus)}` : `+${item.power ?? 0}`)}{big('Attraction', `+${pct(item.attraction ?? 0)}`)}</>}
           {item.kind === 'material' && <>{big('Sells for', `${num(sellValue(data, item))}`)}{big('Used in', String(usedIn.length))}</>}
         </div>

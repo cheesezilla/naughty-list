@@ -1,0 +1,28 @@
+{
+  "note": "Parked when the Reindeer Stables boss became Cinderhoof (imps became hexed elves). Not loaded by the game. Kept so Grizzlewick, Scrinch's right horn, can return in Scrinch's own lair after v1. Old saves that caught him count those catches as Cinderhoof. His old portrait is in art-archive/imps/.",
+  "imp": {
+    "id": "grizzlewick",
+    "name": "Grizzlewick the Horned",
+    "tier": "boss",
+    "power": 6000,
+    "gold": 1500,
+    "points": 3000,
+    "weight": 0,
+    "effectiveness": {
+      "clockwork": 1.5,
+      "starlight": 0
+    },
+    "loot": [
+      {
+        "item": "brimstone_coal",
+        "chance": 1
+      }
+    ]
+  },
+  "flavour": {
+    "tagline": "Scrinch's right horn, and proud of it.",
+    "description": "The Stables' boss, Scrinch's fiercest lieutenant. Starlight dies at his touch; clockwork is the only answer.",
+    "backstory": "Grizzlewick is the oldest of Scrinch's lieutenants and the only one trusted to carry brimstone coal from beneath the throne. His horns are scorched black and every star-lamp gutters out when he walks past. He wants the sleigh grounded before Christmas Eve, and only a trap with a ticking heart can hold him.",
+    "rumour": "Scorched hoof-prints by the sleigh, and the star over the stable door has gone dark."
+  }
+}
