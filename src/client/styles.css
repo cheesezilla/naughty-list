@@ -521,3 +521,6 @@ body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
 .nc-progress .bar div { background: var(--tier); }
 .nc-all { color: var(--muted); }
 .nc-toast-art { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; }
+.admin-row .chips { flex-direction: row; align-items: center; flex-wrap: wrap; }
+.admin-row .chip { flex: none; font-weight: 800; font-size: 14px; min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--edge); background: #fff; color: var(--ink); white-space: nowrap; }
+.admin-row .chip.on { background: var(--gold-2); border-color: var(--gold-2); color: #4a2f00; }

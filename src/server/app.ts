@@ -5,7 +5,7 @@ import { existsSync } from 'node:fs';
 import { randomInt } from 'node:crypto';
 import type { Content } from '../content/schema.js';
 import {
-  buy, checkAchievements, craft, equip, gameData, hunt, newPlayer, objectiveAction, sell, travel,
+  addItem, buy, checkAchievements, craft, equip, gameData, hunt, newPlayer, objectiveAction, rankFor, sell, travel,
   type ActionResult, type JournalRow, type PlayerState, type Rng, type Setup,
 } from '../engine/index.js';
 import { Store, type GameEvent, type HistoryFilter, type UserRow } from './db.js';
@@ -256,7 +256,10 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
       if (t - last < minHuntGapMs) return reply.code(429).send({ error: 'Easy there! One hunt at a time.' });
       lastHunt.set(userId, t);
 
-      const r = hunt(content, loadPlayer(userId), rng, t);
+      const before = loadPlayer(userId);
+      // Speed-run boosts are admin-only: ignored for everyone else even if a save somehow carries them.
+      const boost = req.user!.is_admin === 1 ? before.speedRun : undefined;
+      const r = hunt(content, before, rng, t, boost);
       if (!r.ok) return reply.code(400).send({ error: r.error });
       const earned = awardAchievements(userId, r.player, t, true);
       const rows = store.tx(() => {
@@ -333,6 +336,47 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
       store.setSetting('allowSignups', body.allowSignups);
       req.log.info({ allowSignups: body.allowSignups, by: req.user!.username }, 'sign-up setting changed');
       return { settings: store.settings() };
+    });
+    // Speed-run tools. They only ever change the calling admin's own save.
+    admin.post('/api/admin/speedrun', async (req, reply) => {
+      const b = (req.body ?? {}) as Record<string, unknown>;
+      const userId = req.user!.id;
+      const p = loadPlayer(userId);
+      const n = (v: unknown, max: number) => (Number.isInteger(v) && (v as number) >= 0 && (v as number) <= max ? (v as number) : null);
+      switch (b.action) {
+        case 'boost': {
+          const reward = n(b.reward, 1000);
+          if (reward === null || reward < 1 || typeof b.odds !== 'boolean') return reply.code(400).send({ error: 'Pick a multiplier from 1 to 1000.' });
+          if (reward === 1 && !b.odds) delete p.speedRun; else p.speedRun = { reward, odds: b.odds };
+          break;
+        }
+        case 'gold': {
+          const amount = n(b.amount, 1e9);
+          if (!amount) return reply.code(400).send({ error: 'Amount must be a whole number up to 1,000,000,000.' });
+          p.gold += amount;
+          break;
+        }
+        case 'rank': {
+          const rank = n(b.rank, content.ranks.length);
+          const r = content.ranks.find((x) => x.rank === rank);
+          if (!r) return reply.code(400).send({ error: 'No such rank.' });
+          p.points = Math.max(p.points, r.points);
+          p.rank = rankFor(content, p.points);
+          break;
+        }
+        case 'unlock':
+          for (const l of content.locations) if (!p.unlocked.includes(l.id)) p.unlocked.push(l.id);
+          break;
+        case 'supplies':
+          // 200 of every bait and charm, and 50 of every material, to try any setup or recipe.
+          for (const i of [...content.items.baits, ...content.items.charms]) addItem(p, i.id, Math.max(0, 200 - (p.inventory[i.id] ?? 0)));
+          for (const i of content.items.materials) addItem(p, i.id, Math.max(0, 50 - (p.inventory[i.id] ?? 0)));
+          break;
+        default: return reply.code(400).send({ error: 'Unknown speed-run action.' });
+      }
+      store.savePlayer(userId, p, now());
+      req.log.info({ by: req.user!.username, action: b.action }, 'speed-run tool used');
+      return { player: p };
     });
     admin.get('/api/admin/restarts', async () => ({ restarts: store.restarts() }));
   });

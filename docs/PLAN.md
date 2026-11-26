@@ -26,6 +26,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Achievements and badges: 55 achievements with Bronze, Silver, Gold and Secret badges, an earn popup and an Achievements tab in My profile; see [Achievements and badges](#achievements-and-badges) | Done | #19 (plan), #23 (build), #24 (design pass) |
 | Hunt screen gear card in a 2x2 grid (Trap and Bait over Base and Charm) and 3D medal icons for power types and the gold coin; see [User interface](#user-interface) | Done | #19 (plan), #23 (build) |
 | Frozen top header on every main screen, auto-scroll to the Hunt log when Hunt is pressed, and the New Catch popup for the first catch of each elf (with Quiet toast); achievements show as a non-blocking banner instead of a popup; see [User interface](#user-interface) | Done | #26 |
+| Admin speed-run tools for testing: on the Admin page, boost rewards (x1 to x200), always attract and catch with full loot, add gold, jump to a rank, unlock every location, stock up supplies; see [Admin speed-run tools](#admin-speed-run-tools) | Done | this PR |
 | 5. Tune from play-test | Planned | |
 
 The server runs every hunt and saves each player in SQLite. To play locally, follow "Run it locally" below.
@@ -668,6 +669,21 @@ The More menu's **My stats** becomes **My profile**, with two tabs: **Stats** (t
 
 **Simulator (200 players, to rank 5):** median 42 of 55 badges (p10 39, p90 47): Bronze 24 of 24, Silver 14 of 19, Gold 4 of 12. That is more than the 30 to 35 first guessed. Easy ones worth a look: Butterfingers (5 escapes in a row) and Robbed Blind come for every player in the first 70 hunts, and Rush Job (Gold) for every player at a median hunt 666. Never earned by the simulated players: Never Sleeps, Sleighload of Elves and Santa's Treasurer (past the end of v1, as meant) and Top of the List (needs other players).
 
+## Admin speed-run tools
+
+For eddy's own testing of later zones. A "Speed run (testing)" card on the Admin page (More > Admin), shown only to the admin account.
+
+| Tool | What it does |
+| --- | --- |
+| Always attract and catch | Every hunt finds an elf, catches it (unless it is immune to the trap type) and drops all its loot. No pillage. |
+| Gold and points x1 / 10 / 50 / 200 | Multiplies the gold and points of each catch (any whole number 1 to 1000 via the API). |
+| +1,000 / 10,000 / 100,000 gold | Adds gold. |
+| Jump to rank | Raises points to that rank's threshold; never lowers them. |
+| Unlock every location | Skips rank and gold requirements. |
+| Stock up | Tops every bait and charm up to 200 and every material up to 50. |
+
+Rules: all tools change only the calling admin's own save (`POST /api/admin/speedrun`, behind the admin check, so non-admins get 403). The boost setting is stored on that save as `speedRun` and `/api/hunt` only honours it when the logged-in user is an admin. The simulator and normal balance numbers are unaffected. Start over also clears it.
+
 ## Flavour text
 
 Every trap, base, bait, charm, material and elf has text for its detail screen, in `content/flavour.json`, keyed by id. At load the text is copied onto each entry as a `flavour` field, so `GET /api/content` already returns it. The slots and limits come from the phone-first UI layout (option D):
@@ -842,6 +858,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-26 | this PR | Admin speed-run tools: reward multiplier, always attract and catch, grant gold, jump to rank, unlock all locations, stock up; admin-only on the server |
 | 2026-11-26 | #27 | Achievements now show a 4-second non-blocking banner (with "+N more") instead of a popup, because early games had too many popups; the full popup stays only for Welcome back. The Achievement popups setting became New catch popups (default On). Canvas mockups updated |
 | 2026-11-26 | #26 | Planned a New Catch popup for the first catch of each elf (portrait unlocked, tier colours, tiles, Naughty List progress, Open file and Keep hunting), with a canvas mockup. Design only |
 | 2026-11-26 | #26 | Frozen top header (eddy): title and player bar merged into one header pinned at the top of every screen, with the rank progress bar on its bottom edge; the location banner moves below it and no longer carries the player bar. Canvas mockups updated. UI design only |

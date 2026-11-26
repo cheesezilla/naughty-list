@@ -164,6 +164,28 @@ describe('server', () => {
     expect(r.feed).toEqual([]);
   });
 
+  it('keeps the speed-run tools admin-only and applies boosts only to the admin', async () => {
+    const admin = await signupAdmin();
+    const sam = cookieOf(await post('/api/auth/signup', { username: 'sam', password: 'snowball99' }));
+    expect((await post('/api/admin/speedrun', { action: 'gold', amount: 1000 }, sam)).statusCode).toBe(403);
+    expect((await post('/api/admin/speedrun', { action: 'gold', amount: 1000 })).statusCode).toBe(401);
+    expect((await get('/api/me', sam)).json().player.speedRun).toBeUndefined();
+
+    const g = await post('/api/admin/speedrun', { action: 'gold', amount: 1000 }, admin);
+    expect(g.json().player.gold).toBeGreaterThanOrEqual(1000);
+    const rank = await post('/api/admin/speedrun', { action: 'rank', rank: 4 }, admin);
+    expect(rank.json().player.rank).toBe(4);
+    const unlocked = await post('/api/admin/speedrun', { action: 'unlock' }, admin);
+    expect(unlocked.json().player.unlocked.length).toBeGreaterThan(1);
+    expect((await post('/api/admin/speedrun', { action: 'rank', rank: 99 }, admin)).statusCode).toBe(400);
+    expect((await post('/api/admin/speedrun', { action: 'boost', reward: 0, odds: true }, admin)).statusCode).toBe(400);
+
+    await post('/api/admin/speedrun', { action: 'boost', reward: 10, odds: true }, admin);
+    const h = (await post('/api/hunt', {}, admin)).json();
+    expect(h.entry.entry.outcome).toBe('catch');
+    expect(h.entry.entry.points % 10).toBe(0);
+  });
+
   it('limits hunts to the configured rate', async () => {
     const c = await signupAdmin();
     expect((await post('/api/hunt', {}, c)).statusCode).toBe(200);
