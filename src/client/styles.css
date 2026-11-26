@@ -127,6 +127,12 @@ body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
 .banner-bottom h1 { font-size: 26px; color: var(--gold); text-shadow: 0 2px 0 var(--pine-dark), 0 0 12px rgba(0, 0, 0, 0.6); }
 .gear-card { display: flex; flex-direction: column; gap: 10px; }
 .trap-button { border: 0; background: #efe4cf; border-radius: 14px; padding: 4px 4px 8px; display: flex; flex-direction: column; align-items: center; flex: none; width: 60%; max-width: 230px; align-self: center; color: var(--ink); }
+/* Equipped trap: art on the left, stats on the right, spread evenly (eddy, 26 Nov 2026). */
+.trap-row { display: flex; gap: 12px; align-items: stretch; }
+.trap-row .trap-button { width: 48%; max-width: 230px; align-self: center; }
+.trap-stats { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: space-evenly; gap: 10px; }
+.trap-stats .stat-row { border-top: 0; padding-top: 0; }
+.trap-stats .rate-bars { grid-template-columns: 1fr; padding-top: 0; gap: 12px; }
 /* Hunt screen gear: Trap and Bait on top, Base and Charm below (eddy, 26 Nov 2026). */
 .gear-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
 .gear-grid .slot-btn { min-width: 0; }
