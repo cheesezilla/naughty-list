@@ -691,7 +691,7 @@ Every picture has a fixed name, `src/client/public/art/<slot>/<id>.<ext>`, where
 
 Phone first (layout D2, chosen by eddy on 25 Nov 2026; mockups: https://claude.ai/artifact/7A6Y6w37aCDXneVGDSDCDs). On a computer the same layout is centred in a phone-width column. Fonts are Lilita One (titles) and Nunito (text), bundled with the page.
 
-**Frame.** Every main screen has a slim title strip (game icon and name), then a player bar (rank badge, username, rank and points, gold) and a rank progress bar. A bottom menu with icon and text: **Hunt**, **Naughty List**, **Emporium**, **Workshop**, **More**. Pages have their own address (`#/emporium/bait`), so the phone's back button works.
+**Frame.** Every main screen has a slim title strip (game icon and name), then a player bar (rank badge, username, rank and points, and gold shown as "3,412 Gold" followed by the medal-style gold coin icon) and a rank progress bar. A bottom menu with icon and text: **Hunt**, **Naughty List**, **Emporium**, **Workshop**, **More**. Pages have their own address (`#/emporium/bait`), so the phone's back button works.
 
 | Screen | What it shows |
 | --- | --- |
@@ -793,6 +793,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-26 | #19 | Player bar (eddy): gold reads "3,412 Gold" with the gold coin icon after it on every screen; canvas mockups updated. UI design only |
 | 2026-11-26 | #19 | Merged main after #18: location objectives and pillage on escape are built, so their 9 achievements count from the start (screen totals now 55) |
 | 2026-11-26 | #19 | Badges drawn as 3D metal medals (bevelled rim, recessed face, embossed emblem, gloss, light sweep in the popup); the same style for the power type icons on the Hunt screen and the gold coin in Santa's Workshop; canvas mockups updated. UI design only |
 | 2026-11-26 | #19 | Hunt screen (eddy): trap and base names move off the art into their own boxes; the art sits on top and Trap and Bait over Base and Charm form a 2x2 grid under it; the Trap box's icon is its power type. Canvas mockups updated. UI design only |
