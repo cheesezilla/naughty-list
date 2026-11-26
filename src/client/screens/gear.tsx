@@ -63,7 +63,10 @@ export function ItemStatBlock({ item, exact }: { item: AnyItem; exact: boolean }
       {types.length > 0 && (
         <span class="type-chip">{types.map((t) => <TypeMedal type={t} size={20} />)}{types.map((t) => TYPE_NAME[t]).join(' / ')}{item.kind === 'base' && ' affinity'}</span>
       )}
-      {rows.map(([label, value]) => <div class="stat-row"><span>{label}</span><b>{value}</b></div>)}
+      <div class="stat-tiles">
+        {rows.filter(([l]) => l !== 'Good for' && l !== 'Affinity').map(([label, value]) => <div class="stat-tile"><span>{label}</span><b>{value}</b></div>)}
+      </div>
+      {rows.filter(([l]) => l === 'Good for' || l === 'Affinity').map(([label, value]) => <p class="stat-note"><b>{label}:</b> {value}</p>)}
     </div>
   );
 }
