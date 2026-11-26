@@ -813,7 +813,7 @@ The exact attraction rate and catch chance are hidden from players (eddy, 26 Nov
 
 Where it shows: the two bars (Attraction, Catch) under the gear on the Hunt screen, the quick bait and charm sheet preview ("Weak → Medium", or "stays Strong") and the Arsenal before and after compare. Item cards, the shop, Arsenal lists and the item detail screen no longer list attraction percentages for traps, bases, bait and charms (power, luck and the other numbers stay). The thresholds are in `src/client/lib/effectiveness.tsx`; the engine and simulator still use exact rates.
 
-Admin toggle: More > Admin > "Odds display (testing)" > "Show exact attraction and catch rates". It adds the percentage next to each tier name and in the previews, and brings the attraction numbers back on item cards, the shop and item details. Admin accounts only, stored on that device (`exactOdds` in local prefs), off by default.
+Admin toggle: More > Admin > "Odds display (testing)" > "Show exact attraction and catch rates". It adds the percentage next to each tier name and in the previews, and brings the attraction numbers back on item cards, the shop and item details. Admin accounts only, stored on that device (`exactOdds` in local prefs), off by default. The hunt log escape line follows the same rule (tier name, or the percentage with the toggle on).
 
 ## Admin speed-run tools
 
@@ -1012,6 +1012,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-26 | this PR | Hunt log escapes now show the effectiveness tier ("Escaped. Weak chance") instead of the exact percentage; admins with the exact-odds toggle still see the percentage. Checked the New Catch popup and Hunters feed: they show no odds. Imp-file drop and pillage-risk percentages are unchanged |
 | 2026-11-26 | #36 | Santa's Workshop recipe cards show the output's stats (power, luck, Good for, base type bonus, charm bonuses), traps show their power type medal; attraction stays behind the admin exact-odds toggle. Base type bonus now also shows on item lines in the Emporium and Arsenal |
 | 2026-11-26 | #21 | **Six new optional bases (eddy).** Power, attraction and luck leanings at rank 2 (shop: Toffee Anvil, Chestnut Brazier, Wishbone Plinth) and rank 4 (crafted: Sleigh Runner, Gingerbread Cottage, Wishing Star Pedestal). Rank 4 bases get a +10% power `affinity` for matching trap types; `goodFor` line on item cards; 3 recipes, flavour, art. `simulate --without` leaves items out. Simulator: 200/200 reach rank 5, median 1,608 hunts with every base bought, 1,458 skipping them |
 | 2026-11-26 | this PR | Hunt screen (eddy): equipped trap art moves to the left of the gear card with its stats (power, luck, Attraction and Catch bars) on the right, spaced evenly; the 2x2 gear grid stays underneath. UI layout only |
