@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const powerTypes = ['clockwork', 'starlight', 'frost'] as const;
 export const PowerType = z.enum(powerTypes);
-export const ImpTier = z.enum(['common', 'rare', 'miniboss', 'boss']);
+export const ImpTier = z.enum(['common', 'uncommon', 'rare', 'miniboss', 'boss']);
 
 const id = z.string().regex(/^[a-z0-9_]+$/, 'ids are lowercase letters, digits and underscores');
 const chance = z.number().min(0).max(1);
@@ -58,6 +58,43 @@ export const Imp = z.object({
   flavour: ImpFlavour.optional(),
 });
 
+/** A location's own loop. Counted in hunts, never in time. */
+export const Objective = z.discriminatedUnion('type', [
+  z.object({
+    type: z.literal('bait_ladder'),
+    /** Bait tiers in order; each tier's imps drop what crafts the next tier's bait. */
+    tiers: z.array(z.object({ name: z.string(), baits: z.array(id).min(1), recipe: id.optional() })).min(2),
+    boss: id,
+  }),
+  z.object({
+    type: z.literal('order_board'),
+    slots: z.number().int().positive(),
+    rushSlots: z.number().int().positive(),
+    /** Every this many finished orders, the mini boss inspects. */
+    inspectionEvery: z.number().int().positive(),
+    crateGold: z.number().int().nonnegative(),
+    /** One of these is added to every Toy Crate. */
+    crateRewards: z.array(z.object({ item: id, amount: z.number().int().positive() })).min(1),
+    miniboss: id,
+    boss: id,
+  }),
+  z.object({
+    type: z.literal('sleigh_run'),
+    hunts: z.number().int().positive(),
+    /** Readiness added by a catch, by tier. */
+    gain: z.partialRecord(ImpTier, z.number().int().nonnegative()),
+    /** Readiness taken by these imps when they escape. */
+    loss: z.record(id, z.number().int().nonnegative()),
+    minibossFrom: z.number().int().nonnegative(),
+    minibossWeight: z.number().nonnegative(),
+    launchGold: z.number().int().nonnegative(),
+    launchItems: z.record(id, z.number().int().positive()),
+    failGoldPerReadiness: z.number().nonnegative(),
+    miniboss: id,
+    boss: id,
+  }),
+]);
+
 export const Location = z.object({
   id,
   name: z.string(),
@@ -66,6 +103,7 @@ export const Location = z.object({
   unlockCost: z.number().int().nonnegative(),
   preferredBait: id.optional(),
   otherBaitPenalty: chance.optional(),
+  objective: Objective.optional(),
   imps: z.array(Imp).min(1),
 });
 
@@ -121,7 +159,7 @@ export const Constants = z.object({
   pillage: z.object({
     /** A pillage never takes gold below this. */
     goldFloor: z.number().int().nonnegative(),
-    tiers: z.object({ common: PillageRule, rare: PillageRule, miniboss: PillageRule, boss: PillageRule }),
+    tiers: z.object({ common: PillageRule, uncommon: PillageRule, rare: PillageRule, miniboss: PillageRule, boss: PillageRule }),
   }),
   stamina: z.object({
     enabled: z.boolean(), name: z.string(), max: z.number().int().positive(), costPerHunt: z.number().int().nonnegative(),
@@ -136,6 +174,11 @@ export const Story = z.object({
     paragraphs: z.array(z.string().min(1).max(500)).min(1).max(8),
     signoff: z.string().min(1).max(40),
   }),
+  /** Per location: the first-visit intro logged on arrival, and the how-to-clear steps behind the "?" button. */
+  locations: z.record(id, z.object({
+    intro: z.string().min(1).max(400),
+    hint: z.array(z.string().min(1).max(120)).min(1).max(4),
+  })).optional(),
 });
 
 export const Content = z.object({
@@ -156,6 +199,7 @@ export type Imp = z.infer<typeof Imp>;
 export type PillageRule = z.infer<typeof PillageRule>;
 export type PillageKind = z.infer<typeof PillageKind>;
 export type Location = z.infer<typeof Location>;
+export type Objective = z.infer<typeof Objective>;
 export type Trap = z.infer<typeof Trap>;
 export type Base = z.infer<typeof Base>;
 export type Bait = z.infer<typeof Bait>;

@@ -9,5 +9,42 @@
       "Good luck, hunter. Christmas is counting on you."
     ],
     "signoff": "Santa"
+  },
+  "locations": {
+    "cookie_pantry": {
+      "intro": "Santa's pantry: jars to the ceiling and crumbs on every shelf. Small-time imps raid it all night. Catch them, earn your pay, and kit yourself out before heading deeper into the lair.",
+      "hint": [
+        "Hunt here to earn gold and points.",
+        "Buy a better trap and base in the Elf Emporium as soon as you can afford them.",
+        "Sugar Cookies draw more uncommon and rare imps.",
+        "Reach Elf Deputy to unlock the Wrapping Room."
+      ]
+    },
+    "wrapping_room": {
+      "intro": "Miles of ribbon and paper. The common imps here grab anything, but the Glitter Imp and Spoolwick only come for proper sweets, and Madame Shredwell only for the finest. Bake your way up.",
+      "hint": [
+        "Catch commons with shop bait to collect Sugar Twists and Candied Peel.",
+        "Make Ribbon Candy in Santa's Workshop.",
+        "Ribbon Candy draws the Glitter Imp and Spoolwick. Their drops make Golden Bow Bonbons.",
+        "Bonbons are the only bait Madame Shredwell will take."
+      ]
+    },
+    "toy_workshop": {
+      "intro": "The elves pin toy orders to the board, and each part must be caught with the right kind of trap. Finish enough orders and the bosses come to inspect.",
+      "hint": [
+        "Check the order board: each slot needs a catch with that trap type, in order.",
+        "Swap traps to match, and pick imps that aren't immune to that type.",
+        "Every 3rd order brings Hammerhand. Then take a Rush order to bring Foreman Grimbolt."
+      ]
+    },
+    "reindeer_stables": {
+      "intro": "The sleigh must be ready by Christmas Eve, and the stable imps keep pinching the bells and snipping the harness. Load it in time and Grizzlewick will try to stop the launch.",
+      "hint": [
+        "Start a sleigh run: you have 40 hunts, quiet ones included.",
+        "Catches build Readiness. Escaped Bell Thieves and Harness Snippers take it away.",
+        "Hot Cocoa keeps imps coming, so fewer hunts are wasted.",
+        "Reach 100 to launch the sleigh and face Grizzlewick."
+      ]
+    }
   }
 }

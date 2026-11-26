@@ -12,10 +12,11 @@ describe('content files', () => {
     expect(checkReferences(content)).toEqual([]);
   });
 
-  it('give every location 3 commons, a rare, a mini boss and a boss', () => {
+  it('give the Cookie Pantry commons, uncommons and a rare, and every other location 3 commons, a rare, a mini boss and a boss', () => {
     for (const loc of content.locations) {
       const tiers = loc.imps.map((i) => i.tier).sort();
-      expect(tiers, loc.id).toEqual(['boss', 'common', 'common', 'common', 'miniboss', 'rare']);
+      if (loc.id === 'cookie_pantry') expect(tiers, loc.id).toEqual(['common', 'common', 'rare', 'uncommon', 'uncommon']);
+      else expect(tiers, loc.id).toEqual(['boss', 'common', 'common', 'common', 'miniboss', 'rare']);
     }
   });
 

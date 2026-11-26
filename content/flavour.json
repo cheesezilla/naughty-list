@@ -28,7 +28,7 @@
     "constellation_wreath": {
       "tagline": "Festive on the door, a night sky on the floor.",
       "description": "A wreath of enchanted wrapping studded with brass-sprung stars. Step inside and every star flares at once, and the ring snaps shut.",
-      "backstory": "Santa's Workshop weaves it from the wrapping Madame Shredwell guarded and pins it with stars on the springs Baron Crumblewick hoarded, which the elves find deeply satisfying. Hung on a door it looks like any other wreath. Laid flat, its stars form the shape of the Sleigh, the North Pole's own constellation, and no shadow survives inside it."
+      "backstory": "Santa's Workshop weaves it from the wrapping Madame Shredwell guarded and pins it with stars on brass springs the Gingerbread Imps pinched, which the elves find deeply satisfying. Hung on a door it looks like any other wreath. Laid flat, its stars form the shape of the Sleigh, the North Pole's own constellation, and no shadow survives inside it."
     },
     "snow_globe_prison": {
       "tagline": "Shake it, and the imp sees only snow.",
@@ -122,8 +122,8 @@
     },
     "brass_spring": {
       "tagline": "Coiled tight with stolen bounce.",
-      "description": "A heavy brass spring from Baron Crumblewick's coat. Santa's Workshop winds it into stronger traps.",
-      "backstory": "Baron Crumblewick hoards springs pulled from the Pantry's clockwork mixers and stitches them into the lining of his coat, which is why he bounces when he walks. Catch him and they come loose. Santa's Workshop has never had better springs."
+      "description": "A heavy brass spring that Gingerbread Imps sometimes carry. Santa's Workshop winds it into stronger traps.",
+      "backstory": "Gingerbread Imps prise springs out of the Pantry's clockwork mixers and keep them as pogo sticks, which is why they bounce when they run. Catch one and a spring sometimes comes loose. Santa's Workshop has never had better springs."
     },
     "golden_ribbon": {
       "tagline": "The ribbon reserved for the best presents.",
@@ -154,6 +154,21 @@
       "tagline": "Hot to the touch, and it never goes out.",
       "description": "A lump of devil's coal from Grizzlewick the Horned, smouldering with Scrinch's own fire. Saved for greater gear.",
       "backstory": "Naughty children get coal. Scrinch's lieutenants carry it as a badge of rank, warmed by the fires under his throne. The elves keep every lump in an iron chest, because Santa's Workshop will one day need fire that hot to make the strongest gear of all."
+    },
+    "ribbon_candy": {
+      "tagline": "Striped like the ribbons it was made beside.",
+      "description": "A chewy candy bait made in Santa's Workshop. Draws the Wrapping Room's Glitter Imp and Spoolwick, who ignore plain cookies.",
+      "backstory": "The elves noticed that the fussier imps in the Wrapping Room only stole sweets that matched the paper. So they twisted Sugar Twists and Candied Peel into candy striped like ribbon. The Glitter Imp cannot resist anything that sparkles, and Spoolwick likes anything it can unroll."
+    },
+    "golden_bow_bonbon": {
+      "tagline": "Too pretty to eat. Madame Shredwell disagrees.",
+      "description": "A gilded bonbon tied with Golden Ribbon. The only bait Madame Shredwell will come out for.",
+      "backstory": "Madame Shredwell turns her nose up at cookies and candy alike. What she wants is a present worth shredding: a bonbon of Sugar Glass, wrapped in Golden Ribbon and tied in a perfect bow. Leave one on a trap and she arrives at once, scissors first."
+    },
+    "sugar_twist": {
+      "tagline": "A curl of pulled sugar, a little sticky.",
+      "description": "Common Wrapping Room imps carry these. Mixed with Candied Peel in Santa's Workshop, they make Ribbon Candy.",
+      "backstory": "The Wrapping Room imps twist leftover sugar into curls and keep them in their pockets like spare ribbon. Catch one and a Sugar Twist usually falls out, slightly fluffy. The Workshop elves blow off the fluff and turn them into Ribbon Candy."
     }
   },
   "imps": {
@@ -183,15 +198,9 @@
     },
     "jarbelly": {
       "tagline": "Ate the cookie jar. Then the jar.",
-      "description": "The Pantry's greedy mini boss. Jarbelly eats bait off traps and shrugs off starlight, but springs make it jump.",
+      "description": "A greedy Pantry imp that eats bait off traps. It shrugs off starlight, but springs make it jump.",
       "backstory": "Jarbelly started as an ordinary Crumb Imp who never stopped eating. Now it is the size of a flour barrel and carries a cookie tin under each arm, always empty. It will lick your trap clean before you know it was there. Clockwork startles it; starlight just makes it squint.",
       "rumour": "Cookies vanish from set traps without a single crumb left behind."
-    },
-    "baron_crumblewick": {
-      "tagline": "Lord of the larder, by his own decree.",
-      "description": "Scrinch's lieutenant in the Pantry, a pompous imp in a spring-lined coat. Clockwork outwits him; starlight can't dazzle him.",
-      "backstory": "Baron Crumblewick declared himself ruler of the Pantry and wears a cookie crumb crown to prove it. He lines his coat with springs stolen from the mixers so he can bounce out of danger. He laughs at starlight, but a clockwork trap ticking faster than his springs is his one real fear.",
-      "rumour": "Someone has been holding court on the top shelf, wearing a crown of crumbs."
     },
     "ribbon_tangler": {
       "tagline": "Ties knots for the fun of it.",

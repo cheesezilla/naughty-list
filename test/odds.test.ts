@@ -51,13 +51,14 @@ describe('setup stats', () => {
 });
 
 describe('hunt odds', () => {
-  it('encounter chances add up to 1 and Fruitcake doubles boss odds', () => {
+  it('encounter chances add up to 1 and Fruitcake doubles uncommon and rare odds', () => {
     const setup = { trap: 'starlit_stocking', base: 'cardboard_box', bait: 'stale_cookie', charm: null };
     const plain = huntOdds(content, setup, 'cookie_pantry');
     const fruit = huntOdds(content, { ...setup, bait: 'fruitcake' }, 'cookie_pantry');
     expect(plain.imps.reduce((s, o) => s + o.encounter, 0)).toBeCloseTo(1);
-    const boss = (o: typeof plain) => o.imps.find((i) => i.imp.tier === 'boss')!.encounter;
-    expect(boss(plain)).toBeCloseTo(0.01);
-    expect(boss(fruit)).toBeCloseTo(2 / 109);
+    const rare = (o: typeof plain) => o.imps.find((i) => i.imp.tier === 'rare')!.encounter;
+    expect(rare(plain)).toBeCloseTo(0.05);
+    // commons 70, uncommons (15 + 10) x 2, rare 5 x 2
+    expect(rare(fruit)).toBeCloseTo(10 / 130);
   });
 });

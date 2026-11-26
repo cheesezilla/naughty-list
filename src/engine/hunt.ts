@@ -3,6 +3,7 @@ import { gameData, itemOfKind } from './data.js';
 import { catchChance, impWeights, setupStats } from './odds.js';
 import { addItem, count, rankFor, type PlayerState } from './player.js';
 import { pickWeighted, type Rng } from './rng.js';
+import { afterHunt, objectiveState, objectiveWeights, type ObjectiveResult } from './objectives.js';
 
 export interface JournalEntry {
   outcome: 'quiet' | 'catch' | 'escape';
@@ -20,6 +21,8 @@ export interface JournalEntry {
   firstCatch?: boolean;
   /** Set when an escaped imp pillaged the player. */
   pillage?: Pillage;
+  /** What the hunt did to the location's own loop (order board, sleigh run). */
+  objective?: ObjectiveResult;
 }
 
 /** What an escaped imp took. `safe` lists kinds it went for that a safety rail stopped. */
@@ -81,10 +84,19 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0): 
   const entry: JournalEntry = { outcome: 'quiet', location: location.id, gold: 0, points: 0, loot: [], baitUsed: 0, charmUsed: false };
   if (rescued) entry.rescued = true;
 
-  if (rng() >= stats.attraction) return { ok: true, player: p, entry };
+  objectiveState(p, location, rng);
+  const track = (imp: Imp | undefined, caught: boolean) => {
+    const o = afterHunt(content, p, location, imp, caught, stats.type, rng);
+    if (o) entry.objective = o;
+  };
+
+  if (rng() >= stats.attraction) {
+    track(undefined, false);
+    return { ok: true, player: p, entry };
+  }
 
   p.stats.attracted += 1;
-  const idx = pickWeighted(impWeights(data, location, p.setup.bait), rng);
+  const idx = pickWeighted(objectiveWeights(p, location, impWeights(data, location, p.setup.bait)), rng);
   const imp = location.imps[Math.max(0, idx)]!;
   entry.imp = imp.id;
   p.seen = { ...(p.seen ?? {}), [imp.id]: (p.seen?.[imp.id] ?? 0) + 1 };
@@ -117,6 +129,7 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0): 
         entry.loot.push({ item: l.item, amount });
       }
     }
+    track(imp, true);
     const newRank = rankFor(content, p.points);
     if (newRank > p.rank) {
       p.rank = newRank;
@@ -126,6 +139,7 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0): 
     entry.outcome = 'escape';
     const pillage = rollPillage(content, p, imp, bait, rng);
     if (pillage) entry.pillage = pillage;
+    track(imp, false);
   }
   return { ok: true, player: p, entry };
 }

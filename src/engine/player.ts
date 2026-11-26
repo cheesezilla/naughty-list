@@ -1,5 +1,6 @@
 import type { Content } from '../content/schema.js';
 import { gameData, itemOfKind, priceOf, sellValue } from './data.js';
+import type { ObjectiveState } from './objectives.js';
 
 export interface Setup {
   trap: string;
@@ -24,6 +25,8 @@ export interface PlayerState {
   /** goldEarned counts gold from catches; missing in saves from before the new UI. */
   stats: { hunts: number; attracted: number; caught: number; goldEarned?: number; pillaged?: number };
   stamina: { value: number; updatedAt: number };
+  /** Progress on each location's own loop, by location id. Missing in older saves. */
+  objectives?: Record<string, ObjectiveState>;
 }
 
 export type ActionResult = { ok: true; player: PlayerState } | { ok: false; error: string };

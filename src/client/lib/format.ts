@@ -4,8 +4,8 @@ export const num = (x: number) => Math.round(x).toLocaleString('en-US');
 export const pct = (x: number) => `${Math.round(x * 100)}%`;
 export const plural = (n: number, one: string, many = `${one}s`) => `${num(n)} ${n === 1 ? one : many}`;
 
-export const TIER_NAME: Record<Imp['tier'], string> = { common: 'Common', rare: 'Rare', miniboss: 'Mini boss', boss: 'Boss' };
-export const TIER_ORDER: Record<Imp['tier'], number> = { common: 0, rare: 1, miniboss: 2, boss: 3 };
+export const TIER_NAME: Record<Imp['tier'], string> = { common: 'Common', uncommon: 'Uncommon', rare: 'Rare', miniboss: 'Mini boss', boss: 'Boss' };
+export const TIER_ORDER: Record<Imp['tier'], number> = { common: 0, uncommon: 0.5, rare: 1, miniboss: 2, boss: 3 };
 export const TYPE_NAME: Record<string, string> = { clockwork: 'Clockwork', starlight: 'Starlight', frost: 'Frost' };
 
 const DAY = 864e5;

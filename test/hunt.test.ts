@@ -35,8 +35,8 @@ describe('hunt', () => {
   });
 
   it('bait-stealing imps always pillage one bait when they escape', () => {
-    // Jarbelly sits after weights 40+30+21+5 = 96 of 100
-    const r = hunt(content, fresh(), scripted(0, 0.97, 0.999));
+    // Jarbelly sits after weights 40+30+15 = 85 of 100
+    const r = hunt(content, fresh(), scripted(0, 0.9, 0.999));
     if (!r.ok) throw new Error(r.error);
     expect(r.entry.imp).toBe('jarbelly');
     expect(r.entry.baitUsed).toBe(1);
@@ -179,7 +179,7 @@ describe('pillage on escape', () => {
 
   it('a rank 1 player keeps their points', () => {
     const p: PlayerState = { ...newPlayer(content), points: 2000, gold: 5000 };
-    const out = rollPillage(content, p, imp('baron_crumblewick'), 'stale_cookie', scripted(0));
+    const out = rollPillage(content, p, imp('madame_shredwell'), 'stale_cookie', scripted(0));
     expect(p.points).toBe(2000);
     expect(out?.safe).toContain('points');
   });
