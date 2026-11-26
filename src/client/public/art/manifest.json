@@ -239,6 +239,28 @@
       "prompt": "Fruitcake: a fruitcake loaf with candied fruit, white icing drizzle and a cherry on top. Single item thumbnail on a transparent background, 512x512, centred, soft ground shadow. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
     },
     {
+      "id": "ribbon_candy",
+      "slot": "baits",
+      "file": "baits/ribbon_candy.svg",
+      "width": 512,
+      "height": 512,
+      "transparent": true,
+      "source": "generated",
+      "description": "Ribbon Candy: a wrapped boiled candy with twisted ends, striped red and green like ribbon",
+      "prompt": "Ribbon Candy: a wrapped boiled candy with twisted ends, striped red and green like ribbon. Single item thumbnail on a transparent background, 512x512, centred, soft ground shadow. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
+    },
+    {
+      "id": "golden_bow_bonbon",
+      "slot": "baits",
+      "file": "baits/golden_bow_bonbon.svg",
+      "width": 512,
+      "height": 512,
+      "transparent": true,
+      "source": "generated",
+      "description": "Golden Bow Bonbon: a round chocolate bonbon tied with a shiny golden bow, sparkles",
+      "prompt": "Golden Bow Bonbon: a round chocolate bonbon tied with a shiny golden bow, sparkles. Single item thumbnail on a transparent background, 512x512, centred, soft ground shadow. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
+    },
+    {
       "id": "hot_cocoa",
       "slot": "baits",
       "file": "baits/hot_cocoa.svg",
@@ -292,6 +314,17 @@
       "source": "generated",
       "description": "Candied Peel: curls of candied orange peel dusted with sugar",
       "prompt": "Candied Peel: curls of candied orange peel dusted with sugar. Single crafting material thumbnail on a transparent background, 512x512, centred, soft ground shadow. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
+    },
+    {
+      "id": "sugar_twist",
+      "slot": "materials",
+      "file": "materials/sugar_twist.svg",
+      "width": 512,
+      "height": 512,
+      "transparent": true,
+      "source": "generated",
+      "description": "Sugar Twist: a curl of pink pulled sugar with a white stripe, a little sticky",
+      "prompt": "Sugar Twist: a curl of pink pulled sugar with a white stripe, a little sticky. Single crafting material thumbnail on a transparent background, 512x512, centred, soft ground shadow. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
     },
     {
       "id": "sugar_glass",
@@ -532,9 +565,22 @@
       "height": 512,
       "transparent": false,
       "source": "generated",
-      "description": "Chimney Soot Imp (common, Cookie Pantry): grey soot-covered imp with smudged cheeks and pale little horns, holding a chimney sweep brush",
-      "prompt": "Portrait of Chimney Soot Imp, a common imp from the Cookie Pantry: grey soot-covered imp with smudged cheeks and pale little horns, holding a chimney sweep brush. Square character portrait card, 512x512, rounded corners, head and shoulders facing the viewer, room-coloured background, frame colour shows tier (common plain, rare gold, mini boss silver, boss red and gold). Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos.",
-      "tier": "common",
+      "description": "Chimney Soot Imp (uncommon, Cookie Pantry): grey soot-covered imp with smudged cheeks and pale little horns, holding a chimney sweep brush",
+      "prompt": "Portrait of Chimney Soot Imp, a uncommon imp from the Cookie Pantry: grey soot-covered imp with smudged cheeks and pale little horns, holding a chimney sweep brush. Square character portrait card, 512x512, rounded corners, head and shoulders facing the viewer, room-coloured background, frame colour shows tier (common plain, rare gold, mini boss silver, boss red and gold). Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos.",
+      "tier": "uncommon",
+      "location": "cookie_pantry"
+    },
+    {
+      "id": "jarbelly",
+      "slot": "imps",
+      "file": "imps/jarbelly.svg",
+      "width": 512,
+      "height": 512,
+      "transparent": false,
+      "source": "generated",
+      "description": "Jarbelly the Glutton (uncommon, Cookie Pantry): huge round glutton imp with a cookie-jar lid perched on its head as a hat, mouth wide open, cookies in both hands",
+      "prompt": "Portrait of Jarbelly the Glutton, a uncommon imp from the Cookie Pantry: huge round glutton imp with a cookie-jar lid perched on its head as a hat, mouth wide open, cookies in both hands. Square character portrait card, 512x512, rounded corners, head and shoulders facing the viewer, room-coloured background, frame colour shows tier (common plain, rare gold, mini boss silver, boss red and gold). Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos.",
+      "tier": "uncommon",
       "location": "cookie_pantry"
     },
     {
@@ -548,32 +594,6 @@
       "description": "Gingerbread Imp (rare, Cookie Pantry): rare gingerbread-skinned imp decorated with white icing squiggles and candy buttons, cheeky grin",
       "prompt": "Portrait of Gingerbread Imp, a rare imp from the Cookie Pantry: rare gingerbread-skinned imp decorated with white icing squiggles and candy buttons, cheeky grin. Square character portrait card, 512x512, rounded corners, head and shoulders facing the viewer, room-coloured background, frame colour shows tier (common plain, rare gold, mini boss silver, boss red and gold). Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos.",
       "tier": "rare",
-      "location": "cookie_pantry"
-    },
-    {
-      "id": "jarbelly",
-      "slot": "imps",
-      "file": "imps/jarbelly.svg",
-      "width": 512,
-      "height": 512,
-      "transparent": false,
-      "source": "generated",
-      "description": "Jarbelly the Glutton (mini boss, Cookie Pantry): huge round glutton imp with a cookie-jar lid perched on its head as a hat, mouth wide open, cookies in both hands",
-      "prompt": "Portrait of Jarbelly the Glutton, a mini boss imp from the Cookie Pantry: huge round glutton imp with a cookie-jar lid perched on its head as a hat, mouth wide open, cookies in both hands. Square character portrait card, 512x512, rounded corners, head and shoulders facing the viewer, room-coloured background, frame colour shows tier (common plain, rare gold, mini boss silver, boss red and gold). Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos.",
-      "tier": "miniboss",
-      "location": "cookie_pantry"
-    },
-    {
-      "id": "baron_crumblewick",
-      "slot": "imps",
-      "file": "imps/baron_crumblewick.png",
-      "width": 512,
-      "height": 512,
-      "transparent": false,
-      "source": "custom",
-      "description": "Baron Crumblewick (boss, Cookie Pantry): pompous boss imp in a black top hat with a red band, gold monocle, moustache made of cookie crumbs, green coat and red cravat",
-      "prompt": "Portrait of Baron Crumblewick, a boss imp from the Cookie Pantry: pompous boss imp in a black top hat with a red band, gold monocle, moustache made of cookie crumbs, green coat and red cravat. Square character portrait card, 512x512, rounded corners, head and shoulders facing the viewer, room-coloured background, frame colour shows tier (common plain, rare gold, mini boss silver, boss red and gold). Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos.",
-      "tier": "boss",
       "location": "cookie_pantry"
     },
     {
@@ -1155,6 +1175,17 @@
       "source": "generated",
       "description": "How to play, loot: a boss imp dropping a crafting material, an arrow to Santa's Workshop anvil, an arrow to a new trap",
       "prompt": "Diagram for \"loot\": a boss imp dropping a crafting material, an arrow to Santa's Workshop anvil, an arrow to a new trap. Explainer diagram card, 640x360, cream background, simple icons and arrows, very little text. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
+    },
+    {
+      "id": "pillage",
+      "slot": "howto",
+      "file": "howto/pillage.svg",
+      "width": 640,
+      "height": 360,
+      "transparent": false,
+      "source": "generated",
+      "description": "How to play, pillage: an escaping imp running off with a cookie and gold coins, red minus signs, a padlock on a small pile of coins it could not take",
+      "prompt": "Diagram for \"pillage\": an escaping imp running off with a cookie and gold coins, red minus signs, a padlock on a small pile of coins it could not take. Explainer diagram card, 640x360, cream background, simple icons and arrows, very little text. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
     },
     {
       "id": "ranks",

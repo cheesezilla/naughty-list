@@ -19,7 +19,8 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | New phone-first UI (layout D2): bottom menu, hunt log with events and full history, Arsenal, Elf Emporium, Santa's Workshop, More pages, open sign-up with admin switch | Done | #11 |
 | Holly power type renamed Starlight; its three traps reworked (Starlit Stocking, Star Lantern, Constellation Wreath) with new text and SVG art, old saves migrated | In review | #17 |
 | Intro letter from Santa: the game's backstory as the first hunt-log entry of every new game, and on How to play | In review | #12 |
-| Location objectives: a simple Cookie Pantry start, then a unique loop per location (Wrapping Room bait ladder, Toy Workshop order board, Stables sleigh run), plus first-visit intros, a hint button and a mechanic panel on each Hunt screen; see [Location objectives](#location-objectives-planned) | Planned (design only) | #16 |
+| Location objectives: a simple Cookie Pantry start, then a unique loop per location (Wrapping Room bait ladder, Toy Workshop order board, Stables sleigh run), plus first-visit intros, a hint button and a mechanic panel on each Hunt screen; see [Location objectives](#location-objectives) | In review | #16 (plan), #18 (build) |
+| Pillage on escape: escaped imps may take gold, points and bait (bosses most, mini bosses less, others rarely), with safety rails; see [Pillage on escape](#pillage-on-escape) | In review | #18 |
 | New bases: two tiers of power, attraction and luck bases; see [New bases](#new-bases-power-attraction-and-luck-planned) | Planned (design only) | #21 |
 | 5. Tune from play-test | Planned | |
 
@@ -29,7 +30,7 @@ The server runs every hunt and saves each player in SQLite. To play locally, fol
 
 **The Naughty List** is an original Christmas trap-and-catch browser game for eddy and friends. Imps sent by Scrinch, ruler of the imps, are raiding Santa's secret lair at the North Pole and stealing toy supplies. Santa hires you as an imp hunter. You arm a trap, pick a bait, press Hunt, and the game rolls attraction and catch odds against the imp's power. There is no wait timer: every press is a hunt. Bait cost, not a clock, paces progress.
 
-v1 covers 5 ranks and 4 lair locations. Each location has 3 common imps, a rare imp, a mini boss and a local boss: 24 imps in all. Bosses drop the loot used to craft stronger gear. From the second location on, each location will also have its own local objective (planned; see [Location objectives](#location-objectives-planned)). Expect roughly 1,400 hunts, or about 1 to 1.5 hours of active play, to reach the last v1 rank.
+v1 covers 5 ranks and 4 lair locations: 23 imps in all (Baron Crumblewick is parked). The Cookie Pantry is a simple start with common, uncommon and rare imps. Each later location has 3 common imps, a rare imp, a mini boss and a local boss, and its own local objective that decides when the mini boss and boss come (see [Location objectives](#location-objectives)). Bosses drop the loot used to craft stronger gear. Expect roughly 1,500 hunts, or about 1 to 1.5 hours of active play, to reach the last v1 rank.
 
 The stack is one small Docker container (Node.js + SQLite) on the UGREEN NAS, with open sign-up (the admin can close it) and a leaderboard so friends can play. The stamina meter is built but switched off.
 
@@ -88,7 +89,7 @@ All constants live in `content/constants.json` and the other content files, so t
 - **Effectiveness** E of the trap's power type against an imp: 0 (immune), 0.5 (resists), 1 (normal) or 1.5 (weak). Types: Clockwork (toy machines), Starlight (Christmas-star magic, strong against shadowy imps; called Holly before PR #17), Frost (ice magic).
 - **Catch chance** = clamp((P x E + L^2) / (P x E + M), 0, 98%), where M is the imp's power. Luck only counts when E > 0.
   - Example: a 150 power Clockwork trap on a 20 power base with luck 2, against a normal 90 power imp: (170 + 4) / (170 + 90) = 67%.
-- **Rewards**: a catch pays the imp's gold and points and rolls its loot list; bosses always drop their crafting part. An escape pays nothing; some imps also steal one extra bait when they escape.
+- **Rewards**: a catch pays the imp's gold and points and rolls its loot list; bosses always drop their crafting part. An escape pays nothing and may pillage gold, bait and points (bosses most); see [Pillage on escape](#pillage-on-escape).
 - **RNG**: the engine takes a random source, so the simulator and tests replay exactly from a seed. The server rolls every hunt with a cryptographic random source, so results can't be edited in the browser.
 
 ## Pacing without a cooldown
@@ -127,16 +128,15 @@ The numbers below mirror `content/*.json`. Types: C = Clockwork, S = Starlight, 
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Cookie Pantry | Crumb Imp | Common | 40 | 12 | 20 | | | |
 | Cookie Pantry | Sprinkle Snatcher | Common | 70 | 18 | 30 | C | | Candied Peel 10% |
-| Cookie Pantry | Chimney Soot Imp | Common | 100 | 25 | 45 | | S | |
-| Cookie Pantry | Gingerbread Imp | Rare | 160 | 60 | 100 | F | | Sugar Glass 50% |
-| Cookie Pantry | Jarbelly the Glutton | Mini boss | 300 | 90 | 180 | C | S | Cookie Tin 100% |
-| Cookie Pantry | Baron Crumblewick | Boss | 450 | 150 | 300 | C | S | Brass Spring 100% |
-| Wrapping Room | Ribbon Tangler | Common | 150 | 40 | 60 | | | |
-| Wrapping Room | Tape Biter | Common | 220 | 55 | 85 | S | | |
-| Wrapping Room | Bow Burglar | Common | 280 | 70 | 100 | | C | Candied Peel 10% |
+| Cookie Pantry | Chimney Soot Imp | Uncommon | 100 | 25 | 45 | | S | |
+| Cookie Pantry | Jarbelly the Glutton | Uncommon | 180 | 40 | 70 | C | S | Cookie Tin 30% |
+| Cookie Pantry | Gingerbread Imp | Rare | 160 | 60 | 100 | F | | Sugar Glass 50%, Brass Spring 15% |
+| Wrapping Room | Ribbon Tangler | Common | 150 | 40 | 60 | | | Sugar Twist 25%, Ribbon Candy 2% |
+| Wrapping Room | Tape Biter | Common | 220 | 55 | 85 | S | | Sugar Twist 20%, Ribbon Candy 2% |
+| Wrapping Room | Bow Burglar | Common | 280 | 70 | 100 | | C | Candied Peel 30%, Ribbon Candy 2% |
 | Wrapping Room | Glitter Imp | Rare | 350 | 110 | 160 | F | | Sugar Glass 50% |
 | Wrapping Room | Spoolwick | Mini boss | 600 | 160 | 300 | S | | Golden Ribbon 100% |
-| Wrapping Room | Madame Shredwell | Boss | 1,100 | 300 | 550 | S | C | Enchanted Wrapping 100% |
+| Wrapping Room | Madame Shredwell | Boss | 1,100 | 300 | 550 | S | C | Enchanted Wrapping 100%, Jingle Bell Charm x5 25% |
 | Toy Workshop | Cog Pincher | Common | 450 | 140 | 150 | | | |
 | Toy Workshop | Paint Smudger | Common | 600 | 180 | 190 | S | | |
 | Toy Workshop | Stuffing Ripper | Common | 750 | 220 | 230 | F | S | |
@@ -150,7 +150,7 @@ The numbers below mirror `content/*.json`. Types: C = Clockwork, S = Starlight, 
 | Reindeer Stables | Antler Ripper | Mini boss | 3,500 | 800 | 1,200 | C | S | Silver Sleighbell 100% |
 | Reindeer Stables | Grizzlewick the Horned | Boss | 6,000 | 1,500 | 3,000 | C | S immune | Brimstone Coal 100% |
 
-Jarbelly, Bow Burglar and Bell Thief steal an extra bait when they escape. Brimstone Coal has no use in v1; it is saved for later recipes, including The Naughty List.
+Baron Crumblewick, the old Pantry boss, is parked in `content/parked/baron_crumblewick.json` (not loaded) for a later location or event. Imp weights and which imps a bait draws are in `content/locations.json`; the Wrapping Room's rare, mini boss and boss come only for ladder baits, and the Toy Workshop and Stables mini bosses and bosses only through their objective (weight 0 otherwise). Jarbelly, Bow Burglar and Bell Thief always pillage one bait when they escape; other imps pillage by tier (see [Pillage on escape](#pillage-on-escape)). Brimstone Coal has no use in v1; it is saved for later recipes, including The Naughty List.
 
 **Traps**
 
@@ -182,8 +182,10 @@ Jarbelly, Bow Burglar and Bell Thief steal an extra bait when they escape. Brims
 | Stale Cookie | 70% | Works everywhere | 1 | 8 gold |
 | Sugar Cookie | 78% | Draws more Chimney Soot Imps in the Pantry | 1 | 20 gold |
 | Peppermint Bark | 82% | | 3 | 50 gold |
-| Fruitcake | 85% | Doubles rare imp, mini boss and boss odds | 2 | Crafted |
+| Fruitcake | 85% | Doubles uncommon, rare, mini boss and boss odds (cannot skip the Wrapping Room ladder) | 2 | Crafted |
 | Hot Cocoa | 88% | Stable imps show up at half rate with any other bait | 4 | 90 gold |
+| Ribbon Candy | 82% | Wrapping Room tier 2: draws the Glitter Imp and Spoolwick | 2 | Crafted |
+| Golden Bow Bonbon | 86% | Wrapping Room tier 3: the only bait Madame Shredwell takes | 2 | Crafted |
 
 **Charms** (one used per attracted hunt)
 
@@ -220,27 +222,27 @@ Names are working titles. They follow the theme (toffee, roast chestnuts, the Ch
 
 ### How they compare
 
-Worked out with `huntOdds`, with no charm. "Catch/hunt" is the average over the setups listed. "Resisted" is the catch chance against imps that resist the trap's type. "Cheap bait" is catches per hunt with a weaker bait (Stale Cookie in the Wrapping Room for rank 2; Peppermint Bark in the Stables, where it attracts half as well, for rank 4).
+Worked out with `huntOdds` on the content as of #18, with no charm and before location objectives change which imps show up (for example, the Wrapping Room's rare imps and bosses only come with ladder baits). Those rules change how often each imp appears, not the catch chance against it, so the comparison between bases holds. "Catch/hunt" is the average over the setups listed. "Resisted" is the catch chance against imps that resist the trap's type. "Cheap bait" is catches per hunt with a weaker bait (Stale Cookie in the Wrapping Room for rank 2; Peppermint Bark in the Stables, where it attracts half as well, for rank 4).
 
 Rank 2 tier. Setups: Jack-in-the-Box, Star Lantern and Icicle Jar in the Wrapping Room with Sugar Cookie, and Nutcracker Jaws in the Toy Workshop with Peppermint Bark.
 
 | Base | Catch/hunt | Boss catch | Resisted | Cheap bait |
 | --- | --- | --- | --- | --- |
-| Candy Cane Platform (today) | 0.574 | 33% | 27% | 0.593 |
-| Toffee Anvil | 0.580 | **37%** | **33%** | 0.586 |
-| Chestnut Brazier | 0.590 | 29% | 21% | **0.624** |
-| Wishbone Plinth | **0.600** | 33% | 32% | 0.621 |
+| Candy Cane Platform (today) | 0.586 | 33% | 27% | 0.603 |
+| Toffee Anvil | 0.590 | **37%** | **33%** | 0.594 |
+| Chestnut Brazier | 0.603 | 29% | 21% | **0.635** |
+| Wishbone Plinth | **0.615** | 33% | 32% | 0.634 |
 
 Rank 4 tier. Setups: Constellation Wreath in the Toy Workshop with Peppermint Bark, and Snow Globe Prison and Sleigh-Bell Snapper in the Stables with Hot Cocoa.
 
 | Base | Catch/hunt | Boss catch | Resisted | Cheap bait |
 | --- | --- | --- | --- | --- |
-| Yule Log Base (today) | **0.644** | 40% | 51% | 0.357 |
-| Sleigh Runner | 0.627 | **45%** | 56% | 0.336 |
-| Gingerbread Cottage | 0.637 | 39% | 50% | **0.415** |
-| Wishing Star Pedestal | 0.640 | 40% | **58%** | 0.339 |
+| Yule Log Base (today) | **0.651** | 40% | 51% | 0.361 |
+| Sleigh Runner | 0.633 | **45%** | 56% | 0.339 |
+| Gingerbread Cottage | 0.645 | 39% | 50% | **0.420** |
+| Wishing Star Pedestal | 0.648 | 40% | **58%** | 0.343 |
 
-At rank 2, luck is still close to power against resisted imps, because the early imps are weak and L² is large next to their M. If play-testing shows the Wishbone Plinth is the only one people buy, the first change is to lower its luck to 7 (catch/hunt 0.572).
+At rank 2, luck is still close to power against resisted imps, because the early imps are weak and L² is large next to their M. If play-testing shows the Wishbone Plinth is the only one people buy, the first change is to lower its luck to 7.
 
 ### Building it
 
@@ -249,9 +251,9 @@ At rank 2, luck is still close to power against resisted imps, because the early
 3. Run `npm run check-content`, `npm test` and `npm run simulate`. Bases are optional sidegrades, so the time to reach each rank should barely move. Copy the new results here.
 4. Move this section into "v1 content" and update the status table.
 
-## Location objectives (planned)
+## Location objectives
 
-**Rules (eddy, 25 and 26 Nov 2026):** the first location, the Cookie Pantry, is a simple start with no special objective. From the second location on, every location has its own local objective, a loop that only exists there, and the tiered bait ladder starts in the second location. Nothing in this section is built yet, and eddy wants the UI planned before anything is built. The numbers are a first pass to check with the simulator when each loop is implemented. Every loop counts hunts and catches, never minutes, so it works with no wait timer and behaves the same with the stamina meter on or off (stamina only changes how fast a player can press Hunt in real time).
+**Rules (eddy, 25 and 26 Nov 2026):** the first location, the Cookie Pantry, is a simple start with no special objective. From the second location on, every location has its own local objective, a loop that only exists there, and the tiered bait ladder starts in the second location. **Built in #18.** Code: `src/engine/objectives.ts` (state, weight hook, after-hunt hook, `objectiveAction`), `POST /api/objective`, the `objective` block per location in `content/locations.json`, text in `content/story.json` > `locations`, and the panels in `src/client/screens/objective.tsx`. The numbers below are the built ones, tuned with the simulator. Every loop counts hunts and catches, never minutes, so it works with no wait timer and behaves the same with the stamina meter on or off (stamina only changes how fast a player can press Hunt in real time).
 
 | Location | Rank | Local objective | Boss comes when |
 | --- | --- | --- | --- |
@@ -262,7 +264,7 @@ At rank 2, luck is still close to power against resisted imps, because the early
 
 The Tangle Meter, first planned for the Wrapping Room, is kept as a spare loop for a later location.
 
-**What the engine already does (checked on `main`):**
+**What the engine did before #18 (checked on `main`, kept for reference):**
 
 | Piece | Status | Where |
 | --- | --- | --- |
@@ -277,25 +279,25 @@ The Tangle Meter, first planned for the Wrapping Room, is kept as a spare loop f
 
 So the bait ladder is mostly content (new materials, baits, recipes and `baitWeights`); the order board and sleigh run need a small objective system in the engine.
 
-**Shared engine design (for when it's built).** Each location in `content/locations.json` gets an optional `objective` block with a `type` (`bait_ladder`, `order_board`, `sleigh_run`, and later `tangle_meter`) and its numbers. The save gets `objectives: { [locationId]: state }`, so old saves load with empty state. The hunt runs two hooks: one that adjusts imp weights and power before the imp is picked, and one that updates the state after the catch or escape. Objective changes go into the hunt's journal entry (for example "Readiness 58 → 62"), and the Hunt screen shows a small panel for the current location under the banner. Gear swaps stay free, as now. The simulator gets a strategy per objective so balance can be checked.
+**Shared engine design (built).** Each location in `content/locations.json` gets an optional `objective` block with a `type` (`bait_ladder`, `order_board`, `sleigh_run`, and later `tangle_meter`) and its numbers. The save gets `objectives: { [locationId]: state }`, created lazily on the first hunt or action there, so old saves load unchanged. The hunt runs two hooks: `objectiveWeights()` adjusts imp weights before the imp is picked (a forced next imp, and imps that only come at certain moments), and `afterHunt()` updates the state after a quiet hunt, catch or escape and pays rewards. Objective changes go into the hunt's journal entry (for example "Readiness 58 → 62"), and the Hunt screen shows a small panel for the current location under the banner. Gear swaps stay free, as now. The simulator gets a strategy per objective so balance can be checked.
 
 ### Cookie Pantry: a simple start (no local objective)
 
 The first location teaches the basic loop and nothing else: catch imps, earn gold, buy a better trap, base and bait in the Elf Emporium, rank up and unlock the Wrapping Room. It has common, uncommon and rare imps and no mini boss or boss.
 
-| Imp | Tier (proposed) | Power | Weight (Stale Cookie) | Weight (Sugar Cookie) | Drops (proposed) |
+| Imp | Tier | Power | Weight (Stale Cookie) | Weight (Sugar Cookie) | Drops |
 | --- | --- | --- | --- | --- | --- |
 | `crumb_imp` | Common | 40 | 40 | 40 | |
 | `sprinkle_snatcher` | Common | 70 | 30 | 30 | Candied Peel 10% (as now) |
 | `chimney_soot_imp` | Uncommon (was common) | 100 | 15 | 22 | |
-| `jarbelly` | Uncommon (was mini boss) | 180 (was 300) | 10 | 10 | Cookie Tin 30% (was 100%); still steals a bait on escape |
+| `jarbelly` | Uncommon (was mini boss) | 180 (was 300) | 10 | 10 | Cookie Tin 30% (was 100%); gold 40 and points 70; always pillages a bait on escape |
 | `gingerbread_imp` | Rare | 160 | 5 | 8 | Sugar Glass 50% (as now), Brass Spring 15% (new) |
 
 - **New tier, uncommon.** The engine, the content schema, the hunt log and the Naughty List gain an `uncommon` tier between common and rare, with its own portrait frame. Fruitcake doubles every tier above common.
 - **Baron Crumblewick leaves the Pantry** and is parked for a later location or event; his art and text stay. His Brass Spring now comes from the Gingerbread Imp, so Constellation Wreath can still be crafted.
 - **Sugar Cookie** is the "better bait" step: more uncommon and rare imps for 20 gold instead of 8.
 - No panel on the Hunt screen. The hint and first-visit intro still apply.
-- Gold and points are unchanged, so the rank 1 pace should hold; the simulator checks it when this is built.
+- Rank 1 took a median 181 hunts in the simulator (target 150, within 25%).
 
 ### Wrapping Room: the Bait Ladder (bait tiers)
 
@@ -307,10 +309,10 @@ eddy's loop, starting in the second location: common bait catches common imps, w
 | 2 | **Ribbon Candy** (new bait, 82% attraction, not sold). Recipe: 2 Sugar Twist + 1 Candied Peel + 30 gold → 3 Ribbon Candy | commons 50 in total, `glitter_imp` 30, `spoolwick` 20, `madame_shredwell` 0 | `glitter_imp`: Sugar Glass 50% (as now). `spoolwick`: Golden Ribbon 100% (as now) |
 | 3 | **Golden Bow Bonbon** (new bait, 86% attraction, not sold). Recipe: 1 Sugar Glass + 1 Golden Ribbon + 100 gold → 2 Bonbons | commons 30, `glitter_imp` 10, `spoolwick` 10, `madame_shredwell` 50 | `madame_shredwell`: Enchanted Wrapping 100% (trap part for Constellation Wreath, as now) and 25% for 5 Jingle Bell Charms |
 
-- New ids (proposed): material `sugar_twist`; baits `ribbon_candy`, `golden_bow_bonbon`; recipes `ribbon_candy_x3`, `golden_bow_bonbon_x2`.
+- New ids: material `sugar_twist`; baits `ribbon_candy`, `golden_bow_bonbon`; recipes `ribbon_candy_x3`, `golden_bow_bonbon_x2`.
 - Fruitcake uses the tier 1 weights here, so it can't skip the ladder (2 x 0 is still 0).
 - Candied Peel and Golden Ribbon are also used by Fruitcake and the Yule Log Base, so players choose between bait and gear.
-- Rough pace with the meant-for gear: about 20 attracted hunts per 3 Ribbon Candy and about 11 Ribbon Candy per 2 Bonbons, so about one boss attempt every 60 hunts. To be checked with the simulator.
+- Simulator: a simulated player catches Spoolwick 1.8 times and Madame Shredwell 0.4 times on average before moving on; most players rank up before reaching the top of the ladder.
 - Panel: three bait tiers with what you own of each, and the next recipe's have / need.
 
 ### Toy Workshop: the Order Board (trap-type puzzle)
@@ -323,18 +325,20 @@ The elves pin toy orders to a board. Each order lists parts that must be caught 
 - **Inspection:** every 3rd finished order, the next attracted hunt is Hammerhand (mini boss; weight 0 otherwise). He drops Toymaker's Gear as now.
 - **Rush order:** after an Inspection, the player can take a 5-slot Rush order instead of a normal one. Finishing it makes the next attracted hunt Foreman Grimbolt (boss; weight 0 otherwise), who drops Clockwork Heart as now.
 - Panel: the order slots as type badges, filled or empty, and orders until the next Inspection.
+- Simulator: about 30 orders per player, 3.4 Hammerhand and 2.3 Foreman Grimbolt catches.
 
 ### Reindeer Stables: the Sleigh Run (countdown in hunts)
 
 Get the sleigh ready before the countdown runs out, while thieves undo your work. The countdown is a number of hunts, not a clock.
 
 - **Start a run** from the panel (free). The run lasts 40 hunts; every hunt counts, including quiet ones, so Hot Cocoa's better attraction matters more here.
-- **Readiness** 0 to 100: a common catch adds 4, the rare adds 10, Antler Ripper adds 20. A Bell Thief escape takes 8 (it runs off with the bells); a Harness Snipper escape takes 5.
+- **Readiness** 0 to 100: a common catch adds 5, the rare adds 12, Antler Ripper adds 20 (first pass was 4 and 10; tuned in the simulator). A Bell Thief escape takes 8 (it runs off with the bells); a Harness Snipper escape takes 5.
 - Antler Ripper's weight is 0 below 50 Readiness and 6 from 50 up.
 - **Launch:** reaching 100 before the countdown ends launches the sleigh: 2,000 gold and 1 Silver Sleighbell, and Grizzlewick ambushes it, so the next attracted hunt is him (weight 0 otherwise). He drops Brimstone Coal as now.
 - **Run fails** when the countdown ends below 100: the player gets Readiness x 10 gold and can start another run straight away.
 - Outside a run the Stables hunt as now, without the mini boss and boss.
 - Panel: Readiness bar, hunts left, and a Start run button when no run is active.
+- Simulator: about 14 runs per player, 2.1 of them launched; 2.1 Antler Ripper and 0.8 Grizzlewick catches.
 
 ### Spare loop for a later location: the Tangle Meter (push your luck)
 
@@ -357,15 +361,15 @@ The room gets messier the longer you hunt, and a messy room pays better but is h
 
 ### Location screens (UI plan)
 
-eddy (25 Nov 2026): each location's Hunt screen should feel different. Three additions, all in the phone-first layout D2. **Status: planning; nothing is built until eddy signs off the UI.**
+eddy (25 Nov 2026): each location's Hunt screen should feel different. Three additions, all in the phone-first layout D2. **Status: built in #18.**
 
-**1. First-visit intro in the hunt log.** The first time a player arrives in a location, the hunt log gets an "Arrived: <location>" entry with a short intro to the area: what the room is, which imps raid it and what's different here. It shows folded after the first sentence, like Santa's letter. The Cookie Pantry intro is logged right after Santa's letter when a game starts (sign-up and Start over); the others are logged the first time the player travels there. It is a new journal event, `arrival`, logged once per location, tracked by a `visited` list in the save (old saves count their current location as visited, so they get intros only for new places). The Full history "Events" filter includes it.
+**1. First-visit intro in the hunt log.** The first time a player arrives in a location, the hunt log gets an "Arrived: <location>" entry with a short intro to the area: what the room is, which imps raid it and what's different here. It shows folded after the first sentence, like Santa's letter. The Cookie Pantry intro is logged right after Santa's letter when a game starts (sign-up and Start over); the others are logged the first time the player travels there. It is a new journal event, `arrival`, logged when a location is first unlocked by travel, so old saves get intros only for new places. Changes from the panel (start a sleigh run, take a Rush order) are logged as an `objective` event. The Full history "Events" filter includes it.
 
-**2. Hint button.** A round "?" button on the location banner, next to Travel, opens a bottom sheet "How to clear <location>" with 2 to 4 short steps, the location's intro again (for players who skipped it) and a Close button. The hint never shows exact odds.
+**2. Hint button.** A round "?" button next to Travel, opens a bottom sheet "How to clear <location>" with 2 to 4 short steps, the location's intro again (for players who skipped it) and a Close button. The hint never shows exact odds.
 
-**3. Mechanic panel.** From the second location on, a card between the gear stats and the hunt log, styled per location (its own colour and icon), showing the local objective's state. Tapping it opens the same sheet as the hint button. It updates after every hunt, and a hunt that changes the objective gets a one-line note in its log entry (for example "Readiness 58 → 62").
+**3. Mechanic panel.** From the second location on, a card between the gear stats and the hunt log, styled per location (its own colour and icon), showing the local objective's state. Its "How does this work?" link opens the same sheet as the hint button. It updates after every hunt, and a hunt that changes the objective gets a one-line note in its log entry (for example "Readiness 58 → 62").
 
-Text lives in a new `locations` block in `content/story.json`, keyed by location id: `intro` (up to 400 characters) and `hint` (up to 4 steps of up to 120 characters). Loading fails if a location has no intro or hint, like `flavour.json`. First drafts:
+Text lives in a new `locations` block in `content/story.json`, keyed by location id: `intro` (up to 400 characters) and `hint` (up to 4 steps of up to 120 characters). `npm run check-content` fails if a location has no intro or hint, or names an unknown location. Texts as first drafted (the built text is in `story.json`):
 
 | Location | Intro (first visit) | Hint steps |
 | --- | --- | --- |
@@ -433,7 +437,7 @@ The Cookie Pantry, and any future location without a local objective, shows no p
 
 ### Build order
 
-Nothing is built until eddy has signed off the UI above.
+All five steps were built in #18.
 
 1. Location intros, hint button and the empty panel slot (shared by all locations).
 2. Cookie Pantry simple start: the uncommon tier and the new imp table.
@@ -442,6 +446,47 @@ Nothing is built until eddy has signed off the UI above.
 5. Reindeer Stables sleigh run.
 
 Each step re-runs `npm run simulate` and updates the balance numbers in this file.
+
+## Pillage on escape
+
+**Rule (eddy, 26 Nov 2026):** an imp that escapes may pillage the player, taking gold, points and/or bait. Bosses pillage more than mini bosses, and regular imps only rarely. Built in #18. Code: `rollPillage()` in `src/engine/hunt.ts`; numbers in `content/constants.json` > `pillage`.
+
+**When it happens.** Only after an escape: an imp was attracted, the bait was used, and the catch roll failed. Quiet hunts and catches never pillage. The server rolls a pillage chance for the imp's tier; on a hit it rolls what is taken. Like everything else it counts hunts, not time, so it works the same with the stamina meter on or off.
+
+| Tier | Chance on escape | What it takes |
+| --- | --- | --- |
+| Common | 3% | One of: 1 of the armed bait, or gold equal to the imp's gold reward |
+| Uncommon | 5% | One of: 1 to 2 of the armed bait, or gold equal to 1.5 x the imp's gold reward (added with the uncommon tier) |
+| Rare | 8% | One of: 1 to 2 of the armed bait, or gold equal to 2 x the imp's gold reward |
+| Mini boss | 35% | Two of: 5% of your gold (at most 10 x its gold reward), 2 to 3 of the armed bait, 1% of your points (at most 2 x its points reward) |
+| Boss | 60% | All three: 8% of your gold (at most 15 x its gold reward), 3 to 5 of the armed bait, 2% of your points (at most 3 x its points reward) |
+
+Example: Madame Shredwell (gold 300, points 550) escapes from a player with 6,000 gold, 20 Golden Bow Bonbons and 9,000 points. If she pillages: −480 gold (8%, under the 4,500 cap), −4 Bonbons, −180 points (2%, under the 1,650 cap).
+
+**Bait thieves.** The old rule "some imps steal one extra bait when they escape" becomes part of pillage: Jarbelly, Bow Burglar and Bell Thief keep a guaranteed 1-bait pillage on every escape (`pillage: { chance: 1, bait: [1, 1] }` on the imp), shown and logged the same way as any other pillage. That rule replaces their tier's roll.
+
+**Safety rails** (so it stings but never dead-ends a player):
+- Gold never drops below 100 from a pillage.
+- Points never drop below the current rank's threshold, so a pillage can't take a rank away. Rank 1 players lose no points.
+- When a rail stops a loss the imp still counts as having pillaged, and the log says what was safe.
+- Only the armed bait is taken, never more than is owned. Charms, gear and materials are never taken.
+- Mrs. Claus's free Stale Cookies (no bait and under 50 gold) are unchanged and still catch anyone who runs dry.
+- With the gold floor at 100, a player can always buy bait again (Stale Cookie is 8 gold).
+
+**Content.** `content/constants.json` > `pillage` has `goldFloor` (100) and one rule per tier: `chance`, `takes` (the kinds it picks from), `kinds` (how many it takes), `goldPct` and `goldCap` (gold = goldPct of the player's gold, at most goldCap x the imp's gold; without goldPct, goldCap x the imp's gold), `bait` ([min, max]), `pointsPct` and `pointsCap`. An imp's own `pillage` field replaces its tier rule; `stealsBait` is gone. The player's `stats.pillaged` counts pillages. The simulator reports pillages and the gold and bait they cost per location (see Economy).
+
+**Hunt log.** An escape that pillages gets a red border, a "Pillaged" pill and the losses on one line:
+- Common: "Bow Burglar escaped and pillaged you: −1 Sugar Cookie."
+- Boss: "Madame Shredwell escaped and pillaged you: −480 gold, −4 Golden Bow Bonbons, −180 points."
+- When a safety rail stops a loss, the line says so: "… −0 points (your rank is safe)."
+The Full history gets a **Pillaged** filter. The Hunters catch feed adds boss pillages ("Madame Shredwell escaped and pillaged eddy") next to boss catches, without the amounts.
+
+**On screen.**
+- The gold and points in the player bar flash red when a pillage lands, the Hunt button shakes once (not with reduced motion) and the phone buzzes if vibration is on.
+- Caught imps' files show a "Pillage risk" line: Rarely, Sometimes, Often or Very often with the chance, or "always steals a bait" for the three thieves.
+- How to play has a "Pillage" section with its own diagram (`howto/pillage.svg`, queued for a custom picture).
+
+**Fits with the location objectives.** Pillaged bait counts against the bait ladder (losing crafted Ribbon Candy or Bonbons hurts, which makes a stronger trap worth it before trying for Madame Shredwell). In the Sleigh Run, Bell Thief and Harness Snipper escapes still take Readiness as planned, separately from pillage.
 
 ## Flavour text
 
@@ -460,7 +505,7 @@ Imp descriptions and rumours hint at each imp's weaknesses and resistances, so p
 
 Gold comes in only from catches and sales, and goes out on bait, charms, gear, location unlocks and crafting fees.
 
-- **Sources:** 300 starting gold and 100 Stale Cookies; imp gold on each catch; selling materials (5 to 200 gold each) and gear (40% of its price).
+- **Sources:** 300 starting gold and 100 Stale Cookies; imp gold on each catch; selling materials (5 to 200 gold each; the new Sugar Twist sells for 8) and gear (40% of its price).
 - **Sinks:** bait and charms every attracted hunt; gear; one-time unlock fees; crafting fees.
 
 **Santa's Workshop recipes**
@@ -469,6 +514,8 @@ Gold comes in only from catches and sales, and goes out on bait, charms, gear, l
 | --- | --- | --- | --- |
 | Mistletoe Charm x10 | 1 Sugar Glass | 150 | 1 |
 | Fruitcake x5 | 3 Candied Peel, 1 Cookie Tin | 100 | 2 |
+| Ribbon Candy x3 | 2 Sugar Twist, 1 Candied Peel | 30 | 2 |
+| Golden Bow Bonbon x2 | 1 Sugar Glass, 1 Golden Ribbon | 100 | 2 |
 | Constellation Wreath (trap) | 3 Enchanted Wrapping, 2 Brass Spring | 6,000 | 3 |
 | Yule Log Base | 3 Toymaker's Gear, 1 Golden Ribbon, 2 Sugar Glass | 4,000 | 3 |
 | Sleigh-Bell Snapper (trap) | 3 Silver Sleighbell, 1 Clockwork Heart, 1 Nutcracker Jaws (used up) | 15,000 | 4 |
@@ -484,7 +531,7 @@ Gold comes in only from catches and sales, and goes out on bait, charms, gear, l
 
 **How we check it:** `npm run simulate` plays virtual hunters through v1 with the real engine and content, reports hunts per rank, catch rates and bait cost per location, and with `--strict` fails if a rank target is missed by more than 25%.
 
-**Latest simulator run (PR #1, 100 players):** all reached rank 5, median 1,358 hunts. Median hunts in ranks 1 to 4: 177, 285, 401, 493 (targets 150, 250, 400, 600, all within 25%). Catch per attracted hunt: 64%, 58%, 56%, 58% by location. Known gaps: simulated players never bought Constellation Wreath or Snow Globe Prison and mostly used Stale Cookies, so the better baits and those traps need a stronger reason to use them.
+**Latest simulator run (PR #18, 200 players, with pillage and the location objectives):** all reached rank 5, median 1,503 hunts (1,398 with pillage only, 1,357 before). Median hunts in ranks 1 to 4: 181, 298, 474, 556 (targets 150, 250, 400, 600, all within 25%). Pillages per player by location: 10, 38, 13, 74, costing 7%, 6%, 12% and 11% of the gold earned there. Mini boss and boss catches per player: Spoolwick 1.8, Madame Shredwell 0.4, Hammerhand 3.4, Foreman Grimbolt 2.3, Antler Ripper 2.1, Grizzlewick 0.8. Toy orders 30.3 per player; sleigh runs 14.1, 2.1 launched. Sleigh-Bell Snapper crafted by 41% of players, Constellation Wreath by 1%. Known gaps: Constellation Wreath and Snow Globe Prison are still rarely used.
 
 ## Art
 
@@ -494,14 +541,14 @@ Every picture has a fixed name, `src/client/public/art/<slot>/<id>.<ext>`, where
 | --- | --- | --- | --- |
 | `brand` | 2 | icon 1024², key art 1170×1290 | Game icon, login key art |
 | `traps`, `bases` | 8, 5 | 600×450, transparent | Same canvas; the trap stands on the base's top line (y = 340), so the two layer |
-| `baits`, `charms`, `materials` | 5, 3, 10 | 512², transparent | Thumbnails |
+| `baits`, `charms`, `materials` | 7, 3, 11 | 512², transparent | Thumbnails |
 | `trap_types` | 3 | 256² | Clockwork, Starlight, Frost badges |
 | `locations` | 4 | 1170×470 | Hunt banners; centre floor left clear for the trap |
 | `map` | 1 | 1600×900 | Travel map; manifest has pin positions per location |
-| `imps` | 24 + `_locked` | 512² | Portrait cards; frame shows tier; `_locked` is the "?" card |
+| `imps` | 24 + `_locked` | 512² | Portrait cards; frame shows tier (common, uncommon, rare, mini boss, boss); `_locked` is the "?" card |
 | `ranks` | 5 | 256², transparent | `rank_1` … `rank_5` |
 | `icons` | 19 | 24², `currentColor` | Bottom nav, More menu, stat labels |
-| `howto` | 7 | 640×360 | One diagram per How-to-play section |
+| `howto` | 8 | 640×360 | One diagram per How-to-play section |
 
 `npm run art` regenerates the SVGs and the manifest. It never overwrites a custom file (a PNG/WebP/JPG with the same name, or an SVG without the generator's marker comment). `npm test` fails if any item, imp, location or rank has no picture. The client loads `/art/manifest.json` at start and looks every picture up by slot and id, so a PNG that replaces an SVG shows up after `npm run art` and a rebuild, with no code change.
 
@@ -549,12 +596,13 @@ Phone first (layout D2, chosen by eddy on 25 Nov 2026; mockups: https://claude.a
 | `POST /api/auth/signup` | Create an account. The very first account becomes the admin; later ones are refused while the admin has closed sign-up |
 | `POST /api/auth/login`, `POST /api/auth/logout` | Session cookie, 30 days, token stored hashed |
 | `GET /api/me` | User, player state and the hunt log: the last 50 hunts plus the events between them |
-| `GET /api/history?filter=&before=&limit=` | One page (up to 200 rows) of the full history, newest first; filter `all`, `catches`, `escapes`, `events` or `bosses`; `before` is a row id |
+| `GET /api/history?filter=&before=&limit=` | One page (up to 200 rows) of the full history, newest first; filter `all`, `catches`, `escapes`, `events`, `bosses` or `pillaged`; `before` is a row id |
 | `GET /api/stats` | Join date, rank-up times and first-catch times still in the log |
 | `GET /api/hunters` | Leaderboard (username, rank, points, Naughty List size) and the latest 20 rare or boss catches and rank-ups from everyone |
 | `POST /api/account/password` | Change password; needs the current one |
 | `POST /api/hunt` | One hunt, rolled on the server; limited to `maxHuntsPerSecond` (2) per player |
-| `POST /api/setup`, `/api/buy`, `/api/sell`, `/api/craft`, `/api/travel` | Engine actions on the saved player; each also writes an event to the hunt log and returns it |
+| `POST /api/setup`, `/api/buy`, `/api/sell`, `/api/craft`, `/api/travel` | Engine actions on the saved player; each also writes an event to the hunt log and returns it (`log`, plus `logs` when one action writes more than one row, such as travel and a first-visit arrival) |
+| `POST /api/objective` with `{"action": "start_run" \| "rush_order"}` | Start a sleigh run in the Stables or take a Rush order in the Toy Workshop; logged as an `objective` event |
 | `POST /api/restart` with `{"confirm": true}` | Start over: wipes this player's progress and journal, keeps the account, logs the restart |
 | `GET /api/restarts` | This player's own restart log |
 | `GET /api/admin/players` | Admin only: every player with rank, points, hunts and last active time |
@@ -563,7 +611,7 @@ Phone first (layout D2, chosen by eddy on 25 Nov 2026; mockups: https://claude.a
 
 **Storage:** one SQLite file, `naughty-list.db`, in `DATA_DIR` (`/data` in Docker, `./data` locally), using Node's built-in `node:sqlite` so there are no native modules to compile. Tables: users, sessions, settings (`allowSignups`), players (state as JSON), journal (the hunt log: hunts and events, marked by a `kind` column, up to 10,000 rows per player, pruned every 100 hunts), restarts (one row per Start over, with the player's gold, points, rank, hunts, catches and Naughty List count at that moment; never deleted). Passwords are hashed with scrypt. The old invites table is left in place, unused, so saves from earlier versions open unchanged; the server adds the journal's `kind` column to old saves on start.
 
-**Data stored per player:** gold, points, rank, current location, unlocked locations, setup, inventory counts, the hunt log, lifetime catch counts per imp (the Naughty List), lifetime encounters per imp (`seen`, for "seen, never caught") and gold earned from catches. `seen` and gold earned start counting from this version for older saves.
+**Data stored per player:** gold, points, rank, current location, unlocked locations, setup, inventory counts, the hunt log, lifetime catch counts per imp (the Naughty List), lifetime encounters per imp (`seen`, for "seen, never caught") and gold earned from catches, progress on each location's objective (`objectives`) and a pillage count (`stats.pillaged`). `seen` and gold earned start counting from this version for older saves.
 
 **Start over:** any player can wipe their own run from **More > Account > Start over**. A confirmation dialog lists what will be lost, and nothing is wiped unless the player confirms; the server also refuses a restart without an explicit confirm flag. The wipe replaces that player's state with a fresh one and deletes their journal in one transaction. Their account, other players and the restart log are untouched. The admin sees every restart on the Admin page.
 
@@ -611,6 +659,8 @@ The container starts as root only to fix the save folder's ownership, then drops
 | Date | PR | Change |
 | --- | --- | --- |
 | 2026-11-26 | #21 | Plan for six new bases (design only): power, attraction and luck leanings at rank 2 (shop) and rank 4 (crafted), with catch numbers from `huntOdds`. No game numbers changed |
+| 2026-11-26 | #18 | Location objectives built. Cookie Pantry simple start: new `uncommon` tier (Chimney Soot Imp, Jarbelly at power 180, gold 40, points 70, Cookie Tin 30%), Gingerbread Imp drops Brass Spring 15%, Baron Crumblewick parked. Wrapping Room bait ladder: Sugar Twist, Ribbon Candy and Golden Bow Bonbon with two recipes; rare, mini boss and boss gated behind ladder baits; Madame Shredwell also drops 5 Jingle Bell Charms 25%. Toy Workshop order board (3 slots, Inspection every 3rd order brings Hammerhand, 5-slot Rush order brings Foreman Grimbolt, Toy Crate 400 gold plus a bonus). Reindeer Stables sleigh run (40 hunts, Readiness 5/12/20 per common/rare/mini boss catch, thieves take 8/5, Antler Ripper from 50, launch pays 2,000 gold and a Silver Sleighbell and brings Grizzlewick, a failed run pays 10 gold per Readiness). `objectives` in the save, `POST /api/objective`, first-visit `arrival` log entries, intros and hints in `story.json`, hint sheet and per-location panels on the Hunt screen. Simulator: 200/200 reach rank 5, median 1,503 hunts |
+| 2026-11-26 | #18 | Pillage on escape built: chance and losses per imp tier in `constants.json` (common 3%, rare 8%, mini boss 35%, boss 60%; bosses take gold, bait and points), bait thieves use a per-imp rule (`stealsBait` removed), safety rails (gold floor 100, no rank loss, rank 1 keeps points, armed bait only). Hunt log Pillaged pill and text, Pillaged history filter, boss pillages in the Hunters feed, red flash and shake, pillage risk in imp files, How to play section and diagram. Simulator: 200/200 reach rank 5, median 1,398 hunts (was 1,357) |
 | 2026-11-26 | #17 | Power type Holly renamed **Starlight** (Christmas-star magic, strong against shadowy imps). Its traps reworked: Stocking Snare -> Starlit Stocking (`starlit_stocking`), Holly Noose -> Star Lantern (`star_lantern`), Wreath of Thorns -> Constellation Wreath (`constellation_wreath`, recipe id too), with new flavour text and imp weakness hints. Simple generated SVGs for the three traps and the Starlight badge replace the old Holly PNGs/SVGs and are queued for Gemini in ART_PROGRESS.md. Saves and hunt-log entries with the old ids are rewritten when the server starts. No numbers changed; simulator run unchanged apart from names (100/100 reach rank 5) |
 | 2026-11-25 | #16 | Planned location objectives: Cookie Pantry becomes a simple start (common, uncommon and rare imps, no boss), Wrapping Room bait ladder (eddy's tiered bait-ingredient loop), Toy Workshop order board, Reindeer Stables sleigh run, Tangle Meter kept as a spare; first-visit intro log entries, a hint button and a mechanic panel per location (UI sketches, canvas mockups and first-draft text); recorded what the engine already supports. Design only, no code or numbers changed |
 | 2026-11-25 | #15 | Added docs/ART_PROGRESS.md tracking which of the 56 remaining non-icon art assets still need custom AI-generated pictures (per slot, with ids), linked from docs/ART.md and docs/PLAN.md. No art files or game numbers changed |

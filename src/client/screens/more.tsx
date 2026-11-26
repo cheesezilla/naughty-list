@@ -129,7 +129,9 @@ export function HuntersScreen() {
                   ? <Art slot="ranks" id={`rank_${rank.rank}`} class="thumb small" />
                   : imp ? <ImpThumb id={imp.id} size={44} /> : null}
                 <div class="row-body">
-                  {f.entry.outcome === 'catch' && imp && TIER_ORDER[imp.tier] > 0
+                  {f.entry.outcome === 'escape' && f.entry.pillage && imp
+                    ? <><b>{imp.name}</b> escaped and pillaged <b>{f.username}</b></>
+                    : f.entry.outcome === 'catch' && imp && TIER_ORDER[imp.tier] > 0
                     ? <><b>{f.username}</b> caught {imp.tier === 'rare' ? 'a rare ' : ''}<b>{imp.name}</b>{imp.tier !== 'rare' && `, the ${loc?.name} ${TIER_NAME[imp.tier].toLowerCase()}`}{rank && <>, and reached <b>{rank.name}</b></>}</>
                     : <><b>{f.username}</b> reached <b>{rank?.name}</b></>}
                 </div>
@@ -137,7 +139,7 @@ export function HuntersScreen() {
               </div>
             );
           })}
-          {r.data && r.data.feed.length === 0 && <p class="muted">No big moments yet. Rare imps, bosses and rank-ups show up here.</p>}
+          {r.data && r.data.feed.length === 0 && <p class="muted">No big moments yet. Rare imps, bosses, boss pillages and rank-ups show up here.</p>}
         </div>
         <p class="small muted">Imps you haven't caught yourself still show as ?, so the feed doesn't spoil the portraits.</p>
       </div>
@@ -221,6 +223,7 @@ const HOWTO: { id: string; title: string; text: string }[] = [
   { id: 'luck', title: 'Luck', text: 'Luck gives a bonus that matters most against strong imps. Charms are the easiest way to get more.' },
   { id: 'trap_types', title: 'Trap types', text: 'Clockwork, Starlight and Frost. Some imps are weak to a type (×1.5 power) and some resist it (×0.5) or are immune. Their imp file and rumour hint at which.' },
   { id: 'loot', title: "Loot and Santa's Workshop", text: "Rare imps and bosses drop materials. Craft them in Santa's Workshop into gear and bait you can't buy." },
+  { id: 'pillage', title: 'Pillage', text: 'An imp that escapes may pillage you, taking gold, bait or points. Bosses do it most and take the most; ordinary imps only rarely. A pillage never takes your gold below 100 or costs you a rank.' },
   { id: 'ranks', title: 'Ranks', text: 'Catches earn points. New ranks open new rooms of the lair and new gear in the Elf Emporium.' },
 ];
 export function HowToScreen() {

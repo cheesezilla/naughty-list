@@ -1,4 +1,5 @@
 import { useState } from 'preact/hooks';
+import type { Content, Imp } from '../../content/schema.js';
 import { api } from '../api.js';
 import { useGame } from '../game.js';
 import { Art } from '../lib/art.js';
@@ -80,7 +81,7 @@ export function ImpScreen({ id }: { id: string }) {
               {weak.length > 0 && <>Weak to {weak.join(', ')}. </>}
               {resists.length > 0 && <>Resists {resists.join(', ')}. </>}
               {imp.loot?.length ? <>Drops {imp.loot.map((l) => `${data.items.get(l.item)?.name} (${pct(l.chance)})`).join(', ')}. </> : null}
-              {imp.stealsBait && 'Steals an extra bait when it escapes. '}
+              {pillageRisk(imp, content)}. 
               {first && <>First caught {when(first, prefs.clock24)}.</>}
             </p>
             {imp.flavour && (
@@ -104,4 +105,12 @@ export function ImpScreen({ id }: { id: string }) {
       </div>
     </FullScreen>
   );
+}
+
+/** "Pillage risk: Often (35% of escapes)" for the imp file. */
+function pillageRisk(imp: Imp, content: Content): string {
+  if (imp.pillage?.chance === 1 && imp.pillage.takes.length === 1 && imp.pillage.takes[0] === 'bait') return 'Pillage risk: always steals a bait when it escapes';
+  const chance = (imp.pillage ?? content.constants.pillage.tiers[imp.tier]).chance;
+  const word = chance >= 0.5 ? 'Very often' : chance >= 0.2 ? 'Often' : chance >= 0.06 ? 'Sometimes' : 'Rarely';
+  return `Pillage risk: ${word} (${pct(chance)} of escapes)`;
 }

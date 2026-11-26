@@ -1,0 +1,28 @@
+{
+  "note": "Parked on 2026-11-26 when the Cookie Pantry became a simple start with no boss. Not loaded by the game. Kept so Baron Crumblewick can return in a later location or event (his portrait stays in src/client/public/art/imps/).",
+  "imp": {
+    "id": "baron_crumblewick",
+    "name": "Baron Crumblewick",
+    "tier": "boss",
+    "power": 450,
+    "gold": 150,
+    "points": 300,
+    "weight": 1,
+    "effectiveness": {
+      "clockwork": 1.5,
+      "starlight": 0.5
+    },
+    "loot": [
+      {
+        "item": "brass_spring",
+        "chance": 1
+      }
+    ]
+  },
+  "flavour": {
+    "tagline": "Lord of the larder, by his own decree.",
+    "description": "Scrinch's lieutenant in the Pantry, a pompous imp in a spring-lined coat. Clockwork outwits him; starlight can't dazzle him.",
+    "backstory": "Baron Crumblewick declared himself ruler of the Pantry and wears a cookie crumb crown to prove it. He lines his coat with springs stolen from the mixers so he can bounce out of danger. He laughs at starlight, but a clockwork trap ticking faster than his springs is his one real fear.",
+    "rumour": "Someone has been holding court on the top shelf, wearing a crown of crumbs."
+  }
+}

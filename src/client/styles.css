@@ -85,6 +85,14 @@ img.art { display: block; max-width: 100%; }
 .empty-thumb { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 12px; border: 2px dashed var(--edge); color: var(--muted); font-size: 12px; flex: none; }
 .pill { display: inline-block; font-size: 12px; font-weight: 800; border-radius: 999px; padding: 2px 9px; white-space: nowrap; background: #e8dfcf; color: var(--muted); }
 .pill.gold { background: var(--gold-2); color: #4a2f00; }
+.pill.red { background: var(--red); color: #fff; }
+.log-row.pillaged { border: 2px solid var(--red); }
+/* A pillage flashes the gold and points red and shakes the Hunt button once. */
+@keyframes pillage-flash { 0%, 100% { color: inherit; } 20%, 60% { color: #ff6b5e; } }
+@keyframes pillage-shake { 0%, 100% { transform: none; } 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } }
+body.pillaged .player-bar .gold, body.pillaged .player-bar .who span { animation: pillage-flash 0.9s ease-in-out; }
+body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
+@media (prefers-reduced-motion: reduce) { body.pillaged .hunt-btn { animation: none; } }
 .pill.green { background: var(--green-soft); color: var(--green); }
 .type-chip { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 800; color: var(--muted); margin-left: 6px; }
 .type-icon { width: 16px; height: 16px; }
@@ -160,6 +168,11 @@ img.art { display: block; max-width: 100%; }
 .badge-buy, .badge-sell { background: #f3e2c4; color: #6a4410; }
 .badge-craft { background: #ead9f2; color: #4d2a63; }
 .badge-travel { background: var(--green-soft); color: var(--green); }
+.badge-objective, .badge-arrival { background: var(--gold-soft); color: #4a2f00; }
+.arrival-card { background: #fffaf0; color: var(--ink); border: 2px solid var(--gold); border-radius: 14px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; }
+.arrival-card h3 { margin: 0; font-family: 'Lilita One', sans-serif; font-weight: 400; font-size: 18px; flex: 1; }
+.arrival-card p { margin: 0; font-size: 14px; line-height: 1.4; }
+.objective-note { font-size: 12px; font-weight: 800; color: #1d4466; margin-top: 2px; }
 .day { font-size: 16px; color: var(--mint); margin-top: 8px; }
 .log-end { text-align: center; display: flex; flex-direction: column; gap: 8px; align-items: center; padding: 8px 0 4px; font-size: 14px; color: var(--mint); }
 .hunt-dock { position: sticky; bottom: 0; padding: 8px 0 2px; margin: 0 -14px; padding-left: 14px; padding-right: 14px; background: linear-gradient(to bottom, rgba(15, 61, 46, 0), var(--pine) 40%); }
@@ -340,3 +353,36 @@ img.art { display: block; max-width: 100%; }
 .story-head h3 { flex: 1; font-size: 20px; color: var(--red-dark); }
 .story-card .signoff { font-family: var(--display); font-size: 20px; color: var(--red); text-align: right; }
 .story-card .text-btn { align-self: flex-start; padding: 4px 0; min-height: 36px; }
+
+/* ----- Location screens: hint button, hint sheet, mechanic panels ----- */
+.banner-actions { display: flex; gap: 8px; align-items: center; }
+.hint-btn { width: 44px; height: 44px; border-radius: 999px; border: 0; background: var(--gold); color: var(--pine); font-family: var(--display); font-size: 22px; }
+.hint-sheet ol { margin: 0 0 12px; padding-left: 22px; display: flex; flex-direction: column; gap: 8px; font-size: 15px; line-height: 1.4; }
+.hint-about { background: var(--cream-2); border-radius: 12px; padding: 10px 12px; margin-bottom: 12px; font-size: 14px; line-height: 1.4; }
+.hint-about p { margin: 4px 0 0; }
+.objective-panel { --accent: var(--pine); --panel-bg: var(--cream); border-radius: 16px; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; color: var(--ink); background: var(--panel-bg); border: 2px solid var(--accent); }
+.objective-panel h3 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 19px; color: var(--accent); display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.objective-panel h3 small { font-family: Nunito, system-ui, sans-serif; font-weight: 800; font-size: 13px; }
+.objective-panel .panel-line { margin: 0; font-size: 13px; line-height: 1.4; }
+.objective-panel .panel-line.strong { font-weight: 800; color: var(--red-dark); }
+.objective-panel .panel-help { align-self: flex-start; min-height: 32px; padding: 2px 0; font-size: 13px; }
+.objective-panel .ok { color: #1f6b3a; font-weight: 800; }
+.objective-panel .no { color: #a02a20; font-weight: 800; }
+.objective-panel .wide { width: 100%; }
+.loc-wrapping_room { --accent: #8e1f28; --panel-bg: #fbe9e7; }
+.loc-toy_workshop { --accent: #1f5a35; --panel-bg: #e6f2e9; }
+.loc-reindeer_stables { --accent: #1d4466; --panel-bg: #e5eef7; }
+.ladder { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; text-align: center; font-size: 12px; line-height: 1.25; }
+.ladder li { background: #fff; border: 1px solid var(--edge); border-radius: 10px; padding: 6px 2px; display: flex; flex-direction: column; }
+.ladder li.armed { background: var(--accent); color: #fff; border-color: var(--accent); }
+.ladder-next { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.ladder-next p { margin: 0; font-size: 13px; line-height: 1.4; }
+.small-btn { font: inherit; font-weight: 800; font-size: 13px; min-height: 40px; padding: 0 14px; border-radius: 10px; border: 0; background: var(--accent, var(--pine)); color: #fff; }
+.order-slots { list-style: none; margin: 0; padding: 0; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 6px; text-align: center; font-size: 12px; line-height: 1.2; }
+.order-slots li { background: #fff; border: 1px dashed var(--accent); border-radius: 10px; padding: 5px 2px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.order-slots li.done { background: var(--accent); color: #fff; border-style: solid; }
+.order-slots li.next { border: 3px solid var(--gold-2); }
+.order-slots .type-badge { width: 28px; height: 28px; }
+.readiness { position: relative; height: 22px; border-radius: 999px; background: #c9d9ea; overflow: hidden; }
+.readiness .fill { height: 100%; background: var(--accent); transition: width 0.3s; }
+.readiness .mark { position: absolute; top: 0; bottom: 0; border-left: 2px dashed #fff; }
