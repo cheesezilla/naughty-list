@@ -14,7 +14,7 @@ daily quota): see the `gemini-art-generation` project memory.
 
 ## Done
 
-- **imps** (10 of 25): `crumb_imp`, `gingerbread_imp`, `baron_crumblewick`, `glitter_imp`, `madame_shredwell`, `windup_imp`, `foreman_grimbolt`, `carrot_crook`, `grizzlewick`, `_locked` — PR #13
+- **imps** (24 of 24, done): `crumb_imp`, `gingerbread_imp`, `glitter_imp`, `madame_shredwell`, `windup_imp`, `foreman_grimbolt`, `carrot_crook`, `grizzlewick`, `_locked` (PR #13); `sprinkle_snatcher`, `chimney_soot_imp`, `jarbelly`, `ribbon_tangler`, `tape_biter`, `bow_burglar`, `spoolwick`, `cog_pincher`, `paint_smudger`, `stuffing_ripper`, `hammerhand`, `hay_hoarder`, `bell_thief`, `harness_snipper`, `antler_ripper` (this pass). `baron_crumblewick` was parked in the location rework (PR #18) and dropped from the art manifest, so the imp roster is 24 now, not 25
 - **traps** (8 of 8, done): `jack_in_the_box`, `icicle_jar`, `nutcracker_jaws`, `snow_globe_prison`, `sleigh_bell_snapper` (PR #14), `starlit_stocking`, `star_lantern`, `constellation_wreath` (replacing the three retired Holly traps from PR #17)
 - **bases** (5 of 5, done): `cardboard_box`, `gingerbread_slab`, `candy_cane_platform`, `ice_block` (PR #14), `yule_log_base`
 - **locations** (4 of 4, done): `cookie_pantry`, `wrapping_room`, `toy_workshop`, `reindeer_stables`
@@ -28,7 +28,6 @@ daily quota): see the `gemini-art-generation` project memory.
 - **materials** (10): `candied_peel`, `sugar_glass`, `cookie_tin`, `brass_spring`, `golden_ribbon`, `enchanted_wrapping`, `toymakers_gear`, `clockwork_heart`, `silver_sleighbell`, `brimstone_coal`
 - **trap_types** (3): `clockwork`, `starlight`, `frost` (`starlight` replaced `holly` in PR #17)
 - **map** (1): `lair_map`
-- **imps** (15 of 25): `sprinkle_snatcher`, `chimney_soot_imp`, `jarbelly`, `ribbon_tangler`, `tape_biter`, `bow_burglar`, `spoolwick`, `cog_pincher`, `paint_smudger`, `stuffing_ripper`, `hammerhand`, `hay_hoarder`, `bell_thief`, `harness_snipper`, `antler_ripper`
 - **howto** (8): `hunt`, `attraction`, `power`, `luck`, `trap_types`, `loot`, `pillage`, `ranks`
 
-45 pictures left (excluding icons). Each asset's `prompt` for regenerating it is in `art/manifest.json`.
+30 pictures left (excluding icons). Each asset's `prompt` for regenerating it is in `art/manifest.json`.
