@@ -11,7 +11,7 @@ src/client/public/art/<slot>/<id>.<ext>
 ```
 
 - **slot** is the kind of picture (table below) and is also the folder name.
-- **id** is the game-data id from `content/*.json` (for example `jack_in_the_box`, `crumb_imp`, `cookie_pantry`), so the game finds a picture by the same key it already uses for the thing itself. Pictures that are not game data use the fixed ids in the table.
+- **id** is the game-data id from `content/*.json` (for example `jack_in_the_box`, `crumb_elf`, `cookie_pantry`), so the game finds a picture by the same key it already uses for the thing itself. Pictures that are not game data use the fixed ids in the table.
 - **ext** is `svg` for the generated art. A replacement may be `png`, `webp`, `jpg`, `avif` or `gif`.
 - Ids are lower case `snake_case`. An id that starts with `_` is a special state, not game data (`imps/_locked`).
 
@@ -27,10 +27,10 @@ src/client/public/art/<slot>/<id>.<ext>
 | `baits` | bait ids | 512×512 | Transparent | Thumbnails everywhere |
 | `charms` | charm ids | 512×512 | Transparent | Thumbnails everywhere |
 | `materials` | material ids | 512×512 | Transparent | Workshop ingredients, loot lines |
-| `trap_types` | `clockwork`, `starlight`, `frost` | 256×256 | Transparent corners | Trap type badges, imp weakness hints |
+| `trap_types` | `clockwork`, `starlight`, `frost` | 256×256 | Transparent corners | Trap type badges, elf weakness hints |
 | `locations` | location ids | 1170×470 (5:2) | Filled | Hunt screen banner; crop with `object-fit: cover` for Travel list thumbnails |
 | `map` | `lair_map` | 1600×900 (16:9) | Filled | Travel map. Entry has `pins`: `{ "<location id>": { "x", "y" } }` in map pixels |
-| `imps` | imp ids, plus `_locked` | 512×512 | Filled card | Naughty List grid, imp file, hunt log. `_locked` is the "?" card for imps not caught yet. Entries have `tier` and `location` |
+| `imps` | elf ids (the slot keeps its old name), plus `_locked` | 512×512 | Filled card | Naughty List grid, elf file, hunt log. `_locked` is the "?" card for elves not caught yet. Entries have `tier` and `location` |
 | `ranks` | `rank_<number>` (`rank_1` … `rank_5`) | 256×256 | Transparent | Top bar rank thumbnail, rank-up, How to play |
 | `icons` | `nav_*`, `menu_*`, `stat_*` (below) | 24×24 | Transparent | Bottom nav, More menu, stat labels |
 | `howto` | `hunt`, `attraction`, `power`, `luck`, `trap_types`, `loot`, `pillage`, `ranks` | 640×360 | Filled | How to play page, one per section |
@@ -42,7 +42,7 @@ Icons: `nav_hunt`, `nav_naughty_list`, `nav_emporium`, `nav_workshop`, `nav_more
 ## Replacing a picture
 
 1. Make the new image at the size in the table (bigger is fine if the aspect ratio matches). The manifest `prompt` gives the subject, framing and house style.
-2. Save it next to the old one with the same name and your extension, for example `art/imps/crumb_imp.png`. You can delete the old `.svg` or leave it.
+2. Save it next to the old one with the same name and your extension, for example `art/imps/crumb_elf.png`. You can delete the old `.svg` or leave it.
 3. Run `npm run art`. It sees the custom file, points the manifest at it and marks it `"source": "custom"`. It never overwrites a custom file.
 
 You can also edit or replace an `.svg` directly: the generator only overwrites SVGs that still contain the `generated-by: scripts/art` comment, so remove that line from a hand-edited SVG to keep it.
@@ -52,8 +52,8 @@ You can also edit or replace an `.svg` directly: the generator only overwrites S
 - `npm run art` writes any missing or changed generated SVGs and rebuilds the manifest.
 - `npm run art -- --force` rewrites every generated SVG (custom files are still kept).
 - Drawings live in `scripts/art/`: `items.ts` (traps, bases, baits, charms, materials, trap types), `imps.ts` (portraits), `world.ts` (icon, key art, locations, map), `ui.ts` (ranks, icons, How to play). Shared palette and helpers are in `lib.ts`.
-- Adding a new trap, imp, location or rank to `content/` needs a drawing (or a custom file) and a manifest entry: `npm run art` stops with a message naming the missing id, and `npm test` fails until the manifest covers it.
+- Adding a new trap, elf, location or rank to `content/` needs a drawing (or a custom file) and a manifest entry: `npm run art` stops with a message naming the missing id, and `npm test` fails until the manifest covers it.
 
 ## House style
 
-Flat storybook shapes with a thick dark-brown outline (`#2b1d14`), the UI palette (pine `#0f3d2e`, berry red `#b3261e`, gold `#e9c46a`, cream `#fdf8ef`), small white highlights, no text in pictures except the How-to-play diagrams. Imp portraits share one head shape; each lair room has its own skin colour and background, and the frame shows tier: plain (common), gold (rare), silver (mini boss), red and gold with stars (boss). All art is original to this game.
+Flat storybook shapes with a thick dark-brown outline (`#2b1d14`), the UI palette (pine `#0f3d2e`, berry red `#b3261e`, gold `#e9c46a`, cream `#fdf8ef`), small white highlights, no text in pictures except the How-to-play diagrams. Hexed-elf portraits share one head shape with pointed ears, a pointed cap in the room's colour and a soot smudge from the hex (the Gingerbread Rascal, General Grimbolt and Cinderhoof have their own shapes); each lair room has its own cap colour and background, and the frame shows tier: plain (common), gold (rare), silver (mini boss), red and gold with stars (boss). All art is original to this game.

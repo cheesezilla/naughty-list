@@ -19,10 +19,10 @@ describe('hunt', () => {
     // attract (0), pick first imp (0), catch (0), no loot needed
     const r = hunt(content, fresh(), scripted(0, 0, 0, 0.99));
     if (!r.ok) throw new Error(r.error);
-    expect(r.entry).toMatchObject({ outcome: 'catch', imp: 'crumb_imp', gold: 12, points: 20, baitUsed: 1 });
+    expect(r.entry).toMatchObject({ outcome: 'catch', imp: 'crumb_elf', gold: 12, points: 20, baitUsed: 1 });
     expect(r.player.gold).toBe(312);
     expect(r.player.points).toBe(20);
-    expect(r.player.catches.crumb_imp).toBe(1);
+    expect(r.player.catches.crumb_elf).toBe(1);
     expect(r.player.inventory.stale_cookie).toBe(99);
   });
 
@@ -165,7 +165,7 @@ describe('pillage on escape', () => {
 
   it('misses the roll most of the time for common imps', () => {
     const p = rich();
-    expect(rollPillage(content, p, imp('crumb_imp'), 'stale_cookie', scripted(0.5))).toBeUndefined();
+    expect(rollPillage(content, p, imp('crumb_elf'), 'stale_cookie', scripted(0.5))).toBeUndefined();
     expect(p.gold).toBe(6000);
   });
 

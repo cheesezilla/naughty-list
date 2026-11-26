@@ -24,7 +24,7 @@ const encounter = (p: PlayerState, bait: string) =>
 describe('Wrapping Room bait ladder', () => {
   it('shop bait only draws the commons', () => {
     const e = encounter(at('wrapping_room'), 'stale_cookie');
-    expect(e.glitter_imp).toBe(0);
+    expect(e.glitterbug).toBe(0);
     expect(e.spoolwick).toBe(0);
     expect(e.madame_shredwell).toBe(0);
   });
@@ -33,7 +33,7 @@ describe('Wrapping Room bait ladder', () => {
   });
   it('Ribbon Candy draws the rare and mini boss, and only Bonbons draw Madame Shredwell', () => {
     const candy = encounter(at('wrapping_room'), 'ribbon_candy');
-    expect(candy.glitter_imp).toBeCloseTo(0.3);
+    expect(candy.glitterbug).toBeCloseTo(0.3);
     expect(candy.spoolwick).toBeCloseTo(0.2);
     expect(candy.madame_shredwell).toBe(0);
     expect(encounter(at('wrapping_room'), 'golden_bow_bonbon').madame_shredwell).toBeCloseTo(0.5);
@@ -70,14 +70,14 @@ describe('Toy Workshop order board', () => {
     expect(rush.player.objectives?.toy_workshop?.type === 'order_board' && rush.player.objectives.toy_workshop.slots).toHaveLength(5);
     let q = rush.player;
     for (let i = 0; i < 5; i++) q = ok(hunt(content, q, scripted(0, 0, 0, 0, 0, 0, 0))).player;
-    expect(q.objectives?.toy_workshop).toMatchObject({ forced: 'foreman_grimbolt', rush: false });
-    expect(ok(hunt(content, q, scripted(0, 0.1, 0.99, 0.99))).entry.imp).toBe('foreman_grimbolt');
+    expect(q.objectives?.toy_workshop).toMatchObject({ forced: 'general_grimbolt', rush: false });
+    expect(ok(hunt(content, q, scripted(0, 0.1, 0.99, 0.99))).entry.imp).toBe('general_grimbolt');
   });
 
-  it('never draws Hammerhand or Foreman Grimbolt on their own', () => {
+  it('never draws Hammerhand or General Grimbolt on their own', () => {
     const e = encounter(at('toy_workshop'), 'peppermint_bark');
     expect(e.hammerhand).toBe(0);
-    expect(e.foreman_grimbolt).toBe(0);
+    expect(e.general_grimbolt).toBe(0);
   });
 });
 
@@ -110,23 +110,23 @@ describe('Reindeer Stables sleigh run', () => {
     expect(r.entry.objective?.notes).toContain('Readiness 20 → 12');
   });
 
-  it('launches at 100 Readiness, pays out and sends Grizzlewick', () => {
+  it('launches at 100 Readiness, pays out and sends Cinderhoof', () => {
     const p = start(at('reindeer_stables'));
     p.objectives!.reindeer_stables = { type: 'sleigh_run', active: true, left: 10, readiness: 98, launches: 0 };
     const r = ok(hunt(content, p, scripted(0, 0, 0, 0.99)));
-    expect(r.player.objectives?.reindeer_stables).toMatchObject({ active: false, launches: 1, forced: 'grizzlewick' });
+    expect(r.player.objectives?.reindeer_stables).toMatchObject({ active: false, launches: 1, forced: 'cinderhoof' });
     expect(r.player.inventory.silver_sleighbell).toBe(1);
     expect(r.entry.objective?.gold).toBe(2000);
     expect(objectiveAction(content, r.player, 'start_run', scripted(0)).ok).toBe(false);
     const boss = ok(hunt(content, r.player, scripted(0, 0, 0.999, 0.999)));
-    expect(boss.entry.imp).toBe('grizzlewick');
+    expect(boss.entry.imp).toBe('cinderhoof');
     expect(boss.player.objectives?.reindeer_stables?.forced).toBeUndefined();
   });
 
-  it('draws Antler Ripper only during a run from 50 Readiness, and never Grizzlewick on his own', () => {
+  it('draws Antler Ripper only during a run from 50 Readiness, and never Cinderhoof on its own', () => {
     const p = start(at('reindeer_stables'));
     expect(encounter(p, 'hot_cocoa').antler_ripper).toBe(0);
-    expect(encounter(p, 'hot_cocoa').grizzlewick).toBe(0);
+    expect(encounter(p, 'hot_cocoa').cinderhoof).toBe(0);
     p.objectives!.reindeer_stables = { type: 'sleigh_run', active: true, left: 10, readiness: 50, launches: 0 };
     // huntOdds shows plain weights; the hunt applies the run's weights, so roll into the mini boss slot
     const r = ok(hunt(content, p, scripted(0, 0.99, 0.999, 0.999)));

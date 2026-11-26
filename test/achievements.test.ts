@@ -68,7 +68,7 @@ describe('earning achievements', () => {
   });
 
   it('reports progress for counts and collections, and derives stats from older saves', () => {
-    const p: PlayerState = { ...newPlayer(content), catches: { crumb_imp: 3, sprinkle_snatcher: 1 } };
+    const p: PlayerState = { ...newPlayer(content), catches: { crumb_elf: 3, sprinkle_snatcher: 1 } };
     p.stats = { hunts: 312, attracted: 10, caught: 4 };
     delete p.tally;
     expect(achievementProgress(content, p, byId('hunts_500'))).toEqual({ have: 312, need: 500 });

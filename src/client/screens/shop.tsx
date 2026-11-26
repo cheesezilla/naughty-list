@@ -172,7 +172,7 @@ export function WorkshopScreen() {
             </div>
           );
         })}
-        {shown.length === 0 && <p class="muted center-pad">Nothing you can craft right now. Bosses and rare imps drop the materials.</p>}
+        {shown.length === 0 && <p class="muted center-pad">Nothing you can craft right now. Bosses and rare elves drop the materials.</p>}
       </div>
     </MainScreen>
   );

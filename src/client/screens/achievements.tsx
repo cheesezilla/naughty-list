@@ -37,7 +37,7 @@ const progressText = (a: Achievement, have: number, need: number, unit = false) 
   const text = `${num(have)} / ${num(need)}`;
   if (w.type === 'stat' && w.stat.startsWith('best')) return `Best run ${text}`;
   if (!unit) return text;
-  const u = w.type === 'stat' ? UNIT[w.stat] : w.type === 'collection' ? 'imps' : 'power types';
+  const u = w.type === 'stat' ? UNIT[w.stat] : w.type === 'collection' ? 'elves' : 'power types';
   return u ? `${text} ${u}` : text;
 };
 

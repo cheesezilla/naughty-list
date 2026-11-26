@@ -3,53 +3,58 @@
     "title": "A letter from Santa",
     "paragraphs": [
       "Under the ice at the very top of the world, behind a door that only opens for the jingle of the right bell, lies Santa's secret lair: pantries stacked with cookie jars, a wrapping room with miles of ribbon, a workshop full of half-built toys and the stables where the reindeer sleep.",
-      "This year something has crept in. Scrinch, a horned devil who has never once been on the Nice list, wants Christmas cancelled for good. He has sent his imps through every crack in the walls. They nibble the cookies, shred the paper, pinch the cogs and snip the reindeer harnesses, and every night there is less left for Christmas Eve.",
-      "The elves are too small and too kind to stop them. So Santa has written to you. You are his new imp hunter. Mrs. Claus has found you a stocking snare and a sack of stale cookies, and the Cookie Pantry is where the trouble started.",
-      "Set your trap, pick your bait and press Hunt as often as you like. Every imp you catch goes on The Naughty List. Catch enough and you will rank up and unlock the deeper rooms of the lair, where Scrinch's lieutenants are waiting. Their loot lets the elves of Santa's Workshop build you stronger traps.",
+      "This year Scrinch came. He is a horned devil who has never once been on the Nice list, and he wants Christmas cancelled for good. On the longest night he crept in and blew brimstone soot through every vent in the lair. Every elf who breathed it turned hexed: sour, sneaky and loyal to Scrinch. Now they nibble the cookies, shred the paper, pinch the cogs and snip the reindeer harnesses.",
+      "Mrs. Claus and I got out to the old ice cellar with the few elves the soot missed. So I have written to you. You are my new elf hunter. Mrs. Claus has found you a starlit stocking and a sack of stale cookies, and the Cookie Pantry is where the trouble started.",
+      "Set your trap, pick your bait and press Hunt as often as you like. Every hexed elf you catch goes on The Naughty List, and a mug of Mrs. Claus's cocoa slowly brings them back to their old selves. Catch enough and you will rank up and win back the deeper rooms of the lair, where Scrinch's lieutenants are waiting. Their loot lets the loyal elves of Santa's Workshop build you stronger traps.",
+      "One tip from an old hand: each room's elves still fall for the magic of their old job. Watch what they love, and pick your trap to match.",
       "Good luck, hunter. Christmas is counting on you."
     ],
     "signoff": "Santa"
   },
   "locations": {
     "cookie_pantry": {
-      "intro": "Santa's pantry: jars to the ceiling and crumbs on every shelf. Small-time imps raid it all night. Catch them, earn your pay, and kit yourself out before heading deeper into the lair.",
+      "intro": "Santa's pantry: jars to the ceiling and crumbs on every shelf. The hexed baker elves raid it all night. Catch them, earn your pay, and kit yourself out before heading deeper into the lair.",
       "hint": [
         "Hunt here to earn gold and points.",
+        "Each elf's description hints at the trap type it is weak to. Sootcap hides in shadow; Jarbelly can't resist a box.",
         "Buy a better trap and base in the Elf Emporium as soon as you can afford them.",
-        "Sugar Cookies draw more uncommon and rare imps.",
+        "Sugar Cookies draw more uncommon and rare elves.",
         "Reach Elf Deputy to unlock the Wrapping Room."
       ]
     },
     "wrapping_room": {
-      "intro": "Miles of ribbon and paper. The common imps here grab anything, but the Glitter Imp and Spoolwick only come for proper sweets, and Madame Shredwell only for the finest. Bake your way up.",
+      "intro": "Miles of ribbon and paper. The hexed wrappers still can't resist anything that shines, so Starlight traps work best here. The commons grab anything, but Glitterbug and Spoolwick only come for proper sweets, and Madame Shredwell only for the finest. Bake your way up.",
       "hint": [
+        "Most elves here are weak to Starlight and dodge Clockwork. Ribbon Tanglers freeze stiff in Frost.",
         "Catch commons with shop bait to collect Sugar Twists and Candied Peel.",
         "Make Ribbon Candy in Santa's Workshop.",
-        "Ribbon Candy draws the Glitter Imp and Spoolwick. Their drops make Golden Bow Bonbons.",
+        "Ribbon Candy draws Glitterbug and Spoolwick. Their drops make Golden Bow Bonbons.",
         "Bonbons are the only bait Madame Shredwell will take."
       ]
     },
     "toy_workshop": {
-      "intro": "The elves pin toy orders to the board, and each part must be caught with the right kind of trap. Finish enough orders and the bosses come to inspect.",
+      "intro": "The hexed toymakers can't keep their hands off a wind-up, so Clockwork traps work best here. The loyal elves pin toy orders to the board, and each part must be caught with the right kind of trap. Finish enough orders and the bosses come to inspect.",
       "hint": [
+        "Most elves here are weak to Clockwork and shrug off Frost. Paint Smudgers fear Starlight; Hammerhand is forge-hot.",
         "Check the order board: each slot needs a catch with that trap type, in order.",
-        "Swap traps to match, and pick imps that aren't immune to that type.",
-        "Every 3rd order brings Hammerhand. Then take a Rush order to bring Foreman Grimbolt."
+        "Swap traps to match, and pick elves that aren't immune to that type.",
+        "Every 3rd order brings Hammerhand. Then take a Rush order to bring General Grimbolt."
       ]
     },
     "reindeer_stables": {
-      "intro": "The sleigh must be ready by Christmas Eve, and the stable imps keep pinching the bells and snipping the harness. Load it in time and Grizzlewick will try to stop the launch.",
+      "intro": "The sleigh must be ready by Christmas Eve, and the hexed stable hands keep pinching the bells and snipping the harness. They crave warmth and bolt from the cold, so Frost traps work best here. Load the sleigh in time and Cinderhoof will try to stop the launch.",
       "hint": [
+        "Most elves here are weak to Frost and squint away Starlight. Harness Snippers snag in Clockwork.",
         "Start a sleigh run: you have 40 hunts, quiet ones included.",
         "Catches build Readiness. Escaped Bell Thieves and Harness Snippers take it away.",
-        "Hot Cocoa keeps imps coming, so fewer hunts are wasted.",
-        "Reach 100 to launch the sleigh and face Grizzlewick."
+        "Hot Cocoa keeps elves coming, so fewer hunts are wasted.",
+        "Reach 100 to launch the sleigh and face Cinderhoof."
       ]
     }
   },
   "welcome": {
     "title": "Welcome to The Naughty List!",
-    "text": "Scrinch's imps are raiding Santa's secret lair, and Santa needs a hunter. Set your trap, catch every imp you can, and put them all on the Naughty List!",
+    "text": "Scrinch has hexed Santa's elves and taken over the secret lair. Santa needs a hunter: set your trap, catch every hexed elf you can, and put them all on the Naughty List!",
     "button": "Start hunting"
   }
 }

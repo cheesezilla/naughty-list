@@ -115,24 +115,28 @@ const arrow = (x0: number, y: number, x1: number, color: string = P.ink) =>
 
 const card = (body: string) => g({}, rect(0, 0, DW, DH, { fill: P.cream }, 28), body, rect(4, 4, DW - 8, DH - 8, { fill: 'none', stroke: P.parchment, 'stroke-width': 8 }, 24));
 
-/** Mini imp head for diagrams. */
-const miniImp = (x: number, y: number, s: number, skin: string = '#d9573d') =>
+/** Mini hexed-elf head for diagrams: pointed ears, a pointed hat in the room colour, a soot smudge. */
+const miniImp = (x: number, y: number, s: number, hat: string = '#d9573d') =>
   g(
     { transform: `translate(${x} ${y}) scale(${s})` },
-    path('M-46 -6 L-90 -40 L-40 26 Z M46 -6 L90 -40 L40 26 Z', ol(skin, 8)),
-    path('M-26 -50 L-34 -96 L-6 -58 Z M26 -50 L34 -96 L6 -58 Z', ol(P.cream, 8)),
-    ellipse(0, 0, 60, 56, ol(skin, 8)),
-    circle(-22, -8, 12, ol(P.cream, 5)), circle(22, -8, 12, ol(P.cream, 5)),
-    circle(-20, -6, 5, { fill: P.ink }), circle(24, -6, 5, { fill: P.ink }),
-    path('M-26 20 Q0 40 26 20', line(7)),
+    path('M-46 -6 L-90 -40 L-40 26 Z M46 -6 L90 -40 L40 26 Z', ol(ELF_SKIN, 8)),
+    ellipse(0, 0, 60, 56, ol(ELF_SKIN, 8)),
+    path('M-64 -26 Q-40 -150 40 -130 Q20 -100 64 -26 Z', ol(hat, 8)),
+    circle(44, -130, 14, ol(P.cream, 6)),
+    rect(-68, -40, 136, 22, ol(P.cream, 7), 11),
+    circle(-22, -2, 12, ol(P.cream, 5)), circle(22, -2, 12, ol(P.cream, 5)),
+    circle(-20, 0, 5, { fill: P.ink }), circle(24, 0, 5, { fill: P.ink }),
+    ellipse(-34, 22, 12, 7, { fill: P.ink, opacity: 0.35 }),
+    path('M-26 24 Q0 40 26 24', line(7)),
   );
+const ELF_SKIN = '#f0c39b';
 
 const bar = (x: number, y: number, w: number, frac: number, color: string) =>
   g({}, rect(x, y, w, 26, ol(P.parchment, 6), 13), rect(x + 4, y + 4, Math.max(18, (w - 8) * frac), 18, { fill: color }, 9));
 
 export const howto: Record<string, { look: string; draw: () => string }> = {
   hunt: {
-    look: 'a big red Hunt button being tapped, an arrow to a cookie being used up, an arrow to an imp appearing at a trap',
+    look: 'a big red Hunt button being tapped, an arrow to a cookie being used up, an arrow to a hexed elf appearing at a trap',
     draw: () =>
       card(
         g(
@@ -145,12 +149,12 @@ export const howto: Record<string, { look: string; draw: () => string }> = {
           arrow(420, 175, 470),
           placeSprite(bases.cardboard_box!() + traps.starlit_stocking!(), 450, 110, 190),
           miniImp(580, 140, 0.55),
-          label('Tap Hunt. Bait is used. An imp may come.', 320, 320, 24, P.ink, 600),
+          label('Tap Hunt. Bait is used. An elf may come.', 320, 320, 24, P.ink, 600),
         ),
       ),
   },
   attraction: {
-    look: 'a cookie on a trap giving off scent waves, three imps drawn towards it, an attraction meter filling up',
+    look: 'a cookie on a trap giving off scent waves, three hexed elves drawn towards it, an attraction meter filling up',
     draw: () =>
       card(
         g(
@@ -164,7 +168,7 @@ export const howto: Record<string, { look: string; draw: () => string }> = {
       ),
   },
   power: {
-    look: 'trap plus base plus charm adding up to a power bar, compared against an imp with its own power bar',
+    look: 'trap plus base plus charm adding up to a power bar, compared against a hexed elf with its own power bar',
     draw: () =>
       card(
         g(
@@ -174,12 +178,12 @@ export const howto: Record<string, { look: string; draw: () => string }> = {
           bar(40, 230, 300, 0.7, P.red), label('Your power', 190, 290, 22),
           label('vs', 400, 250, 30, P.goldDark, 800),
           miniImp(540, 140, 0.6),
-          bar(450, 230, 160, 0.5, P.purple), label('Imp power', 530, 290, 22),
+          bar(450, 230, 160, 0.5, P.purple), label('Elf power', 530, 290, 22),
         ),
       ),
   },
   luck: {
-    look: 'a mistletoe charm sparkling, a small luck bonus bar stacked on top of a catch chance bar, stronger imp in the background',
+    look: 'a mistletoe charm sparkling, a small luck bonus bar stacked on top of a catch chance bar, stronger elf in the background',
     draw: () =>
       card(
         g(
@@ -190,12 +194,12 @@ export const howto: Record<string, { look: string; draw: () => string }> = {
           label('Catch chance', 440, 186, 22),
           label('+ luck bonus', 494, 104, 20, P.goldDark),
           miniImp(440, 260, 0.5, '#a0483a'),
-          label('Helps most against strong imps', 320, 336, 22, P.ink, 600),
+          label('Helps most against strong elves', 320, 336, 22, P.ink, 600),
         ),
       ),
   },
   trap_types: {
-    look: 'the three trap-type badges (clockwork gear, starlight star, frost snowflake) with an imp showing x1.5 weakness and x0.5 resistance',
+    look: 'the three trap-type badges (clockwork gear, starlight star, frost snowflake) with a hexed elf showing x1.5 weakness and x0.5 resistance',
     draw: () =>
       card(
         g(
@@ -210,7 +214,7 @@ export const howto: Record<string, { look: string; draw: () => string }> = {
       ),
   },
   loot: {
-    look: 'a boss imp dropping a crafting material, an arrow to Santa\'s Workshop anvil, an arrow to a new trap',
+    look: 'a boss elf dropping a crafting material, an arrow to Santa\'s Workshop anvil, an arrow to a new trap',
     draw: () =>
       card(
         g(
@@ -227,7 +231,7 @@ export const howto: Record<string, { look: string; draw: () => string }> = {
       ),
   },
   pillage: {
-    look: 'an escaping imp running off with a cookie and gold coins, red minus signs, a padlock on a small pile of coins it could not take',
+    look: 'an escaping elf running off with a cookie and gold coins, red minus signs, a padlock on a small pile of coins it could not take',
     draw: () =>
       card(
         g(
@@ -240,7 +244,7 @@ export const howto: Record<string, { look: string; draw: () => string }> = {
           label('−', 545, 120, 56, P.red, 800), label('−', 560, 270, 56, P.red, 800),
           circle(110, 300, 20, ol(P.goldBright, 5)), circle(140, 306, 20, ol(P.goldBright, 5)),
           rect(170, 286, 34, 28, ol(P.silverDark, 5), 5), path('M177 286 L177 276 Q187 262 197 276 L197 286', { fill: 'none', stroke: P.ink, 'stroke-width': 5 }),
-          label('Escaped imps may pillage. Bosses take the most.', 320, 340, 22, P.ink, 600),
+          label('Escaped elves may pillage. Bosses take the most.', 320, 340, 22, P.ink, 600),
         ),
       ),
   },
