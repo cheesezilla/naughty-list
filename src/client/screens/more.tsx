@@ -6,7 +6,7 @@ import { Art, artEntry, Icon } from '../lib/art.js';
 import { ago, date, num, pct, plural, TIER_NAME, TIER_ORDER, when } from '../lib/format.js';
 import { setPref, usePrefs } from '../lib/prefs.js';
 import { go } from '../lib/route.js';
-import { BackRow, Loading, MainScreen, Tabs, Toggle, useAsync } from '../ui.js';
+import { BackRow, Loading, MainScreen, RankProgress, Tabs, Toggle, useAsync } from '../ui.js';
 import { ImpThumb, StoryCard } from './log.js';
 import { AchievementsTab } from './achievements.js';
 import { BadgeMedal, TypeMedal } from '../lib/medal.js';
@@ -179,10 +179,28 @@ export function ProfileScreen({ tab, openId }: { tab: 'stats' | 'achievements'; 
     <MainScreen tab="more">
       <BackRow to="more" title="My profile" sub={user.createdAt ? `Since you joined on ${date(user.createdAt)}` : undefined} />
       <div class="pad stack">
+        <RankHero />
         <Tabs label="Profile" tabs={[{ id: 'stats', label: 'Stats' }, { id: 'achievements', label: 'Achievements' }]} value={tab} onChange={(t) => go(`more/profile/${t}`, true)} />
         {tab === 'achievements' ? <AchievementsTab openId={openId} /> : <StatsTab />}
       </div>
     </MainScreen>
+  );
+}
+
+/** Big rank badge, name, rank, points and the distance to the next rank. */
+function RankHero() {
+  const { content, user, player } = useGame();
+  const rank = content.ranks[player.rank - 1]!;
+  const next = content.ranks[player.rank];
+  return (
+    <section class="rank-hero" aria-label="My rank">
+      <Art slot="ranks" id={`rank_${player.rank}`} alt={`Rank ${player.rank}: ${rank.name}`} class="rank-hero-art" />
+      <b class="rank-hero-name">{user.username}</b>
+      <span class="rank-hero-rank">{rank.name}</span>
+      <span class="rank-hero-pts">{num(player.points)} points</span>
+      <span class="rank-hero-next">{next ? `${num(next.points - player.points)} more points to ${next.name}` : 'Top rank for now'}</span>
+      <RankProgress />
+    </section>
   );
 }
 
