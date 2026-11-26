@@ -21,3 +21,13 @@ describe('hunt log', () => {
     expect(when(new Date(2026, 10, 1, 9, 0).getTime(), true, now)).toMatch(/Nov/);
   });
 });
+
+describe('listProgress', () => {
+  it('counts caught elves in a location and overall', async () => {
+    const { listProgress } = await import('../src/client/lib/progress.js');
+    const content = { locations: [{ id: 'a', imps: [{ id: 'x' }, { id: 'y' }] }, { id: 'b', imps: [{ id: 'z' }] }] } as never;
+    const r = listProgress(content, { x: 3, z: 1 }, 'a');
+    expect(r.here).toEqual({ caught: 1, total: 2 });
+    expect(r.all).toEqual({ caught: 2, total: 3 });
+  });
+});
