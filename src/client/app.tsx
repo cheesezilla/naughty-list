@@ -5,7 +5,7 @@ import { api, type User } from './api.js';
 import { GameContext, trimLog, type Game } from './game.js';
 import { loadArt } from './lib/art.js';
 import { buzz, getPrefs, playSound } from './lib/prefs.js';
-import { AchievementPopup, AchievementToast, WelcomePopup } from './screens/achievements.js';
+import { AchievementBanner, AchievementPopup, WelcomePopup } from './screens/achievements.js';
 import { NewCatchPopup, NewCatchToast, type NewCatch } from './screens/newcatch.js';
 import { go, useRoute } from './lib/route.js';
 import { ArsenalScreen, ItemScreen } from './screens/gear.js';
@@ -48,8 +48,8 @@ function Playing({ content, me, onLogout }: { content: Content; me: MeResponse; 
   const [busy, setBusy] = useState(false);
   const [toastState, setToast] = useState<Toast | null>(null);
   const [newCatch, setNewCatch] = useState<(NewCatch & { quiet: boolean }) | null>(null);
-  const [badges, setBadges] = useState<{ ids: string[]; backfill: boolean; quiet: boolean } | null>(
-    me.backfill?.length ? { ids: me.backfill, backfill: true, quiet: false } : null);
+  const [badges, setBadges] = useState<{ ids: string[]; backfill: boolean } | null>(
+    me.backfill?.length ? { ids: me.backfill, backfill: true } : null);
   const [welcome, setWelcome] = useState(me.player.welcomeSeen === false);
   // Start over gives a new game, and a new game opens with the welcome popup.
   useEffect(() => { if (player.welcomeSeen === false) setWelcome(true); }, [player.welcomeSeen]);
@@ -60,7 +60,7 @@ function Playing({ content, me, onLogout }: { content: Content; me: MeResponse; 
     playSound('badge');
     buzz(60);
     // Badges earned while one popup is open join its queue.
-    setBadges((cur) => ({ ids: [...(cur?.ids ?? []), ...ids], backfill: cur?.backfill ?? backfill, quiet: !getPrefs().achievementPopups }));
+    setBadges((cur) => ({ ids: [...(cur?.ids ?? []), ...ids], backfill: cur?.backfill ?? backfill }));
   }, []);
   const busyRef = useRef(false);
 
@@ -103,7 +103,7 @@ function Playing({ content, me, onLogout }: { content: Content; me: MeResponse; 
       if (r.entry.kind === 'hunt') {
         const e = r.entry.entry;
         const imp = e.imp ? data.imps.get(e.imp) : undefined;
-        if (e.outcome === 'catch' && e.firstCatch && e.imp) setNewCatch({ imp: e.imp, points: e.points ?? 0, quiet: !getPrefs().achievementPopups });
+        if (e.outcome === 'catch' && e.firstCatch && e.imp) setNewCatch({ imp: e.imp, points: e.points ?? 0, quiet: !getPrefs().newCatchPopups });
         if (e.rankUp) {
           toast(`Rank up! You are now ${content.ranks[e.rankUp - 1]!.name}.`, 'good');
           playSound('rank');
@@ -147,9 +147,10 @@ function Playing({ content, me, onLogout }: { content: Content; me: MeResponse; 
       {!welcome && newCatch && (newCatch.quiet
         ? <NewCatchToast found={newCatch} onClose={() => setNewCatch(null)} />
         : <NewCatchPopup found={newCatch} onClose={() => setNewCatch(null)} />)}
-      {!welcome && (!newCatch || newCatch.quiet) && badges && (badges.quiet
-        ? <AchievementToast ids={badges.ids} onClose={() => setBadges(null)} />
-        : <AchievementPopup ids={badges.ids} backfill={badges.backfill} onClose={() => setBadges(null)} />)}
+      {/* Old saves get one Welcome back popup; every other badge is a non-blocking banner. */}
+      {!welcome && badges && (badges.backfill
+        ? (!newCatch || newCatch.quiet) && <AchievementPopup ids={badges.ids} backfill onClose={() => setBadges(null)} />
+        : !(newCatch && newCatch.quiet) && <AchievementBanner ids={badges.ids} onClose={() => setBadges(null)} />)}
       {toastState && (
         <div class={`toast ${toastState.kind}`} role="status" onClick={() => setToast(null)}>{toastState.message}</div>
       )}

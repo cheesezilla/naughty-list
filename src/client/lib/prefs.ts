@@ -7,10 +7,10 @@ export interface Prefs {
   confirmRareBait: boolean;
   clock24: boolean;
   spaceHunts: boolean;
-  /** Show a full popup for each achievement, or only a small toast. */
-  achievementPopups: boolean;
+  /** Show a full popup for a first catch, or only a small toast. */
+  newCatchPopups: boolean;
 }
-const DEFAULTS: Prefs = { sound: false, vibrate: true, confirmRareBait: true, clock24: false, spaceHunts: true, achievementPopups: true };
+const DEFAULTS: Prefs = { sound: false, vibrate: true, confirmRareBait: true, clock24: false, spaceHunts: true, newCatchPopups: true };
 const KEY = 'nl_prefs';
 const listeners = new Set<(p: Prefs) => void>();
 
