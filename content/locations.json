@@ -67,7 +67,7 @@
     "otherBaitPenalty": 0.5,
     "objective": {
       "type": "sleigh_run", "hunts": 40,
-      "gain": { "common": 4, "rare": 10, "miniboss": 20 },
+      "gain": { "common": 5, "rare": 12, "miniboss": 20 },
       "loss": { "bell_thief": 8, "harness_snipper": 5 },
       "minibossFrom": 50, "minibossWeight": 6,
       "launchGold": 2000, "launchItems": { "silver_sleighbell": 1 },

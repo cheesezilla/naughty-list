@@ -57,9 +57,10 @@ function Playing({ content, me, onLogout }: { content: Content; me: MeResponse; 
 
   const act: Game['act'] = async (path, body, ok) => {
     try {
-      const r = await api<{ player: PlayerState; log: JournalRow | null }>('POST', path, body);
+      const r = await api<{ player: PlayerState; log: JournalRow | null; logs?: JournalRow[] }>('POST', path, body);
       setPlayer(r.player);
-      if (r.log) setLog((l) => trimLog([r.log!, ...l]));
+      const rows = r.logs ?? (r.log ? [r.log] : []);
+      if (rows.length) setLog((l) => trimLog([...[...rows].reverse(), ...l]));
       if (ok) toast(ok, 'good');
       return true;
     } catch (e) {

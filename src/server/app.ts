@@ -5,7 +5,7 @@ import { existsSync } from 'node:fs';
 import { randomInt } from 'node:crypto';
 import type { Content } from '../content/schema.js';
 import {
-  buy, craft, equip, gameData, hunt, newPlayer, sell, travel,
+  buy, craft, equip, gameData, hunt, newPlayer, objectiveAction, sell, travel,
   type ActionResult, type PlayerState, type Rng, type Setup,
 } from '../engine/index.js';
 import { Store, type GameEvent, type HistoryFilter, type UserRow } from './db.js';
@@ -85,7 +85,7 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
    */
   function playerAction(
     fn: (p: PlayerState, body: Record<string, unknown>) => ActionResult,
-    describe: (before: PlayerState, after: PlayerState, body: Record<string, unknown>) => GameEvent | null,
+    describe: (before: PlayerState, after: PlayerState, body: Record<string, unknown>) => GameEvent | GameEvent[] | null,
   ) {
     return async (req: FastifyRequest, reply: FastifyReply) => {
       const userId = req.user!.id;
@@ -94,12 +94,14 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
       const r = fn(before, body);
       if (!r.ok) return reply.code(400).send({ error: r.error });
       const t = now();
-      const event = describe(before, r.player, body);
-      const log = store.tx(() => {
+      const described = describe(before, r.player, body);
+      const events = described === null ? [] : Array.isArray(described) ? described : [described];
+      const logs = store.tx(() => {
         store.savePlayer(userId, r.player, t);
-        return event ? store.addJournal(userId, r.player.stats.hunts, event, t, 'event') : null;
+        return events.map((e) => store.addJournal(userId, r.player.stats.hunts, e, t, 'event'));
       });
-      return { player: r.player, log };
+      // `log` is the newest row (older clients); `logs` has every row in the order they were written.
+      return { player: r.player, log: logs.at(-1) ?? null, logs };
     };
   }
   const str = (v: unknown) => (typeof v === 'string' ? v : '');
@@ -128,6 +130,7 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
       const id = store.createUser(username, hashPassword(password), first, t);
       store.savePlayer(id, newPlayer(content, t), t);
       store.addJournal(id, 0, { type: 'intro' }, t, 'event');
+      store.addJournal(id, 0, { type: 'arrival', location: content.constants.startingLocation }, t, 'event');
       return { id } as const;
     });
     if ('error' in result) return reply.code(400).send({ error: result.error });
@@ -220,6 +223,7 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
         impsOnList: Object.keys(old.catches).length, location: old.location,
       }, t);
       store.addJournal(userId, 0, { type: 'intro' }, t, 'event');
+      store.addJournal(userId, 0, { type: 'arrival', location: content.constants.startingLocation }, t, 'event');
       lastHunt.delete(userId);
       req.log.info({ userId, username: req.user!.username }, 'player restarted');
       return { player: fresh, journal: store.recentLog(userId, 50) };
@@ -245,8 +249,15 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
     }));
     game.post('/api/travel', playerAction((p, b) => travel(content, p, str(b.location)), (before, after) => {
       if (before.location === after.location) return null;
-      return { type: 'travel', location: after.location, unlockCost: before.gold - after.gold };
+      const moved: GameEvent = { type: 'travel', location: after.location, unlockCost: before.gold - after.gold };
+      // The first time a player reaches a location (it unlocks then), the log gets its intro.
+      return before.unlocked.includes(after.location) ? moved : [moved, { type: 'arrival', location: after.location }];
     }));
+    game.post('/api/objective', playerAction((p, b) => {
+      const action = str(b.action);
+      if (action !== 'start_run' && action !== 'rush_order') return { ok: false, error: 'Unknown action.' };
+      return objectiveAction(content, p, action, rng);
+    }, (_before, after, b) => ({ type: 'objective', location: after.location, action: str(b.action) as 'start_run' | 'rush_order' })));
   });
 
   // ---------- admin ----------

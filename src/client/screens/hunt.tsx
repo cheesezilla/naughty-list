@@ -7,6 +7,7 @@ import { usePrefs } from '../lib/prefs.js';
 import { go } from '../lib/route.js';
 import { BottomNav, PlayerBar, RankProgress, Sheet, Tabs, TitleStrip } from '../ui.js';
 import { LogRow } from './log.js';
+import { HintSheet, ObjectivePanel } from './objective.js';
 
 /** Catch chance once an imp is attracted, averaged over the imps this bait draws. */
 export function catchIfAttracted(odds: ReturnType<typeof huntOdds>) {
@@ -42,6 +43,7 @@ export function HuntScreen() {
   const { content, data, player, log, hunt, busy } = g;
   const prefs = usePrefs();
   const [sheet, setSheet] = useState<null | 'bait' | 'charm'>(null);
+  const [hint, setHint] = useState(false);
   const location = data.locations.get(player.location)!;
   const trap = data.items.get(player.setup.trap)!;
   const base = data.items.get(player.setup.base)!;
@@ -52,14 +54,14 @@ export function HuntScreen() {
   useEffect(() => {
     if (!prefs.spaceHunts) return;
     const onKey = (e: KeyboardEvent) => {
-      if (sheet || e.repeat) return;
+      if (sheet || hint || e.repeat) return;
       const t = e.target as HTMLElement;
       if (t instanceof HTMLInputElement || t instanceof HTMLSelectElement || t instanceof HTMLTextAreaElement) return;
       if (e.code === 'Space') { e.preventDefault(); hunt(); }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [prefs.spaceHunts, sheet, hunt]);
+  }, [prefs.spaceHunts, sheet, hint, hunt]);
 
   return (
     <div class="screen">
@@ -70,7 +72,10 @@ export function HuntScreen() {
           <div class="banner-top"><PlayerBar overlay /></div>
           <div class="banner-bottom">
             <h1>{location.name}</h1>
-            <button class="cream-btn" onClick={() => go('more/travel')}>Travel</button>
+            <span class="banner-actions">
+              <button class="hint-btn" onClick={() => setHint(true)} aria-label={`How to clear the ${location.name}`}>?</button>
+              <button class="cream-btn" onClick={() => go('more/travel')}>Travel</button>
+            </span>
           </div>
         </div>
         <RankProgress />
@@ -96,6 +101,8 @@ export function HuntScreen() {
             <StatRow setup={player.setup} />
           </div>
 
+          <ObjectivePanel location={location} onHint={() => setHint(true)} />
+
           <div class="section-head"><h2>Hunt log</h2><span>newest first</span></div>
           <div class="log">
             {log.length === 0 && <p class="muted center-pad">No hunts yet. Press Hunt to set your first trap!</p>}
@@ -116,6 +123,7 @@ export function HuntScreen() {
       </div>
       <BottomNav tab="hunt" />
       {sheet && <BaitSheet initial={sheet} onClose={() => setSheet(null)} />}
+      {hint && <HintSheet location={location} onClose={() => setHint(false)} />}
     </div>
   );
 }
