@@ -2,7 +2,7 @@ name: Docker image
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, integration]
   workflow_dispatch:
 permissions:
   contents: read
@@ -19,7 +19,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      # Pull requests build and smoke-test the image; pushes to main publish it.
+      # Pull requests build and smoke-test the image; pushes to main publish :latest, pushes to integration publish :integration.
       - uses: docker/build-push-action@v6
         with:
           context: .
@@ -28,7 +28,7 @@ jobs:
           load: ${{ github.event_name == 'pull_request' }}
           build-args: APP_VERSION=${{ github.sha }}
           tags: |
-            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:${{ github.ref_name == 'integration' && 'integration' || 'latest' }}
             ghcr.io/${{ github.repository }}:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

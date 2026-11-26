@@ -63,6 +63,28 @@ Every pull request also publishes a test image tagged `pr-<number>`, for example
 2. In **Project > naughty-list**, edit the compose file and change the image line to `ghcr.io/cheesezilla/naughty-list:pr-11`. Save and redeploy.
 3. When the pull request is merged, change the line back to `:latest`, pull `latest` and redeploy.
 
+### A second NAS project for the integration branch
+
+The `integration` branch is a test branch that threads can push to directly, without a pull request, so you can try changes straight away. Every push to it publishes the image `ghcr.io/cheesezilla/naughty-list:integration`. `main` stays pull-request only, and the main project keeps pulling `:latest`.
+
+Create a second project in the UGOS Docker app named `naughty-list-test` and paste this. It uses a different container name, host port and save folder, so it never shares a database with the main project:
+
+```yaml
+services:
+  naughty-list-test:
+    image: ghcr.io/cheesezilla/naughty-list:integration
+    container_name: naughty-list-test
+    ports:
+      - "8082:8080"   # main project uses 8081
+    volumes:
+      - /volume1/docker/naughty-list-test:/data   # separate save folder
+    environment:
+      - TZ=Asia/Singapore
+    restart: unless-stopped
+```
+
+Open `http://<your-NAS-address>:8082`. To get the newest integration build, pull the image and redeploy the project. The test save starts empty, and you can delete `/volume1/docker/naughty-list-test` any time to start fresh. When integration work is ready, a pull request merges it into `main`.
+
 ## Troubleshooting
 
 | Problem | Fix |
