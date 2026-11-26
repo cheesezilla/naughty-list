@@ -351,6 +351,10 @@ function SpeedRun() {
           <button class="chip" onClick={() => run({ action: 'unlock' }, 'All locations unlocked.')}>Unlock</button>
         </div>
         <div class="admin-row">
+          <span><b>Unlock all elf portraits</b><small>Gives every elf 1 catch on your list; badges and boss keys are granted quietly. Start over resets it</small></span>
+          <button class="chip" onClick={() => run({ action: 'portraits' }, 'Every elf is on your Naughty List.')}>Unlock</button>
+        </div>
+        <div class="admin-row">
           <span><b>Stock up</b><small>Tops up every bait and charm to 200, every material to 50</small></span>
           <button class="chip" onClick={() => run({ action: 'supplies' }, 'Stocked up.')}>Add</button>
         </div>
