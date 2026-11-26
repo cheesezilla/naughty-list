@@ -30,6 +30,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Admin speed-run tools for testing: on the Admin page, boost rewards (x1 to x200), always attract and catch with full loot, add gold, jump to a rank, unlock every location, stock up supplies; see [Admin speed-run tools](#admin-speed-run-tools) | Done | this PR |
 | Boss keys: the local boss drops a key on its first catch, and the next location needs it to unlock (existing saves are granted the keys they have earned); see [Progression](#progression) | In review | this PR |
 | Branching progression (eddy): luck rework (luck helps most against commons, least against bosses), Madame Shredwell weak to a new Carol type, and the Carol Loft side area where the Carol Horn is made; see [Branching progression](#branching-progression) | In review | this PR |
+| New bases: two tiers of power, attraction and luck bases, with build affinity and a "good for" line; see [New bases](#new-bases-power-attraction-and-luck) | In review | #21 |
 | 5. Tune from play-test | Planned | |
 
 The server runs every hunt and saves each player in SQLite. To play locally, follow "Run it locally" below.
@@ -259,6 +260,63 @@ The home types are data (`homeTypes` per location in `locations.json`; the Cooki
 | Mistletoe Charm | +4 luck | 1 | 30 gold |
 | Jingle Bell Charm | +15% attraction | 2 | 25 gold |
 | Wind-up Key Charm | +20% power | 3 | 60 gold |
+
+## New bases: power, attraction and luck
+
+Built in #21. Six optional bases in two tiers. In each tier there is one base for each leaning, so a player picks a base to suit the job, or saves the gold and skips it. The Yule Log Base stays a strong all-rounder: each new rank 4 base beats it at one thing and is level with it or a little behind it overall.
+
+**What each leaning is for.** These follow from the catch formula C = (P·E + f·L²) / (P·E + M), where f is the luck factor of the elf's tier (3 for commons, 1.5 for rares, 0.75 for mini bosses, 0.3 for bosses, from the luck rework in #32):
+
+- **Power** raises P. It helps most against tough elves with a high M, so it's the boss and mini boss pick, especially with the location's home type (E = 1.5).
+- **Attraction** multiplies the bait's attraction, up to the 95% cap. More hunts end in an encounter, so it's the pick with cheap bait, and in the Reindeer Stables when you hunt without Hot Cocoa (other baits attract half as well there).
+- **Luck** adds f·L², isn't scaled by the trap's type, and counts ten times more against a common than against a boss. It's the pick for farming commons and for elves that resist your trap (E = 0.5), and the worst pick against a boss. It goes well with luck traps such as the Carol Horn.
+
+**Build affinity.** Each rank 4 base also has an `affinity` in `items.json`: +10% total power when the trap's power type matches (`setupStats` in `odds.ts`). The Sleigh Runner suits Clockwork traps, the Gingerbread Cottage Frost, and the Wishing Star Pedestal Starlight and Carol. So a build is picked by type as well as by stat. Bases also carry a `goodFor` line shown on the item card and in the shop list ("Bosses and mini bosses", "Cheap bait", and so on).
+
+### The six bases
+
+| Base | Leaning | Power | Luck | Attraction | Affinity | Rank | How to get it |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Toffee Anvil | Power | 300 | 0 | | | 2 | 3,500 gold |
+| Chestnut Brazier | Attraction | 100 | 1 | +15% | | 2 | 3,500 gold |
+| Wishbone Plinth | Luck | 50 | 4 | | | 2 | 4,500 gold |
+| Sleigh Runner | Power | 1,300 | 2 | | Clockwork +10% power | 4 | Crafted: 2 Silver Sleighbell, 2 Toymaker's Gear, 12,000 gold |
+| Gingerbread Cottage | Attraction | 550 | 4 | +30% | Frost +10% power | 4 | Crafted: 3 Cookie Tin, 2 Golden Ribbon, 1 Candy Cane Platform, 8,000 gold |
+| Wishing Star Pedestal | Luck | 300 | 9 | | Starlight or Carol +10% power | 4 | Crafted: 1 Clockwork Heart, 2 Enchanted Wrapping, 4 Sugar Glass, 12,000 gold |
+
+The rank 2 shop bases sit beside the Candy Cane Platform as sidegrades; none of them replaces the Ice Block (400 power, 3 luck, 8,000 gold), which stays the all-round rank 3 shop base. The rank 4 bases are crafted from loot of the mini bosses and bosses, so they come once a player has farmed the Toy Workshop and the Stables. The Gingerbread Cottage uses up a Candy Cane Platform, so a player who wants it keeps the platform until then. Names are working titles. They follow the theme and copy nothing from other games.
+
+In the game, attraction is shown as a five-tier power bar, not a percentage (exact rates are behind the Admin toggle from #30). The percentages here are the real values.
+
+### How they compare
+
+Worked out with `huntOdds` on the current content, with no charm and before location objectives change which elves show up. "Catch/hunt" is the average over the setups listed. "Boss catch" is the average catch chance against the mini bosses and bosses in those locations. "Resisted" is the average catch chance against the elves that resist the trap (Jack-in-the-Box in the Wrapping Room for rank 2, Constellation Wreath in the Stables with Hot Cocoa for rank 4). "Cheap bait" is catches per hunt with a weaker bait (Stale Cookie in the Wrapping Room; Peppermint Bark in the Stables, where it attracts half as well).
+
+Rank 2 tier. Setups: Jack-in-the-Box, Star Lantern and Icicle Jar in the Wrapping Room with Sugar Cookie, and Nutcracker Jaws in the Toy Workshop with Peppermint Bark.
+
+| Base | Catch/hunt | Boss catch | Resisted | Cheap bait |
+| --- | --- | --- | --- | --- |
+| Candy Cane Platform (today) | 0.620 | 37% | 28% | 0.553 |
+| Toffee Anvil | 0.603 | **40%** | **32%** | 0.540 |
+| Chestnut Brazier | **0.644** | 33% | 22% | **0.570** |
+| Wishbone Plinth | 0.630 | 32% | 26% | 0.568 |
+
+Rank 4 tier. Setups: Constellation Wreath in the Toy Workshop with Peppermint Bark, and Snow Globe Prison and Sleigh-Bell Snapper in the Stables with Hot Cocoa. The Sleigh Runner's and Wishing Star Pedestal's affinity bonuses count here only where the trap matches (the Snapper for the Runner, the Wreath for the Pedestal).
+
+| Base | Catch/hunt | Boss catch | Resisted | Cheap bait |
+| --- | --- | --- | --- | --- |
+| Yule Log Base (today) | **0.780** | 46% | 42% | 0.339 |
+| Sleigh Runner | 0.733 | **52%** | 45% | 0.313 |
+| Gingerbread Cottage | 0.771 | 46% | 40% | **0.391** |
+| Wishing Star Pedestal | 0.777 | 44% | **49%** | 0.336 |
+
+Each base wins its own column and gives something up elsewhere. The Wishbone Plinth was the one to watch: at luck 5 it won catch per hunt and cheap bait outright while losing only a little against bosses, so it's now luck 4. The Wishing Star Pedestal came out at luck 10 beating the Yule Log Base nearly everywhere, so it's luck 9 (and luck 8 would leave it behind on every column but resisted elves). If play-testing shows one base in a tier is the only one people buy, lower its luck or power by one step before touching prices.
+
+**Grind or skip.** The simulator buys every base that helps (a greedy player). With all six available the median run to rank 5 is 1,608 hunts, and with `--without` leaving all six out it is 1,458, so a player who skips the optional bases is about 10% faster to rank 5 and loses nothing needed to finish. A player who buys one or two for a build pays a little pace for a better setup in their chosen job. Run it again with `npm run simulate -- --without toffee_anvil,chestnut_brazier,wishbone_plinth,sleigh_runner,gingerbread_cottage,wishing_star_pedestal`.
+
+### Still to do
+
+Art for the six bases is generated SVG (600×450, standing on the y = 340 line) and queued for custom pictures with the rest of the art.
 
 ## Branching progression
 
@@ -803,7 +861,7 @@ Gold comes in only from catches and sales, and goes out on bait, charms, gear, l
 
 **How we check it:** `npm run simulate` plays virtual hunters through v1 with the real engine and content, reports hunts per rank, catch rates and bait cost per location, and with `--strict` fails if a rank target is missed by more than 25%.
 
-**Latest simulator run (luck rework, off-type boss and Carol Loft, 200 players):** all reached rank 5, median 1,458 hunts; details in [Branching progression](#branching-progression).
+**Latest simulator run (new optional bases, 200 players):** all reached rank 5, median 1,608 hunts (1,458 when the six optional bases are skipped); details in [New bases](#new-bases-power-attraction-and-luck) and [Branching progression](#branching-progression).
 
 Previous run (boss keys, 200 players): all reached rank 5, median 1,447 hunts. Median hunts in ranks 1 to 4: 166, 288, 487, 515 (targets 150, 250, 400, 600). The simulated player now stays in a location until it has caught the boss and got the key, so Madame Shredwell catches per player rose from 0.3 to 1.4 and General Grimbolt from 2.2 to 1.9. Median 47 of 55 badges.
 
@@ -938,6 +996,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-26 | #21 | **Six new optional bases (eddy).** Power, attraction and luck leanings at rank 2 (shop: Toffee Anvil, Chestnut Brazier, Wishbone Plinth) and rank 4 (crafted: Sleigh Runner, Gingerbread Cottage, Wishing Star Pedestal). Rank 4 bases get a +10% power `affinity` for matching trap types; `goodFor` line on item cards; 3 recipes, flavour, art. `simulate --without` leaves items out. Simulator: 200/200 reach rank 5, median 1,608 hunts with every base bought, 1,458 skipping them |
 | 2026-11-26 | this PR | Hunt screen (eddy): equipped trap art moves to the left of the gear card with its stats (power, luck, Attraction and Catch bars) on the right, spaced evenly; the 2x2 gear grid stays underneath. UI layout only |
 | 2026-11-26 | this PR | **Branching progression (eddy).** Luck rework: luck bonus is 3 x luck squared x a tier weight (common 1, rare 0.5, mini boss 0.25, boss 0.1), so luck builds catch minions and power builds catch bosses. Madame Shredwell is now weak to a new fourth power type, Carol. New side area, the Carol Loft (rank 2, 600 gold, needs the Wrapping Room, no boss key): 5 elves, 2 new materials, and the Carol Horn trap (600 power, luck 10). `side` and `after` on locations, `luck` in constants, Carol type medal, art, travel map pin. Simulator: 200/200 reach rank 5, median 1,458 hunts |
 | 2026-11-26 | this PR | Attraction and catch chance shown as five-tier power bars instead of percentages; admin toggle (More > Admin) shows exact rates again |

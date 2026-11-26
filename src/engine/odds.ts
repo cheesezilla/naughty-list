@@ -19,7 +19,8 @@ export function setupStats(content: Content, setup: Setup, location: Location): 
   const charm = itemOfKind(data, setup.charm, 'charm');
 
   const rawPower = (trap?.power ?? 0) + (base?.power ?? 0) + (charm?.power ?? 0);
-  const power = rawPower * (1 + (charm?.powerBonus ?? 0));
+  const affinity = base?.affinity && trap && base.affinity.types.includes(trap.type) ? base.affinity.powerBonus : 0;
+  const power = rawPower * (1 + (charm?.powerBonus ?? 0) + affinity);
   const luck = (trap?.luck ?? 0) + (base?.luck ?? 0) + (charm?.luck ?? 0);
 
   let attraction = 0;

@@ -17,6 +17,7 @@ export function itemStats(item: AnyItem, exact: boolean): string {
   if (item.kind === 'trap' || item.kind === 'base') {
     bits.push(`Power ${num(item.power)}`, `Luck ${item.luck}`);
     if (exact && item.attraction) bits.push(`+${pct(item.attraction)} attraction`);
+    if (item.kind === 'base' && item.goodFor) bits.push(item.goodFor);
   } else if (item.kind === 'bait') {
     if (exact) bits.push(`${pct(item.attraction)} attraction`);
     if (item.rareMultiplier) bits.push(`rares ×${item.rareMultiplier}`);
@@ -161,6 +162,7 @@ export function ItemScreen({ id }: { id: string }) {
           {item.kind === 'charm' && <>{big('Luck', `+${item.luck ?? 0}`)}{big('Power', item.powerBonus ? `+${pct(item.powerBonus)}` : `+${item.power ?? 0}`)}{exact && big('Attraction', `+${pct(item.attraction ?? 0)}`)}</>}
           {item.kind === 'material' && <>{big('Sells for', `${num(sellValue(data, item))}`)}{big('Used in', String(usedIn.length))}</>}
         </div>
+        {item.kind === 'base' && item.goodFor && <p class="small"><strong>Good for:</strong> {item.goodFor}{item.affinity && ` (+${pct(item.affinity.powerBonus)} power with ${item.affinity.types.map((t) => TYPE_NAME[t]).join(' or ')} traps)`}</p>}
         {item.flavour && (
           <div class="flavour">
             <p class="tagline">{item.flavour.tagline}</p>

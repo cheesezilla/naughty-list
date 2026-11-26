@@ -127,6 +127,10 @@ export const Base = z.object({
   id, name: z.string(),
   power: z.number().nonnegative(), luck: z.number().nonnegative(),
   attraction: z.number().optional(), rank: z.number().int().positive(), price,
+  /** Extra power (a fraction of total power) when the trap's power type is one of `types`. */
+  affinity: z.object({ types: z.array(PowerType).min(1), powerBonus: z.number().positive() }).optional(),
+  /** One line on the item card saying what the base is for. */
+  goodFor: z.string().optional(),
   flavour: Flavour.optional(),
 });
 export const Bait = z.object({

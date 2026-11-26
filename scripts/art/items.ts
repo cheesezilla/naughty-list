@@ -294,6 +294,72 @@ export const bases: Record<string, () => string> = {
       // snow on top
       path('M190 292 Q230 276 270 290 Q300 278 320 290', line(14, P.white)),
     ),
+
+  toffee_anvil: () =>
+    g(
+      {},
+      shadow(300, 434, 190, 14),
+      path('M150 330 L450 330 L430 350 Q390 362 380 380 L400 414 L200 414 L220 380 Q210 362 170 350 Z', ol(P.cookie)),
+      path('M150 330 L450 330 L470 312 L190 312 Z', ol(P.cookieLight)),
+      path('M230 372 Q300 360 372 374', line(7, P.cocoaLight)),
+      path('M250 396 L340 396', line(6, P.white)),
+      circle(300, 322, 4, { fill: P.white }),
+    ),
+
+  chestnut_brazier: () =>
+    g(
+      {},
+      shadow(300, 434, 170, 14),
+      path('M150 330 Q300 306 450 330 L420 392 L180 392 Z', ol('#5a5a64')),
+      ellipse(300, 330, 150, 22, ol('#2b1d14')),
+      ellipse(210, 326, 20, 12, ol(P.cocoaLight, 5)), ellipse(260, 322, 20, 12, ol(P.cocoaLight, 5)), ellipse(320, 324, 20, 12, ol(P.cocoaLight, 5)), ellipse(380, 326, 20, 12, ol(P.cocoaLight, 5)),
+      path('M230 318 Q220 290 240 276 Q244 296 256 300 Q262 280 280 268 Q280 296 296 304 Q308 284 330 274 Q324 302 340 312', ol(P.red, 5)),
+      path('M200 392 L180 424 M400 392 L420 424', line(10, P.ink)),
+    ),
+
+  wishbone_plinth: () =>
+    g(
+      {},
+      slab(P.cream, '#e8d9b4', 190, 410, 60),
+      path('M230 340 Q222 250 280 232 Q300 226 300 250 Q300 226 320 232 Q378 250 370 340', line(22, P.ink)),
+      path('M230 340 Q222 250 280 232 Q300 226 300 250 Q300 226 320 232 Q378 250 370 340', line(14, P.cream)),
+      path('M300 232 L300 214 M286 212 Q300 200 314 212', line(8, P.red)),
+      sparkle(378, 260, 12, P.gold),
+    ),
+
+  sleigh_runner: () =>
+    g(
+      {},
+      shadow(300, 434, 190, 14),
+      path('M130 330 L470 330 L470 346 L130 346 Z', ol('#6b4a2b')),
+      path('M120 410 Q130 410 460 410 Q490 410 490 380 Q490 350 460 350 L170 350 Q130 350 120 410 Z', ol(P.red)),
+      path('M120 410 L120 360 Q120 330 150 330', line(10, P.gold)),
+      path('M130 424 Q300 424 480 424', line(10, P.silver)),
+      path('M200 330 L200 350 M300 330 L300 350 M400 330 L400 350', line(8, P.ink)),
+      circle(250, 374, 11, ol(P.gold, 5)), circle(300, 374, 11, ol(P.gold, 5)), circle(350, 374, 11, ol(P.gold, 5)),
+    ),
+
+  gingerbread_cottage: () =>
+    g(
+      {},
+      shadow(300, 434, 190, 14),
+      path('M170 350 L170 414 L430 414 L430 350 Z', ol(P.cookie)),
+      path('M150 354 L300 270 L450 354 Z', ol(P.cocoaLight)),
+      path('M160 352 Q190 372 220 352 Q250 372 280 352 Q310 372 340 352 Q370 372 400 352 Q420 366 440 352', line(10, P.white)),
+      rect(274, 372, 52, 42, ol(P.cocoa)),
+      rect(194, 372, 38, 30, ol(P.gold)), rect(368, 372, 38, 30, ol(P.gold)),
+      circle(300, 316, 10, ol(P.red, 5)),
+    ),
+
+  wishing_star_pedestal: () =>
+    g(
+      {},
+      shadow(300, 434, 170, 14),
+      slab('#34408a', '#232d66', 190, 410, 74),
+      star(300, 276, 50, ol(P.gold, 7)),
+      circle(300, 276, 14, { fill: P.cream }),
+      sparkle(236, 250, 12, P.white), sparkle(364, 246, 12, P.white), sparkle(330, 330, 9, P.gold),
+    ),
 };
 
 // ---------------------------------------------------------------- baits (512 square)
