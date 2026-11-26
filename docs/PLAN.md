@@ -892,7 +892,7 @@ Every picture has a fixed name, `src/client/public/art/<slot>/<id>.<ext>`, where
 | Slot | Count | Size (px) | Notes |
 | --- | --- | --- | --- |
 | `brand` | 2 | icon 1024², key art 1170×1290 | Game icon, login key art |
-| `traps`, `bases` | 9, 11 | 600×450, transparent | Same canvas; the trap stands on the base's top line (y = 340), so the two layer |
+| `traps`, `bases` | 9, 11 | 600×450, transparent | Same canvas; the trap stands on the base's top line (y = 340), so the two layer; in the UI the base is drawn 30% of the frame lower than the trap (`.trap-stack` in styles.css) so it sits under it |
 | `baits`, `charms`, `materials` | 7, 3, 13 | 512², transparent | Thumbnails |
 | `trap_types` | 4 | 256², transparent | Clockwork, Starlight, Frost, Carol badges |
 | `locations` | 5 | 1170×470 | Hunt banners; centre floor left clear for the trap |
@@ -1014,7 +1014,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 | Date | PR | Change |
 | --- | --- | --- |
-| 2026-11-26 | #40 | Imported all 97 custom art pictures (elves, traps, bases, baits, charms, materials, trap types, ranks, locations, map, brand, how-to) as resized WebP, replacing the generated SVGs and older PNGs; icons stay SVG; favicon now WebP. No rule or balance change |
+| 2026-11-26 | #40 | Bases are drawn 30% lower under the trap in the trap stack. Imported all 97 custom art pictures (elves, traps, bases, baits, charms, materials, trap types, ranks, locations, map, brand, how-to) as resized WebP, replacing the generated SVGs and older PNGs; icons stay SVG; favicon now WebP. No rule or balance change |
 | 2026-11-26 | this PR | Hunt log escapes now show the effectiveness tier ("Escaped. Weak chance") instead of the exact percentage; admins with the exact-odds toggle still see the percentage. Checked the New Catch popup and Hunters feed: they show no odds. Imp-file drop and pillage-risk percentages are unchanged |
 | 2026-11-26 | #36 | Santa's Workshop recipe cards show the output's stats (power, luck, Good for, base type bonus, charm bonuses), traps show their power type medal; attraction stays behind the admin exact-odds toggle. Base type bonus now also shows on item lines in the Emporium and Arsenal |
 | 2026-11-26 | #21 | **Six new optional bases (eddy).** Power, attraction and luck leanings at rank 2 (shop: Toffee Anvil, Chestnut Brazier, Wishbone Plinth) and rank 4 (crafted: Sleigh Runner, Gingerbread Cottage, Wishing Star Pedestal). Rank 4 bases get a +10% power `affinity` for matching trap types; `goodFor` line on item cards; 3 recipes, flavour, art. `simulate --without` leaves items out. Simulator: 200/200 reach rank 5, median 1,608 hunts with every base bought, 1,458 skipping them |
