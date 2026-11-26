@@ -29,6 +29,30 @@ export function checkReferences(c: Content): string[] {
       for (const b of Object.keys(imp.baitWeights ?? {})) need(b, `imp ${imp.id} baitWeights`);
     }
   }
+  for (const loc of c.locations) {
+    const o = loc.objective;
+    const imp = (impId: string, what: string) => {
+      if (!loc.imps.some((i) => i.id === impId)) problems.push(`location ${loc.id} objective ${what} "${impId}" is not one of its imps`);
+    };
+    if (c.story && !c.story.locations?.[loc.id]) problems.push(`location ${loc.id} has no intro and hint in story.json`);
+    if (!o) continue;
+    if (o.type === 'bait_ladder') {
+      imp(o.boss, 'boss');
+      for (const t of o.tiers) {
+        for (const b of t.baits) need(b, `location ${loc.id} ladder tier "${t.name}"`);
+        if (t.recipe && !c.recipes.some((r) => r.id === t.recipe)) problems.push(`location ${loc.id} ladder tier "${t.name}" uses unknown recipe "${t.recipe}"`);
+      }
+    } else {
+      imp(o.miniboss, 'miniboss');
+      imp(o.boss, 'boss');
+      if (o.type === 'order_board') for (const r of o.crateRewards) need(r.item, `location ${loc.id} crate reward`);
+      if (o.type === 'sleigh_run') {
+        for (const i of Object.keys(o.loss)) imp(i, 'loss');
+        for (const i of Object.keys(o.launchItems)) need(i, `location ${loc.id} launch reward`);
+      }
+    }
+  }
+  for (const id of Object.keys(c.story?.locations ?? {})) if (!locIds.has(id)) problems.push(`story.json location "${id}" is unknown`);
   for (const r of c.recipes) {
     need(r.output.item, `recipe ${r.id} output`);
     for (const i of Object.keys(r.ingredients)) need(i, `recipe ${r.id} ingredient`);

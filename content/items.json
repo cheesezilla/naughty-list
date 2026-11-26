@@ -21,6 +21,8 @@
     { "id": "sugar_cookie", "name": "Sugar Cookie", "attraction": 0.78, "rank": 1, "price": 20 },
     { "id": "peppermint_bark", "name": "Peppermint Bark", "attraction": 0.82, "rank": 3, "price": 50 },
     { "id": "fruitcake", "name": "Fruitcake", "attraction": 0.85, "rareMultiplier": 2, "rank": 2, "price": null },
+    { "id": "ribbon_candy", "name": "Ribbon Candy", "attraction": 0.82, "rank": 2, "price": null },
+    { "id": "golden_bow_bonbon", "name": "Golden Bow Bonbon", "attraction": 0.86, "rank": 2, "price": null },
     { "id": "hot_cocoa", "name": "Hot Cocoa", "attraction": 0.88, "rank": 4, "price": 90 }
   ],
   "charms": [
@@ -30,6 +32,7 @@
   ],
   "materials": [
     { "id": "candied_peel", "name": "Candied Peel", "sellPrice": 5 },
+    { "id": "sugar_twist", "name": "Sugar Twist", "sellPrice": 8 },
     { "id": "sugar_glass", "name": "Sugar Glass", "sellPrice": 20 },
     { "id": "cookie_tin", "name": "Cookie Tin", "sellPrice": 30 },
     { "id": "brass_spring", "name": "Brass Spring", "sellPrice": 50 },

@@ -7,7 +7,7 @@ import {
   hollyLeaf, shade, rng,
 } from './lib.js';
 
-export type Tier = 'common' | 'rare' | 'miniboss' | 'boss';
+export type Tier = 'common' | 'uncommon' | 'rare' | 'miniboss' | 'boss';
 
 type Horns = 'nub' | 'curl' | 'long' | 'big' | 'antler';
 type Eyes = 'sly' | 'wide' | 'angry' | 'squint' | 'monocle' | 'mask' | 'goggles';
@@ -63,6 +63,11 @@ const SCENES: Record<string, { bg: string; motif: (seed: string) => string; skin
 
 const TIER_FRAME: Record<Tier, (s: number) => string> = {
   common: (s) => rect(6, 6, s - 12, s - 12, { fill: 'none', stroke: P.ink, 'stroke-width': 12 }, 40),
+  uncommon: (s) =>
+    [
+      rect(6, 6, s - 12, s - 12, { fill: 'none', stroke: P.ink, 'stroke-width': 12 }, 40),
+      rect(18, 18, s - 36, s - 36, { fill: 'none', stroke: P.holly, 'stroke-width': 6 }, 30),
+    ].join(''),
   rare: (s) =>
     [
       rect(6, 6, s - 12, s - 12, { fill: 'none', stroke: P.ink, 'stroke-width': 12 }, 40),
