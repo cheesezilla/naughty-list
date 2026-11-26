@@ -1015,7 +1015,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 ## Changelog
 
 | Date | PR | Change |
-| 2026-11-26 | this PR | Emporium cards and Santa's Workshop recipe cards now share one `ItemStatBlock` component: power type medal (traps; bases show their affinity types), then labelled rows Power, Luck, Attraction (exact-odds only), Rares, Good for, Affinity, in the same order. UI only, no numbers changed |
+| 2026-11-26 | this PR | Emporium cards and Santa's Workshop recipe cards now share one `ItemStatBlock` component: power type medal (traps; bases show their affinity types), then labelled rows Power, Luck, Attraction (exact % for admins; charms show "Boost"), Rares, Good for, Affinity, in the same order. UI only, no numbers changed |
 | --- | --- | --- |
 | 2026-11-26 | #40 | Bases are drawn 30% lower under the trap in the trap stack. Imported all 97 custom art pictures (elves, traps, bases, baits, charms, materials, trap types, ranks, locations, map, brand, how-to) as resized WebP, replacing the generated SVGs and older PNGs; icons stay SVG; favicon now WebP. No rule or balance change |
 | 2026-11-26 | this PR | Hunt log escapes now show the effectiveness tier ("Escaped. Weak chance") instead of the exact percentage; admins with the exact-odds toggle still see the percentage. Checked the New Catch popup and Hunters feed: they show no odds. Imp-file drop and pillage-risk percentages are unchanged |

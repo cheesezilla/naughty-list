@@ -26,7 +26,7 @@ export function itemStats(item: AnyItem, exact: boolean): string {
     if (item.luck) bits.push(`+${item.luck} luck`);
     if (item.power) bits.push(`+${item.power} power`);
     if (item.powerBonus) bits.push(`+${pct(item.powerBonus)} power`);
-    if (exact && item.attraction) bits.push(`+${pct(item.attraction)} attraction`);
+    if (item.attraction) bits.push(exact ? `+${pct(item.attraction)} attraction` : 'Attracts more elves');
   } else {
     bits.push(`Sells for ${num(item.sellPrice)} gold`);
   }
@@ -48,7 +48,7 @@ export function itemStatRows(item: AnyItem, exact: boolean): [string, string][] 
     if (item.luck) rows.push(['Luck', `+${item.luck}`]);
     if (item.power) rows.push(['Power', `+${item.power}`]);
     if (item.powerBonus) rows.push(['Power', `+${pct(item.powerBonus)}`]);
-    if (exact && item.attraction) rows.push(['Attraction', `+${pct(item.attraction)}`]);
+    if (item.attraction) rows.push(['Attraction', exact ? `+${pct(item.attraction)}` : 'Boost']);
   }
   return rows;
 }
