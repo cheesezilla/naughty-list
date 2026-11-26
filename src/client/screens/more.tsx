@@ -9,7 +9,7 @@ import { go } from '../lib/route.js';
 import { BackRow, Loading, MainScreen, Tabs, Toggle, useAsync } from '../ui.js';
 import { ImpThumb, StoryCard } from './log.js';
 import { AchievementsTab } from './achievements.js';
-import { BadgeMedal } from '../lib/medal.js';
+import { BadgeMedal, TypeMedal } from '../lib/medal.js';
 
 export function MoreMenu() {
   const { content, player, user, logout } = useGame();
@@ -77,6 +77,7 @@ export function TravelScreen() {
                 <b>{l.name}</b>
                 <small>Rank {rankName} · unlock {l.unlockCost ? `${num(l.unlockCost)} gold` : 'free'}{' '}<span class={`pill ${open ? 'green' : ''}`}>{open ? 'Unlocked' : 'Locked'}</span></small>
                 <small class="desc">{l.description}</small>
+                <span class="weak-row"><small>Best traps</small>{l.homeTypes.map((t) => <TypeMedal type={t} size={22} />)}</span>
               </div>
               {here ? <span class="pill gold">You are here</span>
                 : l.rank > player.rank ? <span class="small muted">Needs {rankName}</span>
@@ -298,6 +299,56 @@ export function SettingsScreen() {
 
 interface AdminPlayer { username: string; isAdmin: boolean; rank: number; points: number; hunts: number; lastActive: number }
 interface Restart { id: number; username: string; at: number; summary: { gold: number; points: number; rank: number; hunts: number; caught: number; impsOnList: number } }
+/** Admin-only testing tools; the server rejects every call from a non-admin and only touches the admin's own save. */
+function SpeedRun() {
+  const { content, player, setPlayer, toast } = useGame();
+  const run = async (body: object, msg: string) => {
+    try {
+      const r = await api<{ player: PlayerState }>('POST', '/api/admin/speedrun', body);
+      setPlayer(r.player);
+      toast(msg, 'good');
+    } catch (e) { toast((e as Error).message, 'bad'); }
+  };
+  const boost = player.speedRun ?? { reward: 1, odds: false };
+  return (
+    <>
+      <h2 class="list-head">Speed run (testing)</h2>
+      <div class="card toggles">
+        <Toggle label="Always attract and catch" hint="Every hunt finds an elf, catches it and drops all loot. Your own account only." checked={boost.odds}
+          onChange={(v) => run({ action: 'boost', reward: boost.reward, odds: v }, v ? 'Always catching.' : 'Normal odds.')} />
+        <div class="admin-row">
+          <span><b>Gold and points x{boost.reward}</b><small>Multiplies what each catch gives</small></span>
+          <span class="chips">
+            {[1, 10, 50, 200].map((m) => (
+              <button class={`chip ${boost.reward === m ? 'on' : ''}`} onClick={() => run({ action: 'boost', reward: m, odds: boost.odds }, `Rewards x${m}.`)}>x{m}</button>
+            ))}
+          </span>
+        </div>
+        <div class="admin-row">
+          <span><b>Gold</b><small>You have {num(player.gold)}</small></span>
+          <span class="chips">
+            {[1000, 10000, 100000].map((a) => <button class="chip" onClick={() => run({ action: 'gold', amount: a }, `+${num(a)} gold.`)}>+{num(a)}</button>)}
+          </span>
+        </div>
+        <div class="admin-row">
+          <span><b>Jump to rank</b><small>Now rank {player.rank}; never goes down</small></span>
+          <span class="chips">
+            {content.ranks.map((r) => <button class="chip" onClick={() => run({ action: 'rank', rank: r.rank }, `Rank ${r.rank}: ${r.name}.`)}>{r.rank}</button>)}
+          </span>
+        </div>
+        <div class="admin-row">
+          <span><b>Unlock every location</b><small>Skips rank and gold requirements</small></span>
+          <button class="chip" onClick={() => run({ action: 'unlock' }, 'All locations unlocked.')}>Unlock</button>
+        </div>
+        <div class="admin-row">
+          <span><b>Stock up</b><small>Tops up every bait and charm to 200, every material to 50</small></span>
+          <button class="chip" onClick={() => run({ action: 'supplies' }, 'Stocked up.')}>Add</button>
+        </div>
+      </div>
+    </>
+  );
+}
+
 export function AdminScreen() {
   const { content, toast } = useGame();
   const prefs = usePrefs();
@@ -332,6 +383,7 @@ export function AdminScreen() {
             : <Loading />}
           <Toggle label={`${content.constants.stamina.name} meter`} hint="Limits hunts with a cup that refills over time. Kept off for now; it is set in content/constants.json." checked={content.constants.stamina.enabled} onChange={() => {}} disabled />
         </div>
+        <SpeedRun />
         <h2 class="list-head">Restart log</h2>
         <div class="card list-card">
           {restarts.data?.restarts.length === 0 && <p class="small muted">Nobody has started over yet.</p>}

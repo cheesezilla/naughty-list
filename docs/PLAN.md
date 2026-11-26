@@ -26,6 +26,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Achievements and badges: 55 achievements with Bronze, Silver, Gold and Secret badges, an earn popup and an Achievements tab in My profile; see [Achievements and badges](#achievements-and-badges) | Done | #19 (plan), #23 (build), #24 (design pass) |
 | Hunt screen gear card in a 2x2 grid (Trap and Bait over Base and Charm) and 3D medal icons for power types and the gold coin; see [User interface](#user-interface) | Done | #19 (plan), #23 (build) |
 | Frozen top header on every main screen, auto-scroll to the Hunt log when Hunt is pressed, and the New Catch popup for the first catch of each elf (with Quiet toast); achievements show as a non-blocking banner instead of a popup; see [User interface](#user-interface) | Done | #26 |
+| Admin speed-run tools for testing: on the Admin page, boost rewards (x1 to x200), always attract and catch with full loot, add gold, jump to a rank, unlock every location, stock up supplies; see [Admin speed-run tools](#admin-speed-run-tools) | Done | this PR |
 | New bases: two tiers of power, attraction and luck bases; see [New bases](#new-bases-power-attraction-and-luck-planned) | Planned (design only) | #21 |
 | 5. Tune from play-test | Planned | |
 
@@ -189,7 +190,7 @@ From the Wrapping Room on, each location has a **home type** most of its elves a
 | Toy Workshop | Clockwork | Frost | The toymakers can't keep their hands off a wind-up; tin, wood and wool don't feel the cold | Nutcracker Jaws (rank 3) | Paint Smudger is weak to Starlight (works in the dark); Hammerhand is weak to Frost (forge-hot) |
 | Reindeer Stables | Frost | Starlight | The hex left the stable hands craving warmth, so they bolt from the cold; they squint away the snow glare | Snow Globe Prison (rank 4) | Harness Snipper is weak to Clockwork (its shears snag in springs) |
 
-Each elf's description in `content/flavour.json` names its weakness, and each location's hint sheet in `content/story.json` names the room's home type and exceptions.
+The home types are data (`homeTypes` per location in `locations.json`; the Cookie Pantry lists Clockwork and Starlight, the two types a rank 1 player can own) and drive the Best traps overlay on the location banner (verified on all four locations), and the same medals on each Travel map card and above each Naughty List location tab. Each elf's description in `content/flavour.json` names its weakness, and each location's hint sheet in `content/story.json` names the room's home type and exceptions.
 
 **Traps**
 
@@ -725,6 +726,21 @@ The More menu's **My stats** becomes **My profile**, with two tabs: **Stats** (t
 
 **Simulator (200 players, to rank 5):** median 42 of 55 badges (p10 39, p90 47): Bronze 24 of 24, Silver 14 of 19, Gold 4 of 12. That is more than the 30 to 35 first guessed. Easy ones worth a look: Butterfingers (5 escapes in a row) and Robbed Blind come for every player in the first 70 hunts, and Rush Job (Gold) for every player at a median hunt 666. Never earned by the simulated players: Never Sleeps, Sleighload of Elves and Santa's Treasurer (past the end of v1, as meant) and Top of the List (needs other players).
 
+## Admin speed-run tools
+
+For eddy's own testing of later zones. A "Speed run (testing)" card on the Admin page (More > Admin), shown only to the admin account.
+
+| Tool | What it does |
+| --- | --- |
+| Always attract and catch | Every hunt finds an elf, catches it (unless it is immune to the trap type) and drops all its loot. No pillage. |
+| Gold and points x1 / 10 / 50 / 200 | Multiplies the gold and points of each catch (any whole number 1 to 1000 via the API). |
+| +1,000 / 10,000 / 100,000 gold | Adds gold. |
+| Jump to rank | Raises points to that rank's threshold; never lowers them. |
+| Unlock every location | Skips rank and gold requirements. |
+| Stock up | Tops every bait and charm up to 200 and every material up to 50. |
+
+Rules: all tools change only the calling admin's own save (`POST /api/admin/speedrun`, behind the admin check, so non-admins get 403). The boost setting is stored on that save as `speedRun` and `/api/hunt` only honours it when the logged-in user is an admin. The simulator and normal balance numbers are unaffected. Start over also clears it.
+
 ## Flavour text
 
 Every trap, base, bait, charm, material and elf has text for its detail screen, in `content/flavour.json`, keyed by id. At load the text is copied onto each entry as a `flavour` field, so `GET /api/content` already returns it. The slots and limits come from the phone-first UI layout (option D):
@@ -799,13 +815,13 @@ Phone first (layout D2, chosen by eddy on 25 Nov 2026; mockups: https://claude.a
 
 | Screen | What it shows |
 | --- | --- |
-| Hunt | Location banner under the frozen header, with the location name, the "?" hint button and Travel. Trap art drawn standing on its base, centred at the top of the gear card with no names on the art (tap for the Arsenal). Under it, four boxes in a 2x2 grid, Trap and Bait on the top row and Base and Charm below: **Trap** (icon is the trap's power type, Clockwork, Starlight or Frost, with the type and trap name), **Bait** (thumbnail, name and amount), **Base** (base thumbnail and name) and **Charm** (thumbnail, name and amount). Trap and Base open the Arsenal; Bait and Charm open the quick sheet. Power, luck, attraction and catch chance under the gear. The hunt log, then a sticky Hunt button. Space bar hunts on a computer |
+| Hunt | Location banner under the frozen header, with the location name, the "?" hint button and Travel, and a small **Best traps** overlay in the top right corner: the power type medal (or two, in the Cookie Pantry: Clockwork and Starlight) the location's elves are weak to, from `homeTypes` in `locations.json`. Trap art drawn standing on its base, centred at the top of the gear card with no names on the art (tap for the Arsenal). Under it, four boxes in a 2x2 grid, Trap and Bait on the top row and Base and Charm below: **Trap** (icon is the trap's power type, Clockwork, Starlight or Frost, with the type and trap name), **Bait** (thumbnail, name and amount), **Base** (base thumbnail and name) and **Charm** (thumbnail, name and amount). Trap and Base open the Arsenal; Bait and Charm open the quick sheet. Power, luck, attraction and catch chance under the gear. The hunt log, then a sticky Hunt button. Space bar hunts on a computer |
 | Hunt log | Starts with Santa's intro letter. Then the last 50 hunts plus the events between them: buy, sell, craft, gear change (equip or swap), travel and unlock, and rank-ups. Hunts show their number and time, events their time, in the viewer's own time zone. Uncaught elves show the "?" card; a first catch is marked "Portrait unlocked". Tapping an elf opens its file |
 | Full history | Every saved row, newest first, grouped by day, with filters All, Catches, Escapes, Events, Bosses, and Load older |
 | Quick bait and charm sheet | Owned bait or charms as picture cards, a preview of catch chance and attraction before and after, Use. Crafted bait asks once more if the setting is on |
 | Arsenal | Full screen with Trap, Base, Bait, Charm tabs. Tap an item to preview the setup and power, luck, attraction and catch before → after, then Equip. Unowned shop items are listed with their price |
 | Item details | Picture, stats, how you get it, tagline, description and backstory from `flavour.json`, Compare and Equip |
-| Naughty List | Portrait grid per location with caught counts. Uncaught elves show "?" and "seen N times, never caught" |
+| Naughty List | Portrait grid per location with caught counts. Uncaught elves show "?" and "seen N times, never caught". Every card, locked ones too, shows a **Weak to** row with the medal of each power type the elf is weak to (x1.5), or "none" |
 | Elf file | Caught: portrait, power, gold, points, catches, weaknesses, drops, first-catch time, tagline, description, backstory. Not caught: "?", only the rumour and "File sealed" |
 | Elf Emporium | Traps, Bases, Bait, Charms, Sell tabs. Cards with thumbnail, stats, description, price and amount owned. Bait and charms have an amount picker and "Buy for N"; gear is bought once. Next-rank items are greyed with the rank that unlocks them |
 | Santa's Workshop | Type filters with counts and "Only show what I can craft now". Each recipe: result, amount, owned, rank needed, ingredient thumbnails with have / need (green or red), gold fee, and a button that says what is missing or "Craft ×N" |
@@ -900,7 +916,9 @@ The container starts as root only to fix the save folder's ownership, then drops
 | Date | PR | Change |
 | --- | --- | --- |
 | 2026-11-26 | #21 | Plan for six new bases (design only): power, attraction and luck leanings at rank 2 (shop) and rank 4 (crafted), with catch numbers from `huntOdds`. No game numbers changed |
+| 2026-11-26 | this PR | Best-traps power types also shown on every Travel map card and above each Naughty List location tab; Admin speed-run tools: reward multiplier, always attract and catch, grant gold, jump to rank, unlock all locations, stock up; admin-only on the server |
 | 2026-11-26 | #27 | Achievements now show a 4-second non-blocking banner (with "+N more") instead of a popup, because early games had too many popups; the full popup stays only for Welcome back. The Achievement popups setting became New catch popups (default On). Canvas mockups updated |
+| 2026-11-26 | this PR | Best traps overlay (power type medals) on the Hunt location banner from new `homeTypes` per location; Weak to row with medals on every Naughty List card, locked ones included. No balance change |
 | 2026-11-26 | #26 | Planned a New Catch popup for the first catch of each elf (portrait unlocked, tier colours, tiles, Naughty List progress, Open file and Keep hunting), with a canvas mockup. Design only |
 | 2026-11-26 | #26 | Frozen top header (eddy): title and player bar merged into one header pinned at the top of every screen, with the rank progress bar on its bottom edge; the location banner moves below it and no longer carries the player bar. Canvas mockups updated. UI design only |
 | 2026-11-26 | #26 | Built: `TopHeader` pinned outside the scrolling area on all main screens (replaces the title strip and player bar); pressing Hunt (button or Space) smooth-scrolls so the Hunt log heading sits at the top of the list (instant with reduced motion); New Catch popup (`newcatch.tsx`, tier colours, power, weaknesses, points, Naughty List progress via `listProgress`, Open file and Keep hunting; Quiet toast when achievement popups are off) shown before achievement popups. No game numbers changed |

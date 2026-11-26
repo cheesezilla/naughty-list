@@ -1,11 +1,12 @@
 import { useState } from 'preact/hooks';
-import type { Content, Imp } from '../../content/schema.js';
+import type { Content, Imp, PowerType } from '../../content/schema.js';
 import { api } from '../api.js';
 import { useGame } from '../game.js';
 import { Art } from '../lib/art.js';
 import { num, pct, TIER_NAME, TYPE_NAME, when } from '../lib/format.js';
 import { usePrefs } from '../lib/prefs.js';
 import { go } from '../lib/route.js';
+import { TypeMedal } from '../lib/medal.js';
 import { BackRow, FullScreen, MainScreen, Tabs, useAsync } from '../ui.js';
 
 export function NaughtyListScreen() {
@@ -28,14 +29,20 @@ export function NaughtyListScreen() {
           onChange={setLoc}
           tabs={content.locations.map((l) => ({ id: l.id, label: <>{l.name} <small>{l.imps.filter((i) => player.catches[i.id]).length}/{l.imps.length}</small></> }))}
         />
+        {location.homeTypes.length > 0 && <span class="weak-row"><small>Best traps here</small>{location.homeTypes.map((t) => <TypeMedal type={t} size={22} />)}</span>}
         <div class="portrait-grid">
           {location.imps.map((imp) => {
             const n = player.catches[imp.id] ?? 0;
             const s = seen[imp.id] ?? 0;
+            const weak = Object.entries(imp.effectiveness ?? {}).filter(([, e]) => e > 1).map(([t]) => t as PowerType);
             return (
               <button class={`portrait-card ${n ? '' : 'locked'}`} onClick={() => go(`imp/${imp.id}`)}>
                 <Art slot="imps" id={n ? imp.id : '_locked'} alt={n ? imp.name : 'Not caught yet'} class="portrait" />
                 <b>{n ? imp.name : '???'}</b>
+                <span class="weak-row" aria-label={weak.length ? `Weak to ${weak.map((t) => TYPE_NAME[t]).join(' and ')}` : 'No weakness'}>
+                  <small>Weak to</small>
+                  {weak.length ? weak.map((t) => <TypeMedal type={t} size={22} />) : <small>none</small>}
+                </span>
                 <small>{TIER_NAME[imp.tier]} · {n ? `caught ${num(n)}` : s ? `seen ${s === 1 ? 'once' : `${num(s)} times`}, never caught` : 'not seen yet'}</small>
               </button>
             );
