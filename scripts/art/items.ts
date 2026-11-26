@@ -174,6 +174,21 @@ export const traps: Record<string, () => string> = {
       circle(300, 190, 112, { fill: 'none', stroke: P.ink, 'stroke-width': O }),
     ),
 
+  carol_horn: () =>
+    g(
+      {},
+      // flared bell and tube
+      path('M200 250 L400 150 L400 310 Z', ol(P.goldBright)),
+      path('M200 250 Q150 250 150 210 Q150 170 190 170 L200 190', line(14, P.goldDark)),
+      ellipse(400, 230, 26, 80, ol(P.goldDark, 8)),
+      ellipse(400, 230, 14, 56, { fill: P.ink }),
+      path('M200 250 L250 244 M250 250 L250 244', line(4, P.goldDark)),
+      // ribbon and a rising note
+      path('M230 215 Q250 260 230 300', line(10, P.pink)),
+      path('M450 120 L450 70 L490 62 L490 108', line(8, P.goldBright)), circle(440, 124, 12, { fill: P.goldBright }), circle(480, 112, 12, { fill: P.goldBright }),
+      glint(300, 190, 0.8),
+    ),
+
   sleigh_bell_snapper: () =>
     g(
       {},
@@ -578,6 +593,26 @@ export const materials: Record<string, () => string> = {
       glint(150, 170, 0.9), sparkle(430, 400, 16),
     ),
 
+  hymn_reed: () =>
+    g(
+      {},
+      shadow(256, 420, 150),
+      ...([[190, -8], [256, 0], [322, 8]] as const).map(([x, r]) => g({ transform: `rotate(${r} ${x} 400)` }, path(`M${x} 400 Q${x - 10} 260 ${x + 6} 100`, line(30, P.ink)), path(`M${x} 400 Q${x - 10} 260 ${x + 6} 100`, line(18, '#e8dcb0')))),
+      path('M170 280 L340 280', line(16, P.ink)), path('M170 280 L340 280', line(8, P.red)),
+      glint(300, 140, 0.7),
+    ),
+
+  carol_songsheet: () =>
+    g(
+      {},
+      shadow(256, 430, 170),
+      path('M130 90 L370 80 L384 150 L366 200 L384 280 L370 430 L136 440 L150 340 L128 270 L144 180 Z', ol(P.cream)),
+      ...[150, 190, 230, 270, 310].map((y) => path(`M160 ${y} H350`, line(4, P.ink))),
+      circle(200, 230, 12, { fill: P.ink }), circle(250, 210, 12, { fill: P.ink }), circle(300, 250, 12, { fill: P.ink }),
+      path('M212 230 V170 M262 210 V150 M312 250 V190', line(5, P.ink)),
+      path('M170 380 Q200 360 230 380 T290 380', line(5, P.cocoa)),
+    ),
+
   silver_sleighbell: () =>
     g(
       {},
@@ -625,6 +660,14 @@ export const trapTypes: Record<string, () => string> = {
       sparkle(66, 70, 14, P.white), sparkle(192, 186, 10, P.white), sparkle(196, 64, 8, P.goldBright),
     ),
   frost: () => g({}, circle(128, 128, 116, ol(P.cream, 8)), circle(128, 128, 82, ol(P.frostLight, 8)), snowflake(128, 128, 64, P.frostDark, 12)),
+  carol: () =>
+    g(
+      {},
+      circle(128, 128, 116, ol('#7a2a47', 8)),
+      circle(128, 130, 84, { fill: '#c24d77' }),
+      path('M104 176 V82 L178 66 V158', line(14, P.goldBright)), circle(86, 178, 22, { fill: P.goldBright }), circle(160, 160, 22, { fill: P.goldBright }),
+      sparkle(196, 60, 10, P.white),
+    ),
 };
 
 // Draw traps and bases 20% larger around the floor point so they fill their thumbnails,

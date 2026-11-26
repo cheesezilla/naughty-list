@@ -65,6 +65,19 @@
       "drawOver": "bases"
     },
     {
+      "id": "carol_horn",
+      "slot": "traps",
+      "file": "traps/carol_horn.svg",
+      "width": 600,
+      "height": 450,
+      "transparent": true,
+      "source": "generated",
+      "description": "Carol Horn: a flaring brass horn with a rose-pink ribbon and a gold music note rising from the bell",
+      "prompt": "Carol Horn (carol trap): a flaring brass horn with a rose-pink ribbon and a gold music note rising from the bell. Single trap sprite on a transparent background, 600x450, three-quarter front view, its bottom resting on y=340 so it sits on top of a base sprite. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos.",
+      "layer": "trap",
+      "drawOver": "bases"
+    },
+    {
       "id": "icicle_jar",
       "slot": "traps",
       "file": "traps/icicle_jar.png",
@@ -426,6 +439,28 @@
       "prompt": "Brimstone Coal: a lump of coal with glowing orange cracks and a curl of smoke. Single crafting material thumbnail on a transparent background, 512x512, centred, soft ground shadow. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
     },
     {
+      "id": "hymn_reed",
+      "slot": "materials",
+      "file": "materials/hymn_reed.svg",
+      "width": 512,
+      "height": 512,
+      "transparent": true,
+      "source": "generated",
+      "description": "Hymn Reed: three thin pale reeds tied with a red thread, slightly bent",
+      "prompt": "Hymn Reed: three thin pale reeds tied with a red thread, slightly bent. Single crafting material thumbnail on a transparent background, 512x512, centred, soft ground shadow. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
+    },
+    {
+      "id": "carol_songsheet",
+      "slot": "materials",
+      "file": "materials/carol_songsheet.svg",
+      "width": 512,
+      "height": 512,
+      "transparent": true,
+      "source": "generated",
+      "description": "Carol Songsheet: a torn sheet of carol music with staff lines, a few notes in pencil and a pencilled note in the margin",
+      "prompt": "Carol Songsheet: a torn sheet of carol music with staff lines, a few notes in pencil and a pencilled note in the margin. Single crafting material thumbnail on a transparent background, 512x512, centred, soft ground shadow. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
+    },
+    {
       "id": "clockwork",
       "slot": "trap_types",
       "file": "trap_types/clockwork.svg",
@@ -457,6 +492,17 @@
       "source": "generated",
       "description": "Frost trap type badge: a blue snowflake on an icy disc",
       "prompt": "Frost trap type badge: a blue snowflake on an icy disc. Round badge icon, 256x256, transparent corners, readable at 24px. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
+    },
+    {
+      "id": "carol",
+      "slot": "trap_types",
+      "file": "trap_types/carol.svg",
+      "width": 256,
+      "height": 256,
+      "transparent": true,
+      "source": "generated",
+      "description": "Carol trap type badge: a gold music note on a rose-pink disc",
+      "prompt": "Carol trap type badge: a gold music note on a rose-pink disc. Round badge icon, 256x256, transparent corners, readable at 24px. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
     },
     {
       "id": "cookie_pantry",
@@ -503,6 +549,17 @@
       "prompt": "Reindeer Stables banner, the reindeer stables: wooden stall doors, a harness of gold bells across the wall, lanterns, hay bales, loose straw and a bucket of carrots. Wide interior scene banner, 1170x470 (5:2), keep the centre floor area clear because the trap is drawn over it, slight dark vignette at the edges. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
     },
     {
+      "id": "carol_loft",
+      "slot": "locations",
+      "file": "locations/carol_loft.svg",
+      "width": 1170,
+      "height": 470,
+      "transparent": false,
+      "source": "generated",
+      "description": "Carol Loft banner: the carol loft: a draughty attic with wooden rafters, a round window with moonlight, music stands with sheet music, a pile of old carol books and a tarnished brass horn",
+      "prompt": "Carol Loft banner, the carol loft: a draughty attic with wooden rafters, a round window with moonlight, music stands with sheet music, a pile of old carol books and a tarnished brass horn. Wide interior scene banner, 1170x470 (5:2), keep the centre floor area clear because the trap is drawn over it, slight dark vignette at the edges. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
+    },
+    {
       "id": "lair_map",
       "slot": "map",
       "file": "map/lair_map.svg",
@@ -528,6 +585,10 @@
         "reindeer_stables": {
           "x": 1130,
           "y": 380
+        },
+        "carol_loft": {
+          "x": 1260,
+          "y": 700
         }
       }
     },
@@ -829,6 +890,71 @@
       "prompt": "Portrait of Cinderhoof, a boss from the Reindeer Stables: Scrinch's hexed reindeer: soot-black coat, long snout with a dark nose, smouldering ember antlers glowing orange at the tips, glowing gold eyes, a scorched harness with silver sleighbells. Square character portrait card, 512x512, rounded corners, head and shoulders facing the viewer, room-coloured background, frame colour shows tier (common plain, rare gold, mini boss silver, boss red and gold). Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos.",
       "tier": "boss",
       "location": "reindeer_stables"
+    },
+    {
+      "id": "tin_whistler",
+      "slot": "imps",
+      "file": "imps/tin_whistler.svg",
+      "width": 512,
+      "height": 512,
+      "transparent": false,
+      "source": "generated",
+      "description": "Tin Whistler (common, Carol Loft): wide-eyed hexed elf in a rose pointed cap blowing a dented tin whistle, musical notes around its head",
+      "prompt": "Portrait of Tin Whistler, a common from the Carol Loft: wide-eyed hexed elf in a rose pointed cap blowing a dented tin whistle, musical notes around its head. Square character portrait card, 512x512, rounded corners, head and shoulders facing the viewer, room-coloured background, frame colour shows tier (common plain, rare gold, mini boss silver, boss red and gold). Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos.",
+      "tier": "common",
+      "location": "carol_loft"
+    },
+    {
+      "id": "hoarse_caroller",
+      "slot": "imps",
+      "file": "imps/hoarse_caroller.svg",
+      "width": 512,
+      "height": 512,
+      "transparent": false,
+      "source": "generated",
+      "description": "Hoarse Caroller (common, Carol Loft): hexed elf in a rose pointed cap wrapped in a long red scarf, squinting with a sore throat and mouth open mid-croak",
+      "prompt": "Portrait of Hoarse Caroller, a common from the Carol Loft: hexed elf in a rose pointed cap wrapped in a long red scarf, squinting with a sore throat and mouth open mid-croak. Square character portrait card, 512x512, rounded corners, head and shoulders facing the viewer, room-coloured background, frame colour shows tier (common plain, rare gold, mini boss silver, boss red and gold). Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos.",
+      "tier": "common",
+      "location": "carol_loft"
+    },
+    {
+      "id": "mistletoe_mumbler",
+      "slot": "imps",
+      "file": "imps/mistletoe_mumbler.svg",
+      "width": 512,
+      "height": 512,
+      "transparent": false,
+      "source": "generated",
+      "description": "Mistletoe Mumbler (common, Carol Loft): shy hexed elf in a rose pointed cap holding a sprig of mistletoe with white berries up to its mouth, sly eyes",
+      "prompt": "Portrait of Mistletoe Mumbler, a common from the Carol Loft: shy hexed elf in a rose pointed cap holding a sprig of mistletoe with white berries up to its mouth, sly eyes. Square character portrait card, 512x512, rounded corners, head and shoulders facing the viewer, room-coloured background, frame colour shows tier (common plain, rare gold, mini boss silver, boss red and gold). Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos.",
+      "tier": "common",
+      "location": "carol_loft"
+    },
+    {
+      "id": "silver_piper",
+      "slot": "imps",
+      "file": "imps/silver_piper.svg",
+      "width": 512,
+      "height": 512,
+      "transparent": false,
+      "source": "generated",
+      "description": "Silver Piper (rare, Carol Loft): rare hexed elf in a rose pointed cap playing a long silver pipe, sly eyes, silver glints in the air",
+      "prompt": "Portrait of Silver Piper, a rare from the Carol Loft: rare hexed elf in a rose pointed cap playing a long silver pipe, sly eyes, silver glints in the air. Square character portrait card, 512x512, rounded corners, head and shoulders facing the viewer, room-coloured background, frame colour shows tier (common plain, rare gold, mini boss silver, boss red and gold). Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos.",
+      "tier": "rare",
+      "location": "carol_loft"
+    },
+    {
+      "id": "choirmaster_hollowvoice",
+      "slot": "imps",
+      "file": "imps/choirmaster_hollowvoice.svg",
+      "width": 512,
+      "height": 512,
+      "transparent": false,
+      "source": "generated",
+      "description": "Choirmaster Hollowvoice (mini boss, Carol Loft): tall hexed choirmaster elf in a rose pointed cap with a long dark coat, white bow tie, mouth wide open holding one flat note and a conductor's baton",
+      "prompt": "Portrait of Choirmaster Hollowvoice, a mini boss from the Carol Loft: tall hexed choirmaster elf in a rose pointed cap with a long dark coat, white bow tie, mouth wide open holding one flat note and a conductor's baton. Square character portrait card, 512x512, rounded corners, head and shoulders facing the viewer, room-coloured background, frame colour shows tier (common plain, rare gold, mini boss silver, boss red and gold). Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos.",
+      "tier": "miniboss",
+      "location": "carol_loft"
     },
     {
       "id": "_locked",

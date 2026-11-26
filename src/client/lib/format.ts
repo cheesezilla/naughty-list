@@ -6,7 +6,7 @@ export const plural = (n: number, one: string, many = `${one}s`) => `${num(n)} $
 
 export const TIER_NAME: Record<Imp['tier'], string> = { common: 'Common', uncommon: 'Uncommon', rare: 'Rare', miniboss: 'Mini boss', boss: 'Boss' };
 export const TIER_ORDER: Record<Imp['tier'], number> = { common: 0, uncommon: 0.5, rare: 1, miniboss: 2, boss: 3 };
-export const TYPE_NAME: Record<string, string> = { clockwork: 'Clockwork', starlight: 'Starlight', frost: 'Frost' };
+export const TYPE_NAME: Record<string, string> = { clockwork: 'Clockwork', starlight: 'Starlight', frost: 'Frost', carol: 'Carol' };
 
 const DAY = 864e5;
 const startOfDay = (t: number) => { const d = new Date(t); d.setHours(0, 0, 0, 0); return d.getTime(); };

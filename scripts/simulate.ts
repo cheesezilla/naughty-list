@@ -81,20 +81,30 @@ interface Log {
 
 function plan(p: PlayerState, log: Log, huntNo: number): PlayerState {
   // 1. Unlock the deepest location the rank allows, keeping a bait reserve.
-  for (const loc of [...content.locations].reverse()) {
+  for (const loc of [...content.locations].filter((l) => !l.side).reverse()) {
     if (!p.unlocked.includes(loc.id) && loc.rank <= p.rank && p.gold >= loc.unlockCost * 1.5) {
       p = apply(p, travel(content, p, loc.id));
       break;
     }
   }
-  // 2. Hunt where points come fastest without losing gold.
+  // 1b. Side areas: take the detour once it is affordable and its room is open.
+  for (const loc of content.locations.filter((l) => l.side)) {
+    if (!p.unlocked.includes(loc.id) && loc.rank <= p.rank && p.gold >= loc.unlockCost * 1.5 && (!loc.after || p.unlocked.includes(loc.after))) {
+      p = apply(p, travel(content, p, loc.id));
+      break;
+    }
+  }
+  // 2. Hunt where points come fastest without losing gold. A player who has opened a side area for a
+  // trap hunts there until they own it.
   let where = p.location;
   let bestValue = -Infinity;
+  const detour = content.locations.find((l) => l.side && p.unlocked.includes(l.id) && content.recipes.some((r) => count(p, r.output.item) === 0 && data.items.get(r.output.item)?.kind === 'trap' && Object.keys(r.ingredients).some((i) => l.imps.some((m) => m.loot?.some((x) => x.item === i)))));
   for (const id of p.unlocked) {
     const s = bestSetup(p, id, true);
     const v = s.net >= 0 ? s.value : s.net - 1e6;
     if (v > bestValue) { bestValue = v; where = id; }
   }
+  if (detour) where = detour.id;
   if (where !== p.location) p = apply(p, travel(content, p, where));
 
   // 3. Craft gear whenever possible (move off a trap the recipe uses up first).

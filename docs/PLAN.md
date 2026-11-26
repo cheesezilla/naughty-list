@@ -29,6 +29,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Trap effectiveness tiers: attraction and catch chance shown as five-tier power bars (Very weak to Very strong) instead of exact percentages; an admin toggle on More > Admin brings the percentages back for tuning; see [Trap effectiveness tiers](#trap-effectiveness-tiers) | Done | this PR |
 | Admin speed-run tools for testing: on the Admin page, boost rewards (x1 to x200), always attract and catch with full loot, add gold, jump to a rank, unlock every location, stock up supplies; see [Admin speed-run tools](#admin-speed-run-tools) | Done | this PR |
 | Boss keys: the local boss drops a key on its first catch, and the next location needs it to unlock (existing saves are granted the keys they have earned); see [Progression](#progression) | In review | this PR |
+| Branching progression (eddy): luck rework (luck helps most against commons, least against bosses), Madame Shredwell weak to a new Carol type, and the Carol Loft side area where the Carol Horn is made; see [Branching progression](#branching-progression) | In review | this PR |
 | 5. Tune from play-test | Planned | |
 
 The server runs every hunt and saves each player in SQLite. To play locally, follow "Run it locally" below.
@@ -112,9 +113,9 @@ All constants live in `content/constants.json` and the other content files, so t
 - **Power** = (trap + base + charm power) x (1 + charm power bonus). **Luck** = trap + base + charm luck.
 - **Attraction** = min(95%, bait attraction x (1 + trap, base and charm attraction bonuses)). In the Reindeer Stables it is halved unless the bait is Hot Cocoa.
 - **Elf pick**: chance of elf i = its weight / sum of weights for that bait. A location's 3 commons share about 91%, the rare elf 5%, the mini boss 3% and the boss 1%. Fruitcake doubles the rare, mini boss and boss weights.
-- **Effectiveness** E of the trap's power type against an elf: 0 (immune), 0.5 (resists), 1 (normal) or 1.5 (weak). Types: Clockwork (toy machines), Starlight (Christmas-star magic, strong against shadowy elves; called Holly before PR #17), Frost (ice magic). From the Wrapping Room on, each location has a home type and a rival type; see [Power types by location](#power-types-by-location).
-- **Catch chance** = clamp((P x E + L^2) / (P x E + M), 0, 98%), where M is the elf's power. Luck only counts when E > 0.
-  - Example: a 150 power Clockwork trap on a 20 power base with luck 2, against a normal 90 power elf: (170 + 4) / (170 + 90) = 67%.
+- **Effectiveness** E of the trap's power type against an elf: 0 (immune), 0.5 (resists), 1 (normal) or 1.5 (weak). Types: Clockwork (toy machines), Starlight (Christmas-star magic, strong against shadowy elves; called Holly before PR #17), Frost (ice magic), and Carol (a fourth type, made in the Carol Loft side area; the Toy Workshop order board and the "Three of a Kind" badge still use only the first three). From the Wrapping Room on, each location has a home type and a rival type; see [Power types by location](#power-types-by-location).
+- **Catch chance** = clamp((P x E + f x L^2) / (P x E + M), 0, 98%), where M is the elf's power and f is the luck factor of the elf's tier (`luck` in `content/constants.json`: scale 3 times a tier weight of common 1, uncommon 1, rare 0.5, mini boss 0.25, boss 0.1). Luck ignores weakness and resistance, but only counts when E > 0. See [Branching progression](#branching-progression).
+  - Example: a 150 power Clockwork trap on a 20 power base with luck 2 against a normal 90 power common elf: (170 + 3 x 4) / (170 + 90) = 70%. Against a boss the same luck adds only 0.3 x 4.
 - **Rewards**: a catch pays the elf's gold and points and rolls its loot list; bosses always drop their crafting part. An escape pays nothing and may pillage gold, bait and points (bosses most); see [Pillage on escape](#pillage-on-escape).
 - **RNG**: the engine takes a random source, so the simulator and tests replay exactly from a seed. The server rolls every hunt with a cryptographic random source, so results can't be edited in the browser.
 
@@ -163,7 +164,7 @@ To unlock a location the player needs three things: the rank, the gold fee **and
 
 ## v1 content
 
-The numbers below mirror `content/*.json`. Types: C = Clockwork, S = Starlight, F = Frost; unlisted types are normal (x1).
+The numbers below mirror `content/*.json`. Types: C = Clockwork, S = Starlight, F = Frost, Carol = Carol; unlisted types are normal (x1).
 
 **Elves**
 
@@ -179,7 +180,12 @@ The numbers below mirror `content/*.json`. Types: C = Clockwork, S = Starlight, 
 | Wrapping Room | Bow Burglar | Common | 280 | 70 | 100 | S | C | Candied Peel 30%, Ribbon Candy 2% |
 | Wrapping Room | Glitterbug | Rare | 350 | 110 | 160 | S | C | Sugar Glass 50% |
 | Wrapping Room | Spoolwick | Mini boss | 600 | 160 | 300 | S | C | Golden Ribbon 100% |
-| Wrapping Room | Madame Shredwell | Boss | 1,100 | 300 | 550 | S | C | Enchanted Wrapping 100%, Jingle Bell Charm x5 25% |
+| Wrapping Room | Madame Shredwell | Boss | 1,100 | 300 | 550 | Carol | C | Enchanted Wrapping 100%, Jingle Bell Charm x5 25% |
+| Carol Loft (side area) | Tin Whistler | Common | 200 | 30 | 42 | C | | Hymn Reed 20% |
+| Carol Loft (side area) | Hoarse Caroller | Common | 260 | 38 | 55 | F | | Hymn Reed 20% |
+| Carol Loft (side area) | Mistletoe Mumbler | Common | 320 | 48 | 70 | S | | Hymn Reed 20% |
+| Carol Loft (side area) | Silver Piper | Rare | 500 | 85 | 130 | Carol | | Hymn Reed 100% |
+| Carol Loft (side area) | Choirmaster Hollowvoice | Mini boss | 1,000 | 180 | 250 | Carol | C | Carol Songsheet 100% |
 | Toy Workshop | Cog Pincher | Common | 450 | 140 | 150 | C | | |
 | Toy Workshop | Paint Smudger | Common | 600 | 180 | 190 | S | | |
 | Toy Workshop | Stuffing Ripper | Common | 750 | 220 | 230 | C | F | |
@@ -217,6 +223,7 @@ The home types are data (`homeTypes` per location in `locations.json`; the Cooki
 | Starlit Stocking | S | 60 | 0 | | 1 | Starter |
 | Jack-in-the-Box | C | 150 | 1 | | 1 | 300 gold |
 | Star Lantern | S | 300 | 2 | | 2 | 1,200 gold |
+| Carol Horn | Carol | 600 | 10 | | 2 | Crafted (Carol Loft) |
 | Icicle Jar | F | 500 | 2 | +5% | 2 | 3,000 gold |
 | Nutcracker Jaws | C | 900 | 3 | | 3 | 9,000 gold |
 | Constellation Wreath | S | 1,400 | 5 | +5% | 3 | Crafted |
@@ -252,6 +259,39 @@ The home types are data (`homeTypes` per location in `locations.json`; the Cooki
 | Mistletoe Charm | +4 luck | 1 | 30 gold |
 | Jingle Bell Charm | +15% attraction | 2 | 25 gold |
 | Wind-up Key Charm | +20% power | 3 | 60 gold |
+
+## Branching progression
+
+**Why (eddy, 26 Nov 2026):** MouseHunt's progression is interesting because players choose what to prioritise: a detour for a trap that makes the main area easier, or push on with what they have. Before this change every boss shared its room's type, luck was a rounding error (a luck of 15 added 225 against a boss of 6,000 power) and the unlock chain was a straight line, so the best play was always "buy the next trap and go on". Three changes, all data driven:
+
+### Luck rework
+
+Luck adds a bonus of **scale x luck squared x tier weight** to the catch chance's numerator (see [Formulas](#formulas)), and it ignores weakness and resistance. Constants in `content/constants.json`: scale 3, tier weights common 1, uncommon 1, rare 0.5, mini boss 0.25, boss 0.1.
+
+- **Luck for minions, power for bosses.** Against a common elf luck counts in full. Against a boss it counts a tenth, so only power (and the right type) beats one.
+- **The choice:** the Mistletoe Charm (+4 luck) and the Wind-up Key Charm (+20% power) compete for one slot, and so do luck-leaning traps (Carol Horn, luck 10) and power traps. Example in the Toy Workshop with a Nutcracker Jaws and a Yule Log Base: the power build (Wind-up Key, 1,800 power, luck 8) catches Paint Smudger 83% of the time, the luck build (Mistletoe, 1,500 power, luck 12) 92%; against General Grimbolt the power build wins by roughly 4 points (checked in `test/hunt.test.ts`).
+- Luck still only counts when the elf is not immune.
+
+### One off-type boss: Madame Shredwell
+
+The Wrapping Room's elves are weak to Starlight, but **Madame Shredwell is now weak to Carol** (x1.5) and resists Clockwork, and is normal (x1) against Starlight and Frost. The Star Lantern that cleared her room is now the wrong tool, and the Icicle Jar (rank 2, 3,000 gold) is a neutral but costly answer. The best answer is a Carol trap, made in the Carol Loft. Her flavour, the Wrapping Room hint sheet and her stats row are updated. The other bosses are unchanged (one off-type boss for now, as eddy asked).
+
+### Carol Loft: a side area
+
+| | |
+| --- | --- |
+| Where | Carol Loft, the attic above the Wrapping Room (`side: true`, `after: wrapping_room` in `content/locations.json`) |
+| Opens at | Rank 2, 600 gold, and the Wrapping Room must already be unlocked. **No boss key**, and nothing later needs it, so skipping it is always allowed |
+| Elves | 3 commons (each weak to a different core type, so any trap works), a rare (Silver Piper) and a mini boss (Choirmaster Hollowvoice, weight 5), weak to Carol. No boss. Rewards are about 70% of the Wrapping Room's, so it is a detour, not a farm |
+| Drops | Hymn Reed (commons 20%, Silver Piper 100%) and Carol Songsheet (Choirmaster, 100%) |
+| Trap | Carol Horn: 5 Hymn Reed + 1 Carol Songsheet + 600 gold at rank 2. New power type **Carol** (a gold music note on rose pink), 600 power and luck 10: a luck-leaning trap that also hits Shredwell, the Piper and the Choirmaster for x1.5 |
+| Later | The Carol type is built to be reused: a later location can make its elves weak to Carol and reward Carol traps. The order board and "Three of a Kind" still use the core three types |
+
+**The choice for a rank 2 player:** spend about 600 gold and roughly 100 hunts on the Loft for a Carol Horn (a luck trap that is also the best answer to Shredwell), or buy an Icicle Jar and push through the Wrapping Room with a neutral trap, or build luck and skip the detour. Key chain code ignores side areas: `keyNeeded` and `grantKeys` walk only the main chain.
+
+**Not built yet:** a badge for the Carol type or the Loft, a Carol charm, and extra Loft rooms. Art is generated SVG like the other rooms.
+
+**Simulator (200 players):** the simulated player takes the Loft detour once it can afford it and hunts there until it owns the Horn. All reached rank 5. Median hunts in ranks 1 to 4: 164, 338, 486, 461 (targets 150, 250, 400, 600). Rank 2 is over the 25% band because the detour sits in it; without the detour it is 276, so the cost of the detour is the choice. Shredwell is caught 1.3 times per player (1.4 before), the Choirmaster 1.5. Median 48 of 55 badges.
 
 ## Location objectives
 
@@ -747,6 +787,7 @@ Gold comes in only from catches and sales, and goes out on bait, charms, gear, l
 | Fruitcake x5 | 3 Candied Peel, 1 Cookie Tin | 100 | 2 |
 | Ribbon Candy x3 | 2 Sugar Twist, 1 Candied Peel | 30 | 2 |
 | Golden Bow Bonbon x2 | 1 Sugar Glass, 1 Golden Ribbon | 100 | 2 |
+| Carol Horn (trap) | 5 Hymn Reed, 1 Carol Songsheet | 600 | 2 |
 | Constellation Wreath (trap) | 3 Enchanted Wrapping, 2 Brass Spring | 6,000 | 3 |
 | Yule Log Base | 3 Toymaker's Gear, 1 Golden Ribbon, 2 Sugar Glass | 4,000 | 3 |
 | Sleigh-Bell Snapper (trap) | 3 Silver Sleighbell, 1 Clockwork Heart, 1 Nutcracker Jaws (used up) | 15,000 | 4 |
@@ -762,7 +803,9 @@ Gold comes in only from catches and sales, and goes out on bait, charms, gear, l
 
 **How we check it:** `npm run simulate` plays virtual hunters through v1 with the real engine and content, reports hunts per rank, catch rates and bait cost per location, and with `--strict` fails if a rank target is missed by more than 25%.
 
-**Latest simulator run (boss keys, 200 players):** all reached rank 5, median 1,447 hunts. Median hunts in ranks 1 to 4: 166, 288, 487, 515 (targets 150, 250, 400, 600). The simulated player now stays in a location until it has caught the boss and got the key, so Madame Shredwell catches per player rose from 0.3 to 1.4 and General Grimbolt from 2.2 to 1.9. Median 47 of 55 badges.
+**Latest simulator run (luck rework, off-type boss and Carol Loft, 200 players):** all reached rank 5, median 1,458 hunts; details in [Branching progression](#branching-progression).
+
+Previous run (boss keys, 200 players): all reached rank 5, median 1,447 hunts. Median hunts in ranks 1 to 4: 166, 288, 487, 515 (targets 150, 250, 400, 600). The simulated player now stays in a location until it has caught the boss and got the key, so Madame Shredwell catches per player rose from 0.3 to 1.4 and General Grimbolt from 2.2 to 1.9. Median 47 of 55 badges.
 
 Previous run (hexed elves and home power types, 200 players): all reached rank 5, median 1,403 hunts (1,503 before). Median hunts in ranks 1 to 4: 166, 288, 457, 497 (targets 150, 250, 400, 600, all within 25%, so no power or price retune was needed). Pillages per player by location: 8, 33, 13, 60, costing 5%, 6%, 14% and 10% of the gold earned there. Mini boss and boss catches per player: Spoolwick 1.8, Madame Shredwell 0.3, Hammerhand 3.9, General Grimbolt 2.2, Antler Ripper 2.4, Cinderhoof 1.4. Toy orders 34.8 per player; sleigh runs 13.3, 3.7 launched. Every player buys the Icicle Jar (for the order board) and 94% buy Snow Globe Prison, which nobody bought before; Sleigh-Bell Snapper is crafted by 81% (was 41%). Median 44 of 55 badges. Known gap: Constellation Wreath is still rarely crafted (1%). The simulated player now buys the cheapest trap of any power type it lacks before hunting at the order board.
 
@@ -895,6 +938,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-26 | this PR | **Branching progression (eddy).** Luck rework: luck bonus is 3 x luck squared x a tier weight (common 1, rare 0.5, mini boss 0.25, boss 0.1), so luck builds catch minions and power builds catch bosses. Madame Shredwell is now weak to a new fourth power type, Carol. New side area, the Carol Loft (rank 2, 600 gold, needs the Wrapping Room, no boss key): 5 elves, 2 new materials, and the Carol Horn trap (600 power, luck 10). `side` and `after` on locations, `luck` in constants, Carol type medal, art, travel map pin. Simulator: 200/200 reach rank 5, median 1,458 hunts |
 | 2026-11-26 | this PR | Attraction and catch chance shown as five-tier power bars instead of percentages; admin toggle (More > Admin) shows exact rates again |
 | 2026-11-26 | this PR | Best-traps power types also shown on every Travel map card and above each Naughty List location tab; Admin speed-run tools: reward multiplier, always attract and catch, grant gold, jump to rank, unlock all locations, stock up; admin-only on the server |
 | 2026-11-26 | #27 | Achievements now show a 4-second non-blocking banner (with "+N more") instead of a popup, because early games had too many popups; the full popup stays only for Welcome back. The Achievement popups setting became New catch popups (default On). Canvas mockups updated |

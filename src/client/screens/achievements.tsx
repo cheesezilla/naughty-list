@@ -27,7 +27,7 @@ export function useCloseKeys(onClose: () => void) {
 /** What a count is of, for the badge sheet: "312 / 500 hunts". */
 const UNIT: Partial<Record<string, string>> = {
   hunts: 'hunts', caught: 'catches', escapes: 'escapes', goldEarned: 'gold', bossesCaught: 'bosses', weaknessCatches: 'catches',
-  catches_clockwork: 'catches', catches_starlight: 'catches', catches_frost: 'catches', ordersDone: 'orders', pillaged: 'pillages',
+  catches_clockwork: 'catches', catches_starlight: 'catches', catches_frost: 'catches', catches_carol: 'catches', ordersDone: 'orders', pillaged: 'pillages',
 };
 
 /** "312 / 500", or "Best run 7 / 10" for streaks; with `unit`, "312 / 500 hunts". Empty for yes/no badges. */

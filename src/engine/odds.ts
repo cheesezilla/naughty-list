@@ -41,12 +41,21 @@ export function effectiveness(imp: Imp, type: string | null): number {
   return e?.[type] ?? 1;
 }
 
-/** C = clamp((P*E + L^2) / (P*E + M), 0, cap); luck only counts when E > 0. */
-export function catchChance(stats: SetupStats, imp: Imp, cap: number): number {
+/**
+ * Luck's multiplier for an elf: `scale` x the weight of its tier. Luck is strongest against common
+ * elves and weakest against bosses, so power is what beats a boss. Defaults to 1 (plain L^2).
+ */
+export function luckFactor(constants: Content['constants'] | undefined, imp: Imp): number {
+  const l = constants?.luck;
+  return l ? l.scale * l.tierWeight[imp.tier] : 1;
+}
+
+/** C = clamp((P*E + f*L^2) / (P*E + M), 0, cap), f = luckFactor; luck only counts when E > 0. */
+export function catchChance(stats: SetupStats, imp: Imp, cap: number, luckMult = 1): number {
   const e = effectiveness(imp, stats.type);
   if (e <= 0) return 0;
   const pe = stats.power * e;
-  const c = (pe + stats.luck * stats.luck) / (pe + imp.power);
+  const c = (pe + luckMult * stats.luck * stats.luck) / (pe + imp.power);
   return Math.max(0, Math.min(cap, c));
 }
 
@@ -86,7 +95,7 @@ export function huntOdds(content: Content, setup: Setup, locationId: string): Hu
   const imps = location.imps.map((imp, i) => ({
     imp,
     encounter: weights[i]! / total,
-    catchChance: catchChance(stats, imp, content.constants.catchCap),
+    catchChance: catchChance(stats, imp, content.constants.catchCap, luckFactor(content.constants, imp)),
   }));
   let catchPerHunt = 0;
   let expectedGold = 0;
