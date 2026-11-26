@@ -1,6 +1,7 @@
 [
   {
     "id": "cookie_pantry",
+    "homeTypes": ["clockwork", "starlight"],
     "name": "Cookie Pantry",
     "description": "Santa's pantry, stacked with cookie jars and milk churns. The hexed baker elves never left.",
     "rank": 1,
@@ -15,6 +16,7 @@
   },
   {
     "id": "wrapping_room",
+    "homeTypes": ["starlight"],
     "name": "Wrapping Room",
     "description": "Miles of ribbon and paper. The hexed wrappers still can't resist anything that shines.",
     "rank": 2,
@@ -39,6 +41,7 @@
   },
   {
     "id": "toy_workshop",
+    "homeTypes": ["clockwork"],
     "name": "Toy Workshop",
     "description": "Benches, gears and paint pots. The hexed toymakers can't keep their hands off a wind-up.",
     "rank": 3,
@@ -59,6 +62,7 @@
   },
   {
     "id": "reindeer_stables",
+    "homeTypes": ["frost"],
     "name": "Reindeer Stables",
     "description": "Warm stalls, jingling harnesses and a sleigh that must be ready by Christmas Eve. The hexed stable hands crave the warmth and bolt from the cold.",
     "rank": 4,

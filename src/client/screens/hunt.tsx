@@ -84,6 +84,12 @@ export function HuntScreen() {
       <div class="scroll hunt-scroll" ref={scroller}>
         <div class="banner">
           <Art slot="locations" id={location.id} class="banner-art" />
+          {location.homeTypes.length > 0 && (
+            <div class="banner-types" aria-label={`Recommended trap power type: ${location.homeTypes.map((t) => TYPE_NAME[t]).join(' or ')}`}>
+              <small>Best traps</small>
+              {location.homeTypes.map((t) => <TypeMedal type={t} size={30} />)}
+            </div>
+          )}
           <div class="banner-bottom">
             <h1>{location.name}</h1>
             <span class="banner-actions">
