@@ -19,6 +19,8 @@ export interface Game {
   setPlayer: (p: PlayerState) => void;
   resetLog: (rows?: JournalRow[]) => void;
   logout: () => void;
+  /** Shows the earn popup (or toast) for these achievement ids. */
+  celebrate: (ids: string[], backfill?: boolean) => void;
 }
 
 export const GameContext = createContext<Game | null>(null);

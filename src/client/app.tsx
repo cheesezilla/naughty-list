@@ -4,14 +4,15 @@ import { gameData, type JournalRow, type PlayerState } from '../engine/index.js'
 import { api, type User } from './api.js';
 import { GameContext, trimLog, type Game } from './game.js';
 import { loadArt } from './lib/art.js';
-import { buzz, playSound } from './lib/prefs.js';
+import { buzz, getPrefs, playSound } from './lib/prefs.js';
+import { AchievementPopup, AchievementToast, WelcomePopup } from './screens/achievements.js';
 import { go, useRoute } from './lib/route.js';
 import { ArsenalScreen, ItemScreen } from './screens/gear.js';
 import { AuthScreen } from './screens/auth.js';
 import { HuntScreen } from './screens/hunt.js';
 import { ImpScreen, NaughtyListScreen } from './screens/list.js';
 import { HistoryScreen } from './screens/log.js';
-import { AccountScreen, AdminScreen, HowToScreen, HuntersScreen, MoreMenu, SettingsScreen, StatsScreen, TravelScreen } from './screens/more.js';
+import { AccountScreen, AdminScreen, HowToScreen, HuntersScreen, MoreMenu, ProfileScreen, SettingsScreen, TravelScreen } from './screens/more.js';
 import { EmporiumScreen, WorkshopScreen } from './screens/shop.js';
 
 export function App() {
@@ -26,7 +27,7 @@ export function App() {
   return <Session content={content} />;
 }
 
-interface MeResponse { user: User; player: PlayerState; journal: JournalRow[] }
+interface MeResponse { user: User; player: PlayerState; journal: JournalRow[]; backfill?: string[] }
 
 function Session({ content }: { content: Content }) {
   const [me, setMe] = useState<MeResponse | null | undefined>(undefined);
@@ -45,7 +46,18 @@ function Playing({ content, me, onLogout }: { content: Content; me: MeResponse; 
   const [log, setLog] = useState(me.journal);
   const [busy, setBusy] = useState(false);
   const [toastState, setToast] = useState<Toast | null>(null);
+  const [badges, setBadges] = useState<{ ids: string[]; backfill: boolean; quiet: boolean } | null>(
+    me.backfill?.length ? { ids: me.backfill, backfill: true, quiet: false } : null);
+  const [welcome, setWelcome] = useState(me.player.welcomeSeen === false);
   const lastHuntAt = useRef(0);
+
+  const celebrate = useCallback((ids: string[], backfill = false) => {
+    if (!ids.length) return;
+    playSound('badge');
+    buzz(60);
+    // Badges earned while one popup is open join its queue.
+    setBadges((cur) => ({ ids: [...(cur?.ids ?? []), ...ids], backfill: cur?.backfill ?? backfill, quiet: !getPrefs().achievementPopups }));
+  }, []);
   const busyRef = useRef(false);
 
   const toast = useCallback((message: string, kind: Toast['kind'] = 'info') => setToast({ message, kind, id: Date.now() }), []);
@@ -57,11 +69,12 @@ function Playing({ content, me, onLogout }: { content: Content; me: MeResponse; 
 
   const act: Game['act'] = async (path, body, ok) => {
     try {
-      const r = await api<{ player: PlayerState; log: JournalRow | null; logs?: JournalRow[] }>('POST', path, body);
+      const r = await api<{ player: PlayerState; log: JournalRow | null; logs?: JournalRow[]; newAchievements?: string[] }>('POST', path, body);
       setPlayer(r.player);
       const rows = r.logs ?? (r.log ? [r.log] : []);
       if (rows.length) setLog((l) => trimLog([...[...rows].reverse(), ...l]));
       if (ok) toast(ok, 'good');
+      celebrate(r.newAchievements ?? []);
       return true;
     } catch (e) {
       toast((e as Error).message, 'bad');
@@ -79,9 +92,10 @@ function Playing({ content, me, onLogout }: { content: Content; me: MeResponse; 
     if (wait > 0) await new Promise((r) => setTimeout(r, wait));
     lastHuntAt.current = Date.now();
     try {
-      const r = await api<{ player: PlayerState; entry: JournalRow }>('POST', '/api/hunt', {});
+      const r = await api<{ player: PlayerState; entry: JournalRow; logs?: JournalRow[]; newAchievements?: string[] }>('POST', '/api/hunt', {});
       setPlayer(r.player);
-      setLog((l) => trimLog([r.entry, ...l]));
+      setLog((l) => trimLog([...[...(r.logs ?? [r.entry])].reverse(), ...l]));
+      celebrate(r.newAchievements ?? []);
       if (r.entry.kind === 'hunt') {
         const e = r.entry.entry;
         const imp = e.imp ? data.imps.get(e.imp) : undefined;
@@ -106,10 +120,10 @@ function Playing({ content, me, onLogout }: { content: Content; me: MeResponse; 
       busyRef.current = false;
       setBusy(false);
     }
-  }, [content, data, toast]);
+  }, [content, data, toast, celebrate]);
 
   const game: Game = {
-    content, data, user: me.user, player, log, act, toast, hunt, busy, setPlayer,
+    content, data, user: me.user, player, log, act, toast, hunt, busy, setPlayer, celebrate,
     resetLog: (rows = []) => setLog(rows),
     logout: () => { api('POST', '/api/auth/logout', {}).finally(() => { go('hunt', true); onLogout(); }); },
   };
@@ -117,6 +131,17 @@ function Playing({ content, me, onLogout }: { content: Content; me: MeResponse; 
   return (
     <GameContext.Provider value={game}>
       <Router />
+      {welcome && (
+        <WelcomePopup onClose={(letter) => {
+          setWelcome(false);
+          api<{ player: PlayerState }>('POST', '/api/welcome', {}).then((r) => setPlayer(r.player)).catch(() => {});
+          go('hunt');
+          if (letter) setTimeout(() => document.querySelector('.story-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
+        }} />
+      )}
+      {!welcome && badges && (badges.quiet
+        ? <AchievementToast ids={badges.ids} onClose={() => setBadges(null)} />
+        : <AchievementPopup ids={badges.ids} backfill={badges.backfill} onClose={() => setBadges(null)} />)}
       {toastState && (
         <div class={`toast ${toastState.kind}`} role="status" onClick={() => setToast(null)}>{toastState.message}</div>
       )}
@@ -125,7 +150,7 @@ function Playing({ content, me, onLogout }: { content: Content; me: MeResponse; 
 }
 
 function Router() {
-  const [page, a, b] = useRoute();
+  const [page, a, b, c] = useRoute();
   useEffect(() => { document.querySelector('.scroll')?.scrollTo(0, 0); }, [page, a]);
   switch (page) {
     case undefined:
@@ -141,7 +166,8 @@ function Router() {
       switch (a) {
         case 'travel': return <TravelScreen />;
         case 'hunters': return <HuntersScreen />;
-        case 'stats': return <StatsScreen />;
+        case 'stats': return <ProfileScreen tab="stats" />;
+        case 'profile': return <ProfileScreen tab={b === 'achievements' ? 'achievements' : 'stats'} openId={c} />;
         case 'howto': return <HowToScreen />;
         case 'settings': return <SettingsScreen />;
         case 'admin': return <AdminScreen />;

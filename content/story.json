@@ -46,5 +46,10 @@
         "Reach 100 to launch the sleigh and face Grizzlewick."
       ]
     }
+  },
+  "welcome": {
+    "title": "Welcome to The Naughty List!",
+    "text": "Scrinch's imps are raiding Santa's secret lair, and Santa needs a hunter. Set your trap, catch every imp you can, and put them all on the Naughty List!",
+    "button": "Start hunting"
   }
 }

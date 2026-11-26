@@ -1,5 +1,5 @@
 import { powerTypes, type Content, type Imp, type Location, type PowerType } from '../content/schema.js';
-import { addItem, type ActionResult, type PlayerState } from './player.js';
+import { addItem, bump, type ActionResult, type PlayerState } from './player.js';
 import type { Rng } from './rng.js';
 
 /** Saved progress on a location's own loop. The bait ladder needs none: it lives in the inventory. */
@@ -96,6 +96,7 @@ export function afterHunt(
     if (s.filled >= s.slots.length) {
       if (s.rush) {
         s.forced = o.boss;
+        bump(p, 'rushOrders');
         out.notes.push(`Rush order done! ${name(o.boss)} is coming to see it.`);
       } else {
         s.ordersDone += 1;
@@ -128,12 +129,14 @@ export function afterHunt(
       s.active = false;
       s.launches += 1;
       s.forced = o.boss;
+      if (s.left >= 10) bump(p, 'expressLaunches');
       p.gold += o.launchGold;
       out.gold = o.launchGold;
       for (const [item, amount] of Object.entries(o.launchItems)) give(item, amount);
       out.notes.push(`The sleigh launches! ${name(o.boss)} attacks it.`);
     } else if (s.left <= 0) {
       s.active = false;
+      bump(p, 'sleighFails');
       const gold = Math.round(s.readiness * o.failGoldPerReadiness);
       p.gold += gold;
       out.gold = gold;

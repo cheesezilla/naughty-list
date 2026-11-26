@@ -10,6 +10,7 @@ import { loadContent } from '../src/content/load.js';
 import type { Content } from '../src/content/schema.js';
 import { gameData, priceOf } from '../src/engine/data.js';
 import { hunt } from '../src/engine/hunt.js';
+import { checkAchievements } from '../src/engine/achievements.js';
 import { objectiveAction } from '../src/engine/objectives.js';
 import { huntOdds } from '../src/engine/odds.js';
 import { buy, count, craft, equip, newPlayer, travel, type PlayerState, type Setup } from '../src/engine/player.js';
@@ -74,6 +75,8 @@ interface Log {
   objectives: { runs: number; launches: number; orders: number };
   finished: boolean;
   hunts: number;
+  /** Achievement id → hunt number it was earned at. */
+  badges: Record<string, number>;
 }
 
 function plan(p: PlayerState, log: Log, huntNo: number): PlayerState {
@@ -171,7 +174,7 @@ function playObjective(p: PlayerState, rng: Rng, log: Log): PlayerState {
 
 function play(rng: Rng): Log {
   let p = newPlayer(content);
-  const log: Log = { rankAt: { 1: 0 }, goldAtRank: {}, purchases: [], byLocation: {}, bossCatches: 0, finished: false, hunts: 0, objectives: { runs: 0, launches: 0, orders: 0 }, bosses: {} };
+  const log: Log = { rankAt: { 1: 0 }, goldAtRank: {}, purchases: [], byLocation: {}, bossCatches: 0, finished: false, hunts: 0, objectives: { runs: 0, launches: 0, orders: 0 }, bosses: {}, badges: {} };
   for (let n = 1; n <= MAX_HUNTS; n++) {
     if (n === 1 || n % 20 === 0 || !p.setup.bait || count(p, p.setup.bait) === 0) p = plan(p, log, n);
     p = playObjective(p, rng, log);
@@ -198,8 +201,11 @@ function play(rng: Rng): Log {
     }
     if (r.entry.rankUp) { log.rankAt[r.entry.rankUp] = n; log.goldAtRank[r.entry.rankUp] = p.gold; }
     log.hunts = n;
+    // Achievement times are hunt numbers here, so the report can say when each one is earned.
+    checkAchievements(content, p, n);
     if (p.rank >= finalRank) { log.finished = true; break; }
   }
+  log.badges = { ...p.achievements };
   return log;
 }
 
@@ -251,6 +257,20 @@ const per = (f: (l: Log) => number) => (logs.reduce((s, l) => s + f(l), 0) / PLA
 console.log('Mini boss and boss catches per player: ' + content.locations.flatMap((l) => l.imps).filter((i) => i.tier === 'boss' || i.tier === 'miniboss').map((i) => `${i.name} ${per((l) => l.bosses[i.id] ?? 0)}`).join(', '));
 console.log(`Toy orders finished: ${per((l) => l.objectives.orders)}. Sleigh runs: ${per((l) => l.objectives.runs)}, launched: ${per((l) => l.objectives.launches)}`);
 
+const badgeCounts = logs.map((l) => Object.keys(l.badges).length);
+console.log(`\nAchievements earned by the end (median ${fmt(quant(badgeCounts, 0.5))} of ${content.achievements.length}; p10 ${fmt(quant(badgeCounts, 0.1))}, p90 ${fmt(quant(badgeCounts, 0.9))})`);
+for (const f of ['bronze', 'silver', 'gold'] as const) {
+  const ids = content.achievements.filter((a) => a.frame === f).map((a) => a.id);
+  const per = logs.map((l) => ids.filter((id) => l.badges[id] !== undefined).length);
+  console.log(`  ${f.padEnd(7)} median ${fmt(quant(per, 0.5))} of ${ids.length}`);
+}
+if (args.includes('--badges')) {
+  console.log('  Badge                     Players  Median hunt');
+  for (const a of content.achievements) {
+    const at = logs.map((l) => l.badges[a.id]).filter((x): x is number => x !== undefined);
+    console.log(`  ${a.name.padEnd(26)}${pct(at.length / PLAYERS).padEnd(9)}${fmt(quant(at, 0.5))}`);
+  }
+}
 if (VERBOSE) console.log(JSON.stringify(logs[0], null, 2));
 if (STRICT && misses > 0) {
   console.error(`\n${misses} target(s) missed by more than 25%.`);

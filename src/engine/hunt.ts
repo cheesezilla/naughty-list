@@ -1,7 +1,7 @@
 import type { Content, Imp, PillageKind } from '../content/schema.js';
 import { gameData, itemOfKind } from './data.js';
-import { catchChance, impWeights, setupStats } from './odds.js';
-import { addItem, count, rankFor, type PlayerState } from './player.js';
+import { catchChance, effectiveness, impWeights, setupStats } from './odds.js';
+import { addItem, bump, count, rankFor, type PlayerState } from './player.js';
 import { pickWeighted, type Rng } from './rng.js';
 import { afterHunt, objectiveState, objectiveWeights, type ObjectiveResult } from './objectives.js';
 
@@ -90,7 +90,18 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0): 
     if (o) entry.objective = o;
   };
 
+  const streak = (kind: 'Catch' | 'Escape' | 'Quiet') => {
+    const t = (p.tally ??= {});
+    for (const k of ['Catch', 'Escape', 'Quiet'] as const) {
+      // Quiet hunts don't break a catch or escape run; any attracted imp breaks a quiet run.
+      if (k === kind) t[`streak${k}`] = (t[`streak${k}`] ?? 0) + 1;
+      else if (kind !== 'Quiet') t[`streak${k}`] = 0;
+      t[`best${k}Streak`] = Math.max(t[`best${k}Streak`] ?? 0, t[`streak${k}`] ?? 0);
+    }
+  };
+
   if (rng() >= stats.attraction) {
+    streak('Quiet');
     track(undefined, false);
     return { ok: true, player: p, entry };
   }
@@ -99,6 +110,7 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0): 
   const idx = pickWeighted(objectiveWeights(p, location, impWeights(data, location, p.setup.bait)), rng);
   const imp = location.imps[Math.max(0, idx)]!;
   entry.imp = imp.id;
+  if (location.objective?.type === 'bait_ladder' && imp.id === location.objective.boss) bump(p, 'ladderBoss');
   p.seen = { ...(p.seen ?? {}), [imp.id]: (p.seen?.[imp.id] ?? 0) + 1 };
 
   const bait = p.setup.bait!;
@@ -121,6 +133,10 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0): 
     p.stats.caught += 1;
     p.stats.goldEarned = (p.stats.goldEarned ?? 0) + imp.gold;
     if (!p.catches[imp.id]) entry.firstCatch = true;
+    streak('Catch');
+    if (stats.type) bump(p, `catches_${stats.type}`);
+    if (effectiveness(imp, stats.type) > 1) bump(p, 'weaknessCatches');
+    if ((imp.tier === 'miniboss' || imp.tier === 'boss') && p.setup.trap === c.startingSetup.trap) bump(p, 'starterBoss');
     p.catches[imp.id] = (p.catches[imp.id] ?? 0) + 1;
     for (const l of imp.loot ?? []) {
       if (rng() < l.chance) {
@@ -137,6 +153,7 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0): 
     }
   } else {
     entry.outcome = 'escape';
+    streak('Escape');
     const pillage = rollPillage(content, p, imp, bait, rng);
     if (pillage) entry.pillage = pillage;
     track(imp, false);

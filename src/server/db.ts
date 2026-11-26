@@ -142,6 +142,11 @@ export class Store {
     });
   }
 
+  /** Every saved player state, for counts across hunters. */
+  playerStates(): PlayerState[] {
+    return (this.db.prepare('SELECT state FROM players').all() as { state: string }[]).map((r) => JSON.parse(r.state) as PlayerState);
+  }
+
   // ----- settings -----
   settings(): Settings {
     const rows = this.db.prepare('SELECT key, value FROM settings').all() as { key: string; value: string }[];
@@ -242,17 +247,18 @@ export class Store {
     return { rankUps, firstCatches };
   }
   /** Everyone's notable moments (rare and boss catches, boss pillages, rank-ups), newest first. */
-  feed(notableImps: string[], limit = 20, pillageImps: string[] = []): (JournalRow & { username: string })[] {
-    const marks = notableImps.map(() => '?').join(',') || "''";
-    const pmarks = pillageImps.map(() => '?').join(',') || "''";
+  feed(notableImps: string[], limit = 20, pillageImps: string[] = [], achievements: string[] = []): (JournalRow & { username: string })[] {
+    const list = (xs: string[]) => xs.map(() => '?').join(',') || "''";
     const rows = this.db.prepare(
       `SELECT j.*, u.username FROM journal j JOIN users u ON u.id = j.user_id
-       WHERE j.kind = 'hunt' AND (json_extract(j.entry, '$.rankUp') IS NOT NULL
-         OR (json_extract(j.entry, '$.outcome') = 'catch' AND json_extract(j.entry, '$.imp') IN (${marks}))
-         OR (json_extract(j.entry, '$.pillage') IS NOT NULL AND json_extract(j.entry, '$.imp') IN (${pmarks})))
+       WHERE (j.kind = 'hunt' AND (json_extract(j.entry, '$.rankUp') IS NOT NULL
+         OR (json_extract(j.entry, '$.outcome') = 'catch' AND json_extract(j.entry, '$.imp') IN (${list(notableImps)}))
+         OR (json_extract(j.entry, '$.pillage') IS NOT NULL AND json_extract(j.entry, '$.imp') IN (${list(pillageImps)}))))
+       OR (j.kind = 'event' AND json_extract(j.entry, '$.type') = 'achievement' AND json_extract(j.entry, '$.backfill') IS NULL
+         AND EXISTS (SELECT 1 FROM json_each(j.entry, '$.ids') WHERE value IN (${list(achievements)})))
        ORDER BY j.id DESC LIMIT ?`,
-    ).all(...notableImps, ...pillageImps, limit) as { id: number; hunt_no: number; created_at: number; entry: string; kind: LogKind; username: string }[];
-    return rows.map((r) => ({ id: r.id, n: r.hunt_no, at: r.created_at, kind: 'hunt', entry: JSON.parse(r.entry), username: r.username }));
+    ).all(...notableImps, ...pillageImps, ...achievements, limit) as { id: number; hunt_no: number; created_at: number; entry: string; kind: LogKind; username: string }[];
+    return rows.map((r) => ({ id: r.id, n: r.hunt_no, at: r.created_at, kind: r.kind, entry: JSON.parse(r.entry), username: r.username }) as JournalRow & { username: string });
   }
 
   // ----- restarts -----
