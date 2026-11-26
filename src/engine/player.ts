@@ -29,6 +29,8 @@ export interface PlayerState {
   objectives?: Record<string, ObjectiveState>;
   /** Earned achievements: id → time earned (ms). Missing in saves from before achievements. */
   achievements?: Record<string, number>;
+  /** For badges earned by a hunt: that hunt's number. */
+  achievementHunts?: Record<string, number>;
   /** Counters the achievements read (purchases, crafts, streaks, catches by trap type…). Missing in older saves. */
   tally?: Record<string, number>;
   /** False until the player closes the welcome popup of a new game. Missing (seen) in older saves. */

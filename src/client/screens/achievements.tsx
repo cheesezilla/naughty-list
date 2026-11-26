@@ -24,8 +24,22 @@ function useCloseKeys(onClose: () => void) {
   }, [onClose]);
 }
 
-const progressText = (a: Achievement, have: number, need: number) =>
-  need > 1 && (a.when.type === 'stat' || a.when.type === 'collection' || a.when.type === 'own_all_types') ? `${num(have)} / ${num(need)}` : '';
+/** What a count is of, for the badge sheet: "312 / 500 hunts". */
+const UNIT: Partial<Record<string, string>> = {
+  hunts: 'hunts', caught: 'catches', escapes: 'escapes', goldEarned: 'gold', bossesCaught: 'bosses', weaknessCatches: 'catches',
+  catches_clockwork: 'catches', catches_starlight: 'catches', catches_frost: 'catches', ordersDone: 'orders', pillaged: 'pillages',
+};
+
+/** "312 / 500", or "Best run 7 / 10" for streaks; with `unit`, "312 / 500 hunts". Empty for yes/no badges. */
+const progressText = (a: Achievement, have: number, need: number, unit = false) => {
+  const w = a.when;
+  if (need <= 1 || (w.type !== 'stat' && w.type !== 'collection' && w.type !== 'own_all_types')) return '';
+  const text = `${num(have)} / ${num(need)}`;
+  if (w.type === 'stat' && w.stat.startsWith('best')) return `Best run ${text}`;
+  if (!unit) return text;
+  const u = w.type === 'stat' ? UNIT[w.stat] : w.type === 'collection' ? 'imps' : 'power types';
+  return u ? `${text} ${u}` : text;
+};
 
 /** "Achievement earned" card, one badge at a time when several come at once. */
 export function AchievementPopup({ ids, backfill, onClose }: { ids: string[]; backfill: boolean; onClose: () => void }) {
@@ -63,8 +77,12 @@ export function AchievementToast({ ids, onClose }: { ids: string[]; onClose: () 
   if (!a) return null;
   return (
     <button class="ach-toast" onClick={() => { onClose(); go(`more/profile/achievements/${a.id}`); }}>
-      <BadgeMedal a={a} earned size={40} />
-      <span><small>Achievement earned{ids.length > 1 ? ` (+${ids.length - 1} more)` : ''}</small><br /><b>{a.name}</b></span>
+      <BadgeMedal a={a} earned size={44} />
+      <span>
+        <small class="kicker">Achievement earned{ids.length > 1 ? ` (+${ids.length - 1} more)` : ''}</small>
+        <b>{a.name}</b>
+        <small>{FRAME_NAME[a.frame]} · tap to view</small>
+      </span>
     </button>
   );
 }
@@ -158,25 +176,27 @@ function BadgeSheet({ a, at, counts, onClose }: { a: Achievement; at?: number; c
   const got = at !== undefined;
   const secret = a.secret && !got;
   const p = achievementProgress(content, player, a);
+  const hunt = player.achievementHunts?.[a.id];
   const by = counts ? `Earned by ${counts.counts[a.id] ?? 0} of ${counts.hunters} hunters` : '';
   return (
-    <Sheet title={secret ? 'Secret achievement' : a.name} onClose={onClose}>
+    <Sheet title={secret ? 'Secret achievement' : a.name} onClose={onClose} bare>
       <div class="badge-sheet">
         <BadgeMedal a={a} earned={got} size={120} shine={got} />
         <h2>{secret ? '?' : a.name}</h2>
         <p>{secret ? 'Keep hunting. This one is a surprise.' : a.description}</p>
         <span class={`frame-pill frame-${a.frame}`}>{secret ? 'Secret' : `${FRAME_NAME[a.frame]} · ${CATEGORY_NAME[a.category]}`}</span>
         {got
-          ? <p class="small">Earned {when(at!, prefs.clock24)}{by && ` · ${by}`}</p>
+          ? <p class="small">Earned {when(at!, prefs.clock24)}{hunt ? ` on hunt #${num(hunt)}` : ''}{by && <><br />{by}</>}</p>
           : <>
             {!secret && p.need > 1 && (
               <div class="badge-progress">
-                <div><span>Progress</span><b>{progressText(a, p.have, p.need)}</b></div>
+                <div><span>Progress</span><b>{progressText(a, p.have, p.need, true)}</b></div>
                 <div class="bar"><div style={{ width: `${(p.have / p.need) * 100}%` }} /></div>
               </div>
             )}
             <p class="small muted">Not earned yet{by && ` · ${by}`}</p>
           </>}
+        <button class="outline-btn dark wide" onClick={onClose}>Close</button>
       </div>
     </Sheet>
   );
