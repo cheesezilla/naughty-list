@@ -18,6 +18,7 @@ export function itemStats(item: AnyItem, exact: boolean): string {
     bits.push(`Power ${num(item.power)}`, `Luck ${item.luck}`);
     if (exact && item.attraction) bits.push(`+${pct(item.attraction)} attraction`);
     if (item.kind === 'base' && item.goodFor) bits.push(item.goodFor);
+    if (item.kind === 'base' && item.affinity) bits.push(`+${pct(item.affinity.powerBonus)} power with ${item.affinity.types.map((t) => TYPE_NAME[t]).join(' or ')} traps`);
   } else if (item.kind === 'bait') {
     if (exact) bits.push(`${pct(item.attraction)} attraction`);
     if (item.rareMultiplier) bits.push(`rares ×${item.rareMultiplier}`);

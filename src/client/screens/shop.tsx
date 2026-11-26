@@ -110,6 +110,7 @@ export function EmporiumScreen({ tab }: { tab: ShopTab }) {
 type CraftFilter = 'all' | 'trap' | 'base' | 'bait' | 'charm';
 export function WorkshopScreen() {
   const { content, data, player, act } = useGame();
+  const exact = useExactOdds();
   const [filter, setFilter] = useState<CraftFilter>('all');
   const [onlyNow, setOnlyNow] = useState(false);
   const canCraft = (r: (typeof content.recipes)[number]) =>
@@ -147,6 +148,8 @@ export function WorkshopScreen() {
                 <div>
                   <b>{out.name}</b> <span class="muted">×{r.output.amount}</span><br />
                   <small>{kindName} · you own {num(count(player, out.id))}</small><br />
+                  {out.kind === 'trap' && <span class="type-chip"><TypeMedal type={out.type} size={20} />{TYPE_NAME[out.type]}</span>}
+                  {out.kind !== 'material' && <small class="recipe-stats">{itemStats(out, exact)}<br /></small>}
                   <small>Rank: {rankName}</small>
                 </div>
               </div>
