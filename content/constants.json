@@ -5,6 +5,7 @@
   "startingLocation": "cookie_pantry",
   "attractionCap": 0.95,
   "catchCap": 0.98,
+  "luck": { "scale": 3, "tierWeight": { "common": 1, "uncommon": 1, "rare": 0.5, "miniboss": 0.25, "boss": 0.1 } },
   "sellBackRate": 0.4,
   "rescue": { "maxGold": 50, "item": "stale_cookie", "amount": 10 },
   "maxHuntsPerSecond": 2,

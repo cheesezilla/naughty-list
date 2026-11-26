@@ -1,6 +1,6 @@
 import type { Content, Imp, PillageKind } from '../content/schema.js';
 import { gameData, itemOfKind } from './data.js';
-import { catchChance, effectiveness, impWeights, setupStats } from './odds.js';
+import { catchChance, effectiveness, impWeights, luckFactor, setupStats } from './odds.js';
 import { addItem, bump, count, rankFor, type PlayerState } from './player.js';
 import { pickWeighted, type Rng } from './rng.js';
 import { afterHunt, objectiveState, objectiveWeights, type ObjectiveResult } from './objectives.js';
@@ -127,7 +127,7 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0, b
     if (count(p, p.setup.charm) < 1) p.setup.charm = null;
   }
 
-  const chance = boost?.odds ? (effectiveness(imp, stats.type) > 0 ? 1 : 0) : catchChance(stats, imp, c.catchCap);
+  const chance = boost?.odds ? (effectiveness(imp, stats.type) > 0 ? 1 : 0) : catchChance(stats, imp, c.catchCap, luckFactor(c, imp));
   const mult = boost?.reward ?? 1;
   entry.catchChance = chance;
   if (rng() < chance) {

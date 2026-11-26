@@ -37,7 +37,7 @@
       { "id": "bow_burglar", "name": "Bow Burglar", "tier": "common", "power": 280, "gold": 70, "points": 100, "weight": 25, "effectiveness": { "starlight": 1.5, "clockwork": 0.5 }, "loot": [{ "item": "candied_peel", "chance": 0.3 }, { "item": "ribbon_candy", "chance": 0.02 }], "pillage": { "chance": 1, "takes": ["bait"], "kinds": 1, "bait": [1, 1] }, "baitWeights": { "ribbon_candy": 13, "golden_bow_bonbon": 8 } },
       { "id": "glitterbug", "name": "Glitterbug", "tier": "rare", "power": 350, "gold": 110, "points": 160, "weight": 0, "effectiveness": { "starlight": 1.5, "clockwork": 0.5 }, "loot": [{ "item": "sugar_glass", "chance": 0.5 }], "baitWeights": { "ribbon_candy": 30, "golden_bow_bonbon": 10 } },
       { "id": "spoolwick", "name": "Spoolwick", "tier": "miniboss", "power": 600, "gold": 160, "points": 300, "weight": 0, "effectiveness": { "starlight": 1.5, "clockwork": 0.5 }, "loot": [{ "item": "golden_ribbon", "chance": 1 }], "baitWeights": { "ribbon_candy": 20, "golden_bow_bonbon": 10 } },
-      { "id": "madame_shredwell", "name": "Madame Shredwell", "tier": "boss", "power": 1100, "gold": 300, "points": 550, "weight": 0, "effectiveness": { "starlight": 1.5, "clockwork": 0.5 }, "loot": [{ "item": "enchanted_wrapping", "chance": 1 }, { "item": "jingle_bell_charm", "chance": 0.25, "amount": 5 }], "baitWeights": { "ribbon_candy": 0, "golden_bow_bonbon": 50 } }
+      { "id": "madame_shredwell", "name": "Madame Shredwell", "tier": "boss", "power": 1100, "gold": 300, "points": 550, "weight": 0, "effectiveness": { "carol": 1.5, "clockwork": 0.5 }, "loot": [{ "item": "enchanted_wrapping", "chance": 1 }, { "item": "jingle_bell_charm", "chance": 0.25, "amount": 5 }], "baitWeights": { "ribbon_candy": 0, "golden_bow_bonbon": 50 } }
     ]
   },
   {
@@ -87,6 +87,23 @@
       { "id": "carrot_crook", "name": "Carrot Crook", "tier": "rare", "power": 2000, "gold": 600, "points": 650, "weight": 5, "effectiveness": { "frost": 1.5, "starlight": 0.5 }, "loot": [{ "item": "sugar_glass", "chance": 0.5 }] },
       { "id": "antler_ripper", "name": "Antler Ripper", "tier": "miniboss", "power": 3500, "gold": 800, "points": 1200, "weight": 0, "effectiveness": { "frost": 1.5, "starlight": 0.5 }, "loot": [{ "item": "silver_sleighbell", "chance": 1 }] },
       { "id": "cinderhoof", "name": "Cinderhoof", "tier": "boss", "power": 6000, "gold": 1500, "points": 3000, "weight": 0, "effectiveness": { "frost": 1.5, "starlight": 0 }, "loot": [{ "item": "brimstone_coal", "chance": 1 }] }
+    ]
+  },
+  {
+    "id": "carol_loft",
+    "homeTypes": ["clockwork", "frost", "starlight"],
+    "name": "Carol Loft",
+    "description": "The draughty attic above the Wrapping Room, where hexed carollers sing flat on purpose. A side trip: nothing here is needed to move on, but it is where Carol traps are made.",
+    "rank": 2,
+    "unlockCost": 600,
+    "side": true,
+    "after": "wrapping_room",
+    "imps": [
+      { "id": "tin_whistler", "name": "Tin Whistler", "tier": "common", "power": 200, "gold": 30, "points": 42, "weight": 36, "effectiveness": { "clockwork": 1.5 }, "loot": [{ "item": "hymn_reed", "chance": 0.2 }] },
+      { "id": "hoarse_caroller", "name": "Hoarse Caroller", "tier": "common", "power": 260, "gold": 38, "points": 55, "weight": 30, "effectiveness": { "frost": 1.5 }, "loot": [{ "item": "hymn_reed", "chance": 0.2 }] },
+      { "id": "mistletoe_mumbler", "name": "Mistletoe Mumbler", "tier": "common", "power": 320, "gold": 48, "points": 70, "weight": 25, "effectiveness": { "starlight": 1.5 }, "loot": [{ "item": "hymn_reed", "chance": 0.2 }] },
+      { "id": "silver_piper", "name": "Silver Piper", "tier": "rare", "power": 500, "gold": 85, "points": 130, "weight": 5, "effectiveness": { "carol": 1.5 }, "loot": [{ "item": "hymn_reed", "chance": 1 }] },
+      { "id": "choirmaster_hollowvoice", "name": "Choirmaster Hollowvoice", "tier": "miniboss", "power": 1000, "gold": 180, "points": 250, "weight": 5, "effectiveness": { "carol": 1.5, "clockwork": 0.5 }, "loot": [{ "item": "carol_songsheet", "chance": 1 }] }
     ]
   }
 ]

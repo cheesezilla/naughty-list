@@ -72,6 +72,8 @@ export function TravelScreen() {
           const rankName = content.ranks[l.rank - 1]?.name;
           const needKey = keyNeeded(content, l.id);
           const missingKey = !open && needKey && !(player.keys ?? []).includes(needKey.id) ? needKey : undefined;
+          const afterLoc = l.after ? content.locations.find((x) => x.id === l.after) : undefined;
+          const needAfter = !open && afterLoc && !player.unlocked.includes(afterLoc.id) ? afterLoc : undefined;
           const bossName = needKey ? content.locations.find((x) => x.key?.id === needKey.id)?.imps.find((m) => m.tier === 'boss')?.name : undefined;
           return (
             <div class={`card loc-card ${here ? 'here' : ''} ${l.rank > player.rank ? 'locked' : ''}`}>
@@ -80,12 +82,15 @@ export function TravelScreen() {
                 <b>{l.name}</b>
                 <small>Rank {rankName} · unlock {l.unlockCost ? `${num(l.unlockCost)} gold` : 'free'}{' '}<span class={`pill ${open ? 'green' : ''}`}>{open ? 'Unlocked' : 'Locked'}</span></small>
                 <small class="desc">{l.description}</small>
+                {l.side && <small>Side area: no boss key, and nothing later needs it.</small>}
+                {needAfter && <small>Opens once you have unlocked the {needAfter.name}.</small>}
                 {needKey && <small>{missingKey ? `Needs the ${needKey.name}: catch ${bossName} to get it.` : `${needKey.name} found.`}</small>}
                 <span class="weak-row"><small>Best traps</small>{l.homeTypes.map((t) => <TypeMedal type={t} size={22} />)}</span>
               </div>
               {here ? <span class="pill gold">You are here</span>
                 : l.rank > player.rank ? <span class="small muted">Needs {rankName}</span>
                 : missingKey ? <span class="small muted">Needs key</span>
+                : needAfter ? <span class="small muted">Needs {needAfter.name}</span>
                 : <button class="primary-btn" disabled={!open && player.gold < l.unlockCost}
                     onClick={async () => { if (await act('/api/travel', { location: l.id }, `Welcome to the ${l.name}.`)) go('hunt'); }}>
                     {open ? 'Go' : `Unlock ${num(l.unlockCost)}`}
@@ -251,8 +256,8 @@ const HOWTO: { id: string; title: string; text: string }[] = [
   { id: 'hunt', title: 'Hunt', text: 'Press Hunt as often as you like: there is no timer. Each time a hexed elf shows up it eats one bait, and your trap tries to catch it.' },
   { id: 'attraction', title: 'Attraction', text: 'Your bait sets how often an elf shows up. Better bait, plus attraction bonuses from gear, means fewer quiet hunts. Quiet hunts cost nothing.' },
   { id: 'power', title: 'Power', text: "Your trap, base and charm add up to your power. The higher it is compared with the elf's power, the better your catch chance." },
-  { id: 'luck', title: 'Luck', text: 'Luck gives a bonus that matters most against strong elves. Charms are the easiest way to get more.' },
-  { id: 'trap_types', title: 'Trap types', text: "Clockwork, Starlight and Frost. Some elves are weak to a type (×1.5 power) and some resist it (×0.5) or are immune. Each room's elves mostly share one weakness: Starlight in the Wrapping Room, Clockwork in the Toy Workshop, Frost in the Reindeer Stables. An elf's file and rumour hint at it." },
+  { id: 'luck', title: 'Luck', text: 'Luck adds a bonus that ignores weakness and resistance. It is strongest against common elves and weakest against bosses, so build luck to catch the small fry quickly and power to catch bosses. Charms are the easiest way to get more.' },
+  { id: 'trap_types', title: 'Trap types', text: "Clockwork, Starlight and Frost, plus Carol, made in the Carol Loft. Some elves are weak to a type (×1.5 power) and some resist it (×0.5) or are immune. Each room's elves mostly share one weakness: Starlight in the Wrapping Room, Clockwork in the Toy Workshop, Frost in the Reindeer Stables. An elf's file and rumour hint at it." },
   { id: 'loot', title: "Loot and Santa's Workshop", text: "Rare elves and bosses drop materials. Craft them in Santa's Workshop into gear and bait you can't buy." },
   { id: 'pillage', title: 'Pillage', text: 'An elf that escapes may pillage you, taking gold, bait or points. Bosses do it most and take the most; ordinary elves only rarely. A pillage never takes your gold below 100 or costs you a rank.' },
   { id: 'ranks', title: 'Ranks', text: 'Catches earn points. New ranks open new rooms of the lair and new gear in the Elf Emporium.' },
