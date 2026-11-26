@@ -195,9 +195,11 @@ function RankHero() {
   return (
     <section class="rank-hero" aria-label="My rank">
       <Art slot="ranks" id={`rank_${player.rank}`} alt={`Rank ${player.rank}: ${rank.name}`} class="rank-hero-art" />
-      <b class="rank-hero-name">{user.username}</b>
-      <span class="rank-hero-rank">{rank.name}</span>
-      <span class="rank-hero-pts">{num(player.points)} points</span>
+      <div class="rank-hero-info">
+        <b class="rank-hero-name">{user.username}</b>
+        <span class="rank-hero-rank">{rank.name}</span>
+        <span class="rank-hero-pts">{num(player.points)} points</span>
+      </div>
       <span class="rank-hero-next">{next ? `${num(next.points - player.points)} more points to ${next.name}` : 'Top rank for now'}</span>
       <RankProgress />
     </section>

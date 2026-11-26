@@ -584,10 +584,11 @@ body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
 .tip-bar p { flex: 1; margin: 0; }
 .tip-bar .outline-btn { flex: none; padding: 6px 10px; font-size: 13px; }
 
-.rank-hero { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 16px 14px; text-align: center; background: var(--green-soft); border-radius: 16px; }
-.rank-hero-art { width: 160px; height: 160px; object-fit: contain; }
-.rank-hero-name { font-size: 20px; font-weight: 800; }
+.rank-hero { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 8px 14px; padding: 14px; background: var(--green-soft); border-radius: 16px; color: #1d2a24; }
+.rank-hero-art { width: 120px; height: 120px; object-fit: contain; }
+.rank-hero-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.rank-hero-name { font-size: 20px; font-weight: 800; color: #1d2a24; overflow: hidden; text-overflow: ellipsis; }
 .rank-hero-rank { font-family: var(--display); font-size: 22px; color: var(--red-dark); }
-.rank-hero-pts { font-weight: 700; }
-.rank-hero-next { color: var(--green); font-size: 14px; }
-.rank-hero .rank-progress { position: static; width: 100%; max-width: 280px; margin-top: 6px; border-radius: 6px; }
+.rank-hero-pts { font-weight: 700; color: #1d2a24; }
+.rank-hero-next { grid-column: 1 / -1; color: var(--green); font-size: 14px; font-weight: 700; text-align: center; }
+.rank-hero .rank-progress { grid-column: 1 / -1; border-radius: 6px; }
