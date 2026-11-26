@@ -42,15 +42,13 @@ describe('earning achievements', () => {
     expect(checkAchievements(content, p, 1)).toEqual(['first_purchase', 'first_upgrade', 'first_craft', 'rank_2', 'ladder_tier_2']);
   });
 
-  it('keeps catch, escape and quiet streaks: quiet hunts break neither catch nor escape runs', () => {
+  it('keeps catch and escape streaks', () => {
     let p = newPlayer(content);
     const catchRoll = () => scripted(0);
-    const quietRoll = () => scripted(0.999);
-    const escapeRoll = () => scripted(0, 0, 0.999, 0.999);
+    const escapeRoll = () => scripted(0, 0.999, 0.999);
     for (let i = 0; i < 3; i++) p = ok(hunt(content, p, catchRoll())).player;
-    p = ok(hunt(content, p, quietRoll())).player;
     p = ok(hunt(content, p, catchRoll())).player;
-    expect(p.tally).toMatchObject({ streakCatch: 4, bestCatchStreak: 4, streakQuiet: 0, bestQuietStreak: 1 });
+    expect(p.tally).toMatchObject({ streakCatch: 4, bestCatchStreak: 4 });
     for (let i = 0; i < 5; i++) p = ok(hunt(content, p, escapeRoll())).player;
     expect(p.tally).toMatchObject({ streakCatch: 0, bestCatchStreak: 4, streakEscape: 5, bestEscapeStreak: 5 });
     expect(checkAchievements(content, p, 1)).toContain('secret_butterfingers');

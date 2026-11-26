@@ -89,7 +89,7 @@ function Compare({ setup }: { setup: Setup }) {
     <div class="compare">
       {line('Power', a.stats.power, b.stats.power, num)}
       {line('Luck', a.stats.luck, b.stats.luck, num)}
-      {line('Attraction', a.stats.attraction, b.stats.attraction, rateText)}
+      {line('Allure', a.stats.attraction, b.stats.attraction, rateText)}
       {line('Catch', catchIfAttracted(a), catchIfAttracted(b), rateText)}
     </div>
   );

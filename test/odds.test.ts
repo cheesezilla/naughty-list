@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { catchChance, huntOdds, setupStats } from '../src/engine/odds.js';
-import { content } from './helpers.js';
+import { content, withConstants } from './helpers.js';
 import type { Imp, Location } from '../src/content/schema.js';
 
 const imp = (over: Partial<Imp> = {}): Imp => ({ id: 'x', name: 'X', tier: 'common', power: 90, gold: 0, points: 0, weight: 1, ...over });
@@ -53,8 +53,10 @@ describe('setup stats', () => {
 describe('hunt odds', () => {
   it('encounter chances add up to 1 and Fruitcake doubles uncommon and rare odds', () => {
     const setup = { trap: 'starlit_stocking', base: 'cardboard_box', bait: 'stale_cookie', charm: null };
-    const plain = huntOdds(content, setup, 'cookie_pantry');
-    const fruit = huntOdds(content, { ...setup, bait: 'fruitcake' }, 'cookie_pantry');
+    // Allure is neutral here (baseline = the setup's attraction) so the weights stay plain.
+    const neutral = (bait: string) => withConstants({ allure: { baseline: huntOdds(content, { ...setup, bait }, 'cookie_pantry').stats.attraction } });
+    const plain = huntOdds(neutral('stale_cookie'), setup, 'cookie_pantry');
+    const fruit = huntOdds(neutral('fruitcake'), { ...setup, bait: 'fruitcake' }, 'cookie_pantry');
     expect(plain.imps.reduce((s, o) => s + o.encounter, 0)).toBeCloseTo(1);
     const rare = (o: typeof plain) => o.imps.find((i) => i.imp.tier === 'rare')!.encounter;
     expect(rare(plain)).toBeCloseTo(0.05);

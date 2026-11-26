@@ -1,6 +1,6 @@
 import type { Content, Imp, PillageKind } from '../content/schema.js';
 import { gameData, itemOfKind } from './data.js';
-import { catchChance, effectiveness, impWeights, luckFactor, setupStats } from './odds.js';
+import { allureFactor, catchChance, effectiveness, impWeights, luckFactor, setupStats } from './odds.js';
 import { addItem, bump, count, rankFor, type PlayerState } from './player.js';
 import { pickWeighted, type Rng } from './rng.js';
 import { afterHunt, objectiveState, objectiveWeights, type ObjectiveResult } from './objectives.js';
@@ -105,14 +105,8 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0, b
     }
   };
 
-  if (!boost?.odds && rng() >= stats.attraction) {
-    streak('Quiet');
-    track(undefined, false);
-    return { ok: true, player: p, entry };
-  }
-
   p.stats.attracted += 1;
-  const idx = pickWeighted(objectiveWeights(p, location, impWeights(data, location, p.setup.bait)), rng);
+  const idx = pickWeighted(objectiveWeights(p, location, impWeights(data, location, p.setup.bait, boost?.odds ? 1 : allureFactor(c, stats.attraction))), rng);
   const imp = location.imps[Math.max(0, idx)]!;
   entry.imp = imp.id;
   if (location.objective?.type === 'bait_ladder' && imp.id === location.objective.boss) bump(p, 'ladderBoss');

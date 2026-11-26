@@ -27,6 +27,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Hunt screen gear card in a 2x2 grid (Trap and Bait over Base and Charm) and 3D medal icons for power types and the gold coin; see [User interface](#user-interface) | Done | #19 (plan), #23 (build) |
 | Early-game onboarding: 200 starting gold (first trap costs 300), free charms and better bait for every badge (logged in the hunt log), a close button on achievement banners and one-time beginner tips; see [Early game and tips](#early-game-and-tips) | Done | this PR |
 | Frozen top header on every main screen, auto-scroll to the Hunt log when Hunt is pressed, and the New Catch popup for the first catch of each elf (with Quiet toast); achievements show as a non-blocking banner instead of a popup; see [User interface](#user-interface) | Done | #26 |
+| Allure: attraction no longer decides whether an elf shows up. Every hunt meets an elf; attraction (now called Allure) scales the rare, mini boss and boss weights; see [Allure](#allure) | Done | this PR |
 | Trap effectiveness tiers: attraction and catch chance shown as five-tier power bars (Very weak to Very strong) instead of exact percentages; an admin toggle on More > Admin brings the percentages back for tuning; see [Trap effectiveness tiers](#trap-effectiveness-tiers) | Done | this PR |
 | Admin speed-run tools for testing: on the Admin page, boost rewards (x1 to x200), always attract and catch with full loot, add gold, jump to a rank, unlock every location, stock up supplies; see [Admin speed-run tools](#admin-speed-run-tools) | Done | this PR |
 | Boss keys: the local boss drops a key on its first catch, and the next location needs it to unlock (existing saves are granted the keys they have earned); see [Progression](#progression) | In review | this PR |
@@ -92,16 +93,14 @@ The player spends gold on bait and gear, hunts to earn gold, points and material
 
 **One hunt, step by step:**
 
-1. **Attraction roll.** If nothing is attracted, no bait is used and the journal says nothing took the bait.
-2. **Elf pick.** An elf is drawn from the location's table, weighted by the bait in use.
+1. **Elf pick.** Every hunt meets an elf, drawn from the location's table, weighted by the bait in use and by Allure (see [Allure](#allure)). There are no quiet hunts any more.
+2. **Bait.** One bait is used on every hunt.
 3. **Catch roll.** Trap power and luck are compared with the elf's power.
 4. **Catch:** gold, points and a chance at loot. **Escape:** nothing gained. Bait is used either way.
 
 ```mermaid
 flowchart LR
-  H[Press Hunt] --> A{Attracted?}
-  A -- no --> Q[Nothing shows up<br/>no bait used]
-  A -- yes --> P[Pick elf by bait] --> C{Caught?}
+  H[Press Hunt] --> P[Pick elf by bait and Allure] --> C{Caught?}
   C -- yes --> W[Catch: gold, points, loot<br/>bait used]
   C -- no --> E[Elf escapes<br/>bait used, nothing gained]
 ```
@@ -113,13 +112,25 @@ Each hunt is written to the hunt log, the main feedback screen, together with th
 All constants live in `content/constants.json` and the other content files, so they can be tuned without code changes. Code: `src/engine/odds.ts` and `src/engine/hunt.ts`.
 
 - **Power** = (trap + base + charm power) x (1 + charm power bonus). **Luck** = trap + base + charm luck.
-- **Attraction** = min(95%, bait attraction x (1 + trap, base and charm attraction bonuses)). In the Reindeer Stables it is halved unless the bait is Hot Cocoa.
-- **Elf pick**: chance of elf i = its weight / sum of weights for that bait. A location's 3 commons share about 91%, the rare elf 5%, the mini boss 3% and the boss 1%. Fruitcake doubles the rare, mini boss and boss weights.
+- **Attraction (Allure)** = min(95%, bait attraction x (1 + trap, base and charm attraction bonuses)). In the Reindeer Stables it is halved unless the bait is Hot Cocoa. It no longer rolls for an encounter; it sets the Allure multiplier, see [Allure](#allure).
+- **Elf pick**: chance of elf i = its weight / sum of weights for that bait, with rare, mini boss and boss weights times the Allure factor. A location's 3 commons share about 91%, the rare elf 5%, the mini boss 3% and the boss 1%. Fruitcake doubles the rare, mini boss and boss weights.
 - **Effectiveness** E of the trap's power type against an elf: 0 (immune), 0.5 (resists), 1 (normal) or 1.5 (weak). Types: Clockwork (toy machines), Starlight (Christmas-star magic, strong against shadowy elves; called Holly before PR #17), Frost (ice magic), and Carol (a fourth type, made in the Carol Loft side area; the Toy Workshop order board and the "Three of a Kind" badge still use only the first three). From the Wrapping Room on, each location has a home type and a rival type; see [Power types by location](#power-types-by-location).
 - **Catch chance** = clamp((P x E + f x L^2) / (P x E + M), 0, 98%), where M is the elf's power and f is the luck factor of the elf's tier (`luck` in `content/constants.json`: scale 3 times a tier weight of common 1, uncommon 1, rare 0.5, mini boss 0.25, boss 0.1). Luck ignores weakness and resistance, but only counts when E > 0. See [Branching progression](#branching-progression).
   - Example: a 150 power Clockwork trap on a 20 power base with luck 2 against a normal 90 power common elf: (170 + 3 x 4) / (170 + 90) = 70%. Against a boss the same luck adds only 0.3 x 4.
 - **Rewards**: a catch pays the elf's gold and points and rolls its loot list; bosses always drop their crafting part. An escape pays nothing and may pillage gold, bait and points (bosses most); see [Pillage on escape](#pillage-on-escape).
 - **RNG**: the engine takes a random source, so the simulator and tests replay exactly from a seed. The server rolls every hunt with a cryptographic random source, so results can't be edited in the browser.
+
+## Allure
+
+*(eddy, 26 Nov 2026.)* Before, a hunt first rolled attraction and a miss was a quiet hunt: no bait used, nothing gained. Now every hunt meets an elf, and attraction sets how strongly your bait pulls the rarer elves.
+
+- **Allure factor** = attraction / `allure.baseline` (0.8 in `content/constants.json`). It multiplies the weights of **rare, mini boss and boss** elves. Commons and uncommons are not changed, so a higher factor pushes rare visits up and the commons share down. Examples: Stale Cookie (70%) 0.88x, Peppermint Bark with gear around 95% 1.19x, Reindeer Stables without Hot Cocoa about 0.4x.
+- Bait is used on every hunt (it used to be about 80% of hunts), and a hunt always ends in a catch or an escape.
+- Attraction gear (bait, traps, bases, the Jingle Bell Charm) keeps its numbers. In the UI the bar is called **Allure**.
+- The Catch bar now shows the overall catch chance of the hunt, averaged over the elves the setup draws.
+- Quiet hunts are gone from the engine, but old log rows with outcome `quiet` still display. The secret badge Silent Night changed to "Lose 4 elves in a row" (`bestEscapeStreak`), because nothing can be quiet now.
+- The numbers were not retuned (eddy's call): with every hunt now paying out, hunts to rank 5 dropped from 1,652 to 1,289 (see Simulator).
+- Code: `allureFactor()` and `impWeights()` in `src/engine/odds.ts`, `hunt()` in `src/engine/hunt.ts`. Admin "always attract and catch" now only forces the catch and loot.
 
 ## Pacing without a cooldown
 
@@ -875,7 +886,9 @@ Gold comes in only from catches and sales, and goes out on bait, charms, gear, l
 
 **How we check it:** `npm run simulate` plays virtual hunters through v1 with the real engine and content, reports hunts per rank, catch rates and bait cost per location, and with `--strict` fails if a rank target is missed by more than 25%.
 
-**Latest simulator run (early-game onboarding, 200 players):** all reached rank 5, median 1,652 hunts; details in [Early game and tips](#early-game-and-tips).
+**Latest simulator run (Allure, 200 players, no retune):** all reached rank 5, median 1,289 hunts (1,652 before, because every hunt now meets an elf). Median hunts in ranks 1 to 4: 122, 266, 468, 404 (targets 150, 250, 400, 600); rank 4 is flagged "too fast". Bait cost per gold earned: 65%, 13%, 11%, 3%, 36% in the Pantry, Wrapping Room, Toy Workshop, Stables and Carol Loft. Mini boss and boss catches per player: Spoolwick 3.2, Madame Shredwell 1.3, Hammerhand 2.6, General Grimbolt 1.2, Antler Ripper 3.8, Cinderhoof 2.6, Choirmaster Hollowvoice 1.6. Median 48 of 55 badges. A retune (cheaper pace or higher bait cost) is left for eddy to decide.
+
+Previous run (early-game onboarding, 200 players): all reached rank 5, median 1,652 hunts; details in [Early game and tips](#early-game-and-tips).
 
 Previous run (new optional bases, 200 players): all reached rank 5, median 1,608 hunts (1,458 when the six optional bases are skipped); details in [New bases](#new-bases-power-attraction-and-luck) and [Branching progression](#branching-progression).
 
@@ -1017,6 +1030,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 | Date | PR | Change |
 | 2026-11-26 | this PR | Emporium cards and Santa's Workshop recipe cards now share one `ItemStatBlock` component: power type medal (traps; bases show their affinity types), then small stat tiles (Power, Luck, Attraction (exact % for admins; charms show "Boost"), Rares) and a small note line for Good for and Affinity, in the same order. UI only, no numbers changed |
 | --- | --- | --- |
+| 2026-11-26 | this PR | **Allure (eddy).** Attraction no longer rolls for an encounter: every hunt meets an elf and uses bait, and attraction / 0.8 multiplies rare, mini boss and boss weights. New `allure.baseline` in constants; `impWeights` and `huntOdds` take it; UI says Allure; Silent Night badge now needs 4 escapes in a row. Not retuned. Simulator: 200/200 reach rank 5, median 1,289 hunts (was 1,652) |
 | 2026-11-26 | #40 | Bases are drawn 30% lower under the trap in the trap stack. Imported all 97 custom art pictures (elves, traps, bases, baits, charms, materials, trap types, ranks, locations, map, brand, how-to) as resized WebP, replacing the generated SVGs and older PNGs; icons stay SVG; favicon now WebP. No rule or balance change |
 | 2026-11-26 | this PR | Hunt log escapes now show the effectiveness tier ("Escaped. Weak chance") instead of the exact percentage; admins with the exact-odds toggle still see the percentage. Checked the New Catch popup and Hunters feed: they show no odds. Imp-file drop and pillage-risk percentages are unchanged |
 | 2026-11-26 | #36 | Santa's Workshop recipe cards show the output's stats (power, luck, Good for, base type bonus, charm bonuses), traps show their power type medal; attraction stays behind the admin exact-odds toggle. Base type bonus now also shows on item lines in the Emporium and Arsenal |
