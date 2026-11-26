@@ -22,7 +22,7 @@ export interface PlayerState {
   /** Lifetime encounters per imp id, caught or not. Missing in saves from before the new UI. */
   seen?: Record<string, number>;
   /** goldEarned counts gold from catches; missing in saves from before the new UI. */
-  stats: { hunts: number; attracted: number; caught: number; goldEarned?: number };
+  stats: { hunts: number; attracted: number; caught: number; goldEarned?: number; pillaged?: number };
   stamina: { value: number; updatedAt: number };
 }
 
@@ -45,7 +45,7 @@ export function newPlayer(content: Content, now = 0): PlayerState {
     inventory,
     catches: {},
     seen: {},
-    stats: { hunts: 0, attracted: 0, caught: 0, goldEarned: 0 },
+    stats: { hunts: 0, attracted: 0, caught: 0, goldEarned: 0, pillaged: 0 },
     stamina: { value: c.stamina.max, updatedAt: now },
   };
 }

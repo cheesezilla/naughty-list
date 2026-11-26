@@ -1157,6 +1157,17 @@
       "prompt": "Diagram for \"loot\": a boss imp dropping a crafting material, an arrow to Santa's Workshop anvil, an arrow to a new trap. Explainer diagram card, 640x360, cream background, simple icons and arrows, very little text. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
     },
     {
+      "id": "pillage",
+      "slot": "howto",
+      "file": "howto/pillage.svg",
+      "width": 640,
+      "height": 360,
+      "transparent": false,
+      "source": "generated",
+      "description": "How to play, pillage: an escaping imp running off with a cookie and gold coins, red minus signs, a padlock on a small pile of coins it could not take",
+      "prompt": "Diagram for \"pillage\": an escaping imp running off with a cookie and gold coins, red minus signs, a padlock on a small pile of coins it could not take. Explainer diagram card, 640x360, cream background, simple icons and arrows, very little text. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
+    },
+    {
       "id": "ranks",
       "slot": "howto",
       "file": "howto/ranks.svg",

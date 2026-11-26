@@ -67,7 +67,7 @@ interface Log {
   rankAt: Record<number, number>;
   goldAtRank: Record<number, number>;
   purchases: { hunt: number; item: string }[];
-  byLocation: Record<string, { hunts: number; attracted: number; caught: number; gold: number; baitCost: number }>;
+  byLocation: Record<string, { hunts: number; attracted: number; caught: number; gold: number; baitCost: number; pillages: number; pillageCost: number }>;
   bossCatches: number;
   finished: boolean;
   hunts: number;
@@ -155,12 +155,16 @@ function play(rng: Rng): Log {
     const r = hunt(content, p, rng);
     if (!r.ok) { p = plan(p, log, n); continue; }
     p = r.player;
-    const L = (log.byLocation[loc] ??= { hunts: 0, attracted: 0, caught: 0, gold: 0, baitCost: 0 });
+    const L = (log.byLocation[loc] ??= { hunts: 0, attracted: 0, caught: 0, gold: 0, baitCost: 0, pillages: 0, pillageCost: 0 });
     L.hunts++;
     if (r.entry.outcome !== 'quiet') L.attracted++;
     if (r.entry.outcome === 'catch') { L.caught++; L.gold += r.entry.gold; }
     if (r.entry.imp && data.imps.get(r.entry.imp)?.tier === 'boss' && r.entry.outcome === 'catch') log.bossCatches++;
     L.baitCost += r.entry.baitUsed * baitPrice(baitBefore ?? '');
+    if (r.entry.pillage) {
+      L.pillages++;
+      L.pillageCost += r.entry.pillage.gold + (r.entry.pillage.bait ? r.entry.pillage.bait.amount * baitPrice(r.entry.pillage.bait.item) : 0);
+    }
     if (r.entry.rankUp) { log.rankAt[r.entry.rankUp] = n; log.goldAtRank[r.entry.rankUp] = p.gold; }
     log.hunts = n;
     if (p.rank >= finalRank) { log.finished = true; break; }
@@ -198,11 +202,11 @@ for (const r of content.ranks.slice(0, -1)) {
   console.log(`${String(r.rank).padEnd(6)}${`${fmt(quant(spent, 0.1))} / ${fmt(med)} / ${fmt(quant(spent, 0.9))}`.padEnd(36)}${String(target ?? '').padEnd(9)}${status}`);
 }
 
-console.log('\nLocation           Hunts    Attract  Catch/attracted  Bait cost / gold');
+console.log('\nLocation           Hunts    Attract  Catch/attracted  Bait cost / gold  Pillages  Pillage cost / gold');
 for (const loc of content.locations) {
   const ls = logs.map((l) => l.byLocation[loc.id]).filter(Boolean) as Log['byLocation'][string][];
   const sum = (k: keyof Log['byLocation'][string]) => ls.reduce((s, x) => s + x[k], 0);
-  console.log(`${loc.name.padEnd(19)}${fmt(sum('hunts') / PLAYERS).padEnd(9)}${pct(sum('attracted') / sum('hunts')).padEnd(9)}${pct(sum('caught') / sum('attracted')).padEnd(17)}${pct(sum('baitCost') / sum('gold'))}`);
+  console.log(`${loc.name.padEnd(19)}${fmt(sum('hunts') / PLAYERS).padEnd(9)}${pct(sum('attracted') / sum('hunts')).padEnd(9)}${pct(sum('caught') / sum('attracted')).padEnd(17)}${pct(sum('baitCost') / sum('gold')).padEnd(18)}${fmt(sum('pillages') / PLAYERS).padEnd(10)}${pct(sum('pillageCost') / sum('gold'))}`);
 }
 
 console.log('\nGear bought or crafted (median hunt number, share of players)');

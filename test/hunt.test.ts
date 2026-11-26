@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { hunt } from '../src/engine/hunt.js';
+import { hunt, rollPillage } from '../src/engine/hunt.js';
 import { newPlayer, buy, sell, craft, equip, travel, type PlayerState } from '../src/engine/player.js';
 import { seededRng } from '../src/engine/rng.js';
 import { content, scripted, withConstants } from './helpers.js';
@@ -34,13 +34,15 @@ describe('hunt', () => {
     expect(r.player.inventory.stale_cookie).toBe(99);
   });
 
-  it('bait-stealing imps take an extra bait when they escape', () => {
+  it('bait-stealing imps always pillage one bait when they escape', () => {
     // Jarbelly sits after weights 40+30+21+5 = 96 of 100
     const r = hunt(content, fresh(), scripted(0, 0.97, 0.999));
     if (!r.ok) throw new Error(r.error);
     expect(r.entry.imp).toBe('jarbelly');
-    expect(r.entry.baitUsed).toBe(2);
+    expect(r.entry.baitUsed).toBe(1);
+    expect(r.entry.pillage).toEqual({ gold: 0, points: 0, bait: { item: 'stale_cookie', amount: 1 } });
     expect(r.player.inventory.stale_cookie).toBe(98);
+    expect(r.player.stats.pillaged).toBe(1);
   });
 
   it('ranks up when points pass a threshold', () => {
@@ -143,5 +145,49 @@ describe('shop, crafting and travel', () => {
     expect(equip(content, fresh(), 'trap', 'jack_in_the_box').ok).toBe(false);
     expect(equip(content, fresh(), 'trap', 'cardboard_box').ok).toBe(false);
     expect(equip(content, fresh(), 'charm', null).ok).toBe(true);
+  });
+});
+
+describe('pillage on escape', () => {
+  const imp = (id: string) => content.locations.flatMap((l) => l.imps).find((i) => i.id === id)!;
+  const rich = (): PlayerState => ({ ...newPlayer(content), gold: 6000, points: 60000, rank: 4, inventory: { stale_cookie: 20 } });
+
+  it('a boss that pillages takes gold, bait and points', () => {
+    const p = rich();
+    // chance roll 0 (hit), three picks, then the bait amount roll (0.99 -> the most, 5)
+    const out = rollPillage(content, p, imp('madame_shredwell'), 'stale_cookie', scripted(0, 0, 0, 0, 0.99));
+    // 8% of 6,000 = 480 (cap 15 x 300); 2% of 60,000 = 1,200 (cap 3 x 550 = 1,650)
+    expect(out).toEqual({ gold: 480, points: 1200, bait: { item: 'stale_cookie', amount: 5 } });
+    expect(p.gold).toBe(5520);
+    expect(p.points).toBe(58800);
+    expect(p.inventory.stale_cookie).toBe(15);
+  });
+
+  it('misses the roll most of the time for common imps', () => {
+    const p = rich();
+    expect(rollPillage(content, p, imp('crumb_imp'), 'stale_cookie', scripted(0.5))).toBeUndefined();
+    expect(p.gold).toBe(6000);
+  });
+
+  it('never takes gold below the floor or points below the rank threshold', () => {
+    const p: PlayerState = { ...rich(), gold: 105, points: 46_100, inventory: {} };
+    const out = rollPillage(content, p, imp('madame_shredwell'), 'stale_cookie', scripted(0));
+    expect(p.gold).toBe(100);
+    expect(p.points).toBe(46_000); // rank 4 starts at 46,000
+    expect(out).toMatchObject({ gold: 5, points: 100, safe: ['bait'] });
+  });
+
+  it('a rank 1 player keeps their points', () => {
+    const p: PlayerState = { ...newPlayer(content), points: 2000, gold: 5000 };
+    const out = rollPillage(content, p, imp('baron_crumblewick'), 'stale_cookie', scripted(0));
+    expect(p.points).toBe(2000);
+    expect(out?.safe).toContain('points');
+  });
+
+  it('a mini boss takes two kinds', () => {
+    const p = rich();
+    const out = rollPillage(content, p, imp('spoolwick'), 'stale_cookie', scripted(0, 0, 0, 0))!;
+    const kinds = [out.gold > 0, !!out.bait, out.points > 0].filter(Boolean).length;
+    expect(kinds).toBe(2);
   });
 });

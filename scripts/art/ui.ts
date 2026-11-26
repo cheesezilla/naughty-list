@@ -226,6 +226,24 @@ export const howto: Record<string, { look: string; draw: () => string }> = {
         ),
       ),
   },
+  pillage: {
+    look: 'an escaping imp running off with a cookie and gold coins, red minus signs, a padlock on a small pile of coins it could not take',
+    draw: () =>
+      card(
+        g(
+          {},
+          placeSprite(bases.cardboard_box!() + traps.starlit_stocking!(), 20, 90, 200),
+          path('M230 190 L300 190 M270 170 L300 190 L270 210', line(8, P.red)),
+          miniImp(380, 170, 0.65, '#a0483a'),
+          place(baits.stale_cookie!(), 430, 60, 90),
+          circle(470, 250, 22, ol(P.goldBright, 5)), circle(505, 262, 22, ol(P.goldBright, 5)),
+          label('−', 545, 120, 56, P.red, 800), label('−', 560, 270, 56, P.red, 800),
+          circle(110, 300, 20, ol(P.goldBright, 5)), circle(140, 306, 20, ol(P.goldBright, 5)),
+          rect(170, 286, 34, 28, ol(P.silverDark, 5), 5), path('M177 286 L177 276 Q187 262 197 276 L197 286', { fill: 'none', stroke: P.ink, 'stroke-width': 5 }),
+          label('Escaped imps may pillage. Bosses take the most.', 320, 340, 22, P.ink, 600),
+        ),
+      ),
+  },
   ranks: {
     look: 'a staircase of five rank badges rising left to right, a door opening at the top to a new room',
     draw: () =>

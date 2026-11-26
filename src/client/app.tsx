@@ -91,6 +91,13 @@ function Playing({ content, me, onLogout }: { content: Content; me: MeResponse; 
           playSound(imp && (imp.tier === 'boss' || imp.tier === 'miniboss') ? 'boss' : 'catch');
         } else if (e.outcome === 'escape') playSound('escape');
         if (e.outcome === 'catch') buzz(imp?.tier === 'boss' ? 120 : 40);
+        if (e.pillage) {
+          document.body.classList.remove('pillaged');
+          void document.body.offsetWidth; // restart the animation on back-to-back pillages
+          document.body.classList.add('pillaged');
+          setTimeout(() => document.body.classList.remove('pillaged'), 1000);
+          buzz(80);
+        }
       }
     } catch (e) {
       toast((e as Error).message, 'bad');

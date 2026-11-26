@@ -8,5 +8,14 @@
   "sellBackRate": 0.4,
   "rescue": { "maxGold": 50, "item": "stale_cookie", "amount": 10 },
   "maxHuntsPerSecond": 2,
+  "pillage": {
+    "goldFloor": 100,
+    "tiers": {
+      "common": { "chance": 0.03, "takes": ["gold", "bait"], "kinds": 1, "goldCap": 1, "bait": [1, 1] },
+      "rare": { "chance": 0.08, "takes": ["gold", "bait"], "kinds": 1, "goldCap": 2, "bait": [1, 2] },
+      "miniboss": { "chance": 0.35, "takes": ["gold", "bait", "points"], "kinds": 2, "goldPct": 0.05, "goldCap": 10, "bait": [2, 3], "pointsPct": 0.01, "pointsCap": 2 },
+      "boss": { "chance": 0.6, "takes": ["gold", "bait", "points"], "kinds": 3, "goldPct": 0.08, "goldCap": 15, "bait": [3, 5], "pointsPct": 0.02, "pointsCap": 3 }
+    }
+  },
   "stamina": { "enabled": false, "name": "Cocoa", "max": 100, "costPerHunt": 1, "refillPerMinute": 1, "buyPrice": 5 }
 }

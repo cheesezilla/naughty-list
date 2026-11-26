@@ -8,6 +8,26 @@ const id = z.string().regex(/^[a-z0-9_]+$/, 'ids are lowercase letters, digits a
 const chance = z.number().min(0).max(1);
 const price = z.number().int().positive().nullable();
 
+/** What an escaped imp can take. */
+export const pillageKinds = ['gold', 'bait', 'points'] as const;
+export const PillageKind = z.enum(pillageKinds);
+/** How an escaped imp pillages: the chance, which kinds it can take and how much of each. */
+export const PillageRule = z.object({
+  /** Chance per escape. */
+  chance,
+  /** Kinds it picks from; it takes `kinds` of them at random. */
+  takes: z.array(PillageKind).min(1),
+  kinds: z.number().int().min(1).max(3),
+  /** Gold taken: goldPct of the player's gold, capped at goldCap x the imp's gold reward. Without goldPct: goldCap x the imp's gold reward. */
+  goldPct: chance.optional(),
+  goldCap: z.number().nonnegative().optional(),
+  /** Armed bait taken, a random whole number from min to max. */
+  bait: z.tuple([z.number().int().nonnegative(), z.number().int().nonnegative()]).optional(),
+  /** Points taken: pointsPct of the player's points, capped at pointsCap x the imp's points reward. */
+  pointsPct: chance.optional(),
+  pointsCap: z.number().nonnegative().optional(),
+});
+
 /** Text shown on item and imp detail screens. Limits match the UI layout's text slots. */
 export const Flavour = z.object({
   tagline: z.string().min(1).max(60),
@@ -33,7 +53,8 @@ export const Imp = z.object({
   baitWeights: z.record(id, z.number().nonnegative()).optional(),
   effectiveness: z.partialRecord(PowerType, z.number().nonnegative()).optional(),
   loot: z.array(z.object({ item: id, chance, amount: z.number().int().positive().optional() })).optional(),
-  stealsBait: z.boolean().optional(),
+  /** Replaces this imp's tier pillage rule, for example the bait thieves. */
+  pillage: PillageRule.optional(),
   flavour: ImpFlavour.optional(),
 });
 
@@ -97,6 +118,11 @@ export const Constants = z.object({
   sellBackRate: chance,
   rescue: z.object({ maxGold: z.number().int().nonnegative(), item: id, amount: z.number().int().positive() }),
   maxHuntsPerSecond: z.number().positive(),
+  pillage: z.object({
+    /** A pillage never takes gold below this. */
+    goldFloor: z.number().int().nonnegative(),
+    tiers: z.object({ common: PillageRule, rare: PillageRule, miniboss: PillageRule, boss: PillageRule }),
+  }),
   stamina: z.object({
     enabled: z.boolean(), name: z.string(), max: z.number().int().positive(), costPerHunt: z.number().int().nonnegative(),
     refillPerMinute: z.number().nonnegative(), buyPrice: z.number().int().nonnegative(),
@@ -127,6 +153,8 @@ export type Flavour = z.infer<typeof Flavour>;
 export type ImpFlavour = z.infer<typeof ImpFlavour>;
 export type FlavourFile = z.infer<typeof FlavourFile>;
 export type Imp = z.infer<typeof Imp>;
+export type PillageRule = z.infer<typeof PillageRule>;
+export type PillageKind = z.infer<typeof PillageKind>;
 export type Location = z.infer<typeof Location>;
 export type Trap = z.infer<typeof Trap>;
 export type Base = z.infer<typeof Base>;

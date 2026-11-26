@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'preact/hooks';
-import type { GameEvent, JournalEntry, JournalRow } from '../../engine/index.js';
+import type { GameEvent, JournalEntry, JournalRow, Pillage } from '../../engine/index.js';
 import { api } from '../api.js';
 import { useGame } from '../game.js';
 import { Art } from '../lib/art.js';
@@ -16,6 +16,19 @@ export function ImpThumb({ id, size = 52 }: { id: string; size?: number }) {
   return (
     <Art slot="imps" id={caught ? id : '_locked'} alt={caught ? name : 'Not caught yet'} class="thumb imp-thumb" style={{ width: `${size}px`, height: `${size}px` }} />
   );
+}
+
+/** "−480 gold, −4 Golden Bow Bonbons, −180 points", plus a note when a safety rail stopped a loss. */
+export function pillageText(p: Pillage, itemName: (id: string) => string): string {
+  const parts: string[] = [];
+  if (p.gold > 0) parts.push(`−${num(p.gold)} gold`);
+  if (p.bait) parts.push(`−${num(p.bait.amount)} ${itemName(p.bait.item)}`);
+  if (p.points > 0) parts.push(`−${num(p.points)} points`);
+  const safe = p.safe ?? [];
+  if (safe.includes('points')) parts.push('your rank is safe');
+  if (safe.includes('gold')) parts.push('your gold is safe');
+  if (safe.includes('bait')) parts.push('no bait left to take');
+  return parts.join(', ') || 'nothing worth taking';
 }
 
 function HuntRow({ row }: { row: JournalRow & { kind: 'hunt' } }) {
@@ -41,17 +54,20 @@ function HuntRow({ row }: { row: JournalRow & { kind: 'hunt' } }) {
     const loot = e.loot.map((l) => `${l.amount} ${itemName(l.item)}`);
     const caught = e.outcome === 'catch';
     return (
-      <button class={`log-row ${caught ? 'catch' : 'escape'} ${e.firstCatch ? 'first' : ''} tier-${imp.tier}`} onClick={() => go(`imp/${imp.id}`)}>
+      <button class={`log-row ${caught ? 'catch' : 'escape'} ${e.pillage ? 'pillaged' : ''} ${e.firstCatch ? 'first' : ''} tier-${imp.tier}`} onClick={() => go(`imp/${imp.id}`)}>
         <ImpThumb id={imp.id} />
         <div class="row-body">
           <div class="row-head">
             <b>{caught ? `Caught ${imp.name}` : imp.name}</b>
             <span class="tier">{TIER_NAME[imp.tier]}</span>
             {e.firstCatch && <span class="pill gold">Portrait unlocked</span>}
+            {e.pillage && <span class="pill red">Pillaged</span>}
           </div>
           {caught
             ? <>{e.firstCatch && 'First catch! '}+{num(e.gold)} gold, +{num(e.points)} points{loot.length > 0 && `, ${loot.join(', ')}`}</>
-            : <>Escaped{e.baitUsed > 1 ? ' and stole extra bait' : ''}. {pct(e.catchChance ?? 0)} chance</>}
+            : e.pillage
+              ? <>Escaped and pillaged you: {pillageText(e.pillage, itemName)}. {pct(e.catchChance ?? 0)} chance</>
+              : <>Escaped. {pct(e.catchChance ?? 0)} chance</>}
         </div>
         {time}
       </button>
@@ -128,9 +144,9 @@ export function LogRow({ row }: { row: JournalRow }) {
   return row.kind === 'hunt' ? <HuntRow row={row} /> : <EventRow row={row} />;
 }
 
-type Filter = 'all' | 'catches' | 'escapes' | 'events' | 'bosses';
+type Filter = 'all' | 'catches' | 'escapes' | 'pillaged' | 'events' | 'bosses';
 const FILTERS: { id: Filter; label: string }[] = [
-  { id: 'all', label: 'All' }, { id: 'catches', label: 'Catches' }, { id: 'escapes', label: 'Escapes' }, { id: 'events', label: 'Events' }, { id: 'bosses', label: 'Bosses' },
+  { id: 'all', label: 'All' }, { id: 'catches', label: 'Catches' }, { id: 'escapes', label: 'Escapes' }, { id: 'pillaged', label: 'Pillaged' }, { id: 'events', label: 'Events' }, { id: 'bosses', label: 'Bosses' },
 ];
 
 export function HistoryScreen() {

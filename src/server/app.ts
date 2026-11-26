@@ -41,6 +41,7 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
   const impsOfTier = (...tiers: string[]) => [...data.imps.values()].filter((i) => tiers.includes(i.tier)).map((i) => i.id);
   const bossIds = impsOfTier('miniboss', 'boss');
   const notableIds = impsOfTier('rare', 'miniboss', 'boss');
+  const pillageFeedIds = impsOfTier('boss');
   const lastHunt = new Map<number, number>();
 
   const app = Fastify({ logger: opts.logger ?? false, trustProxy: true });
@@ -164,7 +165,7 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
     }));
 
     game.get<{ Querystring: { before?: string; filter?: string; limit?: string } }>('/api/history', async (req) => {
-      const filters: HistoryFilter[] = ['all', 'catches', 'escapes', 'events', 'bosses'];
+      const filters: HistoryFilter[] = ['all', 'catches', 'escapes', 'pillaged', 'events', 'bosses'];
       const filter = filters.includes(req.query.filter as HistoryFilter) ? (req.query.filter as HistoryFilter) : 'all';
       const before = Number(req.query.before) || undefined;
       const limit = Number(req.query.limit) || 50;
@@ -177,7 +178,8 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
     // Leaderboard and catch feed. Only public numbers: no inventories or gold.
     game.get('/api/hunters', async (req) => ({
       players: store.players().map((p) => ({ username: p.username, rank: p.rank, points: p.points, impsOnList: p.impsOnList, you: p.id === req.user!.id })),
-      feed: store.feed(notableIds, 20).map((r) => ({ id: r.id, at: r.at, username: r.username, entry: r.entry })),
+      // A pillage shows who was hit, not how much they lost.
+      feed: store.feed(notableIds, 20, pillageFeedIds).map((r) => ({ id: r.id, at: r.at, username: r.username, entry: 'pillage' in r.entry && r.entry.pillage ? { ...r.entry, pillage: { gold: 0, points: 0 } } : r.entry })),
     }));
 
     game.post('/api/account/password', async (req, reply) => {
