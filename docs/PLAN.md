@@ -17,6 +17,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Custom PNG portraits for all 10 cookie-pantry/wrapping-room/toy-workshop/reindeer-stables imps | Done | #13 |
 | Custom AI-generated PNGs for the rest of the game art (traps, bases, baits, charms, materials, trap types, brand, locations, map, how-to, remaining imps) — progress tracked in [ART_PROGRESS.md](ART_PROGRESS.md) | In progress | #14 |
 | New phone-first UI (layout D2): bottom menu, hunt log with events and full history, Arsenal, Elf Emporium, Santa's Workshop, More pages, open sign-up with admin switch | Done | #11 |
+| Holly power type renamed Starlight; its three traps reworked (Starlit Stocking, Star Lantern, Constellation Wreath) with new text and SVG art, old saves migrated | In review | #17 |
 | Intro letter from Santa: the game's backstory as the first hunt-log entry of every new game, and on How to play | In review | #12 |
 | 5. Tune from play-test | Planned | |
 
@@ -82,7 +83,7 @@ All constants live in `content/constants.json` and the other content files, so t
 - **Power** = (trap + base + charm power) x (1 + charm power bonus). **Luck** = trap + base + charm luck.
 - **Attraction** = min(95%, bait attraction x (1 + trap, base and charm attraction bonuses)). In the Reindeer Stables it is halved unless the bait is Hot Cocoa.
 - **Imp pick**: chance of imp i = its weight / sum of weights for that bait. A location's 3 commons share about 91%, the rare imp 5%, the mini boss 3% and the boss 1%. Fruitcake doubles the rare, mini boss and boss weights.
-- **Effectiveness** E of the trap's power type against an imp: 0 (immune), 0.5 (resists), 1 (normal) or 1.5 (weak). Types: Clockwork (toy machines), Holly (Christmas greenery), Frost (ice magic).
+- **Effectiveness** E of the trap's power type against an imp: 0 (immune), 0.5 (resists), 1 (normal) or 1.5 (weak). Types: Clockwork (toy machines), Starlight (Christmas-star magic, strong against shadowy imps; called Holly before PR #17), Frost (ice magic).
 - **Catch chance** = clamp((P x E + L^2) / (P x E + M), 0, 98%), where M is the imp's power. Luck only counts when E > 0.
   - Example: a 150 power Clockwork trap on a 20 power base with luck 2, against a normal 90 power imp: (170 + 4) / (170 + 90) = 67%.
 - **Rewards**: a catch pays the imp's gold and points and rolls its loot list; bosses always drop their crafting part. An escape pays nothing; some imps also steal one extra bait when they escape.
@@ -116,7 +117,7 @@ Ranks depend on points only. Location unlock fees are paid once; travel between 
 
 ## v1 content
 
-The numbers below mirror `content/*.json`. Types: C = Clockwork, H = Holly, F = Frost; unlisted types are normal (x1).
+The numbers below mirror `content/*.json`. Types: C = Clockwork, S = Starlight, F = Frost; unlisted types are normal (x1).
 
 **Imps**
 
@@ -124,28 +125,28 @@ The numbers below mirror `content/*.json`. Types: C = Clockwork, H = Holly, F = 
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Cookie Pantry | Crumb Imp | Common | 40 | 12 | 20 | | | |
 | Cookie Pantry | Sprinkle Snatcher | Common | 70 | 18 | 30 | C | | Candied Peel 10% |
-| Cookie Pantry | Chimney Soot Imp | Common | 100 | 25 | 45 | | H | |
+| Cookie Pantry | Chimney Soot Imp | Common | 100 | 25 | 45 | | S | |
 | Cookie Pantry | Gingerbread Imp | Rare | 160 | 60 | 100 | F | | Sugar Glass 50% |
-| Cookie Pantry | Jarbelly the Glutton | Mini boss | 300 | 90 | 180 | C | H | Cookie Tin 100% |
-| Cookie Pantry | Baron Crumblewick | Boss | 450 | 150 | 300 | C | H | Brass Spring 100% |
+| Cookie Pantry | Jarbelly the Glutton | Mini boss | 300 | 90 | 180 | C | S | Cookie Tin 100% |
+| Cookie Pantry | Baron Crumblewick | Boss | 450 | 150 | 300 | C | S | Brass Spring 100% |
 | Wrapping Room | Ribbon Tangler | Common | 150 | 40 | 60 | | | |
-| Wrapping Room | Tape Biter | Common | 220 | 55 | 85 | H | | |
+| Wrapping Room | Tape Biter | Common | 220 | 55 | 85 | S | | |
 | Wrapping Room | Bow Burglar | Common | 280 | 70 | 100 | | C | Candied Peel 10% |
 | Wrapping Room | Glitter Imp | Rare | 350 | 110 | 160 | F | | Sugar Glass 50% |
-| Wrapping Room | Spoolwick | Mini boss | 600 | 160 | 300 | H | | Golden Ribbon 100% |
-| Wrapping Room | Madame Shredwell | Boss | 1,100 | 300 | 550 | H | C | Enchanted Wrapping 100% |
+| Wrapping Room | Spoolwick | Mini boss | 600 | 160 | 300 | S | | Golden Ribbon 100% |
+| Wrapping Room | Madame Shredwell | Boss | 1,100 | 300 | 550 | S | C | Enchanted Wrapping 100% |
 | Toy Workshop | Cog Pincher | Common | 450 | 140 | 150 | | | |
-| Toy Workshop | Paint Smudger | Common | 600 | 180 | 190 | H | | |
-| Toy Workshop | Stuffing Ripper | Common | 750 | 220 | 230 | F | H | |
+| Toy Workshop | Paint Smudger | Common | 600 | 180 | 190 | S | | |
+| Toy Workshop | Stuffing Ripper | Common | 750 | 220 | 230 | F | S | |
 | Toy Workshop | Wind-up Imp | Rare | 900 | 300 | 320 | C | F immune | Sugar Glass 50% |
 | Toy Workshop | Hammerhand | Mini boss | 1,600 | 400 | 650 | F | | Toymaker's Gear 100% |
 | Toy Workshop | Foreman Grimbolt | Boss | 2,800 | 700 | 1,300 | C | | Clockwork Heart 100% |
 | Reindeer Stables | Hay Hoarder | Common | 1,000 | 300 | 350 | | | |
-| Reindeer Stables | Bell Thief | Common | 1,300 | 380 | 420 | | H | |
+| Reindeer Stables | Bell Thief | Common | 1,300 | 380 | 420 | | S | |
 | Reindeer Stables | Harness Snipper | Common | 1,600 | 450 | 480 | C | F immune | |
 | Reindeer Stables | Carrot Crook | Rare | 2,000 | 600 | 650 | C | F | Sugar Glass 50% |
-| Reindeer Stables | Antler Ripper | Mini boss | 3,500 | 800 | 1,200 | C | H | Silver Sleighbell 100% |
-| Reindeer Stables | Grizzlewick the Horned | Boss | 6,000 | 1,500 | 3,000 | C | H immune | Brimstone Coal 100% |
+| Reindeer Stables | Antler Ripper | Mini boss | 3,500 | 800 | 1,200 | C | S | Silver Sleighbell 100% |
+| Reindeer Stables | Grizzlewick the Horned | Boss | 6,000 | 1,500 | 3,000 | C | S immune | Brimstone Coal 100% |
 
 Jarbelly, Bow Burglar and Bell Thief steal an extra bait when they escape. Brimstone Coal has no use in v1; it is saved for later recipes, including The Naughty List.
 
@@ -153,12 +154,12 @@ Jarbelly, Bow Burglar and Bell Thief steal an extra bait when they escape. Brims
 
 | Trap | Type | Power | Luck | Attraction | Rank | Price |
 | --- | --- | --- | --- | --- | --- | --- |
-| Stocking Snare | H | 60 | 0 | | 1 | Starter |
+| Starlit Stocking | S | 60 | 0 | | 1 | Starter |
 | Jack-in-the-Box | C | 150 | 1 | | 1 | 300 gold |
-| Holly Noose | H | 300 | 2 | | 2 | 1,200 gold |
+| Star Lantern | S | 300 | 2 | | 2 | 1,200 gold |
 | Icicle Jar | F | 500 | 2 | +5% | 2 | 3,000 gold |
 | Nutcracker Jaws | C | 900 | 3 | | 3 | 9,000 gold |
-| Wreath of Thorns | H | 1,400 | 5 | +5% | 3 | Crafted |
+| Constellation Wreath | S | 1,400 | 5 | +5% | 3 | Crafted |
 | Snow Globe Prison | F | 1,800 | 4 | | 4 | 25,000 gold |
 | Sleigh-Bell Snapper | C | 2,600 | 6 | +5% | 4 | Crafted (v1 capstone) |
 
@@ -216,7 +217,7 @@ Gold comes in only from catches and sales, and goes out on bait, charms, gear, l
 | --- | --- | --- | --- |
 | Mistletoe Charm x10 | 1 Sugar Glass | 150 | 1 |
 | Fruitcake x5 | 3 Candied Peel, 1 Cookie Tin | 100 | 2 |
-| Wreath of Thorns (trap) | 3 Enchanted Wrapping, 2 Brass Spring | 6,000 | 3 |
+| Constellation Wreath (trap) | 3 Enchanted Wrapping, 2 Brass Spring | 6,000 | 3 |
 | Yule Log Base | 3 Toymaker's Gear, 1 Golden Ribbon, 2 Sugar Glass | 4,000 | 3 |
 | Sleigh-Bell Snapper (trap) | 3 Silver Sleighbell, 1 Clockwork Heart, 1 Nutcracker Jaws (used up) | 15,000 | 4 |
 
@@ -225,13 +226,13 @@ Gold comes in only from catches and sales, and goes out on bait, charms, gear, l
 | Location | Meant-for gear | Bait cost / gold per attracted hunt | Catch rate (commons) |
 | --- | --- | --- | --- |
 | Cookie Pantry | Jack-in-the-Box + Gingerbread Slab | about 60% | 60 to 70% |
-| Wrapping Room | Holly Noose or Icicle Jar + Candy Cane Platform | about 50% | 55 to 65% |
+| Wrapping Room | Star Lantern or Icicle Jar + Candy Cane Platform | about 50% | 55 to 65% |
 | Toy Workshop | Nutcracker Jaws + Ice Block | about 45% | 55 to 65% |
 | Reindeer Stables | Nutcracker Jaws or Snow Globe Prison + Yule Log Base | about 45% | 45 to 55% |
 
 **How we check it:** `npm run simulate` plays virtual hunters through v1 with the real engine and content, reports hunts per rank, catch rates and bait cost per location, and with `--strict` fails if a rank target is missed by more than 25%.
 
-**Latest simulator run (PR #1, 100 players):** all reached rank 5, median 1,358 hunts. Median hunts in ranks 1 to 4: 177, 285, 401, 493 (targets 150, 250, 400, 600, all within 25%). Catch per attracted hunt: 64%, 58%, 56%, 58% by location. Known gaps: simulated players never bought Wreath of Thorns or Snow Globe Prison and mostly used Stale Cookies, so the better baits and those traps need a stronger reason to use them.
+**Latest simulator run (PR #1, 100 players):** all reached rank 5, median 1,358 hunts. Median hunts in ranks 1 to 4: 177, 285, 401, 493 (targets 150, 250, 400, 600, all within 25%). Catch per attracted hunt: 64%, 58%, 56%, 58% by location. Known gaps: simulated players never bought Constellation Wreath or Snow Globe Prison and mostly used Stale Cookies, so the better baits and those traps need a stronger reason to use them.
 
 ## Art
 
@@ -242,7 +243,7 @@ Every picture has a fixed name, `src/client/public/art/<slot>/<id>.<ext>`, where
 | `brand` | 2 | icon 1024², key art 1170×1290 | Game icon, login key art |
 | `traps`, `bases` | 8, 5 | 600×450, transparent | Same canvas; the trap stands on the base's top line (y = 340), so the two layer |
 | `baits`, `charms`, `materials` | 5, 3, 10 | 512², transparent | Thumbnails |
-| `trap_types` | 3 | 256² | Clockwork, Holly, Frost badges |
+| `trap_types` | 3 | 256² | Clockwork, Starlight, Frost badges |
 | `locations` | 4 | 1170×470 | Hunt banners; centre floor left clear for the trap |
 | `map` | 1 | 1600×900 | Travel map; manifest has pin positions per location |
 | `imps` | 24 + `_locked` | 512² | Portrait cards; frame shows tier; `_locked` is the "?" card |
@@ -359,6 +360,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-26 | #17 | Power type Holly renamed **Starlight** (Christmas-star magic, strong against shadowy imps). Its traps reworked: Stocking Snare -> Starlit Stocking (`starlit_stocking`), Holly Noose -> Star Lantern (`star_lantern`), Wreath of Thorns -> Constellation Wreath (`constellation_wreath`, recipe id too), with new flavour text and imp weakness hints. Simple generated SVGs for the three traps and the Starlight badge replace the old Holly PNGs/SVGs and are queued for Gemini in ART_PROGRESS.md. Saves and hunt-log entries with the old ids are rewritten when the server starts. No numbers changed; simulator run unchanged apart from names (100/100 reach rank 5) |
 | 2026-11-25 | #14 | Custom PNG art for the 8 traps and 4 of 5 bases (`cardboard_box`, `gingerbread_slab`, `candy_cane_platform`, `ice_block`; `yule_log_base` still generated SVG), generated with Gemini on a plain background then cut out locally with `rembg`. Rest of the non-icon art (baits, charms, materials, trap types, brand, locations, map, how-to, remaining 15 imps) still queued, paused on Gemini's daily image-generation limit. No game numbers changed |
 | 2026-11-25 | #13 | Custom PNG portraits for all 10 cookie-pantry/wrapping-room/toy-workshop/reindeer-stables imps (`crumb_imp`, `gingerbread_imp`, `baron_crumblewick`, `glitter_imp`, `madame_shredwell`, `windup_imp`, `foreman_grimbolt`, `carrot_crook`, `grizzlewick`, `_locked`), generated with an AI image tool and dropped in per docs/ART.md; `npm run art` picked them up as custom and left the other 15 imps on generated SVG. No game numbers changed |
 | 2026-11-25 | #12 | Intro letter from Santa (`content/story.json`), logged as a Story event when a game starts (sign-up and Start over) and shown on How to play. No numbers changed |

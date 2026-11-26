@@ -26,15 +26,15 @@
       "prompt": "Tall login key art: night sky with aurora and moon, the shadow of the horned devil Scrinch in the clouds, a snowy hill with Santa's lair (round red door, warm windows, chimney), pine trees, and imp silhouettes with glowing eyes sneaking across the snow carrying a sack; keep the top third calm for the title. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
     },
     {
-      "id": "stocking_snare",
+      "id": "starlit_stocking",
       "slot": "traps",
-      "file": "traps/stocking_snare.png",
+      "file": "traps/starlit_stocking.svg",
       "width": 600,
       "height": 450,
       "transparent": true,
-      "source": "custom",
-      "description": "Stocking Snare: a red Christmas stocking with a white cuff, cinched by a holly-vine drawstring with berries",
-      "prompt": "Stocking Snare (holly trap): a red Christmas stocking with a white cuff, cinched by a holly-vine drawstring with berries. Single trap sprite on a transparent background, 600x450, three-quarter front view, its bottom resting on y=340 so it sits on top of a base sprite. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos.",
+      "source": "generated",
+      "description": "Starlit Stocking: a red Christmas stocking with a white cuff, cinched by a drawstring strung with tiny glowing gold star-lights, a bigger star at the end",
+      "prompt": "Starlit Stocking (starlight trap): a red Christmas stocking with a white cuff, cinched by a drawstring strung with tiny glowing gold star-lights, a bigger star at the end. Single trap sprite on a transparent background, 600x450, three-quarter front view, its bottom resting on y=340 so it sits on top of a base sprite. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos.",
       "layer": "trap",
       "drawOver": "bases"
     },
@@ -52,15 +52,15 @@
       "drawOver": "bases"
     },
     {
-      "id": "holly_noose",
+      "id": "star_lantern",
       "slot": "traps",
-      "file": "traps/holly_noose.png",
+      "file": "traps/star_lantern.svg",
       "width": 600,
       "height": 450,
       "transparent": true,
-      "source": "custom",
-      "description": "Holly Noose: a loop of enchanted holly vine on a wooden stake, glowing red berries",
-      "prompt": "Holly Noose (holly trap): a loop of enchanted holly vine on a wooden stake, glowing red berries. Single trap sprite on a transparent background, 600x450, three-quarter front view, its bottom resting on y=340 so it sits on top of a base sprite. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos.",
+      "source": "generated",
+      "description": "Star Lantern: a brass lantern with open shutters holding a glowing fallen star, a cone of golden starlight shining down",
+      "prompt": "Star Lantern (starlight trap): a brass lantern with open shutters holding a glowing fallen star, a cone of golden starlight shining down. Single trap sprite on a transparent background, 600x450, three-quarter front view, its bottom resting on y=340 so it sits on top of a base sprite. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos.",
       "layer": "trap",
       "drawOver": "bases"
     },
@@ -91,15 +91,15 @@
       "drawOver": "bases"
     },
     {
-      "id": "wreath_of_thorns",
+      "id": "constellation_wreath",
       "slot": "traps",
-      "file": "traps/wreath_of_thorns.png",
+      "file": "traps/constellation_wreath.svg",
       "width": 600,
       "height": 450,
       "transparent": true,
-      "source": "custom",
-      "description": "Wreath of Thorns: a dark holly wreath bristling with brown thorns and berries, standing on edge with a red bow",
-      "prompt": "Wreath of Thorns (holly trap): a dark holly wreath bristling with brown thorns and berries, standing on edge with a red bow. Single trap sprite on a transparent background, 600x450, three-quarter front view, its bottom resting on y=340 so it sits on top of a base sprite. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos.",
+      "source": "generated",
+      "description": "Constellation Wreath: a night-blue wreath of enchanted wrapping studded with glowing gold stars joined by faint constellation lines, standing on edge with a gold bow",
+      "prompt": "Constellation Wreath (starlight trap): a night-blue wreath of enchanted wrapping studded with glowing gold stars joined by faint constellation lines, standing on edge with a gold bow. Single trap sprite on a transparent background, 600x450, three-quarter front view, its bottom resting on y=340 so it sits on top of a base sprite. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos.",
       "layer": "trap",
       "drawOver": "bases"
     },
@@ -404,15 +404,15 @@
       "prompt": "Clockwork trap type badge: a brass gear on a cream disc. Round badge icon, 256x256, transparent corners, readable at 24px. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
     },
     {
-      "id": "holly",
+      "id": "starlight",
       "slot": "trap_types",
-      "file": "trap_types/holly.svg",
+      "file": "trap_types/starlight.svg",
       "width": 256,
       "height": 256,
       "transparent": true,
       "source": "generated",
-      "description": "Holly trap type badge: two holly leaves and red berries on a cream disc",
-      "prompt": "Holly trap type badge: two holly leaves and red berries on a cream disc. Round badge icon, 256x256, transparent corners, readable at 24px. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
+      "description": "Starlight trap type badge: a glowing gold five-point star with small sparkles on a night-blue disc",
+      "prompt": "Starlight trap type badge: a glowing gold five-point star with small sparkles on a night-blue disc. Round badge icon, 256x256, transparent corners, readable at 24px. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
     },
     {
       "id": "frost",
@@ -1142,8 +1142,8 @@
       "height": 360,
       "transparent": false,
       "source": "generated",
-      "description": "How to play, trap types: the three trap-type badges (clockwork gear, holly, frost snowflake) with an imp showing x1.5 weakness and x0.5 resistance",
-      "prompt": "Diagram for \"trap types\": the three trap-type badges (clockwork gear, holly, frost snowflake) with an imp showing x1.5 weakness and x0.5 resistance. Explainer diagram card, 640x360, cream background, simple icons and arrows, very little text. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
+      "description": "How to play, trap types: the three trap-type badges (clockwork gear, starlight star, frost snowflake) with an imp showing x1.5 weakness and x0.5 resistance",
+      "prompt": "Diagram for \"trap types\": the three trap-type badges (clockwork gear, starlight star, frost snowflake) with an imp showing x1.5 weakness and x0.5 resistance. Explainer diagram card, 640x360, cream background, simple icons and arrows, very little text. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
     },
     {
       "id": "loot",

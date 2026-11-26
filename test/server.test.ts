@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { FastifyInstance, LightMyRequestResponse } from 'fastify';
 import { buildApp } from '../src/server/app.js';
 import { Store } from '../src/server/db.js';
+import { newPlayer, type PlayerState } from '../src/engine/player.js';
 import { content, scripted } from './helpers.js';
 
 let app: FastifyInstance;
@@ -114,7 +115,7 @@ describe('server', () => {
     const buy = (await post('/api/buy', { item: 'jack_in_the_box' }, c)).json();
     expect(buy.log).toMatchObject({ kind: 'event', n: 1, entry: { type: 'buy', item: 'jack_in_the_box', amount: 1, gold: 300 } });
     const eq = (await post('/api/setup', { slot: 'trap', item: 'jack_in_the_box' }, c)).json();
-    expect(eq.log.entry).toEqual({ type: 'equip', slot: 'trap', item: 'jack_in_the_box', previous: 'stocking_snare' });
+    expect(eq.log.entry).toEqual({ type: 'equip', slot: 'trap', item: 'jack_in_the_box', previous: 'starlit_stocking' });
     // equipping what is already equipped logs nothing
     expect((await post('/api/setup', { slot: 'trap', item: 'jack_in_the_box' }, c)).json().log).toBeNull();
     const sell = (await post('/api/sell', { item: 'stale_cookie', amount: 10 }, c)).json();
@@ -246,6 +247,27 @@ describe('store', () => {
     s.db.prepare('INSERT INTO journal (user_id, hunt_no, created_at, entry) VALUES (1, 1, 5, ?)').run('{"outcome":"quiet"}');
     (s as unknown as { migrate(): void }).migrate();
     expect(s.journal(1)).toEqual([{ id: 1, n: 1, at: 5, kind: 'hunt', entry: { outcome: 'quiet' } }]);
+    s.close();
+  });
+
+  it('renames the old Holly trap ids in saves and log entries', () => {
+    const s = new Store(':memory:');
+    const id = s.createUser('a', 'x', false, 0);
+    const old = newPlayer(content, 0);
+    const state = JSON.parse(JSON.stringify(old).replaceAll('starlit_stocking', 'stocking_snare')) as PlayerState;
+    state.inventory.holly_noose = 1;
+    s.savePlayer(id, state, 0);
+    s.addJournal(id, 0, { type: 'equip', slot: 'trap', item: 'holly_noose', previous: 'stocking_snare' }, 0, 'event');
+    s.addJournal(id, 0, { type: 'craft', recipe: 'wreath_of_thorns', item: 'wreath_of_thorns', amount: 1, gold: 6000 }, 1, 'event');
+    (s as unknown as { migrate(): void }).migrate();
+    const p = s.player(id)!;
+    expect(p.setup.trap).toBe('starlit_stocking');
+    expect(p.inventory).toMatchObject({ starlit_stocking: 1, star_lantern: 1 });
+    expect(p.inventory).not.toHaveProperty('stocking_snare');
+    expect(s.journal(id).map((r) => r.entry)).toEqual([
+      { type: 'craft', recipe: 'constellation_wreath', item: 'constellation_wreath', amount: 1, gold: 6000 },
+      { type: 'equip', slot: 'trap', item: 'star_lantern', previous: 'starlit_stocking' },
+    ]);
     s.close();
   });
 });

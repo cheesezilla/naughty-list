@@ -219,7 +219,7 @@ const HOWTO: { id: string; title: string; text: string }[] = [
   { id: 'attraction', title: 'Attraction', text: 'Your bait sets how often an imp shows up. Better bait, plus attraction bonuses from gear, means fewer quiet hunts. Quiet hunts cost nothing.' },
   { id: 'power', title: 'Power', text: "Your trap, base and charm add up to your power. The higher it is compared with the imp's power, the better your catch chance." },
   { id: 'luck', title: 'Luck', text: 'Luck gives a bonus that matters most against strong imps. Charms are the easiest way to get more.' },
-  { id: 'trap_types', title: 'Trap types', text: 'Clockwork, Holly and Frost. Some imps are weak to a type (×1.5 power) and some resist it (×0.5) or are immune. Their imp file and rumour hint at which.' },
+  { id: 'trap_types', title: 'Trap types', text: 'Clockwork, Starlight and Frost. Some imps are weak to a type (×1.5 power) and some resist it (×0.5) or are immune. Their imp file and rumour hint at which.' },
   { id: 'loot', title: "Loot and Santa's Workshop", text: "Rare imps and bosses drop materials. Craft them in Santa's Workshop into gear and bait you can't buy." },
   { id: 'ranks', title: 'Ranks', text: 'Catches earn points. New ranks open new rooms of the lair and new gear in the Elf Emporium.' },
 ];

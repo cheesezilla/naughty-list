@@ -1,19 +1,19 @@
 {
   "items": {
-    "stocking_snare": {
-      "tagline": "A wool stocking, a holly drawstring and hope.",
-      "description": "Santa's starter trap: a darned stocking that cinches shut on a holly cord when something small climbs inside.",
-      "backstory": "Every new hunter gets one, fished from the lost-property basket by the big fireplace. The drawstring is a sprig from the first wreath the elves ever hung, and it still pricks anything that wriggles. It won't hold a big imp, but little ones can't resist crawling into something that smells of oranges and old presents."
+    "starlit_stocking": {
+      "tagline": "A wool stocking, a string of starlight and hope.",
+      "description": "Santa's starter trap: a darned stocking laced with a strand of tiny star-lights. It cinches shut when something small climbs in after the glow.",
+      "backstory": "Every new hunter gets one, fished from the lost-property basket by the big fireplace. The drawstring is a thread of light spun from the star on top of the first tree the elves ever decorated, and shadowy little imps can't stand to be near it. It won't hold a big imp, but little ones still crawl in, hoping the glow is something shiny to steal."
     },
     "jack_in_the_box": {
       "tagline": "Wind it up. Wait. Pop goes the imp.",
       "description": "A crank-handled toy box whose clockwork lid slams shut the moment curious fingers lift the latch.",
       "backstory": "The Toy Workshop made these by the thousand until one swallowed an elf's mitten. Rather than scrap the batch, the elves reversed the springs so the lid snaps shut instead of open. Imps simply cannot stand not knowing what is inside a box, which is the whole idea."
     },
-    "holly_noose": {
-      "tagline": "Glossy, green and very, very grabby.",
-      "description": "A loop of enchanted holly vine that tightens as an imp struggles. Its berries glow red while it is set.",
-      "backstory": "The holly in Santa's greenhouse grows towards mischief the way other plants grow towards the sun. An elf gardener noticed it creeping after a raiding imp one night and had the clever idea of tying it in a loop. The vine has been happily strangling the sound of little feet ever since."
+    "star_lantern": {
+      "tagline": "One fallen star, one brass lantern, no escape.",
+      "description": "A brass lantern holding a fallen star. When an imp creeps close, the shutters snap open and the beam pins it where it stands.",
+      "backstory": "Every few winters a star drifts down over the North Pole, and the elves catch it in a mitten before it melts the snow. Kept in a lantern it burns for years. Imps live in shadow, and a beam of real starlight is the one thing they can't wriggle out of. The lamplighter elves trade the old stars for new ones each Christmas Eve."
     },
     "icicle_jar": {
       "tagline": "Cold glass, a sweet smell, a quick freeze.",
@@ -25,10 +25,10 @@
       "description": "A towering nutcracker whose painted jaw is driven by a brass mainspring strong enough to crack a walnut, or an imp.",
       "backstory": "This one stood guard by the Workshop doors for a hundred Christmases and never cracked a single nut. When the raids began, the elves rebuilt its innards with springs from Santa's sleigh. It still salutes politely before it bites, which the imps consider very unfair."
     },
-    "wreath_of_thorns": {
-      "tagline": "Festive on the door, ferocious on the floor.",
-      "description": "A forged wreath of enchanted wrapping and brass-sprung thorns that snaps inward on anything that steps through.",
-      "backstory": "Santa's Workshop weaves it from the wrapping Madame Shredwell guarded and the springs Baron Crumblewick hoarded, which the elves find deeply satisfying. Hung on a door it looks like any other wreath. Laid flat on the floor, its thorns curl inward like fingers closing on a secret."
+    "constellation_wreath": {
+      "tagline": "Festive on the door, a night sky on the floor.",
+      "description": "A wreath of enchanted wrapping studded with brass-sprung stars. Step inside and every star flares at once, and the ring snaps shut.",
+      "backstory": "Santa's Workshop weaves it from the wrapping Madame Shredwell guarded and pins it with stars on the springs Baron Crumblewick hoarded, which the elves find deeply satisfying. Hung on a door it looks like any other wreath. Laid flat, its stars form the shape of the Sleigh, the North Pole's own constellation, and no shadow survives inside it."
     },
     "snow_globe_prison": {
       "tagline": "Shake it, and the imp sees only snow.",
@@ -171,8 +171,8 @@
     },
     "chimney_soot_imp": {
       "tagline": "Comes down the chimney, coughing.",
-      "description": "A sooty imp that lives in the Pantry flues. Its soot smothers holly traps, but sugar cookies lure it down.",
-      "backstory": "These imps were born in the fires under Scrinch's throne and miss the heat terribly. They nest in the Pantry chimneys and slide down whenever the oven is on. Their soot clogs holly vines so badly that the leaves go limp, so hunters bring springs or ice instead.",
+      "description": "A sooty imp that lives in the Pantry flues. Its soot smothers starlight, but sugar cookies lure it down.",
+      "backstory": "These imps were born in the fires under Scrinch's throne and miss the heat terribly. They nest in the Pantry chimneys and slide down whenever the oven is on. Their soot dims starlight to a feeble glimmer, so hunters bring springs or ice instead.",
       "rumour": "Black handprints on the oven door, and the smell of burnt sugar."
     },
     "gingerbread_imp": {
@@ -183,14 +183,14 @@
     },
     "jarbelly": {
       "tagline": "Ate the cookie jar. Then the jar.",
-      "description": "The Pantry's greedy mini boss. Jarbelly eats bait off traps and shrugs off holly, but springs make it jump.",
-      "backstory": "Jarbelly started as an ordinary Crumb Imp who never stopped eating. Now it is the size of a flour barrel and carries a cookie tin under each arm, always empty. It will lick your trap clean before you know it was there. Clockwork startles it; holly just tickles its belly.",
+      "description": "The Pantry's greedy mini boss. Jarbelly eats bait off traps and shrugs off starlight, but springs make it jump.",
+      "backstory": "Jarbelly started as an ordinary Crumb Imp who never stopped eating. Now it is the size of a flour barrel and carries a cookie tin under each arm, always empty. It will lick your trap clean before you know it was there. Clockwork startles it; starlight just makes it squint.",
       "rumour": "Cookies vanish from set traps without a single crumb left behind."
     },
     "baron_crumblewick": {
       "tagline": "Lord of the larder, by his own decree.",
-      "description": "Scrinch's lieutenant in the Pantry, a pompous imp in a spring-lined coat. Clockwork outwits him; holly can't hold him.",
-      "backstory": "Baron Crumblewick declared himself ruler of the Pantry and wears a cookie crumb crown to prove it. He lines his coat with springs stolen from the mixers so he can bounce out of danger. He laughs at holly, but a clockwork trap ticking faster than his springs is his one real fear.",
+      "description": "Scrinch's lieutenant in the Pantry, a pompous imp in a spring-lined coat. Clockwork outwits him; starlight can't dazzle him.",
+      "backstory": "Baron Crumblewick declared himself ruler of the Pantry and wears a cookie crumb crown to prove it. He lines his coat with springs stolen from the mixers so he can bounce out of danger. He laughs at starlight, but a clockwork trap ticking faster than his springs is his one real fear.",
       "rumour": "Someone has been holding court on the top shelf, wearing a crown of crumbs."
     },
     "ribbon_tangler": {
@@ -201,8 +201,8 @@
     },
     "tape_biter": {
       "tagline": "Chews sticky tape like gum.",
-      "description": "An imp with a taste for sticky tape. It gets its teeth stuck in holly vines, which makes it easy to catch.",
-      "backstory": "Tape Biters chew through roll after roll of tape until their jaws are gummed together. They love the crunch but hate the sting of holly, which sticks to their tacky teeth and won't let go. The elves leave a sprig or two by the tape dispensers for exactly that reason.",
+      "description": "An imp with a taste for sticky tape. It lurks in dark corners, and starlight dazzles it long enough to catch.",
+      "backstory": "Tape Biters chew through roll after roll of tape until their jaws are gummed together. They chew in the dark under the wrapping tables and hate any bright light, which freezes them mid-bite. The elves leave a star-lamp or two by the tape dispensers for exactly that reason.",
       "rumour": "Every roll of tape has teeth marks, and none of it sticks any more."
     },
     "bow_burglar": {
@@ -219,14 +219,14 @@
     },
     "spoolwick": {
       "tagline": "Wears stolen golden ribbon as a cape.",
-      "description": "The Wrapping Room's mini boss, wrapped in golden ribbon. Holly snags its cape and pulls it down.",
-      "backstory": "Spoolwick steals the one golden ribbon meant for the year's most special present and wears it like a royal cape. It rolls around the Wrapping Room on a giant spool, faster than any elf. Its long cape catches on holly thorns, though, and that has ended many of its escapes.",
+      "description": "The Wrapping Room's mini boss, wrapped in golden ribbon. Starlight blazes off its cape and blinds it.",
+      "backstory": "Spoolwick steals the one golden ribbon meant for the year's most special present and wears it like a royal cape. It rolls around the Wrapping Room on a giant spool, faster than any elf. Its shiny cape catches starlight and throws it straight back in its eyes, and that has ended many of its escapes.",
       "rumour": "A flash of gold rolling between the shelves, too fast to follow."
     },
     "madame_shredwell": {
       "tagline": "Shreds paper, schedules and spirits.",
-      "description": "Scrinch's lieutenant in the Wrapping Room, with scissor fingers. She snips clockwork but tangles in holly.",
-      "backstory": "Madame Shredwell has scissors for fingers and a smile to match. She shreds wrapping paper into confetti and the elves' schedules along with it. She can snip through clockwork springs like thread, but holly vines grow back faster than she can cut them, and that drives her wild.",
+      "description": "Scrinch's lieutenant in the Wrapping Room, with scissor fingers. She snips clockwork but can't cut starlight.",
+      "backstory": "Madame Shredwell has scissors for fingers and a smile to match. She shreds wrapping paper into confetti and the elves' schedules along with it. She can snip through clockwork springs like thread, but a beam of starlight goes straight through her blades, and that drives her wild.",
       "rumour": "Confetti everywhere, and a sound like scissors snipping in the dark."
     },
     "cog_pincher": {
@@ -237,14 +237,14 @@
     },
     "paint_smudger": {
       "tagline": "Every rocking horse gets a moustache.",
-      "description": "A messy imp that ruins fresh paint jobs. Holly vines catch on its paint-stiff fur.",
-      "backstory": "Paint Smudgers dip their tails in paint pots and drag them across every finished toy. They think it is art. Their fur dries stiff and sticky, and holly catches it like velcro, so the painting elves keep a holly-hung trap behind the easels.",
+      "description": "A messy imp that ruins fresh paint jobs at night. Starlight shows up every smudge and stops it cold.",
+      "backstory": "Paint Smudgers dip their tails in paint pots and drag them across every finished toy, always after the lamps go out. They think it is art. Caught in a beam of light they freeze like a startled cat, so the painting elves keep a star-lit trap behind the easels.",
       "rumour": "Every doll in the Workshop has woken up with a painted moustache."
     },
     "stuffing_ripper": {
       "tagline": "Teddy bears fear it.",
-      "description": "A sharp-clawed imp that tears stuffing out of soft toys. Frost slows its claws; holly it simply rips.",
-      "backstory": "Stuffing Rippers sleep in nests of cotton pulled from teddy bears and rag dolls. Their claws cut holly vines like paper, but they are thin-furred and hate the cold. A frosty trap leaves them sluggish and shivering long enough to catch.",
+      "description": "A sharp-clawed imp that tears stuffing out of soft toys. Frost slows its claws; starlight it simply ignores.",
+      "backstory": "Stuffing Rippers sleep in nests of cotton pulled from teddy bears and rag dolls. They are half blind and barely notice starlight, but they are thin-furred and hate the cold. A frosty trap leaves them sluggish and shivering long enough to catch.",
       "rumour": "Teddy bears lying flat on the shelf, and tufts of white fluff on the floor."
     },
     "windup_imp": {
@@ -273,8 +273,8 @@
     },
     "bell_thief": {
       "tagline": "Silent feet, jingling pockets.",
-      "description": "A stable imp that steals bells and bait. It slips through holly with ease, so bring something else.",
-      "backstory": "Bell Thieves wrap their feet in felt so they never make a sound, then fill their pockets with harness bells until they jingle. They are slippery and leave holly traps empty-handed, often taking the bait with them. They like hot cocoa almost as much as they like bells.",
+      "description": "A stable imp that steals bells and bait. It shuts its eyes against starlight, so bring something else.",
+      "backstory": "Bell Thieves wrap their feet in felt so they never make a sound, then fill their pockets with harness bells until they jingle. They squeeze their eyes shut and walk right through starlit traps, often taking the bait with them. They like hot cocoa almost as much as they like bells.",
       "rumour": "The harness bells have gone quiet, because there are no bells left on them."
     },
     "harness_snipper": {
@@ -291,15 +291,15 @@
     },
     "antler_ripper": {
       "tagline": "Wants antlers of its own.",
-      "description": "The Stables' mini boss, wearing stolen sleighbells. Clockwork catches it; holly barely slows it down.",
-      "backstory": "The Antler Ripper is jealous of reindeer and wears a pair of broken antlers lashed to its head. It steals Santa's silver sleighbells one at a time, hoping to silence the sleigh. Holly vines snap on its sharp antlers, but the precise snap of a clockwork trap is too quick for it.",
+      "description": "The Stables' mini boss, wearing stolen sleighbells. Clockwork catches it; starlight barely slows it down.",
+      "backstory": "The Antler Ripper is jealous of reindeer and wears a pair of broken antlers lashed to its head. It steals Santa's silver sleighbells one at a time, hoping to silence the sleigh. Its polished bells scatter starlight every which way, but the precise snap of a clockwork trap is too quick for it.",
       "rumour": "The sleigh is missing bells, and something with crooked antlers was seen in the loft."
     },
     "grizzlewick": {
       "tagline": "Scrinch's right horn, and proud of it.",
-      "description": "The Stables' boss, Scrinch's fiercest lieutenant. Holly burns at his touch; clockwork is the only answer.",
-      "backstory": "Grizzlewick is the oldest of Scrinch's lieutenants and the only one trusted to carry brimstone coal from beneath the throne. His horns are scorched black and holly withers when he walks past. He wants the sleigh grounded before Christmas Eve, and only a trap with a ticking heart can hold him.",
-      "rumour": "Scorched hoof-prints by the sleigh, and the holly on the stable door has turned to ash."
+      "description": "The Stables' boss, Scrinch's fiercest lieutenant. Starlight dies at his touch; clockwork is the only answer.",
+      "backstory": "Grizzlewick is the oldest of Scrinch's lieutenants and the only one trusted to carry brimstone coal from beneath the throne. His horns are scorched black and every star-lamp gutters out when he walks past. He wants the sleigh grounded before Christmas Eve, and only a trap with a ticking heart can hold him.",
+      "rumour": "Scorched hoof-prints by the sleigh, and the star over the stable door has gone dark."
     }
   }
 }

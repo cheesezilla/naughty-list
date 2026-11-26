@@ -143,7 +143,7 @@ export const howto: Record<string, { look: string; draw: () => string }> = {
           place(baits.stale_cookie!(), 290, 105, 120),
           path('M396 140 L416 160 M416 140 L396 160', line(7, P.red)),
           arrow(420, 175, 470),
-          placeSprite(bases.cardboard_box!() + traps.stocking_snare!(), 450, 110, 190),
+          placeSprite(bases.cardboard_box!() + traps.starlit_stocking!(), 450, 110, 190),
           miniImp(580, 140, 0.55),
           label('Tap Hunt. Bait is used. An imp may come.', 320, 320, 24, P.ink, 600),
         ),
@@ -195,13 +195,13 @@ export const howto: Record<string, { look: string; draw: () => string }> = {
       ),
   },
   trap_types: {
-    look: 'the three trap-type badges (clockwork gear, holly, frost snowflake) with an imp showing x1.5 weakness and x0.5 resistance',
+    look: 'the three trap-type badges (clockwork gear, starlight star, frost snowflake) with an imp showing x1.5 weakness and x0.5 resistance',
     draw: () =>
       card(
         g(
           {},
           place(trapTypes.clockwork!(), 40, 40, 120, 256), label('Clockwork', 100, 190, 22),
-          place(trapTypes.holly!(), 260, 40, 120, 256), label('Holly', 320, 190, 22),
+          place(trapTypes.starlight!(), 260, 40, 120, 256), label('Starlight', 320, 190, 22),
           place(trapTypes.frost!(), 480, 40, 120, 256), label('Frost', 540, 190, 22),
           miniImp(320, 280, 0.55),
           path('M250 270 Q160 260 120 210', line(7, P.holly)), label('×1.5', 170, 300, 28, P.holly, 800),

@@ -116,7 +116,7 @@ describe('shop, crafting and travel', () => {
   });
 
   it('enforces rank on purchases and travel', () => {
-    expect(buy(content, { ...fresh(), gold: 1e6 }, 'holly_noose').ok).toBe(false);
+    expect(buy(content, { ...fresh(), gold: 1e6 }, 'star_lantern').ok).toBe(false);
     expect(travel(content, { ...fresh(), gold: 1e6 }, 'wrapping_room').ok).toBe(false);
     const t = travel(content, { ...fresh(), rank: 2 }, 'wrapping_room');
     if (!t.ok) throw new Error(t.error);

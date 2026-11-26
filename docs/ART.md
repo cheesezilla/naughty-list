@@ -27,7 +27,7 @@ src/client/public/art/<slot>/<id>.<ext>
 | `baits` | bait ids | 512×512 | Transparent | Thumbnails everywhere |
 | `charms` | charm ids | 512×512 | Transparent | Thumbnails everywhere |
 | `materials` | material ids | 512×512 | Transparent | Workshop ingredients, loot lines |
-| `trap_types` | `clockwork`, `holly`, `frost` | 256×256 | Transparent corners | Trap type badges, imp weakness hints |
+| `trap_types` | `clockwork`, `starlight`, `frost` | 256×256 | Transparent corners | Trap type badges, imp weakness hints |
 | `locations` | location ids | 1170×470 (5:2) | Filled | Hunt screen banner; crop with `object-fit: cover` for Travel list thumbnails |
 | `map` | `lair_map` | 1600×900 (16:9) | Filled | Travel map. Entry has `pins`: `{ "<location id>": { "x", "y" } }` in map pixels |
 | `imps` | imp ids, plus `_locked` | 512×512 | Filled card | Naughty List grid, imp file, hunt log. `_locked` is the "?" card for imps not caught yet. Entries have `tier` and `location` |

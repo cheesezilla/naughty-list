@@ -12,9 +12,9 @@ describe('catch chance', () => {
   });
 
   it('applies weakness and resistance to power', () => {
-    const stats = { power: 100, luck: 0, attraction: 1, type: 'holly' };
-    expect(catchChance(stats, imp({ effectiveness: { holly: 1.5 } }), 1)).toBeCloseTo(150 / 240);
-    expect(catchChance(stats, imp({ effectiveness: { holly: 0.5 } }), 1)).toBeCloseTo(50 / 140);
+    const stats = { power: 100, luck: 0, attraction: 1, type: 'starlight' };
+    expect(catchChance(stats, imp({ effectiveness: { starlight: 1.5 } }), 1)).toBeCloseTo(150 / 240);
+    expect(catchChance(stats, imp({ effectiveness: { starlight: 0.5 } }), 1)).toBeCloseTo(50 / 140);
   });
 
   it('is zero against an immune imp, even with luck', () => {
@@ -23,7 +23,7 @@ describe('catch chance', () => {
   });
 
   it('is capped', () => {
-    const stats = { power: 1e6, luck: 50, attraction: 1, type: 'holly' };
+    const stats = { power: 1e6, luck: 50, attraction: 1, type: 'starlight' };
     expect(catchChance(stats, imp(), 0.98)).toBe(0.98);
   });
 });
@@ -46,13 +46,13 @@ describe('setup stats', () => {
   });
 
   it('is zero attraction with no bait', () => {
-    expect(setupStats(content, { trap: 'stocking_snare', base: 'cardboard_box', bait: null, charm: null }, pantry).attraction).toBe(0);
+    expect(setupStats(content, { trap: 'starlit_stocking', base: 'cardboard_box', bait: null, charm: null }, pantry).attraction).toBe(0);
   });
 });
 
 describe('hunt odds', () => {
   it('encounter chances add up to 1 and Fruitcake doubles boss odds', () => {
-    const setup = { trap: 'stocking_snare', base: 'cardboard_box', bait: 'stale_cookie', charm: null };
+    const setup = { trap: 'starlit_stocking', base: 'cardboard_box', bait: 'stale_cookie', charm: null };
     const plain = huntOdds(content, setup, 'cookie_pantry');
     const fruit = huntOdds(content, { ...setup, bait: 'fruitcake' }, 'cookie_pantry');
     expect(plain.imps.reduce((s, o) => s + o.encounter, 0)).toBeCloseTo(1);

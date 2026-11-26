@@ -1,11 +1,11 @@
 {
   "traps": [
-    { "id": "stocking_snare", "name": "Stocking Snare", "type": "holly", "power": 60, "luck": 0, "rank": 1, "price": null },
+    { "id": "starlit_stocking", "name": "Starlit Stocking", "type": "starlight", "power": 60, "luck": 0, "rank": 1, "price": null },
     { "id": "jack_in_the_box", "name": "Jack-in-the-Box", "type": "clockwork", "power": 150, "luck": 1, "rank": 1, "price": 300 },
-    { "id": "holly_noose", "name": "Holly Noose", "type": "holly", "power": 300, "luck": 2, "rank": 2, "price": 1200 },
+    { "id": "star_lantern", "name": "Star Lantern", "type": "starlight", "power": 300, "luck": 2, "rank": 2, "price": 1200 },
     { "id": "icicle_jar", "name": "Icicle Jar", "type": "frost", "power": 500, "luck": 2, "attraction": 0.05, "rank": 2, "price": 3000 },
     { "id": "nutcracker_jaws", "name": "Nutcracker Jaws", "type": "clockwork", "power": 900, "luck": 3, "rank": 3, "price": 9000 },
-    { "id": "wreath_of_thorns", "name": "Wreath of Thorns", "type": "holly", "power": 1400, "luck": 5, "attraction": 0.05, "rank": 3, "price": null },
+    { "id": "constellation_wreath", "name": "Constellation Wreath", "type": "starlight", "power": 1400, "luck": 5, "attraction": 0.05, "rank": 3, "price": null },
     { "id": "snow_globe_prison", "name": "Snow Globe Prison", "type": "frost", "power": 1800, "luck": 4, "rank": 4, "price": 25000 },
     { "id": "sleigh_bell_snapper", "name": "Sleigh-Bell Snapper", "type": "clockwork", "power": 2600, "luck": 6, "attraction": 0.05, "rank": 4, "price": null }
   ],
