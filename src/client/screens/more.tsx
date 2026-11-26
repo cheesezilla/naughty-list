@@ -388,6 +388,10 @@ export function AdminScreen() {
             : <Loading />}
           <Toggle label={`${content.constants.stamina.name} meter`} hint="Limits hunts with a cup that refills over time. Kept off for now; it is set in content/constants.json." checked={content.constants.stamina.enabled} onChange={() => {}} disabled />
         </div>
+        <h2 class="list-head">Odds display (testing)</h2>
+        <div class="card toggles">
+          <Toggle label="Show exact attraction and catch rates" hint="Adds the real percentages next to the tier bars and on item cards (bait, charms, traps, shop). Admins only, this device only." checked={prefs.exactOdds} onChange={(v) => setPref('exactOdds', v)} />
+        </div>
         <SpeedRun />
         <h2 class="list-head">Restart log</h2>
         <div class="card list-card">

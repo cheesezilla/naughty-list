@@ -6,6 +6,7 @@ import { num, pct, plural } from '../lib/format.js';
 import { usePrefs } from '../lib/prefs.js';
 import { go } from '../lib/route.js';
 import { BottomNav, Sheet, Tabs, TopHeader } from '../ui.js';
+import { PowerBar, useExactOdds, useRateText } from '../lib/effectiveness.js';
 import { LogRow } from './log.js';
 import { HintSheet, ObjectivePanel } from './objective.js';
 import { TypeMedal } from '../lib/medal.js';
@@ -23,8 +24,18 @@ export function StatRow({ setup }: { setup: Setup }) {
     <div class="stat-row">
       <div><b>{num(odds.stats.power)}</b><span>Power</span></div>
       <div><b>{num(odds.stats.luck)}</b><span>Luck</span></div>
-      <div><b>{pct(odds.stats.attraction)}</b><span>Attraction</span></div>
-      <div class="catch"><b>{pct(catchIfAttracted(odds))}</b><span>Catch</span></div>
+    </div>
+  );
+}
+
+/** Attraction and catch chance as five-tier power bars; exact rates stay hidden from players. */
+export function RateBars({ setup }: { setup: Setup }) {
+  const { content, player } = useGame();
+  const odds = huntOdds(content, setup, player.location);
+  return (
+    <div class="rate-bars">
+      <div><span>Attraction</span><PowerBar rate={odds.stats.attraction} /></div>
+      <div class="catch"><span>Catch</span><PowerBar rate={catchIfAttracted(odds)} /></div>
     </div>
   );
 }
@@ -122,6 +133,7 @@ export function HuntScreen() {
               </button>
             </div>
             <StatRow setup={player.setup} />
+            <RateBars setup={player.setup} />
           </div>
 
           <ObjectivePanel location={location} onHint={() => setHint(true)} />
@@ -171,11 +183,13 @@ function BaitSheet({ initial, onClose }: { initial: 'bait' | 'charm'; onClose: (
   };
   const describe = (i: (typeof list)[number]) => {
     const it = data.items.get(i.id)!;
-    if (it.kind === 'bait') return `${pct(it.attraction)}${it.rareMultiplier ? `, rares ×${it.rareMultiplier}` : ''}`;
-    if (it.kind === 'charm') return [it.luck && `+${it.luck} luck`, it.attraction && `+${pct(it.attraction)} attr.`, it.powerBonus && `+${pct(it.powerBonus)} power`].filter(Boolean).join(', ');
+    if (it.kind === 'bait') return [exact && pct(it.attraction), it.rareMultiplier && `rares ×${it.rareMultiplier}`].filter(Boolean).join(', ');
+    if (it.kind === 'charm') return [it.luck && `+${it.luck} luck`, exact && it.attraction && `+${pct(it.attraction)} attr.`, it.powerBonus && `+${pct(it.powerBonus)} power`].filter(Boolean).join(', ');
     return '';
   };
-  const change = (a: number, b: number, f: (x: number) => string) => (Math.abs(a - b) < 1e-9 ? `stays ${f(a)}` : `${f(a)} → ${f(b)}`);
+  const exact = useExactOdds();
+  const rateText = useRateText();
+  const change = (a: number, b: number, f: (x: number) => string) => (f(a) === f(b) ? `stays ${f(a)}` : `${f(a)} → ${f(b)}`);
 
   return (
     <Sheet title={tab === 'bait' ? 'Choose bait' : 'Choose a charm'} onClose={onClose}>
@@ -201,7 +215,7 @@ function BaitSheet({ initial, onClose }: { initial: 'bait' | 'charm'; onClose: (
       {chosen !== current && (
         <div class="preview-box">
           {item?.flavour && <p><b>{item.name}:</b> {item.flavour.description}</p>}
-          <p class="small">Catch chance {change(catchIfAttracted(before), catchIfAttracted(after), pct)}; attraction {change(before.stats.attraction, after.stats.attraction, pct)}; power {change(before.stats.power, after.stats.power, num)}; luck {change(before.stats.luck, after.stats.luck, num)}</p>
+          <p class="small">Catch chance {change(catchIfAttracted(before), catchIfAttracted(after), rateText)}; attraction {change(before.stats.attraction, after.stats.attraction, rateText)}; power {change(before.stats.power, after.stats.power, num)}; luck {change(before.stats.luck, after.stats.luck, num)}</p>
           <button class="primary-btn wide" onClick={use}>
             {confirming ? `Yes, use ${item?.name}` : chosen ? `Use ${item?.name}` : 'Take off charm'}
           </button>
