@@ -101,6 +101,8 @@ export const Location = z.object({
   description: z.string(),
   rank: z.number().int().positive(),
   unlockCost: z.number().int().nonnegative(),
+  /** Power types recommended here, shown on the location banner. */
+  homeTypes: z.array(PowerType).default([]),
   preferredBait: id.optional(),
   otherBaitPenalty: chance.optional(),
   objective: Objective.optional(),

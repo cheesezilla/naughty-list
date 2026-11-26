@@ -524,3 +524,9 @@ body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
 .admin-row .chips { flex-direction: row; align-items: center; flex-wrap: wrap; }
 .admin-row .chip { flex: none; font-weight: 800; font-size: 14px; min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--edge); background: #fff; color: var(--ink); white-space: nowrap; }
 .admin-row .chip.on { background: var(--gold-2); border-color: var(--gold-2); color: #4a2f00; }
+
+/* Power type hints: recommended types on the location banner, weaknesses on Naughty List cards. */
+.banner-types { position: absolute; top: 10px; right: 12px; display: flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 999px; background: rgba(10, 30, 22, 0.62); color: var(--cream); }
+.banner-types small { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+.weak-row { display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 24px; }
+.weak-row small { color: var(--muted); }
