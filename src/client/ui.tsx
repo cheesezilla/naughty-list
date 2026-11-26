@@ -4,6 +4,7 @@ import { Art, Icon } from './lib/art.js';
 import { num } from './lib/format.js';
 import { back, go } from './lib/route.js';
 import { useGame } from './game.js';
+import { GoldCoin } from './lib/medal.js';
 
 export type Tab = 'hunt' | 'list' | 'emporium' | 'workshop' | 'more';
 const TABS: { id: Tab; label: string; icon: string; path: string }[] = [
@@ -29,12 +30,14 @@ export function PlayerBar({ overlay = false }: { overlay?: boolean }) {
   const rank = content.ranks[player.rank - 1]!;
   return (
     <div class={`player-bar ${overlay ? 'on-banner' : ''}`}>
-      <Art slot="ranks" id={`rank_${player.rank}`} alt={`Rank ${player.rank}`} class="rank-badge" />
-      <div class="who">
-        <b>{user.username}</b>
-        <span>{rank.name} · {num(player.points)} pts</span>
-      </div>
-      <div class="gold"><Icon id="stat_gold" size={18} /> {num(player.gold)} gold</div>
+      <button class="profile-link" onClick={() => go('more/profile')} aria-label="Open my profile">
+        <Art slot="ranks" id={`rank_${player.rank}`} alt={`Rank ${player.rank}`} class="rank-badge" />
+        <div class="who">
+          <b>{user.username}</b>
+          <span>{rank.name} · {num(player.points)} pts</span>
+        </div>
+      </button>
+      <div class="gold">{num(player.gold)} Gold <GoldCoin size={24} /></div>
     </div>
   );
 }

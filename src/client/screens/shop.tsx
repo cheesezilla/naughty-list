@@ -5,6 +5,7 @@ import { Art } from '../lib/art.js';
 import { num, TYPE_NAME } from '../lib/format.js';
 import { go } from '../lib/route.js';
 import { MainScreen, Stepper, Tabs } from '../ui.js';
+import { GoldCoin, TypeMedal } from '../lib/medal.js';
 import { ItemThumb, itemStats } from './gear.js';
 
 type ShopTab = 'traps' | 'bases' | 'bait' | 'charms' | 'sell';
@@ -29,7 +30,7 @@ function BuyCard({ item }: { item: AnyItem }) {
       <div class="shop-main">
         <div class="row-head">
           <b>{item.name}</b>
-          {item.kind === 'trap' && <span class="type-chip"><Art slot="trap_types" id={item.type} class="type-icon" />{TYPE_NAME[item.type]}</span>}
+          {item.kind === 'trap' && <span class="type-chip"><TypeMedal type={item.type} size={20} />{TYPE_NAME[item.type]}</span>}
         </div>
         <small>{itemStats(item)}</small>
         <span class="price-line"><b>{num(price)} gold</b>{stackable ? ' each' : ''} · you own {num(own)}</span>
@@ -160,7 +161,7 @@ export function WorkshopScreen() {
                   );
                 })}
                 <div class={`ingredient ${player.gold >= r.gold ? 'ok' : 'short'}`}>
-                  <span class="thumb small gold-coin" aria-hidden="true" />
+                  <GoldCoin size={38} />
                   <span>Gold</span>
                   <b>{num(r.gold)}</b>
                 </div>

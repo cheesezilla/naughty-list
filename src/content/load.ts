@@ -38,6 +38,7 @@ export function loadContent(dir: string): Content {
     locations,
     items,
     recipes: read('recipes.json'),
+    achievements: existsSync(join(dir, 'achievements.json')) ? read('achievements.json') : [],
   });
   problems.push(...checkReferences(content));
   if (problems.length > 0) {

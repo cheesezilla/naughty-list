@@ -4,6 +4,7 @@ import { Art, itemSlot } from '../lib/art.js';
 import { num, pct, TYPE_NAME } from '../lib/format.js';
 import { go } from '../lib/route.js';
 import { BackRow, FullScreen, Tabs } from '../ui.js';
+import { TypeMedal } from '../lib/medal.js';
 import { catchIfAttracted, TrapOnBase } from './hunt.js';
 
 type Slot = keyof Setup;
@@ -84,7 +85,7 @@ export function ArsenalScreen({ slot, previewId }: { slot: Slot; previewId?: str
             <button class={`item-row ${previewing === i.id ? 'on' : ''}`} onClick={() => pick(i.id)}>
               <ItemThumb item={i} />
               <span class="item-main">
-                <b>{i.name}</b>{i.kind === 'trap' && <span class="type-chip"><Art slot="trap_types" id={i.type} class="type-icon" />{TYPE_NAME[i.type]}</span>}
+                <b>{i.name}</b>{i.kind === 'trap' && <span class="type-chip"><TypeMedal type={i.type} size={20} />{TYPE_NAME[i.type]}</span>}
                 <br /><small>{itemStats(i)}{(i.kind === 'bait' || i.kind === 'charm') && ` · ×${num(count(player, i.id))}`}</small>
               </span>
               {current === i.id ? <span class="pill green">Equipped</span> : previewing === i.id ? <span class="pill gold">Previewing</span> : null}

@@ -10,6 +10,8 @@ export type GameEvent =
   | { type: 'arrival'; location: string }
   /** A player action on a location's loop. */
   | { type: 'objective'; location: string; action: 'start_run' | 'rush_order' }
+  /** Achievements earned by the hunt or action just before it. `backfill` marks badges awarded to a save from before achievements. */
+  | { type: 'achievement'; ids: string[]; backfill?: boolean }
   /** The intro letter (content/story.json), logged when a game starts: sign-up and Start over. */
   | { type: 'intro' };
 export type LogKind = 'hunt' | 'event';
