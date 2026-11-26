@@ -9,7 +9,7 @@ import { go } from '../lib/route.js';
 import { BackRow, Loading, MainScreen, Tabs, Toggle, useAsync } from '../ui.js';
 import { ImpThumb, StoryCard } from './log.js';
 import { AchievementsTab } from './achievements.js';
-import { BadgeMedal } from '../lib/medal.js';
+import { BadgeMedal, TypeMedal } from '../lib/medal.js';
 
 export function MoreMenu() {
   const { content, player, user, logout } = useGame();
@@ -77,6 +77,7 @@ export function TravelScreen() {
                 <b>{l.name}</b>
                 <small>Rank {rankName} · unlock {l.unlockCost ? `${num(l.unlockCost)} gold` : 'free'}{' '}<span class={`pill ${open ? 'green' : ''}`}>{open ? 'Unlocked' : 'Locked'}</span></small>
                 <small class="desc">{l.description}</small>
+                <span class="weak-row"><small>Best traps</small>{l.homeTypes.map((t) => <TypeMedal type={t} size={22} />)}</span>
               </div>
               {here ? <span class="pill gold">You are here</span>
                 : l.rank > player.rank ? <span class="small muted">Needs {rankName}</span>

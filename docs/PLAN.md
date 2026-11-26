@@ -189,7 +189,7 @@ From the Wrapping Room on, each location has a **home type** most of its elves a
 | Toy Workshop | Clockwork | Frost | The toymakers can't keep their hands off a wind-up; tin, wood and wool don't feel the cold | Nutcracker Jaws (rank 3) | Paint Smudger is weak to Starlight (works in the dark); Hammerhand is weak to Frost (forge-hot) |
 | Reindeer Stables | Frost | Starlight | The hex left the stable hands craving warmth, so they bolt from the cold; they squint away the snow glare | Snow Globe Prison (rank 4) | Harness Snipper is weak to Clockwork (its shears snag in springs) |
 
-The home types are data (`homeTypes` per location in `locations.json`; the Cookie Pantry lists Clockwork and Starlight, the two types a rank 1 player can own) and drive the Best traps overlay on the location banner. Each elf's description in `content/flavour.json` names its weakness, and each location's hint sheet in `content/story.json` names the room's home type and exceptions.
+The home types are data (`homeTypes` per location in `locations.json`; the Cookie Pantry lists Clockwork and Starlight, the two types a rank 1 player can own) and drive the Best traps overlay on the location banner (verified on all four locations), and the same medals on each Travel map card and above each Naughty List location tab. Each elf's description in `content/flavour.json` names its weakness, and each location's hint sheet in `content/story.json` names the room's home type and exceptions.
 
 **Traps**
 
@@ -858,7 +858,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 | Date | PR | Change |
 | --- | --- | --- |
-| 2026-11-26 | this PR | Admin speed-run tools: reward multiplier, always attract and catch, grant gold, jump to rank, unlock all locations, stock up; admin-only on the server |
+| 2026-11-26 | this PR | Best-traps power types also shown on every Travel map card and above each Naughty List location tab; Admin speed-run tools: reward multiplier, always attract and catch, grant gold, jump to rank, unlock all locations, stock up; admin-only on the server |
 | 2026-11-26 | #27 | Achievements now show a 4-second non-blocking banner (with "+N more") instead of a popup, because early games had too many popups; the full popup stays only for Welcome back. The Achievement popups setting became New catch popups (default On). Canvas mockups updated |
 | 2026-11-26 | this PR | Best traps overlay (power type medals) on the Hunt location banner from new `homeTypes` per location; Weak to row with medals on every Naughty List card, locked ones included. No balance change |
 | 2026-11-26 | #26 | Planned a New Catch popup for the first catch of each elf (portrait unlocked, tier colours, tiles, Naughty List progress, Open file and Keep hunting), with a canvas mockup. Design only |
