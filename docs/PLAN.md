@@ -801,6 +801,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-26 | #21 | Custom PNG art for the remaining 15 imp portraits (`sprinkle_snatcher`, `chimney_soot_imp`, `jarbelly`, `ribbon_tangler`, `tape_biter`, `bow_burglar`, `spoolwick`, `cog_pincher`, `paint_smudger`, `stuffing_ripper`, `hammerhand`, `hay_hoarder`, `bell_thief`, `harness_snipper`, `antler_ripper`), generated with Gemini. All 24 imps (`baron_crumblewick` parked in the location rework) are now custom art. No game numbers changed |
 | 2026-11-26 | #20 | Custom PNG art for the 3 new Starlight traps (`starlit_stocking`, `star_lantern`, `constellation_wreath`) and `yule_log_base`, generated with Gemini and cut out with `rembg`. All traps and bases are now custom art. No game numbers changed |
 | 2026-11-26 | #19 | Custom PNG art for the brand slot (`icon`, `key_art`) and all 5 rank badges, generated with Gemini. No game numbers changed |
 | 2026-11-26 | #18 | Custom PNG banners for all 4 locations (`cookie_pantry`, `wrapping_room`, `toy_workshop`, `reindeer_stables`), generated with Gemini. No game numbers changed |
