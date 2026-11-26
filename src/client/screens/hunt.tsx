@@ -6,7 +6,7 @@ import { num, pct, plural } from '../lib/format.js';
 import { usePrefs } from '../lib/prefs.js';
 import { go } from '../lib/route.js';
 import { BottomNav, Sheet, Tabs, TopHeader } from '../ui.js';
-import { PowerBar, useRateText } from '../lib/effectiveness.js';
+import { PowerBar, useExactOdds, useRateText } from '../lib/effectiveness.js';
 import { LogRow } from './log.js';
 import { HintSheet, ObjectivePanel } from './objective.js';
 import { TypeMedal } from '../lib/medal.js';
@@ -183,10 +183,11 @@ function BaitSheet({ initial, onClose }: { initial: 'bait' | 'charm'; onClose: (
   };
   const describe = (i: (typeof list)[number]) => {
     const it = data.items.get(i.id)!;
-    if (it.kind === 'bait') return `${pct(it.attraction)}${it.rareMultiplier ? `, rares ×${it.rareMultiplier}` : ''}`;
-    if (it.kind === 'charm') return [it.luck && `+${it.luck} luck`, it.attraction && `+${pct(it.attraction)} attr.`, it.powerBonus && `+${pct(it.powerBonus)} power`].filter(Boolean).join(', ');
+    if (it.kind === 'bait') return [exact && pct(it.attraction), it.rareMultiplier && `rares ×${it.rareMultiplier}`].filter(Boolean).join(', ');
+    if (it.kind === 'charm') return [it.luck && `+${it.luck} luck`, exact && it.attraction && `+${pct(it.attraction)} attr.`, it.powerBonus && `+${pct(it.powerBonus)} power`].filter(Boolean).join(', ');
     return '';
   };
+  const exact = useExactOdds();
   const rateText = useRateText();
   const change = (a: number, b: number, f: (x: number) => string) => (f(a) === f(b) ? `stays ${f(a)}` : `${f(a)} → ${f(b)}`);
 

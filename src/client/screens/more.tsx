@@ -385,7 +385,7 @@ export function AdminScreen() {
         </div>
         <h2 class="list-head">Odds display (testing)</h2>
         <div class="card toggles">
-          <Toggle label="Show exact attraction and catch rates" hint="Adds the real percentages next to the tier bars on the Hunt screen and in gear previews. Admins only, this device only." checked={prefs.exactOdds} onChange={(v) => setPref('exactOdds', v)} />
+          <Toggle label="Show exact attraction and catch rates" hint="Adds the real percentages next to the tier bars and on item cards (bait, charms, traps, shop). Admins only, this device only." checked={prefs.exactOdds} onChange={(v) => setPref('exactOdds', v)} />
         </div>
         <SpeedRun />
         <h2 class="list-head">Restart log</h2>

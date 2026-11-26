@@ -682,9 +682,9 @@ The exact attraction rate and catch chance are hidden from players (eddy, 26 Nov
 | Strong | 60% to 79% | 4 of 5 |
 | Very strong | 80% and up | 5 of 5 |
 
-Where it shows: the two bars (Attraction, Catch) under the gear on the Hunt screen, the quick bait and charm sheet preview ("Weak → Medium", or "stays Strong") and the Arsenal before and after compare. Item cards and shop prices still list their own bait and charm attraction numbers. The thresholds are in `src/client/lib/effectiveness.tsx`; the engine and simulator still use exact rates.
+Where it shows: the two bars (Attraction, Catch) under the gear on the Hunt screen, the quick bait and charm sheet preview ("Weak → Medium", or "stays Strong") and the Arsenal before and after compare. Item cards, the shop, Arsenal lists and the item detail screen no longer list attraction percentages for traps, bases, bait and charms (power, luck and the other numbers stay). The thresholds are in `src/client/lib/effectiveness.tsx`; the engine and simulator still use exact rates.
 
-Admin toggle: More > Admin > "Odds display (testing)" > "Show exact attraction and catch rates". It adds the percentage next to each tier name and in the previews. Admin accounts only, stored on that device (`exactOdds` in local prefs), off by default.
+Admin toggle: More > Admin > "Odds display (testing)" > "Show exact attraction and catch rates". It adds the percentage next to each tier name and in the previews, and brings the attraction numbers back on item cards, the shop and item details. Admin accounts only, stored on that device (`exactOdds` in local prefs), off by default.
 
 ## Admin speed-run tools
 
