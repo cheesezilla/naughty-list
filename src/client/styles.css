@@ -140,6 +140,9 @@ body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
 .gear-grid .slot-btn b { overflow-wrap: anywhere; }
 .trap-stack { position: relative; display: block; width: 100%; aspect-ratio: 4 / 3; }
 .trap-stack img { position: absolute; inset: 0; width: 100%; height: 100%; }
+/* The base art is centred in its frame, so drop it 30% to sit under the trap; margin keeps the dropped bottom clear of the text below. */
+.trap-stack img:first-child { transform: translateY(30%); }
+.trap-stack { margin-bottom: 10%; }
 .trap-stack.big { max-width: 300px; margin: 0 auto; }
 .trap-stack.hero { max-width: 360px; margin: 0 auto; }
 .slot-btn { font-size: 14px; display: flex; gap: 8px; align-items: center; text-align: left; padding: 5px 8px 5px 5px; min-height: 48px; border-radius: 10px; border: 1px solid var(--edge); background: #fff; color: var(--ink); line-height: 1.25; }

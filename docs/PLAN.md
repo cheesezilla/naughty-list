@@ -15,7 +15,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Flavour text for every item and elf | Done | #9 (shown in the UI since #11) |
 | Art for every UI slot: 97 original SVGs + manifest, named by game id | Done | #10 (shown in the UI since #11) |
 | Custom PNG portraits for all 10 cookie-pantry/wrapping-room/toy-workshop/reindeer-stables elves | Done | #13 |
-| Custom AI-generated PNGs for the rest of the game art (traps, bases, baits, charms, materials, trap types, brand, locations, map, how-to, remaining elves) — progress tracked in [ART_PROGRESS.md](ART_PROGRESS.md) | In progress | #14 |
+| Custom AI-generated art for every slot except the 24px icons (97 pictures: 29 elves, traps, bases, baits, charms, materials, trap types, ranks, locations, map, brand, how-to), resized and saved as WebP; see [ART_PROGRESS.md](ART_PROGRESS.md) | Done | #14, #40 |
 | New phone-first UI (layout D2): bottom menu, hunt log with events and full history, Arsenal, Elf Emporium, Santa's Workshop, More pages, open sign-up with admin switch | Done | #11 |
 | Holly power type renamed Starlight; its three traps reworked (Starlit Stocking, Star Lantern, Constellation Wreath) with new text and SVG art, old saves migrated | In review | #17 |
 | Intro letter from Santa: the game's backstory as the first hunt-log entry of every new game, and on How to play | In review | #12 |
@@ -887,20 +887,22 @@ Before the home types, with the old buying rule, the simulator never bought a Fr
 
 ## Art
 
-Every picture has a fixed name, `src/client/public/art/<slot>/<id>.<ext>`, where the id is the game-data id (`traps/jack_in_the_box.svg`, `imps/crumb_elf.svg`, `locations/cookie_pantry.svg`). `art/manifest.json` lists each one with its size, a description and a prompt for regenerating it with an image tool. Full rules, sizes and how to swap in a PNG: [docs/ART.md](ART.md).
+Every picture has a fixed name, `src/client/public/art/<slot>/<id>.<ext>`, where the id is the game-data id (`traps/jack_in_the_box.webp`, `imps/crumb_elf.webp`, `locations/cookie_pantry.webp`). `art/manifest.json` lists each one with its size, a description and a prompt for regenerating it with an image tool. Full rules, sizes and how to swap in a PNG: [docs/ART.md](ART.md).
 
 | Slot | Count | Size (px) | Notes |
 | --- | --- | --- | --- |
 | `brand` | 2 | icon 1024², key art 1170×1290 | Game icon, login key art |
-| `traps`, `bases` | 8, 5 | 600×450, transparent | Same canvas; the trap stands on the base's top line (y = 340), so the two layer |
-| `baits`, `charms`, `materials` | 7, 3, 11 | 512², transparent | Thumbnails |
-| `trap_types` | 3 | 256² | Clockwork, Starlight, Frost badges |
-| `locations` | 4 | 1170×470 | Hunt banners; centre floor left clear for the trap |
+| `traps`, `bases` | 9, 11 | 600×450, transparent | Same canvas; the trap stands on the base's top line (y = 340), so the two layer; in the UI the base is drawn 30% of the frame lower than the trap (`.trap-stack` in styles.css) so it sits under it |
+| `baits`, `charms`, `materials` | 7, 3, 13 | 512², transparent | Thumbnails |
+| `trap_types` | 4 | 256², transparent | Clockwork, Starlight, Frost, Carol badges |
+| `locations` | 5 | 1170×470 | Hunt banners; centre floor left clear for the trap |
 | `map` | 1 | 1600×900 | Travel map; manifest has pin positions per location |
-| `imps` | 23 + `_locked` | 512² | Hexed-elf portrait cards (the slot keeps its old name); frame shows tier (common, uncommon, rare, mini boss, boss); `_locked` is the "?" card. Since the hexed-elves story these are simple generated SVGs; the old custom imp PNGs are kept in `art-archive/imps/` and new custom portraits are in the art backlog ([ART_PROGRESS.md](ART_PROGRESS.md)) |
+| `imps` | 28 + `_locked` | 512² | Hexed-elf portrait cards (the slot keeps its old name); frame shows tier (common, uncommon, rare, mini boss, boss); `_locked` is the "?" card. Custom pictures since this PR; the old imp PNGs are kept in `art-archive/imps/` |
 | `ranks` | 5 | 256², transparent | `rank_1` … `rank_5` |
 | `icons` | 19 | 24², `currentColor` | Bottom nav, More menu, stat labels |
 | `howto` | 8 | 640×360 | One diagram per How-to-play section |
+
+**Custom art (this PR).** All 97 pictures outside the icons are custom AI-generated art, saved as lossy WebP (the whole art folder went from 9.4 MB to about 5.7 MB). Originals were 1254–1983 px; they were resized to the slot sizes above. Traps, bases, baits, charms and materials were cut to transparent PNG-style alpha, trimmed and re-centred (traps and bases bottom-anchored on the same line so they still layer); trap type and rank badges had a flat grey background removed. The old generated SVGs for these slots were deleted; the 19 icons stay SVG. The browser tab and home-screen icon now use `brand/icon.webp`.
 
 `npm run art` regenerates the SVGs and the manifest. It never overwrites a custom file (a PNG/WebP/JPG with the same name, or an SVG without the generator's marker comment). `npm test` fails if any item, elf, location or rank has no picture. The client loads `/art/manifest.json` at start and looks every picture up by slot and id, so a PNG that replaces an SVG shows up after `npm run art` and a rebuild, with no code change.
 
@@ -1012,6 +1014,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-26 | #40 | Bases are drawn 30% lower under the trap in the trap stack. Imported all 97 custom art pictures (elves, traps, bases, baits, charms, materials, trap types, ranks, locations, map, brand, how-to) as resized WebP, replacing the generated SVGs and older PNGs; icons stay SVG; favicon now WebP. No rule or balance change |
 | 2026-11-26 | this PR | Hunt log escapes now show the effectiveness tier ("Escaped. Weak chance") instead of the exact percentage; admins with the exact-odds toggle still see the percentage. Checked the New Catch popup and Hunters feed: they show no odds. Imp-file drop and pillage-risk percentages are unchanged |
 | 2026-11-26 | #36 | Santa's Workshop recipe cards show the output's stats (power, luck, Good for, base type bonus, charm bonuses), traps show their power type medal; attraction stays behind the admin exact-odds toggle. Base type bonus now also shows on item lines in the Emporium and Arsenal |
 | 2026-11-26 | #21 | **Six new optional bases (eddy).** Power, attraction and luck leanings at rank 2 (shop: Toffee Anvil, Chestnut Brazier, Wishbone Plinth) and rank 4 (crafted: Sleigh Runner, Gingerbread Cottage, Wishing Star Pedestal). Rank 4 bases get a +10% power `affinity` for matching trap types; `goodFor` line on item cards; 3 recipes, flavour, art. `simulate --without` leaves items out. Simulator: 200/200 reach rank 5, median 1,608 hunts with every base bought, 1,458 skipping them |
