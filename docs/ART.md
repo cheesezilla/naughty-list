@@ -2,7 +2,7 @@
 
 Every picture in the game lives in `src/client/public/art/` and is served at `/art/...`. The first set is original vector art (SVG) drawn in code by `scripts/art/`, in one house style. Any file can be swapped for a hand-made or AI-generated image without touching game code.
 
-A pass replacing the generated SVGs with custom AI-generated pictures is in progress, asset by asset. See [ART_PROGRESS.md](ART_PROGRESS.md) for what's done and what's still queued.
+The generated SVGs have been replaced by custom AI-generated WebP pictures for every slot except `icons` (see [ART_PROGRESS.md](ART_PROGRESS.md)). The tables below still describe the sizes each picture is resized to.
 
 ## Naming rule
 
