@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const powerTypes = ['clockwork', 'holly', 'frost'] as const;
+export const powerTypes = ['clockwork', 'starlight', 'frost'] as const;
 export const PowerType = z.enum(powerTypes);
 export const ImpTier = z.enum(['common', 'rare', 'miniboss', 'boss']);
 

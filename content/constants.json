@@ -1,7 +1,7 @@
 {
   "startingGold": 300,
   "startingItems": { "stale_cookie": 100 },
-  "startingSetup": { "trap": "stocking_snare", "base": "cardboard_box", "bait": "stale_cookie", "charm": null },
+  "startingSetup": { "trap": "starlit_stocking", "base": "cardboard_box", "bait": "stale_cookie", "charm": null },
   "startingLocation": "cookie_pantry",
   "attractionCap": 0.95,
   "catchCap": 0.98,

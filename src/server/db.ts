@@ -60,6 +60,13 @@ const DEFAULT_SETTINGS: Settings = { allowSignups: true };
 export interface RestartSummary { gold: number; points: number; rank: number; hunts: number; caught: number; impsOnList: number; location: string }
 export interface RestartRow { id: number; username: string; at: number; summary: RestartSummary }
 
+/** Old item id -> new id. Saves and log entries using an old id are rewritten when the store opens. */
+export const RENAMED_ITEMS: Record<string, string> = {
+  stocking_snare: 'starlit_stocking',
+  holly_noose: 'star_lantern',
+  wreath_of_thorns: 'constellation_wreath',
+};
+
 /** Rows kept per player (hunts and events). Older rows are pruned every 100 hunts. */
 export const JOURNAL_KEEP = 10_000;
 
@@ -79,6 +86,16 @@ export class Store {
   private migrate() {
     const cols = (this.db.prepare('PRAGMA table_info(journal)').all() as { name: string }[]).map((c) => c.name);
     if (!cols.includes('kind')) this.db.exec("ALTER TABLE journal ADD COLUMN kind TEXT NOT NULL DEFAULT 'hunt'");
+    // Item ids renamed when the Holly power type became Starlight: rewrite owned items, set-ups and log entries.
+    const rename = this.db.prepare(
+      'UPDATE players SET state = REPLACE(state, ?, ?) WHERE instr(state, ?) > 0',
+    );
+    const renameLog = this.db.prepare('UPDATE journal SET entry = REPLACE(entry, ?, ?) WHERE instr(entry, ?) > 0');
+    for (const [from, to] of Object.entries(RENAMED_ITEMS)) {
+      const [f, t] = [JSON.stringify(from), JSON.stringify(to)];
+      rename.run(f, t, f);
+      renameLog.run(f, t, f);
+    }
   }
 
   close() { this.db.close(); }

@@ -16,7 +16,7 @@ export const FLOOR = 340;
 // ---------------------------------------------------------------- traps
 
 export const traps: Record<string, () => string> = {
-  stocking_snare: () =>
+  starlit_stocking: () =>
     g(
       {},
       // stocking leg and foot, toe resting on the base
@@ -26,12 +26,13 @@ export const traps: Record<string, () => string> = {
       // white cuff
       rect(232, 76, 122, 50, ol(P.cream), 18),
       circle(256, 96, 6, { fill: P.parchment }), circle(300, 106, 6, { fill: P.parchment }), circle(332, 92, 6, { fill: P.parchment }),
-      // holly drawstring
-      path('M232 112 Q180 140 190 190 Q196 220 176 236', line(9, P.holly)),
-      hollyLeaf(178, 246, 56, 70, P.holly),
-      berries(196, 226, 9),
-      path('M354 112 Q398 132 386 170', line(9, P.holly)),
-      hollyLeaf(392, 182, 48, 110, P.hollyLight),
+      // drawstring: a strand of tiny star-lights
+      path('M232 112 Q180 140 190 190 Q196 220 176 236', line(7, P.goldDark)),
+      path('M354 112 Q398 132 386 170', line(7, P.goldDark)),
+      ...([[204, 132], [186, 172], [190, 208], [374, 124], [390, 156]] as const).map(([x, y]) =>
+        g({}, circle(x, y, 15, { fill: P.goldBright, opacity: 0.35 }), star(x, y, 11, ol(P.goldBright, 4)))),
+      circle(176, 244, 28, { fill: P.goldBright, opacity: 0.3 }),
+      star(176, 244, 22, ol(P.goldBright, 6)),
       glint(270, 150, 0.8),
     ),
 
@@ -57,26 +58,27 @@ export const traps: Record<string, () => string> = {
       glint(236, 250, 0.7),
     ),
 
-  holly_noose: () =>
+  star_lantern: () =>
     g(
       {},
-      // stake
-      rect(290, 120, 20, 225, ol(P.cocoa, 8), 6),
-      // looping vine
-      path('M300 140 C190 120 160 260 240 300 C310 335 400 300 390 220 C380 150 310 160 300 190', line(26, P.ink)),
-      path('M300 140 C190 120 160 260 240 300 C310 335 400 300 390 220 C380 150 310 160 300 190', line(14, P.holly)),
-      hollyLeaf(196, 182, 60, -60, P.holly),
-      hollyLeaf(236, 312, 58, 20, P.hollyLight),
-      hollyLeaf(372, 286, 60, -30, P.holly),
-      hollyLeaf(396, 196, 54, 80, P.hollyLight),
-      hollyLeaf(262, 132, 54, -10, P.hollyLight),
-      // glowing berries
-      circle(206, 238, 26, { fill: P.redLight, opacity: 0.35 }),
-      berries(206, 240, 11),
-      circle(330, 316, 24, { fill: P.redLight, opacity: 0.35 }),
-      berries(330, 318, 10),
-      circle(372, 150, 22, { fill: P.redLight, opacity: 0.35 }),
-      berries(372, 152, 10),
+      // beam of starlight spilling down onto the base
+      path('M262 250 L160 340 L440 340 L338 250 Z', { fill: P.goldBright, opacity: 0.5 }),
+      // hanging ring and cap
+      circle(300, 74, 18, line(10, P.ink)), circle(300, 74, 18, line(5, P.brass)),
+      path('M246 128 L300 92 L354 128 Z', ol(P.brass)),
+      // glass body with brass frame
+      rect(244, 128, 112, 150, ol(P.nightMid), 14),
+      circle(300, 202, 50, { fill: P.nightLight }),
+      star(300, 202, 40, ol(P.goldBright, 7)),
+      star(300, 202, 16, { fill: P.white }),
+      path('M256 140 L256 266', line(8, P.white)),
+      path('M244 128 L244 278 M356 128 L356 278 M300 128 L300 140 M300 264 L300 278', line(10, P.brass)),
+      // open shutters
+      path('M244 136 L204 156 L204 262 L244 272 Z', ol(P.brass, 8)),
+      path('M356 136 L396 156 L396 262 L356 272 Z', ol(P.brass, 8)),
+      // base plate resting on the floor
+      path('M230 278 L370 278 L384 340 L216 340 Z', ol(P.goldDark)),
+      sparkle(178, 214, 14, P.goldBright), sparkle(424, 190, 12, P.goldBright), sparkle(410, 300, 9, P.white),
     ),
 
   icicle_jar: () =>
@@ -121,33 +123,34 @@ export const traps: Record<string, () => string> = {
       circle(222, 246, 16, ol(P.white, 7)), circle(378, 246, 16, ol(P.white, 7)),
     ),
 
-  wreath_of_thorns: () => {
-    const leaves: string[] = [];
-    for (let i = 0; i < 14; i++) {
-      const a = (i / 14) * Math.PI * 2;
+  constellation_wreath: () => {
+    const stars: string[] = [];
+    for (let i = 0; i < 10; i++) {
+      const a = (i / 10) * Math.PI * 2 - Math.PI / 2;
       const x = 300 + Math.cos(a) * 100;
       const y = 220 + Math.sin(a) * 100;
-      leaves.push(hollyLeaf(x, y, 62, (a * 180) / Math.PI + 90 + (i % 2 ? 25 : -25), i % 2 ? P.holly : P.pineMid, 8));
+      const big = i % 2 === 0;
+      stars.push(g({}, circle(x, y, big ? 30 : 20, { fill: P.goldBright, opacity: 0.3 }), star(x, y, big ? 24 : 15, ol(big ? P.goldBright : P.gold, 6))));
     }
-    const thorns: string[] = [];
-    for (let i = 0; i < 18; i++) {
-      const a = (i / 18) * Math.PI * 2 + 0.17;
-      const r0 = i % 2 ? 128 : 72;
-      const r1 = i % 2 ? 152 : 50;
-      thorns.push(`M${(300 + Math.cos(a) * r0).toFixed(1)} ${(220 + Math.sin(a) * r0).toFixed(1)} L${(300 + Math.cos(a) * r1).toFixed(1)} ${(220 + Math.sin(a) * r1).toFixed(1)}`);
-    }
+    // a little constellation of lines joining some of the stars
+    const pts = [0, 2, 3, 5, 7].map((i) => {
+      const a = (i / 10) * Math.PI * 2 - Math.PI / 2;
+      return `${(300 + Math.cos(a) * 100).toFixed(1)} ${(220 + Math.sin(a) * 100).toFixed(1)}`;
+    });
     return g(
       {},
+      // ring of night-blue enchanted wrapping
       circle(300, 220, 100, line(46, P.ink)),
-      circle(300, 220, 100, line(34, P.pine)),
-      path(thorns.join(' '), line(7, P.cocoa)),
-      ...leaves,
-      berries(232, 150, 10), berries(392, 250, 10), berries(250, 310, 10),
-      // red bow at the bottom resting on the base
-      path('M300 318 L248 296 L250 342 Z', ol(P.red, 8)),
-      path('M300 318 L352 296 L350 342 Z', ol(P.red, 8)),
-      circle(300, 318, 14, ol(P.redDark, 8)),
+      circle(300, 220, 100, line(34, P.nightMid)),
+      circle(300, 220, 100, { ...line(6, P.nightLight), 'stroke-dasharray': '4 18' }),
+      path(`M${pts.join(' L')}`, { ...line(3, P.white), opacity: 0.7 }),
+      ...stars,
+      // gold bow at the bottom resting on the base
+      path('M300 318 L248 296 L250 342 Z', ol(P.gold, 8)),
+      path('M300 318 L352 296 L350 342 Z', ol(P.gold, 8)),
+      circle(300, 318, 14, ol(P.goldDark, 8)),
       path('M292 330 L276 346 M308 330 L324 346', line(10, P.ink)),
+      sparkle(300, 220, 16, P.white),
     );
   },
 
@@ -576,13 +579,13 @@ export const materials: Record<string, () => string> = {
 
 export const trapTypes: Record<string, () => string> = {
   clockwork: () => g({}, circle(128, 128, 116, ol(P.cream, 8)), gear(128, 128, 84, 10, P.brass, 8, 0.32)),
-  holly: () =>
+  starlight: () =>
     g(
       {},
-      circle(128, 128, 116, ol(P.cream, 8)),
-      hollyLeaf(92, 130, 108, -40, P.holly, 8),
-      hollyLeaf(164, 130, 108, 40, P.hollyLight, 8),
-      berries(128, 112, 16, 7),
+      circle(128, 128, 116, ol(P.night, 8)),
+      circle(128, 130, 84, { fill: P.nightLight }),
+      star(128, 132, 74, ol(P.goldBright, 8), 0.42),
+      sparkle(66, 70, 14, P.white), sparkle(192, 186, 10, P.white), sparkle(196, 64, 8, P.goldBright),
     ),
   frost: () => g({}, circle(128, 128, 116, ol(P.cream, 8)), circle(128, 128, 82, ol(P.frostLight, 8)), snowflake(128, 128, 64, P.frostDark, 12)),
 };

@@ -77,7 +77,7 @@ export function EmporiumScreen({ tab }: { tab: ShopTab }) {
   const items = [...data.items.values()];
   const list = tab === 'sell' ? [] : items.filter((i) => i.kind === KIND[tab]);
   const forSale = list.filter((i) => priceOf(i) !== null);
-  const craftedOnly = list.filter((i) => priceOf(i) === null && i.id !== 'stocking_snare' && i.id !== 'cardboard_box');
+  const craftedOnly = list.filter((i) => priceOf(i) === null && i.id !== 'starlit_stocking' && i.id !== 'cardboard_box');
   const sellable = items.filter((i) => count(player, i.id) > 0 && sellValue(data, i) > 0)
     .sort((a, b) => (a.kind === 'material' ? 0 : 1) - (b.kind === 'material' ? 0 : 1));
   return (

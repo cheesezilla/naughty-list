@@ -41,12 +41,12 @@ const SLOT_STYLE: Record<string, string> = {
 };
 
 const ITEM_LOOKS: Record<string, string> = {
-  stocking_snare: 'a red Christmas stocking with a white cuff, cinched by a holly-vine drawstring with berries',
+  starlit_stocking: 'a red Christmas stocking with a white cuff, cinched by a drawstring strung with tiny glowing gold star-lights, a bigger star at the end',
   jack_in_the_box: 'a red and gold jack-in-the-box with a crank; a toothy golden lid springs up on a coiled spring',
-  holly_noose: 'a loop of enchanted holly vine on a wooden stake, glowing red berries',
+  star_lantern: 'a brass lantern with open shutters holding a glowing fallen star, a cone of golden starlight shining down',
   icicle_jar: 'a frosted glass jar with icicle teeth around the rim and a snowflake on the glass',
   nutcracker_jaws: 'a wooden nutcracker head trap with a tall red hat and gold band, wide toothed jaws and a lever arm',
-  wreath_of_thorns: 'a dark holly wreath bristling with brown thorns and berries, standing on edge with a red bow',
+  constellation_wreath: 'a night-blue wreath of enchanted wrapping studded with glowing gold stars joined by faint constellation lines, standing on edge with a gold bow',
   snow_globe_prison: 'a snow globe on a wooden plinth with a tiny barred door inside the snow',
   sleigh_bell_snapper: 'a giant golden sleigh bell split into two toothed halves like jaws, red ribbon on top',
   cardboard_box: 'a flattened brown cardboard box slab with packing tape',
@@ -76,7 +76,7 @@ const ITEM_LOOKS: Record<string, string> = {
 
 const TRAP_TYPE_LOOKS: Record<string, string> = {
   clockwork: 'a brass gear on a cream disc',
-  holly: 'two holly leaves and red berries on a cream disc',
+  starlight: 'a glowing gold five-point star with small sparkles on a night-blue disc',
   frost: 'a blue snowflake on an icy disc',
 };
 
