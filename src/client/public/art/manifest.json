@@ -6,22 +6,22 @@
     {
       "id": "icon",
       "slot": "brand",
-      "file": "brand/icon.svg",
+      "file": "brand/icon.png",
       "width": 1024,
       "height": 1024,
       "transparent": false,
-      "source": "generated",
+      "source": "custom",
       "description": "Game icon: an imp peeking over the Naughty List scroll",
       "prompt": "App icon: a red imp with golden eyes peeking over an unrolled parchment scroll of ticks and one red cross, red wax seal with holly, on a pine-green rounded square with a gold rim. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
     },
     {
       "id": "key_art",
       "slot": "brand",
-      "file": "brand/key_art.svg",
+      "file": "brand/key_art.png",
       "width": 1170,
       "height": 1290,
       "transparent": false,
-      "source": "generated",
+      "source": "custom",
       "description": "Login key art: Santa's snowy lair at night with imps sneaking in",
       "prompt": "Tall login key art: night sky with aurora and moon, the shadow of the horned devil Scrinch in the clouds, a snowy hill with Santa's lair (round red door, warm windows, chimney), pine trees, and imp silhouettes with glowing eyes sneaking across the snow carrying a sack; keep the top third calm for the title. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
     },
@@ -824,11 +824,11 @@
     {
       "id": "rank_1",
       "slot": "ranks",
-      "file": "ranks/rank_1.svg",
+      "file": "ranks/rank_1.png",
       "width": 256,
       "height": 256,
       "transparent": true,
-      "source": "generated",
+      "source": "custom",
       "description": "Rank 1 badge (Snow Scout): round bronze medal with a white snowflake, red ribbon tails",
       "prompt": "Rank badge for \"Snow Scout\" (rank 1 of 5): round bronze medal with a white snowflake, red ribbon tails. Rank badge medal, 256x256, transparent background, readable at 32px. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos.",
       "rank": 1
@@ -836,11 +836,11 @@
     {
       "id": "rank_2",
       "slot": "ranks",
-      "file": "ranks/rank_2.svg",
+      "file": "ranks/rank_2.png",
       "width": 256,
       "height": 256,
       "transparent": true,
-      "source": "generated",
+      "source": "custom",
       "description": "Rank 2 badge (Elf Deputy): silver medal with a gold five-point star and green ribbon tails",
       "prompt": "Rank badge for \"Elf Deputy\" (rank 2 of 5): silver medal with a gold five-point star and green ribbon tails. Rank badge medal, 256x256, transparent background, readable at 32px. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos.",
       "rank": 2
@@ -848,11 +848,11 @@
     {
       "id": "rank_3",
       "slot": "ranks",
-      "file": "ranks/rank_3.svg",
+      "file": "ranks/rank_3.png",
       "width": 256,
       "height": 256,
       "transparent": true,
-      "source": "generated",
+      "source": "custom",
       "description": "Rank 3 badge (Imp Tracker): gold shield badge with a magnifying glass over an imp footprint, purple ribbon tails",
       "prompt": "Rank badge for \"Imp Tracker\" (rank 3 of 5): gold shield badge with a magnifying glass over an imp footprint, purple ribbon tails. Rank badge medal, 256x256, transparent background, readable at 32px. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos.",
       "rank": 3
@@ -860,11 +860,11 @@
     {
       "id": "rank_4",
       "slot": "ranks",
-      "file": "ranks/rank_4.svg",
+      "file": "ranks/rank_4.png",
       "width": 256,
       "height": 256,
       "transparent": true,
-      "source": "generated",
+      "source": "custom",
       "description": "Rank 4 badge (Frost Warden): frosted blue shield with icicles along the bottom edge, silver rim and a snowflake crest",
       "prompt": "Rank badge for \"Frost Warden\" (rank 4 of 5): frosted blue shield with icicles along the bottom edge, silver rim and a snowflake crest. Rank badge medal, 256x256, transparent background, readable at 32px. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos.",
       "rank": 4
@@ -872,11 +872,11 @@
     {
       "id": "rank_5",
       "slot": "ranks",
-      "file": "ranks/rank_5.svg",
+      "file": "ranks/rank_5.png",
       "width": 256,
       "height": 256,
       "transparent": true,
-      "source": "generated",
+      "source": "custom",
       "description": "Rank 5 badge (Yule Marshal): grand gold star badge ringed with holly leaves and red berries, red ribbon tails, sparkles",
       "prompt": "Rank badge for \"Yule Marshal\" (rank 5 of 5): grand gold star badge ringed with holly leaves and red berries, red ribbon tails, sparkles. Rank badge medal, 256x256, transparent background, readable at 32px. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos.",
       "rank": 5

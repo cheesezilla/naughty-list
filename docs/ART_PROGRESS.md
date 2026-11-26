@@ -18,6 +18,8 @@ daily quota): see the `gemini-art-generation` project memory.
 - **traps** (5 of 8): `jack_in_the_box`, `icicle_jar`, `nutcracker_jaws`, `snow_globe_prison`, `sleigh_bell_snapper` — PR #14. (The three Holly traps from PR #14 were retired in PR #17 when Holly became Starlight; their replacements are queued below.)
 - **bases** (4 of 5): `cardboard_box`, `gingerbread_slab`, `candy_cane_platform`, `ice_block` — PR #14
 - **locations** (4 of 4, done): `cookie_pantry`, `wrapping_room`, `toy_workshop`, `reindeer_stables`
+- **brand** (2 of 2, done): `icon`, `key_art`
+- **ranks** (5 of 5, done): `rank_1`, `rank_2`, `rank_3`, `rank_4`, `rank_5`
 
 ## Still queued
 
@@ -27,10 +29,8 @@ daily quota): see the `gemini-art-generation` project memory.
 - **charms** (3): `mistletoe_charm`, `jingle_bell_charm`, `windup_key_charm`
 - **materials** (10): `candied_peel`, `sugar_glass`, `cookie_tin`, `brass_spring`, `golden_ribbon`, `enchanted_wrapping`, `toymakers_gear`, `clockwork_heart`, `silver_sleighbell`, `brimstone_coal`
 - **trap_types** (3): `clockwork`, `starlight`, `frost` (`starlight` replaced `holly` in PR #17)
-- **brand** (2): `icon`, `key_art`
 - **map** (1): `lair_map`
 - **imps** (15 of 25): `sprinkle_snatcher`, `chimney_soot_imp`, `jarbelly`, `ribbon_tangler`, `tape_biter`, `bow_burglar`, `spoolwick`, `cog_pincher`, `paint_smudger`, `stuffing_ripper`, `hammerhand`, `hay_hoarder`, `bell_thief`, `harness_snipper`, `antler_ripper`
-- **ranks** (5): `rank_1`, `rank_2`, `rank_3`, `rank_4`, `rank_5`
 - **howto** (7): `hunt`, `attraction`, `power`, `luck`, `trap_types`, `loot`, `ranks`
 
-55 pictures left (excluding icons). Each asset's `prompt` for regenerating it is in `art/manifest.json`.
+48 pictures left (excluding icons). Each asset's `prompt` for regenerating it is in `art/manifest.json`.
