@@ -553,6 +553,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-26 | #20 | Custom PNG art for the 3 new Starlight traps (`starlit_stocking`, `star_lantern`, `constellation_wreath`) and `yule_log_base`, generated with Gemini and cut out with `rembg`. All traps and bases are now custom art. No game numbers changed |
 | 2026-11-26 | #19 | Custom PNG art for the brand slot (`icon`, `key_art`) and all 5 rank badges, generated with Gemini. No game numbers changed |
 | 2026-11-26 | #18 | Custom PNG banners for all 4 locations (`cookie_pantry`, `wrapping_room`, `toy_workshop`, `reindeer_stables`), generated with Gemini. No game numbers changed |
 | 2026-11-26 | #17 | Power type Holly renamed **Starlight** (Christmas-star magic, strong against shadowy imps). Its traps reworked: Stocking Snare -> Starlit Stocking (`starlit_stocking`), Holly Noose -> Star Lantern (`star_lantern`), Wreath of Thorns -> Constellation Wreath (`constellation_wreath`, recipe id too), with new flavour text and imp weakness hints. Simple generated SVGs for the three traps and the Starlight badge replace the old Holly PNGs/SVGs and are queued for Gemini in ART_PROGRESS.md. Saves and hunt-log entries with the old ids are rewritten when the server starts. No numbers changed; simulator run unchanged apart from names (100/100 reach rank 5) |
