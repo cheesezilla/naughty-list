@@ -26,6 +26,8 @@ const SEED = opt('seed', 1);
 const MAX_HUNTS = opt('max-hunts', 20000);
 const STRICT = args.includes('--strict');
 const VERBOSE = args.includes('--verbose');
+/** `--without a,b` leaves those items out of the run: neither bought nor crafted (e.g. to check optional bases barely move the pace). */
+const WITHOUT = new Set((args[args.indexOf('--without') + 1] ?? '').split(',').filter((x) => args.includes('--without') && x));
 
 /** Target hunts spent in each rank, from the plan. */
 const TARGET_HUNTS_IN_RANK: Record<number, number> = { 1: 150, 2: 250, 3: 400, 4: 600 };
@@ -110,6 +112,7 @@ function plan(p: PlayerState, log: Log, huntNo: number): PlayerState {
   // 3. Craft gear whenever possible (move off a trap the recipe uses up first).
   for (const r of content.recipes) {
     const out = data.items.get(r.output.item)!;
+    if (WITHOUT.has(out.id)) continue;
     if ((out.kind === 'trap' || out.kind === 'base') && count(p, out.id) === 0) {
       let q = p;
       for (const ing of Object.keys(r.ingredients)) {
@@ -145,7 +148,7 @@ function plan(p: PlayerState, log: Log, huntNo: number): PlayerState {
   const reserve = 60 * Math.max(8, baitPrice(current.setup.bait ?? ''));
   let pick: { id: string; gain: number } | null = null;
   for (const item of [...content.items.traps, ...content.items.bases]) {
-    if (item.price === null || item.rank > p.rank || count(p, item.id) > 0 || p.gold < item.price + reserve) continue;
+    if (WITHOUT.has(item.id) || item.price === null || item.rank > p.rank || count(p, item.id) > 0 || p.gold < item.price + reserve) continue;
     const trial = { ...p, inventory: { ...p.inventory, [item.id]: 1 } };
     const gain = bestSetup(trial, p.location, true).value - current.value;
     if (gain > 0 && (!pick || gain > pick.gain)) pick = { id: item.id, gain };

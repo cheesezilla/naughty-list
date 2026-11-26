@@ -62,3 +62,19 @@ describe('hunt odds', () => {
     expect(rare(fruit)).toBeCloseTo(10 / 130);
   });
 });
+
+describe('base affinity', () => {
+  const loc = content.locations[0]!;
+  const stats = (trap: string, base: string) => setupStats(content, { trap, base, bait: null, charm: null }, loc);
+
+  it('adds 10% power only when the trap type matches', () => {
+    const trap = content.items.traps.find((t) => t.id === 'sleigh_bell_snapper')!; // Clockwork
+    const plain = trap.power + 1300;
+    expect(stats('sleigh_bell_snapper', 'sleigh_runner').power).toBeCloseTo(plain * 1.1, 6);
+    expect(stats('constellation_wreath', 'sleigh_runner').power).toBe(1400 + 1300);
+  });
+
+  it('lets the Wishing Star Pedestal match Carol as well as Starlight', () => {
+    expect(stats('carol_horn', 'wishing_star_pedestal').power).toBeCloseTo((600 + 300) * 1.1, 6);
+  });
+});

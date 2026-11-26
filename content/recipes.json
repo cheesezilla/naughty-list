@@ -6,5 +6,8 @@
   { "id": "carol_horn", "output": { "item": "carol_horn", "amount": 1 }, "ingredients": { "hymn_reed": 5, "carol_songsheet": 1 }, "gold": 600, "rank": 2 },
   { "id": "constellation_wreath", "output": { "item": "constellation_wreath", "amount": 1 }, "ingredients": { "enchanted_wrapping": 3, "brass_spring": 2 }, "gold": 6000, "rank": 3 },
   { "id": "yule_log_base", "output": { "item": "yule_log_base", "amount": 1 }, "ingredients": { "toymakers_gear": 3, "golden_ribbon": 1, "sugar_glass": 2 }, "gold": 4000, "rank": 3 },
+  { "id": "sleigh_runner", "output": { "item": "sleigh_runner", "amount": 1 }, "ingredients": { "silver_sleighbell": 2, "toymakers_gear": 2 }, "gold": 12000, "rank": 4 },
+  { "id": "gingerbread_cottage", "output": { "item": "gingerbread_cottage", "amount": 1 }, "ingredients": { "cookie_tin": 3, "golden_ribbon": 2, "candy_cane_platform": 1 }, "gold": 8000, "rank": 4 },
+  { "id": "wishing_star_pedestal", "output": { "item": "wishing_star_pedestal", "amount": 1 }, "ingredients": { "clockwork_heart": 1, "enchanted_wrapping": 2, "sugar_glass": 4 }, "gold": 12000, "rank": 4 },
   { "id": "sleigh_bell_snapper", "output": { "item": "sleigh_bell_snapper", "amount": 1 }, "ingredients": { "silver_sleighbell": 3, "clockwork_heart": 1, "nutcracker_jaws": 1 }, "gold": 15000, "rank": 4 }
 ]

@@ -65,6 +65,36 @@
       "description": "A forged yule log that glows like embers. Its warmth draws hexed elves from all over, and its gears keep your trap steady.",
       "backstory": "Santa's Workshop fits a real yule log with toymaker's gears, ties it with golden ribbon and glazes it in sugar glass. It smoulders gently without ever burning down. Cold, hexed elves come for the warmth, stay for the smell of woodsmoke and cinnamon, and leave on The Naughty List."
     },
+    "toffee_anvil": {
+      "tagline": "Heavy, sticky and impossible to shift.",
+      "description": "A block of hardened toffee shaped like a blacksmith's anvil. It sits so solidly that even the biggest elves can't rock your trap loose.",
+      "backstory": "The Pantry cooks poured this one by accident when a toffee pot boiled over onto an anvil mould. It set before anyone could stop it and has not moved since. Boss-sized elves hate it, mostly because it will not give."
+    },
+    "chestnut_brazier": {
+      "tagline": "The smell alone brings them running.",
+      "description": "A little iron brazier of glowing roast chestnuts. Even a stale cookie smells like a feast beside it.",
+      "backstory": "A night watchman elf started roasting chestnuts to keep warm and found the hexed elves queuing up. Now it stands guard in the Wrapping Room, crackling away. Hunters on a budget swear by it, and keep a few chestnuts back for themselves."
+    },
+    "wishbone_plinth": {
+      "tagline": "Make a wish. The small ones usually come true.",
+      "description": "A pedestal built from one enormous Christmas wishbone. It adds little muscle but a lot of luck, and common elves rarely get away from it.",
+      "backstory": "Every year the largest wishbone in the lair is pulled by two elves, and every year the wish is the same: fewer escapes. The winner's half was mounted on a plinth to see if it would help. It does, mostly with the little ones."
+    },
+    "sleigh_runner": {
+      "tagline": "Built to haul the heaviest trap the lair has.",
+      "description": "A polished sleigh runner bolted to a toymaker's frame. It carries huge traps and shrugs off the biggest elves, and clockwork traps run best on it.",
+      "backstory": "The Workshop makes these from silver sleigh bells and spare gears when a runner snaps in the Stables. Mounted flat, one makes a base that nothing can tip. Clockwork traps fit its grooves exactly and wind a little tighter."
+    },
+    "gingerbread_cottage": {
+      "tagline": "A tiny house nobody can resist.",
+      "description": "A whole gingerbread cottage with icing snow and candy windows. The smell draws elves from every corridor, and frost traps keep it fresh.",
+      "backstory": "Cookie tins, golden ribbon and a worn Candy Cane Platform are all it takes, plus patience with the icing bag. Hexed elves cannot walk past it without a nibble. The frosting keeps better beside a frost trap, which is why the Stables hunters like it."
+    },
+    "wishing_star_pedestal": {
+      "tagline": "Wish on it, then hope the elf wishes harder.",
+      "description": "A pedestal topped with a captured wishing star. It is heavy on luck, so it catches elves that shrug off your trap, and star and carol traps shine on it.",
+      "backstory": "A clockwork heart ticks inside, wrapped in enchanted wrapping and sealed with sugar glass. The star on top grants one small wish per hunt, usually the elf's, and usually that it were somewhere else. Starlight and carol traps make the star sing."
+    },
     "stale_cookie": {
       "tagline": "Hard as a brick, but hexed elves aren't fussy.",
       "description": "Yesterday's cookies, swept up from the Pantry floor. Cheap, plentiful and good enough for most hexed elves.",
