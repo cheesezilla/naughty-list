@@ -3,8 +3,9 @@ import type { GameEvent, JournalEntry, JournalRow, Pillage } from '../../engine/
 import { api } from '../api.js';
 import { useGame } from '../game.js';
 import { Art } from '../lib/art.js';
-import { dayLabel, num, pct, TIER_NAME, when } from '../lib/format.js';
+import { dayLabel, num, TIER_NAME, when } from '../lib/format.js';
 import { usePrefs } from '../lib/prefs.js';
+import { useRateText } from '../lib/effectiveness.js';
 import { go } from '../lib/route.js';
 import { BackRow, MainScreen, Tabs } from '../ui.js';
 import { BadgeMedal } from '../lib/medal.js';
@@ -40,6 +41,7 @@ function ObjectiveNote({ o, itemName }: { o: NonNullable<JournalEntry['objective
 function HuntRow({ row }: { row: JournalRow & { kind: 'hunt' } }) {
   const { data, content } = useGame();
   const prefs = usePrefs();
+  const rateText = useRateText();
   const e: JournalEntry = row.entry;
   const imp = e.imp ? data.imps.get(e.imp) : undefined;
   const itemName = (id: string) => data.items.get(id)?.name ?? id;
@@ -74,8 +76,8 @@ function HuntRow({ row }: { row: JournalRow & { kind: 'hunt' } }) {
           {caught
             ? <>{e.firstCatch && 'First catch! '}+{num(e.gold)} gold, +{num(e.points)} points{loot.length > 0 && `, ${loot.join(', ')}`}{e.key && <>. The boss dropped a key: <b>{keyName(e.key)}</b></>}</>
             : e.pillage
-              ? <>Escaped and pillaged you: {pillageText(e.pillage, itemName)}. {pct(e.catchChance ?? 0)} chance</>
-              : <>Escaped. {pct(e.catchChance ?? 0)} chance</>}
+              ? <>Escaped and pillaged you: {pillageText(e.pillage, itemName)}. {rateText(e.catchChance ?? 0)} chance</>
+              : <>Escaped. {rateText(e.catchChance ?? 0)} chance</>}
           {e.objective && <ObjectiveNote o={e.objective} itemName={itemName} />}
         </div>
         {time}
