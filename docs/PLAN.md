@@ -53,6 +53,16 @@ The tone is a cheeky Christmas storybook. Every elf, place, trap, bait, rank and
 
 **Welcome popup (eddy 26 Nov 2026, built in #23).** A one-time popup greets the player when a new game starts: right after creating an account, and again after Start over. It sits over the Hunt screen with the key art on top, the game icon, and:
 
+**New Catch popup (planned, eddy 26 Nov 2026).** The first time a player catches a particular elf, a popup appears over the Hunt screen right after the hunt, so a first catch feels like an event instead of a line in the log. It shows:
+
+- a header ribbon "NEW ELF ON YOUR NAUGHTY LIST" in the tier's colour (common green, uncommon teal, rare purple, mini boss orange, boss gold);
+- the portrait in a tier-coloured frame, with a "Portrait unlocked" pill (the "?" card turns into the real portrait here);
+- the name, a tier pill and the location, then the tagline from `content/flavour.json`;
+- three small tiles: power, the power type it is weak to (as a medal icon, or "No weakness" if it has none), and the points it gave;
+- progress on the Naughty List: this location (for example 4 of 5) with a bar, and all locations (9 of 23).
+
+Buttons: **Open file** closes the popup and opens the elf's file; **Keep hunting** closes it. Esc, Enter and Space also close it, and the first Space press never hunts behind it. The hunt log still gets its usual "Portrait unlocked" mark on that catch. If the same catch also earns achievements, the New Catch popup comes first and the achievement popups follow it. There is no new save field: "first catch" is already known from the elf's catch count going from 0 to 1 in that hunt. The setting **Achievement popups: Quiet** also applies here, turning this into a small toast with the portrait thumbnail and name. Mockup: the UI canvas, row "Achievements and badges", artboard "New Catch popup".
+
 > **Welcome to The Naughty List!**
 > Scrinch's elves are raiding Santa's secret lair, and Santa needs a hunter. Set your trap, catch every elf you can, and put them all on the Naughty List!
 
@@ -827,6 +837,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-26 | #26 | Planned a New Catch popup for the first catch of each elf (portrait unlocked, tier colours, tiles, Naughty List progress, Open file and Keep hunting), with a canvas mockup. Design only |
 | 2026-11-26 | #26 | Frozen top header (eddy): title and player bar merged into one header pinned at the top of every screen, with the rank progress bar on its bottom edge; the location banner moves below it and no longer carries the player bar. Canvas mockups updated. UI design only |
 | 2026-11-26 | this PR | **Hexed elves and home power types (eddy).** New story: Scrinch took over the lair and hexed Santa's elves, who replace the imps; catching them goes on The Naughty List and Mrs. Claus's cocoa brings them round. Renamed Crumb Elf, Sootcap, Gingerbread Rascal, Glitterbug, Wind-up Elf and General Grimbolt (a hexed nutcracker soldier), with new ids; the Stables boss is now Cinderhoof, an original hexed reindeer (no Rudolph: trademarked), and Grizzlewick is parked. Rank 3 is Hex Tracker. Power types by location: Wrapping Room weak to Starlight / resists Clockwork, Toy Workshop weak to Clockwork / resists Frost, Reindeer Stables weak to Frost / resists Starlight, Pantry a teaching room; 16 elves' weaknesses changed (table above). All elf text rewritten (flavour, letter, welcome, location intros and hints with the room's type, achievements, screens, How to play); hint sheets allow 5 steps. Simple generated SVG portraits for all 23 elves and the "?" card; the old imp PNGs moved to `art-archive/imps/`, other custom art kept; new elf portraits, the icon and key art added to the art backlog. Saves, badges and log entries with old ids are rewritten on start. Simulator: buys one trap of each type before the order board; 200/200 reach rank 5, median 1,403 hunts (was 1,503), Snow Globe Prison now bought by 94% |
 | 2026-11-26 | #24 | Design pass against every phone screen on the UI canvas. Fixed: the welcome popup now shows again after Start over without a reload; each of the 55 badges has its own emblem (the feed no longer shows "?" for an earned secret); progress reads `312 / 500 hunts` and `Best run 7 / 10`; the badge sheet says which hunt earned a badge (`achievementHunts` in the save) and has a handle and a Close button; the quiet toast shows the frame and "tap to view"; the hint sheet has its title in the location's colour and Open Workshop and Close buttons. Top of the List now needs at least one other hunter, so a lone player doesn't get it on hunt #1. No game numbers changed |
