@@ -35,6 +35,8 @@ export interface PlayerState {
   tally?: Record<string, number>;
   /** False until the player closes the welcome popup of a new game. Missing (seen) in older saves. */
   welcomeSeen?: boolean;
+  /** Admin speed-run settings. Only honoured for admin accounts, and only the admin endpoint sets it. */
+  speedRun?: { reward: number; odds: boolean };
 }
 
 export type ActionResult = { ok: true; player: PlayerState } | { ok: false; error: string };

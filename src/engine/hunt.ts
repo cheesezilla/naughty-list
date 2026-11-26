@@ -55,7 +55,10 @@ function hasAnyBait(content: Content, p: PlayerState): boolean {
 }
 
 /** Runs one hunt. Pure apart from the random source: returns a new player state and a journal entry. */
-export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0): HuntResult {
+/** Admin speed-run settings: multiplies catch rewards, and/or makes every hunt attract and catch with full loot. */
+export interface HuntBoost { reward: number; odds: boolean }
+
+export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0, boost?: HuntBoost): HuntResult {
   const data = gameData(content);
   const c = content.constants;
   const p = structuredClone(player);
@@ -100,7 +103,7 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0): 
     }
   };
 
-  if (rng() >= stats.attraction) {
+  if (!boost?.odds && rng() >= stats.attraction) {
     streak('Quiet');
     track(undefined, false);
     return { ok: true, player: p, entry };
@@ -122,16 +125,17 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0): 
     if (count(p, p.setup.charm) < 1) p.setup.charm = null;
   }
 
-  const chance = catchChance(stats, imp, c.catchCap);
+  const chance = boost?.odds ? (effectiveness(imp, stats.type) > 0 ? 1 : 0) : catchChance(stats, imp, c.catchCap);
+  const mult = boost?.reward ?? 1;
   entry.catchChance = chance;
   if (rng() < chance) {
     entry.outcome = 'catch';
-    entry.gold = imp.gold;
-    entry.points = imp.points;
-    p.gold += imp.gold;
-    p.points += imp.points;
+    entry.gold = imp.gold * mult;
+    entry.points = imp.points * mult;
+    p.gold += entry.gold;
+    p.points += entry.points;
     p.stats.caught += 1;
-    p.stats.goldEarned = (p.stats.goldEarned ?? 0) + imp.gold;
+    p.stats.goldEarned = (p.stats.goldEarned ?? 0) + entry.gold;
     if (!p.catches[imp.id]) entry.firstCatch = true;
     streak('Catch');
     if (stats.type) bump(p, `catches_${stats.type}`);
@@ -139,7 +143,7 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0): 
     if ((imp.tier === 'miniboss' || imp.tier === 'boss') && p.setup.trap === c.startingSetup.trap) bump(p, 'starterBoss');
     p.catches[imp.id] = (p.catches[imp.id] ?? 0) + 1;
     for (const l of imp.loot ?? []) {
-      if (rng() < l.chance) {
+      if (boost?.odds || rng() < l.chance) {
         const amount = l.amount ?? 1;
         addItem(p, l.item, amount);
         entry.loot.push({ item: l.item, amount });

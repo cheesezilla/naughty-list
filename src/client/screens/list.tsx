@@ -29,6 +29,7 @@ export function NaughtyListScreen() {
           onChange={setLoc}
           tabs={content.locations.map((l) => ({ id: l.id, label: <>{l.name} <small>{l.imps.filter((i) => player.catches[i.id]).length}/{l.imps.length}</small></> }))}
         />
+        {location.homeTypes.length > 0 && <span class="weak-row"><small>Best traps here</small>{location.homeTypes.map((t) => <TypeMedal type={t} size={22} />)}</span>}
         <div class="portrait-grid">
           {location.imps.map((imp) => {
             const n = player.catches[imp.id] ?? 0;
