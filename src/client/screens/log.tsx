@@ -173,8 +173,8 @@ export function ArrivalCard({ location, at }: { location: string; at: number }) 
 }
 
 /** Earned badges: one row with each badge, tap to open it on My profile. */
-function AchievementRow({ ids, at, backfill }: { ids: string[]; at: number; backfill?: boolean }) {
-  const { content } = useGame();
+function AchievementRow({ ids, at, backfill, rewards }: { ids: string[]; at: number; backfill?: boolean; rewards?: Record<string, number> }) {
+  const { content, data } = useGame();
   const prefs = usePrefs();
   const list = ids.map((id) => content.achievements.find((a) => a.id === id)).filter((a) => !!a);
   if (!list.length) return null;
@@ -184,6 +184,7 @@ function AchievementRow({ ids, at, backfill }: { ids: string[]; at: number; back
       <div class="row-body">
         {backfill ? <><b>Welcome back!</b> You've already earned {list.length} badge{list.length > 1 ? 's' : ''}: </> : <>🏅 Achievement: </>}
         <b>{list.map((a) => a.name).join(', ')}</b>
+        {rewards && Object.keys(rewards).length > 0 && <><br />🎁 Rewards: {Object.entries(rewards).map(([id, n]) => `${num(n)} ${data.items.get(id)?.name ?? id}`).join(', ')}</>}
       </div>
       <span class="row-time">{when(at, prefs.clock24)}</span>
     </button>
@@ -191,7 +192,7 @@ function AchievementRow({ ids, at, backfill }: { ids: string[]; at: number; back
 }
 
 export function LogRow({ row }: { row: JournalRow }) {
-  if (row.kind === 'event' && row.entry.type === 'achievement') return <AchievementRow ids={row.entry.ids} at={row.at} backfill={row.entry.backfill} />;
+  if (row.kind === 'event' && row.entry.type === 'achievement') return <AchievementRow ids={row.entry.ids} at={row.at} backfill={row.entry.backfill} rewards={row.entry.rewards} />;
   if (row.kind === 'event' && row.entry.type === 'intro') return <StoryCard at={row.at} />;
   if (row.kind === 'event' && row.entry.type === 'arrival') return <ArrivalCard location={row.entry.location} at={row.at} />;
   return row.kind === 'hunt' ? <HuntRow row={row} /> : <EventRow row={row} />;

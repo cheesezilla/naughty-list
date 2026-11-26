@@ -63,6 +63,8 @@ export function checkReferences(c: Content): string[] {
   if (!locIds.has(c.constants.startingLocation)) problems.push(`starting location "${c.constants.startingLocation}" is unknown`);
   for (const i of Object.keys(c.constants.startingItems)) need(i, 'startingItems');
   need(c.constants.rescue.item, 'rescue item');
+  for (const [frame, r] of Object.entries(c.constants.achievementRewards)) for (const i of Object.keys(r)) need(i, `achievementRewards.${frame}`);
+  for (const a of c.achievements) for (const i of Object.keys(a.reward ?? {})) need(i, `achievement ${a.id} reward`);
 
   for (const [kind, list] of Object.entries(c.items)) {
     for (const i of list) if (!i.flavour) problems.push(`${kind} "${i.id}" has no text in flavour.json`);

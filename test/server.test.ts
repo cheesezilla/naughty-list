@@ -102,7 +102,7 @@ describe('server', () => {
     expect(r.statusCode).toBe(200);
     expect(r.json().entry.entry).toMatchObject({ outcome: 'catch', imp: 'crumb_elf' });
     const me = (await get('/api/me', c)).json();
-    expect(me.player.gold).toBe(312);
+    expect(me.player.gold).toBe(162);
     expect(me.journal).toHaveLength(3);
     expect(me.journal[0]).toMatchObject({ n: 1, kind: 'hunt', entry: { firstCatch: true } });
     expect(me.journal[1]).toMatchObject({ n: 0, kind: 'event', entry: { type: 'arrival', location: 'cookie_pantry' } });
@@ -115,6 +115,7 @@ describe('server', () => {
     const c = await signupAdmin();
     await post('/api/hunt', {}, c);
     clock += 1000;
+    store.savePlayer(1, { ...store.player(1)!, gold: 300 }, clock);
     const buy = (await post('/api/buy', { item: 'jack_in_the_box' }, c)).json();
     expect(buy.log).toMatchObject({ kind: 'event', n: 1, entry: { type: 'buy', item: 'jack_in_the_box', amount: 1, gold: 300 } });
     const eq = (await post('/api/setup', { slot: 'trap', item: 'jack_in_the_box' }, c)).json();
@@ -201,6 +202,7 @@ describe('server', () => {
 
   it('buys, equips, travels and reports engine errors', async () => {
     const c = await signupAdmin();
+    store.savePlayer(1, { ...store.player(1)!, gold: 300 }, clock);
     expect((await post('/api/buy', { item: 'jack_in_the_box' }, c)).json().player.gold).toBe(0);
     expect((await post('/api/setup', { slot: 'trap', item: 'jack_in_the_box' }, c)).json().player.setup.trap).toBe('jack_in_the_box');
     const broke = await post('/api/buy', { item: 'gingerbread_slab' }, c);
@@ -258,11 +260,11 @@ describe('start over', () => {
 
     const r = await post('/api/restart', { confirm: true }, sam);
     expect(r.statusCode).toBe(200);
-    expect(r.json().player).toMatchObject({ gold: 300, points: 0, rank: 1, catches: {}, stats: { hunts: 0 } });
+    expect(r.json().player).toMatchObject({ gold: 150, points: 0, rank: 1, catches: {}, stats: { hunts: 0 } });
 
     const samMe = (await get('/api/me', sam)).json();
     expect(samMe.user.username).toBe('sam');
-    expect(samMe.player.gold).toBe(300);
+    expect(samMe.player.gold).toBe(150);
     expect(samMe.player.inventory.mistletoe_charm).toBeUndefined();
     // the log starts again with Santa's letter and the Cookie Pantry's intro
     expect(samMe.journal).toEqual([
@@ -273,13 +275,13 @@ describe('start over', () => {
 
     // the other player is untouched
     const eddyMe = (await get('/api/me', admin)).json();
-    expect(eddyMe.player.gold).toBe(312);
+    expect(eddyMe.player.gold).toBe(162);
     expect(eddyMe.journal).toHaveLength(3);
 
     // the restart is logged with what sam had, visible to sam and to the admin
     const own = (await get('/api/restarts', sam)).json().restarts;
     expect(own).toHaveLength(1);
-    expect(own[0]).toMatchObject({ username: 'sam', summary: { gold: 252, points: 20, hunts: 1, caught: 1, impsOnList: 1 } });
+    expect(own[0]).toMatchObject({ username: 'sam', summary: { gold: 102, points: 20, hunts: 1, caught: 1, impsOnList: 1 } });
     const all = (await get('/api/admin/restarts', admin)).json().restarts;
     expect(all.map((x: { username: string }) => x.username)).toEqual(['sam']);
     expect((await get('/api/admin/restarts', sam)).statusCode).toBe(403);
@@ -374,11 +376,12 @@ describe('achievements and the welcome popup', () => {
     h = (await post('/api/hunt', {}, cookie)).json();
     expect(h.newAchievements).toEqual(['secret_top_hunter']);
     expect(h.logs.map((r: { kind: string }) => r.kind)).toEqual(['hunt', 'event']);
-    expect(h.logs[1].entry).toEqual({ type: 'achievement', ids: ['secret_top_hunter'] });
+    expect(h.logs[1].entry).toEqual({ type: 'achievement', ids: ['secret_top_hunter'], rewards: { jingle_bell_charm: 1, peppermint_bark: 8 } });
     expect(h.player.achievements).toEqual({ first_catch: clock - 1000, secret_top_hunter: clock });
     expect(h.player.achievementHunts).toEqual({ first_catch: 1, secret_top_hunter: 2 });
 
     clock += 1000;
+    store.savePlayer(1, { ...store.player(1)!, gold: 300 }, clock);
     const b = (await post('/api/buy', { item: 'jack_in_the_box' }, cookie)).json();
     expect(b.newAchievements).toEqual(['first_purchase']);
     // Badges from actions other than a hunt have no hunt number.
@@ -391,7 +394,7 @@ describe('achievements and the welcome popup', () => {
 
     // Only the Silver, Gold and Secret badges go into the Hunters feed.
     const feed = (await get('/api/hunters', cookie)).json().feed;
-    expect(feed.filter((f: { kind: string }) => f.kind === 'event').map((f: { entry: unknown }) => f.entry)).toEqual([{ type: 'achievement', ids: ['secret_top_hunter'] }]);
+    expect(feed.filter((f: { kind: string }) => f.kind === 'event').map((f: { entry: unknown }) => f.entry)).toEqual([{ type: 'achievement', ids: ['secret_top_hunter'], rewards: { jingle_bell_charm: 1, peppermint_bark: 8 } }]);
     expect((await get('/api/achievements', cookie)).json()).toMatchObject({ hunters: 2, counts: { first_catch: 1, first_purchase: 1 } });
   });
 

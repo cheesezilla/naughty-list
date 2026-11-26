@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'preact/hooks';
-import type { Achievement } from '../../content/schema.js';
+import type { Achievement, Content } from '../../content/schema.js';
 import { achievementProgress } from '../../engine/index.js';
 import { api } from '../api.js';
 import { useGame } from '../game.js';
@@ -69,6 +69,12 @@ export function AchievementPopup({ ids, backfill, onClose }: { ids: string[]; ba
   );
 }
 
+/** What a badge gave, like "1 Mistletoe Charm, 5 Sugar Cookie". */
+function rewardText(content: Content, a: Achievement): string {
+  const names = new Map([...content.items.baits, ...content.items.charms].map((i) => [i.id, i.name]));
+  return Object.entries(a.reward ?? content.constants.achievementRewards[a.frame]).map(([id, n]) => `${n} ${names.get(id) ?? id}`).join(', ');
+}
+
 /** Every new badge: a banner under the header that never blocks the screen and leaves by itself. */
 export function AchievementBanner({ ids, onClose }: { ids: string[]; onClose: () => void }) {
   const { content } = useGame();
@@ -81,16 +87,20 @@ export function AchievementBanner({ ids, onClose }: { ids: string[]; onClose: ()
   }, [i, ids.length]);
   if (!a) return null;
   return (
-    <button class="ach-banner" key={a.id} onClick={() => { onClose(); go(`more/profile/achievements/${a.id}`); }}>
-      <BadgeMedal a={a} earned size={48} />
-      <span>
-        <small class="kicker">Achievement earned</small>
-        <b>{a.name}</b>
-        <small>{FRAME_NAME[a.frame]} · tap to view</small>
-      </span>
-      {left > 0 && <em class="ach-more">+{left} more</em>}
+    <div class="ach-banner" key={a.id}>
+      <button class="ach-open" onClick={() => { onClose(); go(`more/profile/achievements/${a.id}`); }}>
+        <BadgeMedal a={a} earned size={48} />
+        <span>
+          <small class="kicker">Achievement earned</small>
+          <b>{a.name}</b>
+          <small>{FRAME_NAME[a.frame]} · tap to view</small>
+          {rewardText(content, a) && <small class="ach-reward">🎁 {rewardText(content, a)}</small>}
+        </span>
+        {left > 0 && <em class="ach-more">+{left} more</em>}
+      </button>
+      <button class="ach-close" aria-label="Dismiss" onClick={onClose}>✕</button>
       <i class="ach-timer" aria-hidden="true" />
-    </button>
+    </div>
   );
 }
 

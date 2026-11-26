@@ -1,8 +1,13 @@
 {
-  "startingGold": 300,
+  "startingGold": 150,
   "startingItems": { "stale_cookie": 100 },
   "startingSetup": { "trap": "starlit_stocking", "base": "cardboard_box", "bait": "stale_cookie", "charm": null },
   "startingLocation": "cookie_pantry",
+  "achievementRewards": {
+    "bronze": { "mistletoe_charm": 1, "sugar_cookie": 5 },
+    "silver": { "jingle_bell_charm": 1, "peppermint_bark": 8 },
+    "gold": { "windup_key_charm": 1, "hot_cocoa": 10 }
+  },
   "attractionCap": 0.95,
   "catchCap": 0.98,
   "luck": { "scale": 3, "tierWeight": { "common": 1, "uncommon": 1, "rare": 0.5, "miniboss": 0.25, "boss": 0.1 } },
