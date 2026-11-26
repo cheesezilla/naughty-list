@@ -6,6 +6,7 @@ import { GameContext, trimLog, type Game } from './game.js';
 import { loadArt } from './lib/art.js';
 import { buzz, getPrefs, playSound } from './lib/prefs.js';
 import { AchievementPopup, AchievementToast, WelcomePopup } from './screens/achievements.js';
+import { NewCatchPopup, NewCatchToast, type NewCatch } from './screens/newcatch.js';
 import { go, useRoute } from './lib/route.js';
 import { ArsenalScreen, ItemScreen } from './screens/gear.js';
 import { AuthScreen } from './screens/auth.js';
@@ -46,6 +47,7 @@ function Playing({ content, me, onLogout }: { content: Content; me: MeResponse; 
   const [log, setLog] = useState(me.journal);
   const [busy, setBusy] = useState(false);
   const [toastState, setToast] = useState<Toast | null>(null);
+  const [newCatch, setNewCatch] = useState<(NewCatch & { quiet: boolean }) | null>(null);
   const [badges, setBadges] = useState<{ ids: string[]; backfill: boolean; quiet: boolean } | null>(
     me.backfill?.length ? { ids: me.backfill, backfill: true, quiet: false } : null);
   const [welcome, setWelcome] = useState(me.player.welcomeSeen === false);
@@ -101,6 +103,7 @@ function Playing({ content, me, onLogout }: { content: Content; me: MeResponse; 
       if (r.entry.kind === 'hunt') {
         const e = r.entry.entry;
         const imp = e.imp ? data.imps.get(e.imp) : undefined;
+        if (e.outcome === 'catch' && e.firstCatch && e.imp) setNewCatch({ imp: e.imp, points: e.points ?? 0, quiet: !getPrefs().achievementPopups });
         if (e.rankUp) {
           toast(`Rank up! You are now ${content.ranks[e.rankUp - 1]!.name}.`, 'good');
           playSound('rank');
@@ -141,7 +144,10 @@ function Playing({ content, me, onLogout }: { content: Content; me: MeResponse; 
           if (letter) setTimeout(() => document.querySelector('.story-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
         }} />
       )}
-      {!welcome && badges && (badges.quiet
+      {!welcome && newCatch && (newCatch.quiet
+        ? <NewCatchToast found={newCatch} onClose={() => setNewCatch(null)} />
+        : <NewCatchPopup found={newCatch} onClose={() => setNewCatch(null)} />)}
+      {!welcome && (!newCatch || newCatch.quiet) && badges && (badges.quiet
         ? <AchievementToast ids={badges.ids} onClose={() => setBadges(null)} />
         : <AchievementPopup ids={badges.ids} backfill={badges.backfill} onClose={() => setBadges(null)} />)}
       {toastState && (
