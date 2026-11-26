@@ -1,6 +1,8 @@
 [
   { "id": "mistletoe_x10", "output": { "item": "mistletoe_charm", "amount": 10 }, "ingredients": { "sugar_glass": 1 }, "gold": 150, "rank": 1 },
   { "id": "fruitcake_x5", "output": { "item": "fruitcake", "amount": 5 }, "ingredients": { "candied_peel": 3, "cookie_tin": 1 }, "gold": 100, "rank": 2 },
+  { "id": "ribbon_candy_x3", "output": { "item": "ribbon_candy", "amount": 3 }, "ingredients": { "sugar_twist": 2, "candied_peel": 1 }, "gold": 30, "rank": 2 },
+  { "id": "golden_bow_bonbon_x2", "output": { "item": "golden_bow_bonbon", "amount": 2 }, "ingredients": { "sugar_glass": 1, "golden_ribbon": 1 }, "gold": 100, "rank": 2 },
   { "id": "constellation_wreath", "output": { "item": "constellation_wreath", "amount": 1 }, "ingredients": { "enchanted_wrapping": 3, "brass_spring": 2 }, "gold": 6000, "rank": 3 },
   { "id": "yule_log_base", "output": { "item": "yule_log_base", "amount": 1 }, "ingredients": { "toymakers_gear": 3, "golden_ribbon": 1, "sugar_glass": 2 }, "gold": 4000, "rank": 3 },
   { "id": "sleigh_bell_snapper", "output": { "item": "sleigh_bell_snapper", "amount": 1 }, "ingredients": { "silver_sleighbell": 3, "clockwork_heart": 1, "nutcracker_jaws": 1 }, "gold": 15000, "rank": 4 }

@@ -33,7 +33,7 @@ src/client/public/art/<slot>/<id>.<ext>
 | `imps` | imp ids, plus `_locked` | 512×512 | Filled card | Naughty List grid, imp file, hunt log. `_locked` is the "?" card for imps not caught yet. Entries have `tier` and `location` |
 | `ranks` | `rank_<number>` (`rank_1` … `rank_5`) | 256×256 | Transparent | Top bar rank thumbnail, rank-up, How to play |
 | `icons` | `nav_*`, `menu_*`, `stat_*` (below) | 24×24 | Transparent | Bottom nav, More menu, stat labels |
-| `howto` | `hunt`, `attraction`, `power`, `luck`, `trap_types`, `loot`, `ranks` | 640×360 | Filled | How to play page, one per section |
+| `howto` | `hunt`, `attraction`, `power`, `luck`, `trap_types`, `loot`, `pillage`, `ranks` | 640×360 | Filled | How to play page, one per section |
 
 Icons: `nav_hunt`, `nav_naughty_list`, `nav_emporium`, `nav_workshop`, `nav_more`, `menu_travel`, `menu_hunters`, `menu_stats`, `menu_howto`, `menu_settings`, `menu_admin`, `menu_account`, `menu_logout`, `stat_gold`, `stat_points`, `stat_power`, `stat_luck`, `stat_attraction`, `stat_catch`. They are line icons drawn in `currentColor`, so to colour them with the text, inline them or use them as a CSS `mask-image`; as a plain `<img>` they draw in black.
 

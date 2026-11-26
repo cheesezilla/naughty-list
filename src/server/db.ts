@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS restarts (
 `;
 
 export interface UserRow { id: number; username: string; password_hash: string; is_admin: number; created_at: number }
-export type HistoryFilter = 'all' | 'catches' | 'escapes' | 'events' | 'bosses';
+export type HistoryFilter = 'all' | 'catches' | 'escapes' | 'pillaged' | 'events' | 'bosses';
 export interface PlayerSummary { id: number; username: string; isAdmin: boolean; createdAt: number; updatedAt: number; rank: number; points: number; hunts: number; caught: number; impsOnList: number }
 export interface Settings { allowSignups: boolean }
 const DEFAULT_SETTINGS: Settings = { allowSignups: true };
@@ -215,6 +215,7 @@ export class Store {
     switch (opts.filter ?? 'all') {
       case 'catches': where.push("kind = 'hunt'", "json_extract(entry, '$.outcome') = 'catch'"); break;
       case 'escapes': where.push("kind = 'hunt'", "json_extract(entry, '$.outcome') = 'escape'"); break;
+      case 'pillaged': where.push("kind = 'hunt'", "json_extract(entry, '$.pillage') IS NOT NULL"); break;
       case 'events': where.push("(kind = 'event' OR json_extract(entry, '$.rankUp') IS NOT NULL)"); break;
       case 'bosses': {
         const ids = opts.bossIds ?? [];
@@ -240,15 +241,17 @@ export class Store {
     }
     return { rankUps, firstCatches };
   }
-  /** Everyone's notable moments (rare and boss catches, rank-ups), newest first. */
-  feed(notableImps: string[], limit = 20): (JournalRow & { username: string })[] {
+  /** Everyone's notable moments (rare and boss catches, boss pillages, rank-ups), newest first. */
+  feed(notableImps: string[], limit = 20, pillageImps: string[] = []): (JournalRow & { username: string })[] {
     const marks = notableImps.map(() => '?').join(',') || "''";
+    const pmarks = pillageImps.map(() => '?').join(',') || "''";
     const rows = this.db.prepare(
       `SELECT j.*, u.username FROM journal j JOIN users u ON u.id = j.user_id
        WHERE j.kind = 'hunt' AND (json_extract(j.entry, '$.rankUp') IS NOT NULL
-         OR (json_extract(j.entry, '$.outcome') = 'catch' AND json_extract(j.entry, '$.imp') IN (${marks})))
+         OR (json_extract(j.entry, '$.outcome') = 'catch' AND json_extract(j.entry, '$.imp') IN (${marks}))
+         OR (json_extract(j.entry, '$.pillage') IS NOT NULL AND json_extract(j.entry, '$.imp') IN (${pmarks})))
        ORDER BY j.id DESC LIMIT ?`,
-    ).all(...notableImps, limit) as { id: number; hunt_no: number; created_at: number; entry: string; kind: LogKind; username: string }[];
+    ).all(...notableImps, ...pillageImps, limit) as { id: number; hunt_no: number; created_at: number; entry: string; kind: LogKind; username: string }[];
     return rows.map((r) => ({ id: r.id, n: r.hunt_no, at: r.created_at, kind: 'hunt', entry: JSON.parse(r.entry), username: r.username }));
   }
 

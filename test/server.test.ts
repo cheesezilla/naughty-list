@@ -101,9 +101,10 @@ describe('server', () => {
     expect(r.json().entry.entry).toMatchObject({ outcome: 'catch', imp: 'crumb_imp' });
     const me = (await get('/api/me', c)).json();
     expect(me.player.gold).toBe(312);
-    expect(me.journal).toHaveLength(2);
+    expect(me.journal).toHaveLength(3);
     expect(me.journal[0]).toMatchObject({ n: 1, kind: 'hunt', entry: { firstCatch: true } });
-    expect(me.journal[1]).toMatchObject({ n: 0, kind: 'event', entry: { type: 'intro' } });
+    expect(me.journal[1]).toMatchObject({ n: 0, kind: 'event', entry: { type: 'arrival', location: 'cookie_pantry' } });
+    expect(me.journal[2]).toMatchObject({ n: 0, kind: 'event', entry: { type: 'intro' } });
     expect(me.player.seen).toEqual({ crumb_imp: 1 });
     expect(me.player.stats.goldEarned).toBe(12);
   });
@@ -121,7 +122,7 @@ describe('server', () => {
     const sell = (await post('/api/sell', { item: 'stale_cookie', amount: 10 }, c)).json();
     expect(sell.log.entry).toMatchObject({ type: 'sell', amount: 10, gold: 30 });
     const me = (await get('/api/me', c)).json();
-    expect(me.journal.map((r: { kind: string }) => r.kind)).toEqual(['event', 'event', 'event', 'hunt', 'event']);
+    expect(me.journal.map((r: { kind: string }) => r.kind)).toEqual(['event', 'event', 'event', 'hunt', 'event', 'event']);
   });
 
   it('keeps the last 50 hunts with the events between them, and pages the full history', async () => {
@@ -133,7 +134,7 @@ describe('server', () => {
     }
     const log = (await get('/api/me', c)).json().journal;
     expect(log.filter((r: { kind: string }) => r.kind === 'hunt')).toHaveLength(50);
-    expect(log.filter((r: { kind: string }) => r.kind === 'event')).toHaveLength(1); // the intro is older than the 50th hunt
+    expect(log.filter((r: { kind: string }) => r.kind === 'event')).toHaveLength(1); // the intro and arrival are older than the 50th hunt
     expect(log[0].n).toBe(60);
     expect(log.at(-1)).toMatchObject({ kind: 'hunt', n: 11 });
 
@@ -141,9 +142,9 @@ describe('server', () => {
     expect(page1.rows).toHaveLength(40);
     expect(page1.more).toBe(true);
     const page2 = (await get(`/api/history?limit=40&before=${page1.rows.at(-1).id}`, c)).json();
-    expect(page2.rows).toHaveLength(23);
+    expect(page2.rows).toHaveLength(24);
     expect(page2.more).toBe(false);
-    expect((await get('/api/history?filter=events', c)).json().rows).toHaveLength(3);
+    expect((await get('/api/history?filter=events', c)).json().rows).toHaveLength(4);
     expect((await get('/api/history?filter=catches&limit=200', c)).json().rows).toHaveLength(60);
     expect((await get('/api/history?filter=bosses', c)).json().rows).toHaveLength(0);
   });
@@ -178,6 +179,33 @@ describe('server', () => {
     expect(broke.json().error).toMatch(/Not enough gold/);
     expect((await post('/api/travel', { location: 'wrapping_room' }, c)).statusCode).toBe(400);
   });
+
+  it('logs an arrival intro the first time a player reaches a location, and runs location goals', async () => {
+    const c = await signupAdmin();
+    const rich: PlayerState = { ...newPlayer(content), rank: 4, points: 50_000, gold: 20_000 };
+    store.savePlayer(1, rich, clock);
+    const first = (await post('/api/travel', { location: 'reindeer_stables' }, c)).json();
+    expect(first.logs.map((r: { entry: { type: string } }) => r.entry.type)).toEqual(['travel', 'arrival']);
+    await post('/api/travel', { location: 'cookie_pantry' }, c);
+    const again = (await post('/api/travel', { location: 'reindeer_stables' }, c)).json();
+    expect(again.logs.map((r: { entry: { type: string } }) => r.entry.type)).toEqual(['travel']);
+    const run = (await post('/api/objective', { action: 'start_run' }, c)).json();
+    expect(run.player.objectives.reindeer_stables).toMatchObject({ type: 'sleigh_run', active: true, left: 40, readiness: 0 });
+    expect(run.log.entry).toEqual({ type: 'objective', location: 'reindeer_stables', action: 'start_run' });
+    expect((await post('/api/objective', { action: 'start_run' }, c)).statusCode).toBe(400);
+    expect((await post('/api/objective', { action: 'rush_order' }, c)).statusCode).toBe(400);
+  });
+
+  it('filters pillaged hunts and shows boss pillages in the feed without amounts', async () => {
+    const c = await signupAdmin();
+    const p: PlayerState = { ...newPlayer(content), rank: 4, points: 50_000, gold: 9_000, location: 'wrapping_room', unlocked: ['cookie_pantry', 'wrapping_room'] };
+    store.savePlayer(1, p, clock);
+    store.addJournal(1, 1, { outcome: 'escape', location: 'wrapping_room', imp: 'madame_shredwell', gold: 0, points: 0, loot: [], baitUsed: 1, charmUsed: false, pillage: { gold: 720, points: 1000 } }, clock);
+    const rows = (await get('/api/history?filter=pillaged', c)).json().rows;
+    expect(rows).toHaveLength(1);
+    const feed = (await get('/api/hunters', c)).json().feed;
+    expect(feed[0].entry.pillage).toEqual({ gold: 0, points: 0 });
+  });
 });
 
 describe('start over', () => {
@@ -207,14 +235,17 @@ describe('start over', () => {
     expect(samMe.user.username).toBe('sam');
     expect(samMe.player.gold).toBe(300);
     expect(samMe.player.inventory.mistletoe_charm).toBeUndefined();
-    // the log starts again with Santa's letter
-    expect(samMe.journal).toEqual([expect.objectContaining({ n: 0, kind: 'event', entry: { type: 'intro' } })]);
-    expect(r.json().journal).toHaveLength(1);
+    // the log starts again with Santa's letter and the Cookie Pantry's intro
+    expect(samMe.journal).toEqual([
+      expect.objectContaining({ n: 0, kind: 'event', entry: { type: 'arrival', location: 'cookie_pantry' } }),
+      expect.objectContaining({ n: 0, kind: 'event', entry: { type: 'intro' } }),
+    ]);
+    expect(r.json().journal).toHaveLength(2);
 
     // the other player is untouched
     const eddyMe = (await get('/api/me', admin)).json();
     expect(eddyMe.player.gold).toBe(312);
-    expect(eddyMe.journal).toHaveLength(2);
+    expect(eddyMe.journal).toHaveLength(3);
 
     // the restart is logged with what sam had, visible to sam and to the admin
     const own = (await get('/api/restarts', sam)).json().restarts;
