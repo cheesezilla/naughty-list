@@ -177,6 +177,11 @@ describe('server', () => {
     expect(rank.json().player.rank).toBe(4);
     const unlocked = await post('/api/admin/speedrun', { action: 'unlock' }, admin);
     expect(unlocked.json().player.unlocked.length).toBeGreaterThan(1);
+    expect((await post('/api/admin/speedrun', { action: 'portraits' }, sam)).statusCode).toBe(403);
+    const pt = (await post('/api/admin/speedrun', { action: 'portraits' }, admin)).json().player;
+    expect(Object.keys(pt.catches).length).toBeGreaterThan(10);
+    expect(Object.values(pt.catches as Record<string, number>).every((n) => n >= 1)).toBe(true);
+    expect(pt.keys.length).toBeGreaterThan(0);
     expect((await post('/api/admin/speedrun', { action: 'rank', rank: 99 }, admin)).statusCode).toBe(400);
     expect((await post('/api/admin/speedrun', { action: 'boost', reward: 0, odds: true }, admin)).statusCode).toBe(400);
 

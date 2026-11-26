@@ -374,6 +374,14 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
             if (l.key && !(p.keys ??= []).includes(l.key.id)) p.keys.push(l.key.id);
           }
           break;
+        case 'portraits':
+          // One catch for every elf that has none, so every Naughty List portrait and description unlocks. Only the
+          // catches map changes: no hunts, points, gold or loot. Catch badges this earns are awarded silently (no
+          // banner or log row), and boss keys follow from the caught bosses via grantKeys on the next load.
+          for (const l of content.locations) for (const m of l.imps) p.catches[m.id] = Math.max(1, p.catches[m.id] ?? 0);
+          checkAchievements(content, p, now());
+          grantKeys(content, p);
+          break;
         case 'supplies':
           // 200 of every bait and charm, and 50 of every material, to try any setup or recipe.
           for (const i of [...content.items.baits, ...content.items.charms]) addItem(p, i.id, Math.max(0, 200 - (p.inventory[i.id] ?? 0)));
