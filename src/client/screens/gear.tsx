@@ -33,6 +33,41 @@ export function itemStats(item: AnyItem, exact: boolean): string {
   return bits.join(' · ');
 }
 
+/** Labelled stat rows, the same order everywhere: Power, Luck, Attraction, Rare bonus, Good for, Affinity. */
+export function itemStatRows(item: AnyItem, exact: boolean): [string, string][] {
+  const rows: [string, string][] = [];
+  if (item.kind === 'trap' || item.kind === 'base') {
+    rows.push(['Power', num(item.power)], ['Luck', String(item.luck)]);
+    if (exact && item.attraction) rows.push(['Attraction', `+${pct(item.attraction)}`]);
+    if (item.kind === 'base' && item.goodFor) rows.push(['Good for', item.goodFor]);
+    if (item.kind === 'base' && item.affinity) rows.push(['Affinity', `+${pct(item.affinity.powerBonus)} power with ${item.affinity.types.map((t) => TYPE_NAME[t]).join(' or ')} traps`]);
+  } else if (item.kind === 'bait') {
+    if (exact) rows.push(['Attraction', pct(item.attraction)]);
+    if (item.rareMultiplier) rows.push(['Rares', `×${item.rareMultiplier}`]);
+  } else if (item.kind === 'charm') {
+    if (item.luck) rows.push(['Luck', `+${item.luck}`]);
+    if (item.power) rows.push(['Power', `+${item.power}`]);
+    if (item.powerBonus) rows.push(['Power', `+${pct(item.powerBonus)}`]);
+    if (exact && item.attraction) rows.push(['Attraction', `+${pct(item.attraction)}`]);
+  }
+  return rows;
+}
+
+/** Power type medal(s) then stat rows. Shared by the Emporium and Santa's Workshop so both look the same. */
+export function ItemStatBlock({ item, exact }: { item: AnyItem; exact: boolean }) {
+  if (item.kind === 'material') return <small class="muted">Sells for {num(item.sellPrice)} gold</small>;
+  const types = item.kind === 'trap' ? [item.type] : item.kind === 'base' ? item.affinity?.types ?? [] : [];
+  const rows = itemStatRows(item, exact);
+  return (
+    <div class="stat-block">
+      {types.length > 0 && (
+        <span class="type-chip">{types.map((t) => <TypeMedal type={t} size={20} />)}{types.map((t) => TYPE_NAME[t]).join(' / ')}{item.kind === 'base' && ' affinity'}</span>
+      )}
+      {rows.map(([label, value]) => <div class="stat-row"><span>{label}</span><b>{value}</b></div>)}
+    </div>
+  );
+}
+
 export function ItemThumb({ item, class: cls = 'thumb' }: { item: AnyItem; class?: string }) {
   if (item.kind === 'trap') return <span class={`${cls} gear-thumb`}><Art slot="traps" id={item.id} alt={item.name} /></span>;
   if (item.kind === 'base') return <span class={`${cls} gear-thumb`}><Art slot="bases" id={item.id} alt={item.name} /></span>;

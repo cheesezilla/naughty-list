@@ -595,3 +595,7 @@ body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
 .rank-hero-pts { font-weight: 700; color: #1d2a24; }
 .rank-hero-next { grid-column: 1 / -1; color: var(--green); font-size: 14px; font-weight: 700; text-align: center; }
 .rank-hero .rank-progress { grid-column: 1 / -1; border-radius: 6px; }
+.stat-block { display: flex; flex-direction: column; gap: 2px; align-items: flex-start; width: 100%; }
+.stat-block .type-chip { margin-left: 0; margin-bottom: 2px; }
+.stat-row { display: flex; gap: 8px; font-size: 13px; }
+.stat-row span { color: var(--muted); min-width: 72px; }
