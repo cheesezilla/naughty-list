@@ -139,7 +139,7 @@ body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
 .slot-btn { font-size: 14px; display: flex; gap: 8px; align-items: center; text-align: left; padding: 5px 8px 5px 5px; min-height: 48px; border-radius: 10px; border: 1px solid var(--edge); background: #fff; color: var(--ink); line-height: 1.25; }
 .slot-btn small { color: var(--muted); }
 .slot-btn .empty-thumb { width: 38px; height: 38px; font-size: 10px; }
-.stat-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; border-top: 1px solid var(--line); padding-top: 10px; text-align: center; }
+.stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 6px; border-top: 1px solid var(--line); padding-top: 10px; text-align: center; }
 .stat-row > div { display: flex; flex-direction: column; }
 .stat-row b { font-family: var(--display); font-weight: 400; font-size: 24px; color: var(--pine); line-height: 1.1; }
 .stat-row span { font-size: 13px; color: var(--muted); }
@@ -530,3 +530,16 @@ body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
 .banner-types small { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
 .weak-row { display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 24px; }
 .weak-row small { color: var(--muted); }
+
+.rate-bars { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-top: 10px; }
+.rate-bars > div { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.rate-bars > div > span:first-child { font-size: 13px; color: var(--muted); }
+.power-label { font-family: var(--display); font-weight: 400; font-size: 17px; color: var(--pine); line-height: 1.1; }
+.catch .power-label { color: var(--red); }
+.power-bar { display: flex; gap: 3px; width: 100%; max-width: 130px; }
+.power-bar i { flex: 1; height: 9px; border-radius: 3px; background: var(--line); }
+.power-bar.t0 i.on { background: #9aa5a0; }
+.power-bar.t1 i.on { background: #d9a441; }
+.power-bar.t2 i.on { background: #e9c46a; }
+.power-bar.t3 i.on { background: #6fb67f; }
+.power-bar.t4 i.on { background: #2f9e5a; box-shadow: 0 0 6px #7be3a0; }

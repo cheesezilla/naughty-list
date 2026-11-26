@@ -26,6 +26,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Achievements and badges: 55 achievements with Bronze, Silver, Gold and Secret badges, an earn popup and an Achievements tab in My profile; see [Achievements and badges](#achievements-and-badges) | Done | #19 (plan), #23 (build), #24 (design pass) |
 | Hunt screen gear card in a 2x2 grid (Trap and Bait over Base and Charm) and 3D medal icons for power types and the gold coin; see [User interface](#user-interface) | Done | #19 (plan), #23 (build) |
 | Frozen top header on every main screen, auto-scroll to the Hunt log when Hunt is pressed, and the New Catch popup for the first catch of each elf (with Quiet toast); achievements show as a non-blocking banner instead of a popup; see [User interface](#user-interface) | Done | #26 |
+| Trap effectiveness tiers: attraction and catch chance shown as five-tier power bars (Very weak to Very strong) instead of exact percentages; an admin toggle on More > Admin brings the percentages back for tuning; see [Trap effectiveness tiers](#trap-effectiveness-tiers) | Done | this PR |
 | Admin speed-run tools for testing: on the Admin page, boost rewards (x1 to x200), always attract and catch with full loot, add gold, jump to a rank, unlock every location, stock up supplies; see [Admin speed-run tools](#admin-speed-run-tools) | Done | this PR |
 | 5. Tune from play-test | Planned | |
 
@@ -669,6 +670,22 @@ The More menu's **My stats** becomes **My profile**, with two tabs: **Stats** (t
 
 **Simulator (200 players, to rank 5):** median 42 of 55 badges (p10 39, p90 47): Bronze 24 of 24, Silver 14 of 19, Gold 4 of 12. That is more than the 30 to 35 first guessed. Easy ones worth a look: Butterfingers (5 escapes in a row) and Robbed Blind come for every player in the first 70 hunts, and Rush Job (Gold) for every player at a median hunt 666. Never earned by the simulated players: Never Sleeps, Sleighload of Elves and Santa's Treasurer (past the end of v1, as meant) and Top of the List (needs other players).
 
+## Trap effectiveness tiers
+
+The exact attraction rate and catch chance are hidden from players (eddy, 26 Nov 2026), so gear choices feel like discovery rather than arithmetic. Power and luck stay as numbers.
+
+| Tier | Rate | Bar |
+| --- | --- | --- |
+| Very weak | under 20% | 1 of 5 segments |
+| Weak | 20% to 39% | 2 of 5 |
+| Medium | 40% to 59% | 3 of 5 |
+| Strong | 60% to 79% | 4 of 5 |
+| Very strong | 80% and up | 5 of 5 |
+
+Where it shows: the two bars (Attraction, Catch) under the gear on the Hunt screen, the quick bait and charm sheet preview ("Weak → Medium", or "stays Strong") and the Arsenal before and after compare. Item cards and shop prices still list their own bait and charm attraction numbers. The thresholds are in `src/client/lib/effectiveness.tsx`; the engine and simulator still use exact rates.
+
+Admin toggle: More > Admin > "Odds display (testing)" > "Show exact attraction and catch rates". It adds the percentage next to each tier name and in the previews. Admin accounts only, stored on that device (`exactOdds` in local prefs), off by default.
+
 ## Admin speed-run tools
 
 For eddy's own testing of later zones. A "Speed run (testing)" card on the Admin page (More > Admin), shown only to the admin account.
@@ -758,7 +775,7 @@ Phone first (layout D2, chosen by eddy on 25 Nov 2026; mockups: https://claude.a
 
 | Screen | What it shows |
 | --- | --- |
-| Hunt | Location banner under the frozen header, with the location name, the "?" hint button and Travel, and a small **Best traps** overlay in the top right corner: the power type medal (or two, in the Cookie Pantry: Clockwork and Starlight) the location's elves are weak to, from `homeTypes` in `locations.json`. Trap art drawn standing on its base, centred at the top of the gear card with no names on the art (tap for the Arsenal). Under it, four boxes in a 2x2 grid, Trap and Bait on the top row and Base and Charm below: **Trap** (icon is the trap's power type, Clockwork, Starlight or Frost, with the type and trap name), **Bait** (thumbnail, name and amount), **Base** (base thumbnail and name) and **Charm** (thumbnail, name and amount). Trap and Base open the Arsenal; Bait and Charm open the quick sheet. Power, luck, attraction and catch chance under the gear. The hunt log, then a sticky Hunt button. Space bar hunts on a computer |
+| Hunt | Location banner under the frozen header, with the location name, the "?" hint button and Travel, and a small **Best traps** overlay in the top right corner: the power type medal (or two, in the Cookie Pantry: Clockwork and Starlight) the location's elves are weak to, from `homeTypes` in `locations.json`. Trap art drawn standing on its base, centred at the top of the gear card with no names on the art (tap for the Arsenal). Under it, four boxes in a 2x2 grid, Trap and Bait on the top row and Base and Charm below: **Trap** (icon is the trap's power type, Clockwork, Starlight or Frost, with the type and trap name), **Bait** (thumbnail, name and amount), **Base** (base thumbnail and name) and **Charm** (thumbnail, name and amount). Trap and Base open the Arsenal; Bait and Charm open the quick sheet. Power and luck under the gear as numbers, then **Attraction** and **Catch** as five-tier power bars (see [Trap effectiveness tiers](#trap-effectiveness-tiers)). The hunt log, then a sticky Hunt button. Space bar hunts on a computer |
 | Hunt log | Starts with Santa's intro letter. Then the last 50 hunts plus the events between them: buy, sell, craft, gear change (equip or swap), travel and unlock, and rank-ups. Hunts show their number and time, events their time, in the viewer's own time zone. Uncaught elves show the "?" card; a first catch is marked "Portrait unlocked". Tapping an elf opens its file |
 | Full history | Every saved row, newest first, grouped by day, with filters All, Catches, Escapes, Events, Bosses, and Load older |
 | Quick bait and charm sheet | Owned bait or charms as picture cards, a preview of catch chance and attraction before and after, Use. Crafted bait asks once more if the setting is on |
@@ -858,6 +875,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-26 | this PR | Attraction and catch chance shown as five-tier power bars instead of percentages; admin toggle (More > Admin) shows exact rates again |
 | 2026-11-26 | this PR | Best-traps power types also shown on every Travel map card and above each Naughty List location tab; Admin speed-run tools: reward multiplier, always attract and catch, grant gold, jump to rank, unlock all locations, stock up; admin-only on the server |
 | 2026-11-26 | #27 | Achievements now show a 4-second non-blocking banner (with "+N more") instead of a popup, because early games had too many popups; the full popup stays only for Welcome back. The Achievement popups setting became New catch popups (default On). Canvas mockups updated |
 | 2026-11-26 | this PR | Best traps overlay (power type medals) on the Hunt location banner from new `homeTypes` per location; Weak to row with medals on every Naughty List card, locked ones included. No balance change |

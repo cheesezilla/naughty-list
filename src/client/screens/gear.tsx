@@ -5,6 +5,7 @@ import { num, pct, TYPE_NAME } from '../lib/format.js';
 import { go } from '../lib/route.js';
 import { BackRow, FullScreen, Tabs } from '../ui.js';
 import { TypeMedal } from '../lib/medal.js';
+import { useRateText } from '../lib/effectiveness.js';
 import { catchIfAttracted, TrapOnBase } from './hunt.js';
 
 type Slot = keyof Setup;
@@ -38,6 +39,7 @@ export function ItemThumb({ item, class: cls = 'thumb' }: { item: AnyItem; class
 
 function Compare({ setup }: { setup: Setup }) {
   const { content, player } = useGame();
+  const rateText = useRateText();
   const a = huntOdds(content, player.setup, player.location);
   const b = huntOdds(content, setup, player.location);
   const line = (label: string, x: number, y: number, f: (n: number) => string) => (
@@ -47,8 +49,8 @@ function Compare({ setup }: { setup: Setup }) {
     <div class="compare">
       {line('Power', a.stats.power, b.stats.power, num)}
       {line('Luck', a.stats.luck, b.stats.luck, num)}
-      {line('Attraction', a.stats.attraction, b.stats.attraction, pct)}
-      {line('Catch', catchIfAttracted(a), catchIfAttracted(b), pct)}
+      {line('Attraction', a.stats.attraction, b.stats.attraction, rateText)}
+      {line('Catch', catchIfAttracted(a), catchIfAttracted(b), rateText)}
     </div>
   );
 }
