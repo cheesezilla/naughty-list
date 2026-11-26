@@ -29,7 +29,7 @@ The server runs every hunt and saves each player in SQLite. To play locally, fol
 
 **The Naughty List** is an original Christmas trap-and-catch browser game for eddy and friends. Imps sent by Scrinch, ruler of the imps, are raiding Santa's secret lair at the North Pole and stealing toy supplies. Santa hires you as an imp hunter. You arm a trap, pick a bait, press Hunt, and the game rolls attraction and catch odds against the imp's power. There is no wait timer: every press is a hunt. Bait cost, not a clock, paces progress.
 
-v1 covers 5 ranks and 4 lair locations: 24 imps in all. The Cookie Pantry is a simple start with common, uncommon and rare imps. Each later location has 3 common imps, a rare imp, a mini boss and a local boss, and its own local objective that decides when the mini boss and boss come (see [Location objectives](#location-objectives)). Bosses drop the loot used to craft stronger gear. Expect roughly 1,500 hunts, or about 1 to 1.5 hours of active play, to reach the last v1 rank.
+v1 covers 5 ranks and 4 lair locations: 23 imps in all (Baron Crumblewick is parked). The Cookie Pantry is a simple start with common, uncommon and rare imps. Each later location has 3 common imps, a rare imp, a mini boss and a local boss, and its own local objective that decides when the mini boss and boss come (see [Location objectives](#location-objectives)). Bosses drop the loot used to craft stronger gear. Expect roughly 1,500 hunts, or about 1 to 1.5 hours of active play, to reach the last v1 rank.
 
 The stack is one small Docker container (Node.js + SQLite) on the UGREEN NAS, with open sign-up (the admin can close it) and a leaderboard so friends can play. The stamina meter is built but switched off.
 

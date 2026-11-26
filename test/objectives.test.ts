@@ -93,11 +93,11 @@ describe('Reindeer Stables sleigh run', () => {
     expect(objectiveAction(content, p, 'start_run', scripted(0)).ok).toBe(false);
     for (let i = 0; i < 39; i++) p = ok(hunt(content, p, scripted(0.999))).player;
     expect(p.objectives?.reindeer_stables).toMatchObject({ active: true, left: 1, readiness: 0 });
-    // a common catch adds 4, then the run ends at 4 Readiness: 40 gold
+    // a common catch adds 5, then the run ends at 5 Readiness: 50 gold
     const gold = p.gold;
     const last = ok(hunt(content, p, scripted(0, 0, 0, 0.99)));
-    expect(last.player.objectives?.reindeer_stables).toMatchObject({ active: false, readiness: 4 });
-    expect(last.player.gold - gold).toBe(300 + 40);
+    expect(last.player.objectives?.reindeer_stables).toMatchObject({ active: false, readiness: 5 });
+    expect(last.player.gold - gold).toBe(300 + 50);
   });
 
   it('escaped thieves take Readiness', () => {
