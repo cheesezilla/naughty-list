@@ -111,9 +111,15 @@ export function HuntScreen() {
         </div>
         <div class="pad stack">
           <div class="card gear-card">
-            <button class="trap-button" onClick={() => go('arsenal/trap')} aria-label={`Change trap and base. Now ${trap.name} on ${base.name}`}>
-              <TrapOnBase trap={trap.id} base={base.id} />
-            </button>
+            <div class="trap-row">
+              <button class="trap-button" onClick={() => go('arsenal/trap')} aria-label={`Change trap and base. Now ${trap.name} on ${base.name}`}>
+                <TrapOnBase trap={trap.id} base={base.id} />
+              </button>
+              <div class="trap-stats">
+                <StatRow setup={player.setup} />
+                <RateBars setup={player.setup} />
+              </div>
+            </div>
             <div class="gear-grid">
               <button class="slot-btn" onClick={() => go('arsenal/trap')}>
                 {trap.kind === 'trap' ? <TypeMedal type={trap.type} size={38} /> : <span class="thumb small empty-thumb" />}
@@ -132,8 +138,6 @@ export function HuntScreen() {
                 <span><small>Charm</small><br /><b>{charm ? charm.name : 'No charm'}</b>{charm && ` ×${num(count(player, charm.id))}`}</span>
               </button>
             </div>
-            <StatRow setup={player.setup} />
-            <RateBars setup={player.setup} />
           </div>
 
           <ObjectivePanel location={location} onHint={() => setHint(true)} />
