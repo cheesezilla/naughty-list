@@ -22,7 +22,7 @@ describe('hunt', () => {
     const r = hunt(content, fresh(), scripted(0, 0, 0, 0.99));
     if (!r.ok) throw new Error(r.error);
     expect(r.entry).toMatchObject({ outcome: 'catch', imp: 'crumb_elf', gold: 12, points: 20, baitUsed: 1 });
-    expect(r.player.gold).toBe(162);
+    expect(r.player.gold).toBe(212);
     expect(r.player.points).toBe(20);
     expect(r.player.catches.crumb_elf).toBe(1);
     expect(r.player.inventory.stale_cookie).toBe(99);
@@ -32,7 +32,7 @@ describe('hunt', () => {
     const r = hunt(content, fresh(), scripted(0, 0, 0.999));
     if (!r.ok) throw new Error(r.error);
     expect(r.entry.outcome).toBe('escape');
-    expect(r.player.gold).toBe(150);
+    expect(r.player.gold).toBe(200);
     expect(r.player.inventory.stale_cookie).toBe(99);
   });
 

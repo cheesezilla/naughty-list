@@ -1,5 +1,5 @@
 {
-  "startingGold": 150,
+  "startingGold": 200,
   "startingItems": { "stale_cookie": 100 },
   "startingSetup": { "trap": "starlit_stocking", "base": "cardboard_box", "bait": "stale_cookie", "charm": null },
   "startingLocation": "cookie_pantry",
