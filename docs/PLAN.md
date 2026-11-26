@@ -20,6 +20,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Holly power type renamed Starlight; its three traps reworked (Starlit Stocking, Star Lantern, Constellation Wreath) with new text and SVG art, old saves migrated | In review | #17 |
 | Intro letter from Santa: the game's backstory as the first hunt-log entry of every new game, and on How to play | In review | #12 |
 | Location objectives: a simple Cookie Pantry start, then a unique loop per location (Wrapping Room bait ladder, Toy Workshop order board, Stables sleigh run), plus first-visit intros, a hint button and a mechanic panel on each Hunt screen; see [Location objectives](#location-objectives-planned) | Planned (design only) | #16 |
+| Pillage on escape: escaped imps may take gold, points and bait (bosses most, mini bosses less, others rarely), with safety rails; see [Pillage on escape](#pillage-on-escape-planned) | Planned (design only) | #PRNUM |
 | 5. Tune from play-test | Planned | |
 
 The server runs every hunt and saves each player in SQLite. To play locally, follow "Run it locally" below.
@@ -87,7 +88,7 @@ All constants live in `content/constants.json` and the other content files, so t
 - **Effectiveness** E of the trap's power type against an imp: 0 (immune), 0.5 (resists), 1 (normal) or 1.5 (weak). Types: Clockwork (toy machines), Starlight (Christmas-star magic, strong against shadowy imps; called Holly before PR #17), Frost (ice magic).
 - **Catch chance** = clamp((P x E + L^2) / (P x E + M), 0, 98%), where M is the imp's power. Luck only counts when E > 0.
   - Example: a 150 power Clockwork trap on a 20 power base with luck 2, against a normal 90 power imp: (170 + 4) / (170 + 90) = 67%.
-- **Rewards**: a catch pays the imp's gold and points and rolls its loot list; bosses always drop their crafting part. An escape pays nothing; some imps also steal one extra bait when they escape.
+- **Rewards**: a catch pays the imp's gold and points and rolls its loot list; bosses always drop their crafting part. An escape pays nothing; some imps also steal one extra bait when they escape. Planned: escapes may pillage gold, points and bait, more for bosses; see [Pillage on escape](#pillage-on-escape-planned).
 - **RNG**: the engine takes a random source, so the simulator and tests replay exactly from a seed. The server rolls every hunt with a cryptographic random source, so results can't be edited in the browser.
 
 ## Pacing without a cooldown
@@ -386,6 +387,47 @@ Nothing is built until eddy has signed off the UI above.
 
 Each step re-runs `npm run simulate` and updates the balance numbers in this file.
 
+## Pillage on escape (planned)
+
+**Rule (eddy, 26 Nov 2026):** an imp that escapes may pillage the player, taking gold, points and/or bait. Bosses pillage more than mini bosses, and regular imps only rarely. This is a plan only; nothing is built until eddy says so.
+
+**When it happens.** Only after an escape: an imp was attracted, the bait was used, and the catch roll failed. Quiet hunts and catches never pillage. The server rolls a pillage chance for the imp's tier; on a hit it rolls what is taken. Like everything else it counts hunts, not time, so it works the same with the stamina meter on or off.
+
+| Tier | Chance on escape | What it takes |
+| --- | --- | --- |
+| Common | 3% | One of: 1 of the armed bait, or gold equal to the imp's gold reward |
+| Uncommon | 5% | One of: 1 to 2 of the armed bait, or gold equal to 1.5 x the imp's gold reward |
+| Rare | 8% | One of: 1 to 2 of the armed bait, or gold equal to 2 x the imp's gold reward |
+| Mini boss | 35% | Two of: 5% of your gold (at most 10 x its gold reward), 2 to 3 of the armed bait, 1% of your points (at most 2 x its points reward) |
+| Boss | 60% | All three: 8% of your gold (at most 15 x its gold reward), 3 to 5 of the armed bait, 2% of your points (at most 3 x its points reward) |
+
+Example: Madame Shredwell (gold 300, points 550) escapes from a player with 6,000 gold, 20 Golden Bow Bonbons and 9,000 points. If she pillages: −480 gold (8%, under the 4,500 cap), −4 Bonbons, −180 points (2%, under the 1,650 cap).
+
+**Bait thieves.** The old rule "some imps steal one extra bait when they escape" becomes part of pillage: Jarbelly, Bow Burglar and Bell Thief keep a guaranteed 1-bait pillage on every escape (`pillage: { chance: 1, bait: [1, 1] }` on the imp), shown and logged the same way as any other pillage. They roll their tier's normal pillage as well.
+
+**Safety rails** (so it stings but never dead-ends a player):
+- Gold never drops below 100 from a pillage.
+- Points never drop below the current rank's threshold, so a pillage can't take a rank away. Rank 1 players lose no points.
+- Only the armed bait is taken, never more than is owned. Charms, gear and materials are never taken.
+- Mrs. Claus's free Stale Cookies (no bait and under 50 gold) are unchanged and still catch anyone who runs dry.
+- With the gold floor at 100, a player can always buy bait again (Stale Cookie is 8 gold).
+
+**Content.** A `pillage` block in `content/constants.json` holds the table above per tier (chance, gold %, gold cap multiplier, bait range, points %, points cap multiplier, how many kinds are taken). An imp can override it with its own `pillage` field. `stealsBait` is replaced by that override. All numbers are a first pass; the simulator will report gold, points and bait lost to pillage per location, and the rates get tuned so the bait-cost targets in Economy still hold.
+
+**Hunt log.** An escape that pillages gets a red border, a "Pillaged" pill and the losses on one line:
+- Common: "Bow Burglar escaped and pillaged you: −1 Sugar Cookie."
+- Boss: "Madame Shredwell escaped and pillaged you: −480 gold, −4 Golden Bow Bonbons, −180 points."
+- When a safety rail stops a loss, the line says so: "… −0 points (your rank is safe)."
+The Full history gets a **Pillaged** filter. The Hunters catch feed adds boss pillages ("Madame Shredwell pillaged eddy") next to boss catches.
+
+**On screen.**
+- The gold and points in the player bar flash red and count down when a pillage lands, and the Hunt button shakes once.
+- Imp files show a "Pillage risk" line: Rare, Sometimes, Often or Very often by tier, with "always steals a bait" for the three thieves. Uncaught imps hint at it in their rumour.
+- The catch chance under the gear stays as it is; tapping it opens the odds for the location, which gains a "Pillage if it escapes" column.
+- How to play gains a short "Pillage" section.
+
+**Fits with the location objectives.** Pillaged bait counts against the bait ladder (losing crafted Ribbon Candy or Bonbons hurts, which makes a stronger trap worth it before trying for Madame Shredwell). In the Sleigh Run, Bell Thief and Harness Snipper escapes still take Readiness as planned, separately from pillage.
+
 ## Flavour text
 
 Every trap, base, bait, charm, material and imp has text for its detail screen, in `content/flavour.json`, keyed by id. At load the text is copied onto each entry as a `flavour` field, so `GET /api/content` already returns it. The slots and limits come from the phone-first UI layout (option D):
@@ -553,6 +595,7 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-26 | #PRNUM | Planned pillage on escape: chance and losses per imp tier (common 3% to boss 60%; bosses take gold, bait and points), bait thieves folded in, safety rails (gold floor 100, no rank loss, armed bait only, Mrs. Claus unchanged), hunt log text and on-screen feedback. Design only, no code or numbers changed |
 | 2026-11-26 | #17 | Power type Holly renamed **Starlight** (Christmas-star magic, strong against shadowy imps). Its traps reworked: Stocking Snare -> Starlit Stocking (`starlit_stocking`), Holly Noose -> Star Lantern (`star_lantern`), Wreath of Thorns -> Constellation Wreath (`constellation_wreath`, recipe id too), with new flavour text and imp weakness hints. Simple generated SVGs for the three traps and the Starlight badge replace the old Holly PNGs/SVGs and are queued for Gemini in ART_PROGRESS.md. Saves and hunt-log entries with the old ids are rewritten when the server starts. No numbers changed; simulator run unchanged apart from names (100/100 reach rank 5) |
 | 2026-11-25 | #16 | Planned location objectives: Cookie Pantry becomes a simple start (common, uncommon and rare imps, no boss), Wrapping Room bait ladder (eddy's tiered bait-ingredient loop), Toy Workshop order board, Reindeer Stables sleigh run, Tangle Meter kept as a spare; first-visit intro log entries, a hint button and a mechanic panel per location (UI sketches, canvas mockups and first-draft text); recorded what the engine already supports. Design only, no code or numbers changed |
 | 2026-11-25 | #15 | Added docs/ART_PROGRESS.md tracking which of the 56 remaining non-icon art assets still need custom AI-generated pictures (per slot, with ids), linked from docs/ART.md and docs/PLAN.md. No art files or game numbers changed |
