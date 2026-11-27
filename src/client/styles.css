@@ -628,6 +628,8 @@ body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
 .boon-chip { font-size: 12px; font-weight: 800; border-radius: 999px; padding: 3px 10px; background: #e8dfcf; color: var(--ink); }
 .boon-chip.rare, .boon-card.rare { --rar: #2b6cb0; background: #dbe9f7; }
 .boon-chip.legendary, .boon-card.legendary { --rar: #d9a21a; background: #fff1c2; }
+.boon-chip.gift { background: #dff0e0; }
+.boon-chip.penalty { background: var(--red-soft); color: var(--red-dark); }
 .favour { display: flex; align-items: center; gap: 8px; font-size: 13px; }
 .favour-bar { flex: 1; height: 10px; border-radius: 5px; background: #e3d5bd; overflow: hidden; }
 .favour-bar i { display: block; height: 100%; background: linear-gradient(#ffd76a, #d9a21a); }

@@ -1,5 +1,5 @@
 import { useState } from 'preact/hooks';
-import { tollGold, type EventNote, type JournalEntry } from '../../engine/index.js';
+import { tollGold, type Buff, type EventNote, type JournalEntry } from '../../engine/index.js';
 import type { Boon } from '../../content/schema.js';
 import { useGame } from '../game.js';
 import { num } from '../lib/format.js';
@@ -40,16 +40,9 @@ export function CheerCard() {
           )}
           {!full && <p class="hint cheer-hint">Catch elves to fill it. Rares count double. An escape costs {c.escapePips}.</p>}
           {s?.held && <p class="hint cheer-hint">Overcharged: better boons at {c.max}, but an escape costs {c.heldEscapePips}.</p>}
-          {(s?.active.length ?? 0) > 0 && (
-            <div class="boon-chips">
-              {s!.active.map((a) => {
-                const b = content.boons.find((x) => x.id === a.id);
-                return <span class={`boon-chip ${b?.rarity}`} title={b?.text}>{b?.name} · {a.hunts}</span>;
-              })}
-            </div>
-          )}
         </>
       )}
+      <ActiveBuffs />
       {content.constants.events.enabled && (
         <div class="favour" title="Every boon from Santa or Mrs. Claus has this chance to be a free Grand Gift. Beating Scrinch raises it.">
           <span>Santa's favour</span>
@@ -58,6 +51,31 @@ export function CheerCard() {
         </div>
       )}
       {open && (draw ?? player.cheer?.draw) && <CheerSheet onClose={() => setOpen(false)} />}
+    </div>
+  );
+}
+
+const left = (n: number, unit: string) => `${n} ${unit}${n === 1 ? '' : 's'} left`;
+/** A buff that hurts the player: a Scrinch penalty (weaker power, luck or Allure, or dearer bait). */
+const isPenalty = (b: Buff) => b.stat === 'baitCost' || (/Mult$/.test(b.stat) && b.value < 1);
+
+/** Everything in play with a countdown: boons, Santa's gifts, event effects and Scrinch penalties. */
+function ActiveBuffs() {
+  const { content, player } = useGame();
+  const boons = content.constants.cheer.enabled ? player.cheer?.active ?? [] : [];
+  const buffs = player.events?.buffs ?? [];
+  if (!boons.length && !buffs.length) return null;
+  return (
+    <div class="boon-chips" aria-label="Active effects">
+      {boons.map((a) => {
+        const b = content.boons.find((x) => x.id === a.id);
+        return <span class={`boon-chip ${b?.rarity}`} title={b?.text}>{b?.name} · {left(a.hunts, 'hunt')}</span>;
+      })}
+      {buffs.map((b) => (
+        <span class={`boon-chip ${isPenalty(b) ? 'penalty' : 'gift'}`}>
+          {b.label} · {[b.hunts !== undefined && left(b.hunts, 'hunt'), b.uses !== undefined && left(b.uses, b.stat === 'noPillage' || b.stat === 'bossShield' ? 'try' : 'use')].filter(Boolean).join(', ')}
+        </span>
+      ))}
     </div>
   );
 }
