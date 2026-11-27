@@ -140,7 +140,7 @@ export function HuntScreen() {
           <div class="log">
             {log.length === 0 && <p class="muted center-pad">No hunts yet. Press Hunt to set your first trap!</p>}
             {player.stats.hunts === 0 && log.length > 0 && <p class="muted center-pad">No hunts yet. Read Santa's letter, then press Hunt to set your first trap!</p>}
-            {log.map((row) => <div class={seen.current && !seen.current.has(row.id) ? 'log-new' : undefined}><LogRow row={row} /></div>)}
+            {log.map((row) => <div key={row.id} class={seen.current && !seen.current.has(row.id) ? 'log-new' : undefined}><LogRow row={row} /></div>)}
           </div>
           {player.stats.hunts > 0 && (
             <div class="log-end">
