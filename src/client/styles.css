@@ -707,3 +707,7 @@ body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
 .event-card .muted { color: #6b4a00; }
 .event-card .gift { background: linear-gradient(#fffdf0, #ffe9a0); box-shadow: 0 1px 0 #fff inset, 0 2px 4px rgba(138,100,16,.3); }
 @media (prefers-reduced-motion: reduce) { .event-card, .event-card::before, .event-card::after { animation: none !important; } }
+
+.boon-chip.boon-effect { display: flex; flex-direction: column; gap: 1px; border-radius: 12px; padding: 5px 10px; flex: 1 1 100%; }
+.boon-chip.boon-effect b { font-size: 12px; }
+.boon-chip.boon-effect small { font-weight: 600; font-size: 12px; line-height: 1.3; }
