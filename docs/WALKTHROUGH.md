@@ -20,7 +20,7 @@ Start: 200 gold, 100 Stale Cookies, a Starlit Stocking. Elves: Crumb Elf, Sprink
 
 ## 2. Wrapping Room (rank 2, to 12,000 points)
 
-Commons: Ribbon Tangler (weak Frost), Tape Biter and Bow Burglar (weak Starlight; Bow Burglar resists Clockwork and steals bait). Rare Glitterbug, mini boss Spoolwick and boss Madame Shredwell come only for ladder baits. Shredwell is weak to Carol and resists Clockwork.
+Commons: Ribbon Tangler (weak Frost), Tape Biter and Bow Burglar (weak Starlight; Bow Burglar resists Clockwork and steals bait). Rare Glitterbug, mini boss Spoolwick and boss Madame Shredwell come only for ladder baits. Shredwell is weak to Carol (x1.5) and resists every other type heavily (x0.2).
 
 | Step | What to do |
 | --- | --- |
@@ -28,13 +28,13 @@ Commons: Ribbon Tangler (weak Frost), Tape Biter and Bow Burglar (weak Starlight
 | Bait tier 1 | Any shop bait. Commons drop Sugar Twist and Candied Peel. |
 | Bait tier 2 | 2 Sugar Twist + 1 Candied Peel + 30 g = 3 **Ribbon Candy**. Draws Glitterbug (Sugar Glass 50%) and Spoolwick (always a Golden Ribbon). |
 | Bait tier 3 | 1 Sugar Glass + 1 Golden Ribbon + 100 g = 2 **Golden Bow Bonbons**. The only bait that draws Shredwell (half of visits). Craft 4 to 6, because she steals bait when she escapes. |
-| Boss gear | A Star Lantern gives about 31% on Shredwell. A Carol Horn plus a Toffee Anvil (3,500 g) gives about 56%, 60% with a Wind-up Key Charm. |
+| Boss gear | Without Carol she is a wall: a Star Lantern gives about 8% and the best rank 2 non-Carol gear (Icicle Jar plus Toffee Anvil) about 13%. A Carol Horn plus a Toffee Anvil (3,500 g) gives about 56%, 58% with a Mistletoe Charm. Do the Carol Loft first. |
 
 Shredwell drops Enchanted Wrapping (the Constellation Wreath needs 3) and the Gift-Tag Key on the first catch.
 
 ### Optional: Carol Loft (rank 2, 600 g, needs the Wrapping Room)
 
-Go once you have the Candy Cane Platform and about 600 spare gold. Every elf is weak to a different type, so any trap works. Hunt until you have 5 Hymn Reeds (commons 20%, rare Silver Piper 100%) and a Carol Songsheet (Choirmaster Hollowvoice, about 5% of visits, always drops it). Craft the **Carol Horn** (+600 g): 600 power, luck 10, x1.5 on Shredwell, and a joker on the Toy Workshop order board. Nothing later needs it, so skipping is fine.
+Go once you have the Candy Cane Platform and about 600 spare gold. Every elf is weak to a different type, so any trap works. Hunt until you have 5 Hymn Reeds (commons 20%, rare Silver Piper 100%) and a Carol Songsheet (Choirmaster Hollowvoice, about 5% of visits, always drops it). Craft the **Carol Horn** (+600 g): 600 power, luck 10, x1.5 on Shredwell, and a joker on the Toy Workshop order board. Shredwell is the only boss that needs it, but without it she is about 13% at best until much later gear, so it is the intended route.
 
 ## 3. Toy Workshop (rank 3, to 46,000 points; 1,500 g + Gift-Tag Key)
 
