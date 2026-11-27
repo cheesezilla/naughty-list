@@ -119,7 +119,7 @@ export function eventText(ev: GameEvent, itemName: (id: string) => string, locNa
     case 'achievement': return <>Achievement{ev.ids.length > 1 ? 's' : ''}</>;
     case 'arrival': return <>Arrived in the <b>{locName(ev.location)}</b></>;
     case 'objective': return ev.action === 'start_run' ? <>Started a <b>sleigh run</b></> : <>Took a <b>Rush order</b></>;
-    case 'travel': return <>Travelled to the <b>{locName(ev.location)}</b>{ev.unlockCost > 0 && ` and unlocked it for ${num(ev.unlockCost)} gold`}</>;
+    case 'travel': return <>Travelled to the <b>{locName(ev.location)}</b>{ev.unlockCost > 0 && ` and unlocked it for ${num(ev.unlockCost)} gold`}{ev.cheerReset && <> · the Cheer Meter starts fresh{ev.cheerReset.boons > 0 && ` and ${ev.cheerReset.boons === 1 ? 'a boon' : `${ev.cheerReset.boons} boons`} ended`}</>}</>;
     case 'equip':
       if (!ev.item) return <>Took off {ev.previous ? itemName(ev.previous) : 'your'} {ev.slot}</>;
       if ((ev.slot === 'trap' || ev.slot === 'base') && ev.previous) return <>Swapped {ev.slot}: <b>{itemName(ev.item)}</b> replaces {itemName(ev.previous)}</>;
