@@ -1,4 +1,4 @@
-import { useState } from 'preact/hooks';
+import { useRef, useState } from 'preact/hooks';
 import { tollGold, type Buff, type EventNote, type JournalEntry } from '../../engine/index.js';
 import type { Boon } from '../../content/schema.js';
 import { useGame } from '../game.js';
@@ -6,6 +6,13 @@ import { num } from '../lib/format.js';
 import { Sheet } from '../ui.js';
 
 const RARITY: Record<Boon['rarity'], string> = { common: 'Common', rare: 'Rare', legendary: 'Legendary' };
+
+/** Remembers the value before the latest change so the UI can animate a move forward or back. */
+function useDelta(value: number) {
+  const r = useRef({ prev: value, cur: value });
+  if (r.current.cur !== value) r.current = { prev: r.current.cur, cur: value };
+  return r.current.prev;
+}
 
 /** The Cheer Meter: pips, Cash in / Hold, boons in play, and the always-visible Santa's favour bar. */
 export function CheerCard() {
@@ -19,6 +26,9 @@ export function CheerCard() {
   const draw = s?.draw;
   const cashIn = async () => { if (draw || (await act('/api/cheer', { action: 'draw' }))) setOpen(true); };
   const favour = player.events?.grand ?? content.constants.events.grandBase;
+  const prevPips = useDelta(pips);
+  const prevFavour = useDelta(favour);
+  const favourMove = favour > prevFavour ? 'up' : favour < prevFavour ? 'down' : '';
   return (
     <div class="card cheer-card">
       {c.enabled && (
@@ -29,7 +39,7 @@ export function CheerCard() {
           </div>
           <div class={`pips ${full ? 'full' : ''}`} role="img" aria-label={`Cheer ${pips} of ${c.full}`}>
             {Array.from({ length: c.max }, (_, i) => (
-              <i class={`pip ${i < pips ? 'on' : ''} ${i >= c.full ? 'over' : ''} ${i >= c.full && !s?.held ? 'hidden' : ''}`} />
+              <i class={`pip ${i < pips ? 'on' : ''} ${i >= c.full ? 'over' : ''} ${i >= c.full && !s?.held ? 'hidden' : ''} ${i >= prevPips && i < pips ? 'pop' : ''} ${i >= pips && i < prevPips ? 'drop' : ''}`} />
             ))}
           </div>
           {full && (
@@ -46,7 +56,7 @@ export function CheerCard() {
       {content.constants.events.enabled && (
         <div class="favour" title="Every boon from Santa or Mrs. Claus has this chance to be a free Grand Gift. Beating Scrinch raises it.">
           <span>Santa's favour</span>
-          <span class="favour-bar"><i style={{ width: `${Math.round(favour * 100)}%` }} /></span>
+          <span class={`favour-bar ${favourMove}`}><i style={{ width: `${Math.round(favour * 100)}%` }} /></span>
           <b>{Math.round(favour * 100)}%</b>
         </div>
       )}

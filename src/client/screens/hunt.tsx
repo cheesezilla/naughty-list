@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'preact/hooks';
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { count, huntOdds, type Setup } from '../../engine/index.js';
 import { useGame } from '../game.js';
 import { Art, Icon } from '../lib/art.js';
@@ -63,6 +63,9 @@ export function HuntScreen() {
   const base = data.items.get(player.setup.base)!;
   const bait = player.setup.bait ? data.items.get(player.setup.bait) : undefined;
   const charm = player.setup.charm ? data.items.get(player.setup.charm) : undefined;
+  // Rows present when the screen opens don't animate; rows that arrive afterwards slide in.
+  const seen = useRef<Set<number> | null>(null);
+  if (!seen.current && (log.length > 0 || player.stats.hunts === 0)) seen.current = new Set(log.map((r) => r.id));
   const huntsShown = useMemo(() => log.filter((r) => r.kind === 'hunt').length, [log]);
 
   useEffect(() => {
@@ -137,7 +140,7 @@ export function HuntScreen() {
           <div class="log">
             {log.length === 0 && <p class="muted center-pad">No hunts yet. Press Hunt to set your first trap!</p>}
             {player.stats.hunts === 0 && log.length > 0 && <p class="muted center-pad">No hunts yet. Read Santa's letter, then press Hunt to set your first trap!</p>}
-            {log.map((row) => <LogRow row={row} />)}
+            {log.map((row) => <div class={seen.current && !seen.current.has(row.id) ? 'log-new' : undefined}><LogRow row={row} /></div>)}
           </div>
           {player.stats.hunts > 0 && (
             <div class="log-end">
