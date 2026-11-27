@@ -5,7 +5,14 @@
  *   npm run simulate                    # 200 players
  *   npm run simulate -- --players 1000 --seed 42
  *   npm run simulate -- --strict        # exit 1 when a target in the plan is missed by more than 25%
+ *   npm run simulate -- --players 1000 --seeds 5   # pool seeds 1..5 (the numbers that go into PLAN.md)
+ *   npm run simulate -- --trace out.jsonl          # one JSON line per hunt for the first player (--trace-players N for more)
+ *
+ * Cheer Meter and random events are not in the engine on every branch. The flags `--no-cheer`, `--no-events`,
+ * `--boon-policy random|greedy|hold` and `--event-policy safe|big|skip|fight` are parsed and printed in the
+ * report header; they take effect once the engine exposes those systems (see HOOKS below).
  */
+import { writeFileSync } from 'node:fs';
 import { loadContent } from '../src/content/load.js';
 import type { Content } from '../src/content/schema.js';
 import { gameData, priceOf } from '../src/engine/data.js';
@@ -23,9 +30,21 @@ const opt = (name: string, def: number) => {
 };
 const PLAYERS = opt('players', 200);
 const SEED = opt('seed', 1);
+const SEEDS = opt('seeds', 0);
 const MAX_HUNTS = opt('max-hunts', 20000);
 const STRICT = args.includes('--strict');
 const VERBOSE = args.includes('--verbose');
+const strOpt = (name: string, def = '') => { const i = args.indexOf(`--${name}`); return i >= 0 ? (args[i + 1] ?? def) : def; };
+const TRACE = strOpt('trace');
+const TRACE_PLAYERS = opt('trace-players', 1);
+const NO_CHEER = args.includes('--no-cheer');
+const NO_EVENTS = args.includes('--no-events');
+const BOON_POLICY = strOpt('boon-policy', 'greedy');
+const EVENT_POLICY = strOpt('event-policy', 'safe');
+/** HOOKS: the Cheer Meter and events live in the engine on the branch that builds them; until then the report says they are absent. */
+const HAS_CHEER = false;
+const HAS_EVENTS = false;
+const traceLines: string[] = [];
 /** `--without a,b` leaves those items out of the run: neither bought nor crafted (e.g. to check optional bases barely move the pace). */
 const WITHOUT = new Set((args[args.indexOf('--without') + 1] ?? '').split(',').filter((x) => args.includes('--without') && x));
 
@@ -79,6 +98,21 @@ interface Log {
   hunts: number;
   /** Achievement id → hunt number it was earned at. */
   badges: Record<string, number>;
+  /** Encounters and catches per elf tier, overall and per location. */
+  tiers: Record<string, { met: number; caught: number }>;
+  tiersAt: Record<string, Record<string, { met: number; caught: number }>>;
+  /** Longest run of escapes in a row. */
+  worstEscapes: number;
+  /** Elf id → hunt number of the first catch, and per location the hunt every elf was caught. */
+  firstCatch: Record<string, number>;
+  portraitDone: Record<string, number>;
+  /** Hunt numbers where something good happened (any catch, or a milestone that is not a plain catch). */
+  goodAny: number[];
+  goodMilestone: number[];
+  goldIn: number;
+  baitSpent: number;
+  pillageLost: number;
+  lootHunts: number;
 }
 
 function plan(p: PlayerState, log: Log, huntNo: number): PlayerState {
@@ -199,9 +233,13 @@ function playObjective(p: PlayerState, rng: Rng, log: Log): PlayerState {
   return p;
 }
 
-function play(rng: Rng): Log {
+function play(rng: Rng, playerNo: number): Log {
   let p = newPlayer(content);
-  const log: Log = { rankAt: { 1: 0 }, goldAtRank: {}, purchases: [], byLocation: {}, bossCatches: 0, finished: false, hunts: 0, objectives: { runs: 0, launches: 0, orders: 0 }, bosses: {}, badges: {} };
+  const log: Log = { rankAt: { 1: 0 }, goldAtRank: {}, purchases: [], byLocation: {}, bossCatches: 0, finished: false, hunts: 0, objectives: { runs: 0, launches: 0, orders: 0 }, bosses: {}, badges: {}, tiers: {}, tiersAt: {}, worstEscapes: 0, firstCatch: {}, portraitDone: {}, goodAny: [], goodMilestone: [], goldIn: 0, baitSpent: 0, pillageLost: 0, lootHunts: 0 };
+  const traceMe = !!TRACE && playerNo < TRACE_PLAYERS;
+  let escRun = 0;
+  let badgesBefore = 0;
+  let purchasesBefore = 0;
   for (let n = 1; n <= MAX_HUNTS; n++) {
     if (n === 1 || n % 20 === 0 || !p.setup.bait || count(p, p.setup.bait) === 0) p = plan(p, log, n);
     p = playObjective(p, rng, log);
@@ -230,6 +268,32 @@ function play(rng: Rng): Log {
     log.hunts = n;
     // Achievement times are hunt numbers here, so the report can say when each one is earned.
     checkAchievements(content, p, n);
+    const e = r.entry;
+    const t = tier ?? 'common';
+    for (const bucket of [(log.tiers[t] ??= { met: 0, caught: 0 }), ((log.tiersAt[loc] ??= {})[t] ??= { met: 0, caught: 0 })]) {
+      bucket.met++;
+      if (e.outcome === 'catch') bucket.caught++;
+    }
+    escRun = e.outcome === 'escape' ? escRun + 1 : 0;
+    log.worstEscapes = Math.max(log.worstEscapes, escRun);
+    if (e.outcome === 'catch') log.goldIn += e.gold;
+    log.baitSpent += e.baitUsed * baitPrice(baitBefore ?? '');
+    if (e.pillage) log.pillageLost += e.pillage.gold;
+    if (e.loot.length) log.lootHunts++;
+    if (e.firstCatch && e.imp) {
+      log.firstCatch[e.imp] = n;
+      const here = data.locations.get(loc)!;
+      if (!log.portraitDone[loc] && here.imps.every((i) => (p.catches[i.id] ?? 0) > 0)) log.portraitDone[loc] = n;
+    }
+    const badgesNow = Object.keys(p.achievements ?? {}).length;
+    const milestone = !!(e.firstCatch || e.rankUp || e.key || e.loot.length || e.objective?.notes?.length || badgesNow > badgesBefore || log.purchases.length > purchasesBefore);
+    badgesBefore = badgesNow;
+    purchasesBefore = log.purchases.length;
+    if (e.outcome === 'catch' || milestone) log.goodAny.push(n);
+    if (milestone) log.goodMilestone.push(n);
+    if (traceMe) {
+      traceLines.push(JSON.stringify({ n, location: loc, tier: t, imp: e.imp, outcome: e.outcome, chance: e.catchChance && Math.round(e.catchChance * 1000) / 1000, gold: e.gold, points: e.points, loot: e.loot.map((l) => `${l.item}x${l.amount}`), firstCatch: e.firstCatch, rankUp: e.rankUp, pillage: e.pillage?.gold, goldTotal: p.gold, good: milestone, pips: null, boons: null, event: null }));
+    }
     if (p.rank >= finalRank) { log.finished = true; break; }
   }
   log.badges = { ...p.achievements };
@@ -246,10 +310,20 @@ const fmt = (n: number) => (Number.isFinite(n) ? Math.round(n).toLocaleString('e
 const pct = (n: number) => (Number.isFinite(n) ? `${Math.round(n * 100)}%` : '-');
 
 const logs: Log[] = [];
-for (let i = 0; i < PLAYERS; i++) logs.push(play(seededRng(SEED * 100003 + i)));
+const seedList = SEEDS > 0 ? Array.from({ length: SEEDS }, (_, k) => k + 1) : [SEED];
+const perSeedMedian: number[] = [];
+for (const sd of seedList) {
+  const mine: Log[] = [];
+  for (let i = 0; i < PLAYERS; i++) mine.push(play(seededRng(sd * 100003 + i), i + (sd === seedList[0] ? 0 : 1e9)));
+  perSeedMedian.push(quant(mine.filter((l) => l.finished).map((l) => l.hunts), 0.5));
+  logs.push(...mine);
+}
+const TOTAL = logs.length;
 
-console.log(`\nThe Naughty List balance run: ${PLAYERS} players, seed ${SEED}\n`);
-console.log(`Reached rank ${finalRank}: ${logs.filter((l) => l.finished).length}/${PLAYERS}`);
+console.log(`\nThe Naughty List balance run: ${TOTAL} players, ${SEEDS > 0 ? `seeds 1 to ${SEEDS}` : `seed ${SEED}`}`);
+console.log(`Cheer Meter: ${HAS_CHEER ? (NO_CHEER ? 'off' : `on, boon policy ${BOON_POLICY}`) : 'not in this engine'}. Events: ${HAS_EVENTS ? (NO_EVENTS ? 'off' : `on, event policy ${EVENT_POLICY}`) : 'not in this engine'}.\n`);
+if (SEEDS > 0) console.log(`Median hunts to rank ${finalRank} per seed: ${perSeedMedian.map(fmt).join(', ')}`);
+console.log(`Reached rank ${finalRank}: ${logs.filter((l) => l.finished).length}/${TOTAL}`);
 console.log(`Total hunts to rank ${finalRank}: median ${fmt(quant(logs.filter((l) => l.finished).map((l) => l.hunts), 0.5))}\n`);
 
 let misses = 0;
@@ -266,21 +340,21 @@ for (const r of content.ranks.slice(0, -1)) {
   console.log(`${String(r.rank).padEnd(6)}${`${fmt(quant(spent, 0.1))} / ${fmt(med)} / ${fmt(quant(spent, 0.9))}`.padEnd(36)}${String(target ?? '').padEnd(9)}${status}`);
 }
 
-console.log('\nLocation           Hunts    Attract  Catch/attracted  Bait cost / gold  Pillages  Pillage cost / gold');
+console.log('\nLocation           Hunts    Catch rate  Bait cost / gold  Pillages  Pillage cost / gold');
 for (const loc of content.locations) {
   const ls = logs.map((l) => l.byLocation[loc.id]).filter(Boolean) as Log['byLocation'][string][];
   const sum = (k: keyof Log['byLocation'][string]) => ls.reduce((s, x) => s + x[k], 0);
-  console.log(`${loc.name.padEnd(19)}${fmt(sum('hunts') / PLAYERS).padEnd(9)}${pct(sum('attracted') / sum('hunts')).padEnd(9)}${pct(sum('caught') / sum('attracted')).padEnd(17)}${pct(sum('baitCost') / sum('gold')).padEnd(18)}${fmt(sum('pillages') / PLAYERS).padEnd(10)}${pct(sum('pillageCost') / sum('gold'))}`);
+  console.log(`${loc.name.padEnd(19)}${fmt(sum('hunts') / TOTAL).padEnd(9)}${pct(sum('caught') / sum('hunts')).padEnd(12)}${pct(sum('baitCost') / sum('gold')).padEnd(18)}${fmt(sum('pillages') / TOTAL).padEnd(10)}${pct(sum('pillageCost') / sum('gold'))}`);
 }
 
 console.log('\nGear bought or crafted (median hunt number, share of players)');
 const items = new Map<string, number[]>();
 for (const l of logs) for (const pu of l.purchases) (items.get(pu.item) ?? items.set(pu.item, []).get(pu.item)!).push(pu.hunt);
 for (const [item, hunts] of [...items].sort((a, b) => quant(a[1], 0.5) - quant(b[1], 0.5))) {
-  console.log(`  ${(data.items.get(item)?.name ?? item).padEnd(22)} hunt ${fmt(quant(hunts, 0.5)).padEnd(8)} ${pct(hunts.length / PLAYERS)}`);
+  console.log(`  ${(data.items.get(item)?.name ?? item).padEnd(22)} hunt ${fmt(quant(hunts, 0.5)).padEnd(8)} ${pct(hunts.length / TOTAL)}`);
 }
-console.log(`\nBoss catches per player: ${(logs.reduce((s, l) => s + l.bossCatches, 0) / PLAYERS).toFixed(1)}`);
-const per = (f: (l: Log) => number) => (logs.reduce((s, l) => s + f(l), 0) / PLAYERS).toFixed(1);
+console.log(`\nBoss catches per player: ${(logs.reduce((s, l) => s + l.bossCatches, 0) / TOTAL).toFixed(1)}`);
+const per = (f: (l: Log) => number) => (logs.reduce((s, l) => s + f(l), 0) / TOTAL).toFixed(1);
 console.log('Mini boss and boss catches per player: ' + content.locations.flatMap((l) => l.imps).filter((i) => i.tier === 'boss' || i.tier === 'miniboss').map((i) => `${i.name} ${per((l) => l.bosses[i.id] ?? 0)}`).join(', '));
 console.log(`Toy orders finished: ${per((l) => l.objectives.orders)}. Sleigh runs: ${per((l) => l.objectives.runs)}, launched: ${per((l) => l.objectives.launches)}`);
 
@@ -295,8 +369,68 @@ if (args.includes('--badges')) {
   console.log('  Badge                     Players  Median hunt');
   for (const a of content.achievements) {
     const at = logs.map((l) => l.badges[a.id]).filter((x): x is number => x !== undefined);
-    console.log(`  ${a.name.padEnd(26)}${pct(at.length / PLAYERS).padEnd(9)}${fmt(quant(at, 0.5))}`);
+    console.log(`  ${a.name.padEnd(26)}${pct(at.length / TOTAL).padEnd(9)}${fmt(quant(at, 0.5))}`);
   }
+}
+
+// ---------- Allure, goals, economy and progress feel ----------
+const TIERS = ['common', 'uncommon', 'rare', 'miniboss', 'boss'];
+console.log('\nEncounter mix and catch rate by elf tier (every hunt meets an elf)');
+console.log('Location           ' + TIERS.map((t) => t.padEnd(16)).join(''));
+for (const loc of [...content.locations, { id: '*', name: 'All areas' }]) {
+  const cells = TIERS.map((t) => {
+    const rows = logs.map((l) => (loc.id === '*' ? l.tiers[t] : l.tiersAt[loc.id]?.[t])).filter(Boolean) as { met: number; caught: number }[];
+    const all = logs.flatMap((l) => Object.values(loc.id === '*' ? l.tiers : (l.tiersAt[loc.id] ?? {})));
+    const met = rows.reduce((s, x) => s + x.met, 0), caught = rows.reduce((s, x) => s + x.caught, 0);
+    const total = all.reduce((s, x) => s + x.met, 0);
+    return (met ? `${pct(met / total)} / ${pct(caught / met)}` : '-').padEnd(16);
+  });
+  console.log(loc.name.padEnd(19) + cells.join(''));
+}
+console.log('(each cell: share of encounters / catch rate)');
+const esc = logs.map((l) => l.worstEscapes);
+console.log(`Longest escape streak: median ${fmt(quant(esc, 0.5))}, p90 ${fmt(quant(esc, 0.9))}, max ${fmt(Math.max(...esc))}`);
+
+console.log('\nPortrait goal (every elf of an area caught) and first catches');
+console.log('Location           Done by end  Median hunt done  Rank-up hunt (median)  Done minus rank-up hunt (median, negative = done before)');
+for (const loc of content.locations.filter((l) => !l.side)) {
+  const done = logs.map((l) => l.portraitDone[loc.id]).filter((x): x is number => x !== undefined);
+  const next = content.ranks.find((r) => r.rank === (content.locations.filter((l) => !l.side).indexOf(loc) + 2));
+  const rankUp = logs.map((l) => (next ? l.rankAt[next.rank] : undefined)).filter((x): x is number => x !== undefined);
+  const extra = logs.map((l) => (next && l.portraitDone[loc.id] !== undefined && l.rankAt[next.rank] !== undefined ? l.portraitDone[loc.id]! - l.rankAt[next.rank]! : undefined)).filter((x): x is number => x !== undefined);
+  console.log(`${loc.name.padEnd(19)}${pct(done.length / TOTAL).padEnd(13)}${fmt(quant(done, 0.5)).padEnd(18)}${fmt(quant(rankUp, 0.5)).padEnd(23)}${fmt(quant(extra, 0.5))}`);
+}
+console.log('Hunts to first catch (median, share of players who ever caught it): the long tail');
+for (const loc of content.locations) {
+  console.log('  ' + loc.name.padEnd(17) + loc.imps.filter((i) => ['rare', 'miniboss', 'boss'].includes(i.tier)).map((i) => {
+    const at = logs.map((l) => l.firstCatch[i.id]).filter((x): x is number => x !== undefined);
+    return `${i.name} ${fmt(quant(at, 0.5))} (${pct(at.length / TOTAL)})`;
+  }).join(', '));
+}
+
+const done = logs.filter((l) => l.finished);
+const sumOf = (f: (l: Log) => number) => done.reduce((s, l) => s + f(l), 0);
+console.log('\nGold flow, players who reached the end (per player, median)');
+console.log(`  Earned from catches ${fmt(quant(done.map((l) => l.goldIn), 0.5))}, bait used ${fmt(quant(done.map((l) => l.baitSpent), 0.5))} (${pct(sumOf((l) => l.baitSpent) / sumOf((l) => l.goldIn))} of gold earned), lost to pillage ${fmt(quant(done.map((l) => l.pillageLost), 0.5))}`);
+console.log('  Gold in hand at rank-up (median): ' + content.ranks.slice(1).map((r) => `R${r.rank} ${fmt(quant(logs.map((l) => l.goldAtRank[r.rank]).filter((x): x is number => x !== undefined), 0.5))}`).join(', '));
+console.log(`  Hunts that dropped loot: ${pct(sumOf((l) => l.lootHunts) / sumOf((l) => l.hunts))}`);
+
+const gaps = (xs: number[]) => {
+  const out: number[] = [];
+  let prev = 0;
+  for (const x of xs) { out.push(x - prev); prev = x; }
+  return out;
+};
+const gapsAny = done.flatMap((l) => gaps(l.goodAny));
+const gapsMile = done.flatMap((l) => gaps(l.goodMilestone));
+const longest = (set: Log[], f: (l: Log) => number[]) => quant(set.map((l) => Math.max(...gaps(f(l)))), 0.5);
+console.log('\nProgress feel: hunts between good things (a milestone is a first catch, loot, rank-up, key, objective step, badge or purchase)');
+console.log(`  Any catch or milestone: median gap ${fmt(quant(gapsAny, 0.5))}, p90 ${fmt(quant(gapsAny, 0.9))}, p99 ${fmt(quant(gapsAny, 0.99))}, longest dry spell (median player) ${fmt(longest(done, (l) => l.goodAny))}`);
+console.log(`  Milestones only (plain catches excluded): median gap ${fmt(quant(gapsMile, 0.5))}, p90 ${fmt(quant(gapsMile, 0.9))}, p99 ${fmt(quant(gapsMile, 0.99))}, longest dry spell (median player) ${fmt(longest(done, (l) => l.goodMilestone))}`);
+if (!HAS_CHEER || !HAS_EVENTS) console.log('  (pips, boons and events are not counted: they are not in this engine yet)');
+if (TRACE) {
+  writeFileSync(TRACE, traceLines.join('\n') + '\n');
+  console.log(`\nTrace: ${traceLines.length} hunts written to ${TRACE}`);
 }
 if (VERBOSE) console.log(JSON.stringify(logs[0], null, 2));
 if (STRICT && misses > 0) {
