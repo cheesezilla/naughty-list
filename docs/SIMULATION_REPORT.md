@@ -125,3 +125,12 @@ eddy found the Order Board too fiddly: the three slots had to be filled in order
 - **Built:** Workshop commons power 1,200 / 1,500 / 1,850 (were 380 / 510 / 640).
 - **Result:** median 1,212 hunts to rank 5 (1,359 before). Hunts in ranks 1 to 4: 118, 237, 324, 532 (targets 150, 250, 400, 600, all ok). Toy Workshop: 256 hunts, catch rate 54% (commons 88% of encounters at 55%, rare 50%, mini boss 45%, boss 26%), bait 8% of gold, pillage 15% of gold earned there. About 30 orders finished per player, Hammerhand 4.3 and General Grimbolt 2.5 catches, Cheer fills 3.6 per 100 hunts in the Workshop (4.1 before), 3.4 per 100 overall, median 16 hunts per fill.
 - **Not simulated:** the Triple Crate, because the bot never swaps for it. It adds 800 gold and every crate reward per 9 catches if you cycle all three types, which is about one extra crate per three orders; watch it in play and retune `tripleGold` if it feels too strong or too weak.
+
+## Report 6: Scrinch's random events removed (1,000 players, seed 42, Cheer and events on, greedy boons, safe events)
+
+Scrinch challenges, tolls and the boss-escape grudge are gone; random events are now only Santa and Mrs. Claus boons and Grand Gifts. The chance per hunt went from 2.5% to 1.5% so the boon rate stays the same (it was 60% of 2.5%). The Grand Gift pity bar now grows only by +5% per boon.
+
+- **Pace unchanged:** median 1,208 hunts to rank 5 (1,212 in Report 5). Hunts in ranks 1 to 4: 117, 236, 325, 533 (targets 150, 250, 400, 600, all ok).
+- **Events:** 1.15 per 100 hunts (boon cards 0.92, Grand Gifts 0.23), median 63 hunts between events (p90 163), 14 events per player, 2.8 Grand Gifts per player. Boon-card gold is 3,837 per player, 2% of gold earned. Report 2's 2.0 per 100 hunts is now about 1.15, with no more grudge-driven events.
+- **Gone from the report:** Scrinch fight win rate, tolls paid and the `skip` and `fight` policies (Reports 2 to 4 keep their old numbers as history).
+

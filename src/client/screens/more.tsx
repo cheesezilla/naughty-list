@@ -382,7 +382,7 @@ function SpeedRun() {
         <div class="admin-row">
           <span><b>Trigger an event</b><small>Replaces any open card or challenge</small></span>
           <span class="chips">
-            {(['boon', 'grand', 'scrinch'] as const).map((k) => <button class="chip" onClick={() => run({ action: 'event', kind: k }, `Event: ${k}.`)}>{k}</button>)}
+            {(['boon', 'grand'] as const).map((k) => <button class="chip" onClick={() => run({ action: 'event', kind: k }, `Event: ${k}.`)}>{k}</button>)}
           </span>
         </div>
         <div class="admin-row">

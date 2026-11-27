@@ -214,15 +214,11 @@ export const Constants = z.object({
       weights: z.object({ common: z.number().nonnegative(), rare: z.number().nonnegative(), legendary: z.number().nonnegative() }),
     })).min(1),
   }),
-  /** Random events: Santa and Mrs. Claus boons, Grand Gifts and Scrinch threats. `enabled: false` switches them off. */
+  /** Random events: Santa and Mrs. Claus boons and Grand Gifts. `enabled: false` switches them off. */
   events: z.object({
     enabled: z.boolean(),
     chancePerHunt: chance, minHunts: z.number().int().nonnegative(), minGap: z.number().int().nonnegative(),
-    scrinchShare: chance,
-    grudgeChance: chance, grudgeGap: z.number().int().nonnegative(),
-    /** The grudge is skipped once the same boss has escaped this many times in a row. */
-    grudgeMaxStreak: z.number().int().positive(),
-    grandBase: chance, grandPerScrinchWin: chance, grandPerBoon: chance,
+    grandBase: chance, grandPerBoon: chance,
   }),
   stamina: z.object({
     enabled: z.boolean(), name: z.string(), max: z.number().int().positive(), costPerHunt: z.number().int().nonnegative(),
@@ -304,35 +300,11 @@ export const Effect = z.discriminatedUnion('type', [
     hunts: z.number().int().positive().optional(), uses: z.number().int().positive().optional(),
   }),
 ]);
-export const Threat = z.discriminatedUnion('type', [
-  z.object({ type: z.literal('goldPct'), pct: chance, capH: z.number().positive() }),
-  z.object({ type: z.literal('baitLoss'), amount: z.number().int().positive() }),
-  z.object({
-    type: z.literal('buff'), stat: z.enum(buffStats), value: z.number(), label: z.string(),
-    hunts: z.number().int().positive().optional(), uses: z.number().int().positive().optional(),
-  }),
-]);
-export const ScrinchGoal = z.discriminatedUnion('type', [
-  /** Catch `need` of the next `window` hunts. */
-  z.object({ type: z.literal('catches'), need: z.number().int().positive(), window: z.number().int().positive() }),
-  /** Catch `need` in a row within `window` hunts. */
-  z.object({ type: z.literal('streak'), need: z.number().int().positive(), window: z.number().int().positive() }),
-  /** Catch one rare elf or better within `window` hunts. */
-  z.object({ type: z.literal('rare'), window: z.number().int().positive() }),
-  /** Catch an elf with a trap of the location's home type within `window` hunts. */
-  z.object({ type: z.literal('homeType'), window: z.number().int().positive() }),
-]);
 const Sender = z.enum(['santa', 'mrs_claus']);
 export const Gift = z.object({ label: z.string(), effects: z.array(Effect).min(1) });
 export const EventsFile = z.object({
   boons: z.array(z.object({ id, name: z.string(), from: Sender, a: Gift, b: Gift })),
   grandGifts: z.array(z.object({ id, name: z.string(), from: Sender, text: z.string(), effects: z.array(Effect).min(1) })),
-  scrinch: z.array(z.object({
-    id, name: z.string(), text: z.string(), threat: Threat, goal: ScrinchGoal, goalText: z.string(),
-    prize: z.array(Effect).min(1), prizeText: z.string(), failText: z.string(),
-    /** Skip toll: `h` x H gold or `pct` of the player's gold. */
-    toll: z.object({ h: z.number().positive().optional(), pct: chance.optional() }),
-  })),
 });
 
 /** What a boon changes while it lasts. Every field is optional; see `modsOf` in src/engine/mods.ts. */
@@ -356,7 +328,7 @@ export const Content = z.object({
   recipes: z.array(Recipe),
   achievements: z.array(Achievement).default([]),
   boons: z.array(Boon).default([]),
-  events: EventsFile.default({ boons: [], grandGifts: [], scrinch: [] }),
+  events: EventsFile.default({ boons: [], grandGifts: [] }),
 });
 
 export type PowerType = z.infer<typeof PowerType>;
@@ -381,8 +353,6 @@ export type Content = z.infer<typeof Content>;
 export type Story = z.infer<typeof Story>;
 export type Boon = z.infer<typeof Boon>;
 export type Effect = z.infer<typeof Effect>;
-export type Threat = z.infer<typeof Threat>;
-export type ScrinchGoal = z.infer<typeof ScrinchGoal>;
 export type EventsFile = z.infer<typeof EventsFile>;
 export type Achievement = z.infer<typeof Achievement>;
 export type AchievementRule = z.infer<typeof AchievementRule>;

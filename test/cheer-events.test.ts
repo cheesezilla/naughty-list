@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cheerAddPips, cheerAction, cheerAfterHunt, cheerOf, drawCards, eventAction, eventsAfterHunt, eventsOf, forceEvent, hunt, modsOf, newPlayer, seededRng, tollGold, unitH, type PlayerState } from '../src/engine/index.js';
+import { cheerAddPips, cheerAction, cheerAfterHunt, cheerOf, drawCards, eventAction, eventsAfterHunt, eventsOf, forceEvent, hunt, modsOf, newPlayer, seededRng, unitH, type PlayerState } from '../src/engine/index.js';
 import { content } from './helpers.js';
 
 const pantry = content.locations.find((l) => l.id === 'cookie_pantry')!;
@@ -152,8 +152,7 @@ describe('events', () => {
     const early = fresh((p) => { p.stats.hunts = 29; });
     expect(eventsAfterHunt(content, early, ctx(true), () => 0)).toEqual([]);
     const late = fresh((p) => { p.stats.hunts = 30; });
-    // roll 0.0 < 2.5%, then 0.0 < 40% share starts Scrinch; use 0.5 for the share to get a boon
-    const seq = [0.0, 0.5, 0.99, 0];
+    const seq = [0.0, 0.99, 0.5, 0];
     let i = 0;
     const notes = eventsAfterHunt(content, late, ctx(true), () => seq[Math.min(i++, seq.length - 1)]!);
     expect(notes[0]!.type).toBe('boon');
@@ -170,38 +169,31 @@ describe('events', () => {
     expect(g.player.events!.grand).toBeCloseTo(0.1);
   });
 
-  it('a boss escape can start a Scrinch grudge, but not after two in a row', () => {
+  it('a boss escape starts no event of its own', () => {
     const p = fresh((q) => { q.stats.hunts = 15; });
-    expect(eventsAfterHunt(content, p, ctx(false, boss), () => 0)[0]!.type).toBe('scrinch');
-    const q = fresh((s) => { s.stats.hunts = 50; Object.assign(eventsOf(content, s), { escapeImp: boss.id, escapeCount: 2 }); });
-    expect(eventsAfterHunt(content, q, ctx(false, boss), () => 0.99)).toEqual([]);
-    expect(q.events!.escapeCount).toBe(3);
-    const r = fresh((s) => { s.stats.hunts = 20; Object.assign(eventsOf(content, s), { escapeImp: boss.id, escapeCount: 2 }); });
-    expect(eventsAfterHunt(content, r, ctx(false, boss), () => 0)).toEqual([]); // third escape: grudge skipped
+    expect(eventsAfterHunt(content, p, ctx(false, boss), () => 0.99)).toEqual([]);
   });
 
-  it('beating a Scrinch challenge pays the prize and raises the favour; failing it applies the threat', () => {
-    const win = fresh((q) => { q.stats.hunts = 40; eventsOf(content, q).scrinch = { id: 'soot_snatch', hunts: 0, caught: 0, run: 0 }; });
-    const all = (p: PlayerState, caught: boolean, n: number) => Array.from({ length: n }, () => eventsAfterHunt(content, p, ctx(caught), () => 0.99)).flat();
-    let notes = all(win, true, 5);
-    expect(notes[0]!.type).toBe('scrinch_win');
-    expect(win.events!.scrinch).toBeUndefined();
-    expect(win.events!.grand).toBeCloseTo(0.25);
-
-    const lose = fresh((q) => { q.gold = 1000; q.stats.hunts = 40; eventsOf(content, q).scrinch = { id: 'soot_snatch', hunts: 0, caught: 0, run: 0 }; });
-    notes = all(lose, false, 8);
-    expect(notes[0]!.type).toBe('scrinch_fail');
-    expect(lose.gold).toBeLessThan(1000);
-    expect(lose.gold).toBeGreaterThanOrEqual(content.constants.pillage.goldFloor);
-  });
-
-  it('the skip toll costs gold, cancels the challenge and needs enough gold', () => {
-    const p = fresh((q) => { q.gold = 500; eventsOf(content, q).scrinch = { id: 'bait_bandits', hunts: 2, caught: 0, run: 0 }; });
-    const toll = tollGold(content, p, 'bait_bandits');
-    const r = eventAction(content, p, 'toll', seededRng(1));
-    expect(r.ok && r.player.gold).toBe(500 - toll);
-    expect(r.ok && r.player.events!.scrinch).toBeUndefined();
-    expect(eventAction(content, { ...p, gold: 0 }, 'toll', seededRng(1)).ok).toBe(false);
+  it('an old save with a Scrinch challenge, penalties and totals still loads, minus the Scrinch parts', () => {
+    const p = fresh((q) => {
+      q.events = {
+        grand: 0.3, lastEvent: 5, escapeImp: boss.id, escapeCount: 2, wins: 2, fails: 1, tolls: 1, boons: 4, grands: 1,
+        scrinch: { id: 'soot_snatch', hunts: 2, caught: 1, run: 0 },
+        buffs: [
+          { stat: 'powerMult', value: 0.8, label: 'Soot: weaker power', hunts: 5 },
+          { stat: 'baitCost', value: 2, label: 'Dearer bait', hunts: 5 },
+          { stat: 'powerMult', value: 1.1, label: 'Warm Mittens: +10% power', hunts: 5 },
+        ],
+      } as never;
+    });
+    const ev = eventsOf(content, p);
+    expect(ev).not.toHaveProperty('scrinch');
+    expect(ev).not.toHaveProperty('tolls');
+    expect(ev.buffs.map((b) => b.label)).toEqual(['Warm Mittens: +10% power']);
+    expect(ev.grand).toBe(0.3);
+    expect(ev.boons).toBe(4);
+    expect(() => hunt(content, p, () => 0.5)).not.toThrow();
+    expect(eventAction(content, p, 'a', seededRng(1)).ok).toBe(false); // no pending card
   });
 
   it('a hex buff lowers power and a Grand Gift power buff does not stack with a Cheer boon', () => {

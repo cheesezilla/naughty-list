@@ -632,7 +632,6 @@ body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
 .boon-chip.rare, .boon-card.rare { --rar: #2b6cb0; background: #dbe9f7; }
 .boon-chip.legendary, .boon-card.legendary { --rar: #d9a21a; background: #fff1c2; }
 .boon-chip.gift { background: #dff0e0; }
-.boon-chip.penalty { background: var(--red-soft); color: var(--red-dark); }
 .favour { display: flex; align-items: center; gap: 8px; font-size: 13px; }
 .favour-bar { flex: 1; height: 10px; border-radius: 5px; background: #e3d5bd; overflow: hidden; }
 .favour-bar i { display: block; height: 100%; background: linear-gradient(#ffd76a, #d9a21a); }
@@ -642,11 +641,9 @@ body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
 .event-card { border: 2px solid var(--gold-2); background: var(--gold-soft); display: flex; flex-direction: column; gap: 6px; }
 .gift-row { display: flex; gap: 8px; }
 .gift { flex: 1; padding: 10px; border-radius: 12px; border: 2px solid var(--gold-2); background: #fff; color: var(--ink); font-weight: 800; }
-.scrinch-card { background: var(--red-soft); border: 2px solid var(--red); display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
 .event-note { margin-top: 4px; font-size: 13px; padding: 4px 8px; border-radius: 8px; background: var(--gold-soft); }
 .event-note.cheer { background: var(--green-soft); }
-.event-note.scrinch, .event-note.scrinch_fail { background: var(--red-soft); }
-.event-note.grand, .event-note.scrinch_win { background: #fff1c2; }
+.event-note.grand { background: #fff1c2; }
 
 /* ---------- UI polish: early shimmer, ladder layout, meters, boon auras ---------- */
 .nc-frame { position: relative; overflow: hidden; }

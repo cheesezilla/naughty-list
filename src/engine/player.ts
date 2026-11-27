@@ -41,7 +41,7 @@ export interface PlayerState {
   keys?: string[];
   /** The Cheer Meter and its boons. Created on the first hunt; missing in older saves. */
   cheer?: CheerState;
-  /** Random events: Santa's favour, the open boon card, an active Scrinch challenge and event buffs. Missing in older saves. */
+  /** Random events: Santa's favour, the open boon card, and event buffs. Missing in older saves. */
   events?: EventsState;
   /** Admin speed-run settings. Only honoured for admin accounts, and only the admin endpoint sets it. */
   speedRun?: { reward: number; odds: boolean };
