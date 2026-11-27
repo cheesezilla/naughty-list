@@ -665,7 +665,8 @@ Example: Madame Shredwell (gold 300, points 550) escapes from a player with 6,00
 **Safety rails** (so it stings but never dead-ends a player):
 - Gold never drops below 100 from a pillage.
 - Points never drop below the current rank's threshold, so a pillage can't take a rank away. Rank 1 players lose no points.
-- When a rail stops a loss the elf still counts as having pillaged, and the log says what was safe.
+- When a rail stops a loss the elf still counts as having pillaged, and the log says what was safe. A bait thief that comes away empty on the bait-save roll while the player still has bait is logged as "the thief fumbled and came away empty-handed" (`pillage.fumbled`); "no bait left to take" is only for a player with none.
+- Every hunt log entry ends with a fixed line, "Bait: <name> x<left> remaining" (`entry.baitLeft`), the armed bait count after the hunt.
 - Only the armed bait is taken, never more than is owned. Charms, gear and materials are never taken.
 - Mrs. Claus's free Stale Cookies (no bait and under 50 gold) are unchanged and still catch anyone who runs dry.
 - With the gold floor at 100, a player can always buy bait again (Stale Cookie is 8 gold).
@@ -1299,6 +1300,7 @@ The first idea (replace the attraction roll where no elf takes the bait) is trac
 | 2026-11-26 | this PR | Planned the Cheer Meter: +1 pip per catch (+2 rare or better), -3 on an escape, full at 10, then pick 1 of 3 boons from a pool of 14 (6 common, 5 rare, 3 legendary), Overcharge up to 15 pips with better draw odds and a -5 escape, and three Cheer charms that fill the meter faster. Design only, no numbers changed |
 | 2026-11-27 | this PR | Cookie Pantry goals panel on the Hunt screen: "Rank up and move on" ticks at the next area's rank, optional "Unlock every portrait" shows caught/total. Client only, no rule changes |
 | 2026-11-27 | this PR | Cheer card shows all active buffs (boons, gifts, event effects) with hunts or uses left. Client only, no rule changes |
+| 2026-11-27 | this PR | Bait pillage fumble wording fixed (was "no bait left to take" even with bait in the sack); every hunt log entry shows the armed bait remaining |
 | 2026-11-26 | #40 | Bases are drawn 30% lower under the trap in the trap stack. Imported all 97 custom art pictures (elves, traps, bases, baits, charms, materials, trap types, ranks, locations, map, brand, how-to) as resized WebP, replacing the generated SVGs and older PNGs; icons stay SVG; favicon now WebP. No rule or balance change |
 | 2026-11-26 | this PR | Hunt log escapes now show the effectiveness tier ("Escaped. Weak chance") instead of the exact percentage; admins with the exact-odds toggle still see the percentage. Checked the New Catch popup and Hunters feed: they show no odds. Imp-file drop and pillage-risk percentages are unchanged |
 | 2026-11-26 | #36 | Santa's Workshop recipe cards show the output's stats (power, luck, Good for, base type bonus, charm bonuses), traps show their power type medal; attraction stays behind the admin exact-odds toggle. Base type bonus now also shows on item lines in the Emporium and Arsenal |

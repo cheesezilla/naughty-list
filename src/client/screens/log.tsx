@@ -30,13 +30,19 @@ export function pillageText(p: Pillage, itemName: (id: string) => string): strin
   const safe = p.safe ?? [];
   if (safe.includes('points')) parts.push('your rank is safe');
   if (safe.includes('gold')) parts.push('your gold is safe');
-  if (safe.includes('bait')) parts.push('no bait left to take');
+  if (safe.includes('bait')) parts.push(p.fumbled ? 'the thief fumbled and came away empty-handed' : 'no bait left to take');
   return parts.join(', ') || 'nothing worth taking';
 }
 
 function ObjectiveNote({ o, itemName }: { o: NonNullable<JournalEntry['objective']>; itemName: (id: string) => string }) {
   const reward = [o.gold ? `+${num(o.gold)} gold` : '', ...(o.items ?? []).map((i) => `+${num(i.amount)} ${itemName(i.item)}`)].filter(Boolean).join(', ');
   return <div class="objective-note">{o.notes.join('. ')}{reward && `: ${reward}`}</div>;
+}
+
+/** Fixed last line of every hunt entry: how much of the armed bait is left. */
+function BaitLeft({ e, itemName }: { e: JournalEntry; itemName: (id: string) => string }) {
+  if (!e.baitLeft) return null;
+  return <div class="bait-left">Bait: {itemName(e.baitLeft.item)} x{num(e.baitLeft.amount)} remaining</div>;
 }
 
 function HuntRow({ row }: { row: JournalRow & { kind: 'hunt' } }) {
@@ -56,7 +62,7 @@ function HuntRow({ row }: { row: JournalRow & { kind: 'hunt' } }) {
       return (
         <div class="log-row quiet">
           <span class="empty-thumb" aria-hidden="true">empty</span>
-          <div class="row-body"><b>Quiet hunt</b><br />Nothing took the bait.{e.rescued && ' Mrs. Claus slipped you 10 Stale Cookies.'}{e.objective && <ObjectiveNote o={e.objective} itemName={itemName} />}<HuntExtras e={e} /></div>
+          <div class="row-body"><b>Quiet hunt</b><br />Nothing took the bait.{e.rescued && ' Mrs. Claus slipped you 10 Stale Cookies.'}{e.objective && <ObjectiveNote o={e.objective} itemName={itemName} />}<HuntExtras e={e} /><BaitLeft e={e} itemName={itemName} /></div>
           {time}
         </div>
       );
@@ -81,6 +87,7 @@ function HuntRow({ row }: { row: JournalRow & { kind: 'hunt' } }) {
               : <>Escaped. {rateText(e.catchChance ?? 0)} chance</>}
           {e.objective && <ObjectiveNote o={e.objective} itemName={itemName} />}
           <HuntExtras e={e} />
+          <BaitLeft e={e} itemName={itemName} />
         </div>
         {time}
       </button>
