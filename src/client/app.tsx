@@ -32,6 +32,18 @@ export function App() {
 function UpdatePopup() {
   const [old, setOld] = useState(stale);
   useEffect(() => onStale(() => setOld(true)), []);
+  // An idle tab makes no API calls, so check the version when it comes back into view (at most once a minute).
+  useEffect(() => {
+    let last = 0;
+    const check = () => {
+      if (document.visibilityState !== 'visible' || Date.now() - last < 60_000) return;
+      last = Date.now();
+      fetch('/api/health').then(checkVersion).catch(() => {});
+    };
+    document.addEventListener('visibilitychange', check);
+    window.addEventListener('focus', check);
+    return () => { document.removeEventListener('visibilitychange', check); window.removeEventListener('focus', check); };
+  }, []);
   if (!old) return null;
   return (
     <div class="popup-backdrop update-backdrop" style="z-index:100">
