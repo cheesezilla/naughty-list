@@ -13,7 +13,11 @@ export type GameEvent =
   /** Achievements earned by the hunt or action just before it. `backfill` marks badges awarded to a save from before achievements. */
   | { type: 'achievement'; ids: string[]; backfill?: boolean; /** Free items the badges gave (item id → amount). */ rewards?: Record<string, number> }
   /** The intro letter (content/story.json), logged when a game starts: sign-up and Start over. */
-  | { type: 'intro' };
+  | { type: 'intro' }
+  /** A Cheer boon picked from the draw. */
+  | { type: 'cheer_pick'; boon: string }
+  /** An answer to a boon card (`text` says what was taken). */
+  | { type: 'event_answer'; id: string; name: string; text: string };
 export type LogKind = 'hunt' | 'event';
 /** One hunt-log row. Hunts carry a JournalEntry; events carry a GameEvent and the hunt number they follow. */
 export type JournalRow =

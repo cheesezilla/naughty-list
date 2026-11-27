@@ -12,6 +12,11 @@ type Slot = keyof Setup;
 const SLOTS: { id: Slot; label: string }[] = [{ id: 'trap', label: 'Trap' }, { id: 'base', label: 'Base' }, { id: 'bait', label: 'Bait' }, { id: 'charm', label: 'Charm' }];
 
 /** One line of numbers for any item. */
+/** What a Cheer charm does, in a few words. */
+function cheerText(c: { all?: number; rare?: number; escape?: number }): string {
+  return [c.all && '+1 Cheer pip a catch', !c.all && c.rare && '+1 Cheer pip on rare catches', c.escape && 'escapes cost 1 less'].filter(Boolean).join(', ');
+}
+
 export function itemStats(item: AnyItem, exact: boolean): string {
   const bits: string[] = [];
   if (item.kind === 'trap' || item.kind === 'base') {
@@ -26,6 +31,7 @@ export function itemStats(item: AnyItem, exact: boolean): string {
     if (item.luck) bits.push(`+${item.luck} luck`);
     if (item.power) bits.push(`+${item.power} power`);
     if (item.powerBonus) bits.push(`+${pct(item.powerBonus)} power`);
+    if (item.kind === 'charm' && item.cheer) bits.push(cheerText(item.cheer));
     if (item.attraction) bits.push(exact ? `+${pct(item.attraction)} attraction` : 'Attracts more elves');
   } else {
     bits.push(`Sells for ${num(item.sellPrice)} gold`);
@@ -48,6 +54,7 @@ export function itemStatRows(item: AnyItem, exact: boolean): [string, string][] 
     if (item.luck) rows.push(['Luck', `+${item.luck}`]);
     if (item.power) rows.push(['Power', `+${item.power}`]);
     if (item.powerBonus) rows.push(['Power', `+${pct(item.powerBonus)}`]);
+    if (item.kind === 'charm' && item.cheer) rows.push(['Cheer', cheerText(item.cheer)]);
     if (item.attraction) rows.push(['Attraction', exact ? `+${pct(item.attraction)}` : 'Boost']);
   }
   return rows;

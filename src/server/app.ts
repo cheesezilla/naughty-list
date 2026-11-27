@@ -5,8 +5,8 @@ import { existsSync } from 'node:fs';
 import { randomInt } from 'node:crypto';
 import type { Content } from '../content/schema.js';
 import {
-  addItem, buy, checkAchievements, craft, equip, gameData, grantKeys, hunt, newPlayer, objectiveAction, rankFor, sell, travel,
-  type ActionResult, type JournalRow, type PlayerState, type Rng, type Setup,
+  addItem, buy, checkAchievements, cheerAction, cheerFill, craft, equip, eventAction, eventChoiceText, forceEvent, gameData, grantKeys, hunt, newPlayer, objectiveAction, rankFor, sell, travel,
+  type ActionResult, type CheerAction, type EventAction, type JournalRow, type PlayerState, type Rng, type Setup,
 } from '../engine/index.js';
 import { Store, type GameEvent, type HistoryFilter, type UserRow } from './db.js';
 import { hashPassword, hashToken, newToken, validPassword, validUsername, verifyPassword } from './auth.js';
@@ -223,6 +223,17 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
       return { player: p };
     });
 
+    // The release notes popup was closed: remember the current version.
+    game.post('/api/release-seen', async (req) => {
+      const p = loadPlayer(req.user!.id);
+      const v = content.releases[0]?.version;
+      if (v && p.releaseSeen !== v) {
+        p.releaseSeen = v;
+        store.savePlayer(req.user!.id, p, now());
+      }
+      return { player: p };
+    });
+
     game.get<{ Querystring: { before?: string; filter?: string; limit?: string } }>('/api/history', async (req) => {
       const filters: HistoryFilter[] = ['all', 'catches', 'escapes', 'pillaged', 'events', 'bosses'];
       const filter = filters.includes(req.query.filter as HistoryFilter) ? (req.query.filter as HistoryFilter) : 'all';
@@ -337,6 +348,18 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
       if (action !== 'start_run' && action !== 'rush_order') return { ok: false, error: 'Unknown action.' };
       return objectiveAction(content, p, action, rng);
     }, (_before, after, b) => ({ type: 'objective', location: after.location, action: str(b.action) as 'start_run' | 'rush_order' })));
+    // Cheer Meter: draw (cash in), hold (Overcharge), reroll and pick. Only a pick is logged.
+    game.post('/api/cheer', playerAction((p, b) => {
+      const action = str(b.action);
+      if (!['draw', 'hold', 'reroll', 'pick', 'perk'].includes(action)) return { ok: false, error: 'Unknown Cheer action.' };
+      return cheerAction(content, p, action as CheerAction, rng, str(b.boon));
+    }, (_before, _after, b) => (str(b.action) === 'pick' ? { type: 'cheer_pick', boon: str(b.boon) } : null)));
+    // Random events: answer the boon card (a, b, decline).
+    game.post('/api/event', playerAction((p, b) => {
+      const action = str(b.action);
+      if (!['a', 'b', 'decline'].includes(action)) return { ok: false, error: 'Unknown event action.' };
+      return eventAction(content, p, action as EventAction, rng);
+    }, (before, _after, b) => ({ type: 'event_answer', ...eventChoiceText(content, before, str(b.action) as EventAction) })));
   });
 
   // ---------- admin ----------
@@ -378,6 +401,19 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
           if (!r) return reply.code(400).send({ error: 'No such rank.' });
           p.points = Math.max(p.points, r.points);
           p.rank = rankFor(content, p.points);
+          break;
+        }
+        case 'cheer': {
+          const filled = cheerFill(content, p);
+          Object.assign(p, filled);
+          break;
+        }
+        case 'event': {
+          const kind = str(b.kind);
+          if (kind !== 'boon' && kind !== 'grand') return reply.code(400).send({ error: 'Pick boon or grand.' });
+          const r = forceEvent(content, p, kind, rng);
+          Object.assign(p, r.player);
+          if (r.note) store.addJournal(userId, p.stats.hunts, { type: 'event_answer', id: r.note.id, name: r.note.name, text: `Admin triggered: ${r.note.text}` }, now(), 'event');
           break;
         }
         case 'unlock':

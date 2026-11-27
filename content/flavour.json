@@ -130,6 +130,21 @@
       "description": "A tiny brass bell that tinkles on its own. Hexed elves can't resist investigating, so more of them come to your trap.",
       "backstory": "These bells fall off reindeer harnesses by the dozen, and the elves gather them up each morning. Hexed elves believe a ringing bell means a sleigh is loading presents nearby. They come sneaking to see, and find your trap waiting instead of a sack of toys."
     },
+    "cheer_bauble": {
+      "tagline": "Shiny enough to make a rare catch feel like a party.",
+      "description": "A glass bauble that adds a pip to the Cheer Meter whenever you catch a rare elf, a mini boss or a boss.",
+      "backstory": "Mrs. Claus hangs these on the lair's tree for good luck. Hunters noticed the big catches made the baubles ring, and the Cheer Meter began to fill a little faster."
+    },
+    "tinsel_cheer_charm": {
+      "tagline": "A little sparkle on every catch.",
+      "description": "A twist of tinsel that adds a pip to the Cheer Meter on every catch.",
+      "backstory": "The tinsel was meant for the tree, but it tangles round any trap and glitters whenever something is caught. Santa's elves swear it makes the whole lair feel merrier."
+    },
+    "gold_star_cheer_charm": {
+      "tagline": "The tree topper's little cousin.",
+      "description": "A gold star that adds a pip to the Cheer Meter on every catch, and makes an escape cost one pip less.",
+      "backstory": "Only the best-behaved hunters get one. It shines brighter after every catch and, even when an elf slips away, it keeps a little of the cheer safe."
+    },
     "windup_key_charm": {
       "tagline": "A few turns more and your trap bites harder.",
       "description": "A brass wind-up key that slots into any trap and tightens every spring, adding a fifth to its power.",

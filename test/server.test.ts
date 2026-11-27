@@ -18,7 +18,7 @@ beforeEach(async () => {
   clock = 1_000_000;
   // Every roll is 0: always attracted, always the first imp (Crumb Elf, which has no loot), always caught.
   // Achievements are off here so the log checks stay about one thing; they have their own tests below.
-  app = await buildApp({ content: { ...content, achievements: [] }, store, version: 'test', now: () => clock, rng: () => 0 });
+  app = await buildApp({ content: { ...content, achievements: [], constants: { ...content.constants, events: { ...content.constants.events, enabled: false } } }, store, version: 'test', now: () => clock, rng: () => 0 });
 });
 afterEach(async () => {
   await app.close();
@@ -401,6 +401,21 @@ describe('store', () => {
     expect(p.achievements).toEqual({ boss_cinderhoof: 5 });
     expect(s.journal(id)[0]!.entry).toEqual({ outcome: 'catch', imp: 'cinderhoof' });
     s.close();
+  });
+});
+
+describe('release notes', () => {
+  it('are already seen by a new game, and an older save sees the current version once', async () => {
+    const cookie = await signupAdmin();
+    const latest = content.releases[0]!.version;
+    expect((await get('/api/me', cookie)).json().player.releaseSeen).toBe(latest);
+    const row = store.player(1)!;
+    const old = JSON.parse(JSON.stringify(row));
+    delete old.releaseSeen;
+    store.savePlayer(1, old, clock);
+    expect((await get('/api/me', cookie)).json().player.releaseSeen).toBeUndefined();
+    expect((await post('/api/release-seen', {}, cookie)).json().player.releaseSeen).toBe(latest);
+    expect((await get('/api/me', cookie)).json().player.releaseSeen).toBe(latest);
   });
 });
 

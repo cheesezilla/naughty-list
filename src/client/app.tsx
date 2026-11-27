@@ -5,7 +5,7 @@ import { api, type User } from './api.js';
 import { GameContext, trimLog, type Game } from './game.js';
 import { loadArt } from './lib/art.js';
 import { buzz, getPrefs, playSound } from './lib/prefs.js';
-import { AchievementBanner, AchievementPopup, WelcomePopup } from './screens/achievements.js';
+import { AchievementBanner, AchievementPopup, ReleasePopup, WelcomePopup } from './screens/achievements.js';
 import { NewCatchPopup, NewCatchToast, type NewCatch } from './screens/newcatch.js';
 import { go, useRoute } from './lib/route.js';
 import { ArsenalScreen, ItemScreen } from './screens/gear.js';
@@ -13,7 +13,7 @@ import { AuthScreen } from './screens/auth.js';
 import { HuntScreen } from './screens/hunt.js';
 import { ImpScreen, NaughtyListScreen } from './screens/list.js';
 import { HistoryScreen } from './screens/log.js';
-import { AccountScreen, AdminScreen, FeedbackScreen, HowToScreen, HuntersScreen, MoreMenu, ProfileScreen, SettingsScreen, TravelScreen } from './screens/more.js';
+import { AccountScreen, AdminScreen, FeedbackScreen, HowToScreen, HuntersScreen, MoreMenu, ProfileScreen, SettingsScreen, TravelScreen, WhatsNewScreen } from './screens/more.js';
 import { EmporiumScreen, WorkshopScreen } from './screens/shop.js';
 
 export function App() {
@@ -53,6 +53,8 @@ function Playing({ content, me, onLogout }: { content: Content; me: MeResponse; 
   const [welcome, setWelcome] = useState(me.player.welcomeSeen === false);
   // Start over gives a new game, and a new game opens with the welcome popup.
   useEffect(() => { if (player.welcomeSeen === false) setWelcome(true); }, [player.welcomeSeen]);
+  const latest = content.releases[0]?.version;
+  const [notes, setNotes] = useState(!!latest && me.player.releaseSeen !== latest && me.player.welcomeSeen !== false);
   const lastHuntAt = useRef(0);
 
   const celebrate = useCallback((ids: string[], backfill = false) => {
@@ -144,7 +146,14 @@ function Playing({ content, me, onLogout }: { content: Content; me: MeResponse; 
           if (letter) setTimeout(() => document.querySelector('.story-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
         }} />
       )}
-      {!welcome && newCatch && (newCatch.quiet
+      {!welcome && notes && (
+        <ReleasePopup onClose={(all) => {
+          setNotes(false);
+          api<{ player: PlayerState }>('POST', '/api/release-seen', {}).then((r) => setPlayer(r.player)).catch(() => {});
+          if (all) go('more/whatsnew');
+        }} />
+      )}
+      {!welcome && !notes && newCatch && (newCatch.quiet
         ? <NewCatchToast found={newCatch} onClose={() => setNewCatch(null)} />
         : <NewCatchPopup found={newCatch} onClose={() => setNewCatch(null)} />)}
       {/* Old saves get one Welcome back popup; every other badge is a non-blocking banner. */}
@@ -170,7 +179,7 @@ function Router() {
     case 'arsenal': return <ArsenalScreen slot={(['trap', 'base', 'bait', 'charm'].includes(a ?? '') ? a : 'trap') as 'trap'} previewId={b} />;
     case 'item': return <ItemScreen id={a ?? ''} />;
     case 'emporium': return <EmporiumScreen tab={(['traps', 'bases', 'bait', 'charms', 'sell'].includes(a ?? '') ? a : 'traps') as 'traps'} />;
-    case 'workshop': return <WorkshopScreen />;
+    case 'workshop': return <WorkshopScreen focus={a} />;
     case 'more':
       switch (a) {
         case 'travel': return <TravelScreen />;
@@ -181,6 +190,7 @@ function Router() {
         case 'settings': return <SettingsScreen />;
         case 'admin': return <AdminScreen />;
         case 'feedback': return <FeedbackScreen />;
+        case 'whatsnew': return <WhatsNewScreen />;
         case 'account': return <AccountScreen />;
         default: return <MoreMenu />;
       }

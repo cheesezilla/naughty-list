@@ -8,7 +8,7 @@ import { setPref, usePrefs } from '../lib/prefs.js';
 import { go } from '../lib/route.js';
 import { BackRow, Loading, MainScreen, RankProgress, Tabs, Toggle, useAsync } from '../ui.js';
 import { ImpThumb, StoryCard } from './log.js';
-import { AchievementsTab } from './achievements.js';
+import { AchievementsTab, ReleaseNotes } from './achievements.js';
 import { BadgeMedal, TypeMedal } from '../lib/medal.js';
 
 export function MoreMenu() {
@@ -29,6 +29,7 @@ export function MoreMenu() {
           {item('menu_travel', 'Travel map', `${content.locations.length} lair locations, ${player.unlocked.length} unlocked`, 'more/travel')}
           {item('menu_hunters', 'Hunters', 'Leaderboard and catch feed', 'more/hunters')}
           {item('menu_stats', 'My profile', `${num(player.stats.hunts)} hunts, ${Object.keys(player.achievements ?? {}).length} of ${content.achievements.length} badges`, 'more/profile')}
+          {item('menu_settings', "What's new", content.releases[0] ? `Release notes, version ${content.releases[0].version}` : 'Release notes', 'more/whatsnew')}
           {item('menu_howto', 'How to play', 'Power, luck, bait and traps', 'more/howto')}
           {item('menu_settings', 'Settings', 'Sound, clock and shortcuts', 'more/settings')}
           {item('menu_settings', 'Feedback', 'Tell us what to fix or add', 'more/feedback')}
@@ -283,6 +284,24 @@ const HOWTO: { id: string; title: string; text: string }[] = [
   { id: 'pillage', title: 'Pillage', text: 'An elf that escapes may pillage you, taking gold, bait or points. Bosses do it most and take the most; ordinary elves only rarely. A pillage never takes your gold below 100 or costs you a rank.' },
   { id: 'ranks', title: 'Ranks', text: 'Catches earn points. New ranks open new rooms of the lair and new gear in the Elf Emporium.' },
 ];
+export function WhatsNewScreen() {
+  const { content } = useGame();
+  return (
+    <MainScreen tab="more">
+      <BackRow to="more" title="What's new" sub="Release notes, newest first" />
+      <div class="pad stack">
+        {content.releases.map((r) => (
+          <div class="card" key={r.version}>
+            <div class="popup-kicker">Version {r.version} · {r.date}</div>
+            <h2>{r.title}</h2>
+            <ReleaseNotes release={r} />
+          </div>
+        ))}
+      </div>
+    </MainScreen>
+  );
+}
+
 export function HowToScreen() {
   return (
     <MainScreen tab="more">
@@ -374,6 +393,16 @@ function SpeedRun() {
         <div class="admin-row">
           <span><b>Unlock all elf portraits</b><small>Gives every elf 1 catch on your list; badges and boss keys are granted quietly. Start over resets it</small></span>
           <button class="chip" onClick={() => run({ action: 'portraits' }, 'Every elf is on your Naughty List.')}>Unlock</button>
+        </div>
+        <div class="admin-row">
+          <span><b>Fill the Cheer Meter</b><small>Sets it to 15 and holds the charge</small></span>
+          <button class="chip" onClick={() => run({ action: 'cheer' }, 'Cheer Meter filled.')}>Fill</button>
+        </div>
+        <div class="admin-row">
+          <span><b>Trigger an event</b><small>Replaces any open card or challenge</small></span>
+          <span class="chips">
+            {(['boon', 'grand'] as const).map((k) => <button class="chip" onClick={() => run({ action: 'event', kind: k }, `Event: ${k}.`)}>{k}</button>)}
+          </span>
         </div>
         <div class="admin-row">
           <span><b>Stock up</b><small>Tops up every bait and charm to 200, every material to 50</small></span>

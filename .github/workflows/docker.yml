@@ -10,6 +10,8 @@ permissions:
 jobs:
   image:
     runs-on: ubuntu-latest
+    outputs:
+      release: ${{ steps.tags.outputs.release }}
     steps:
       - uses: actions/checkout@v4
       - uses: docker/setup-buildx-action@v3
@@ -19,6 +21,31 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      # Merging integration into main publishes :latest. If package.json holds a version that has no git tag yet,
+      # this push is that release: it also publishes :X.Y.Z and :X.Y, and the release job below tags it.
+      - name: Work out image tags
+        id: tags
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          repo=ghcr.io/${{ github.repository }}
+          version=${{ github.sha }}
+          list="$repo:${{ github.sha }}"
+          if [ "${{ github.ref_name }}" = integration ]; then
+            list="$list,$repo:integration"
+          else
+            list="$list,$repo:latest"
+            if [ "${{ github.event_name }}" = push ] && [ "${{ github.ref_name }}" = main ]; then
+              v=$(node -p "require('./package.json').version")
+              if ! gh api "repos/${{ github.repository }}/git/ref/tags/v$v" >/dev/null 2>&1; then
+                list="$list,$repo:$v,$repo:${v%.*}"
+                version=$v
+                echo "release=$v" >> "$GITHUB_OUTPUT"
+              fi
+            fi
+          fi
+          echo "list=$list" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
       # Pull requests build and smoke-test the image; pushes to main publish :latest, pushes to integration publish :integration.
       - uses: docker/build-push-action@v6
         with:
@@ -26,10 +53,8 @@ jobs:
           platforms: linux/amd64
           push: ${{ github.event_name != 'pull_request' }}
           load: ${{ github.event_name == 'pull_request' }}
-          build-args: APP_VERSION=${{ github.sha }}
-          tags: |
-            ghcr.io/${{ github.repository }}:${{ github.ref_name == 'integration' && 'integration' || 'latest' }}
-            ghcr.io/${{ github.repository }}:${{ github.sha }}
+          build-args: APP_VERSION=${{ steps.tags.outputs.version }}
+          tags: ${{ steps.tags.outputs.list }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Smoke test (root-owned save folder, like a fresh NAS share)
@@ -62,3 +87,20 @@ jobs:
       - name: Container log
         if: failure() && github.event_name == 'pull_request'
         run: docker logs nl || true
+  # A new version on main gets its git tag and GitHub Release, with that version's CHANGELOG.md section as the notes.
+  release:
+    if: needs.image.outputs.release != ''
+    needs: image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create the tag and GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.image.outputs.release }}
+        run: |
+          awk -v v="$VERSION" '$0 ~ "^## \\[" v "\\]" {on=1; next} /^## \[|^\[[^]]*\]: / {on=0} on' CHANGELOG.md > notes.md
+          [ -s notes.md ] || { echo "No CHANGELOG.md section for $VERSION"; exit 1; }
+          gh release create "v$VERSION" --target "${{ github.sha }}" --title "The Naughty List $VERSION" --notes-file notes.md

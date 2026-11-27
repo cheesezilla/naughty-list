@@ -17,6 +17,7 @@
   "maxHuntsPerSecond": 2,
   "pillage": {
     "goldFloor": 100,
+    "baitSave": { "bought": 0.5, "crafted": 0.85 },
     "tiers": {
       "common": { "chance": 0.03, "takes": ["gold", "bait"], "kinds": 1, "goldCap": 1, "bait": [1, 1] },
       "uncommon": { "chance": 0.05, "takes": ["gold", "bait"], "kinds": 1, "goldCap": 1.5, "bait": [1, 2] },
@@ -24,6 +25,20 @@
       "miniboss": { "chance": 0.35, "takes": ["gold", "bait", "points"], "kinds": 2, "goldPct": 0.05, "goldCap": 10, "bait": [2, 3], "pointsPct": 0.01, "pointsCap": 2 },
       "boss": { "chance": 0.6, "takes": ["gold", "bait", "points"], "kinds": 3, "goldPct": 0.08, "goldCap": 15, "bait": [3, 5], "pointsPct": 0.02, "pointsCap": 3 }
     }
+  },
+  "cheer": {
+    "enabled": true, "full": 10, "max": 15, "catchPips": 1, "bigCatchPips": 2, "escapePips": 3, "heldEscapePips": 5, "orderPips": 1, "blessingCopies": 2,
+    "pity": { "rare": 3, "legendary": 8 },
+    "tiers": [
+      { "from": 0, "name": "Full", "cards": 3, "rerolls": 0, "weights": { "common": 70, "rare": 25, "legendary": 5 } },
+      { "from": 11, "name": "Warm", "cards": 3, "rerolls": 0, "weights": { "common": 55, "rare": 35, "legendary": 10 } },
+      { "from": 13, "name": "Hot", "cards": 3, "rerolls": 0, "weights": { "common": 40, "rare": 42, "legendary": 18 } },
+      { "from": 15, "name": "Blazing", "cards": 2, "rerolls": 1, "picks": 1, "perks": ["second_pick", "long", "blessing"], "weights": { "common": 0, "rare": 55, "legendary": 45 } }
+    ]
+  },
+  "events": {
+    "enabled": true, "chancePerHunt": 0.015, "minHunts": 30, "minGap": 20,
+    "grandBase": 0.1, "grandPerBoon": 0.05
   },
   "stamina": { "enabled": false, "name": "Cocoa", "max": 100, "costPerHunt": 1, "refillPerMinute": 1, "buyPrice": 5 }
 }

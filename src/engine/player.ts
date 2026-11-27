@@ -1,6 +1,8 @@
 import type { Content } from '../content/schema.js';
 import { gameData, itemOfKind, priceOf, sellValue } from './data.js';
 import type { ObjectiveState } from './objectives.js';
+import type { CheerState } from './cheer.js';
+import type { EventsState } from './events.js';
 
 export interface Setup {
   trap: string;
@@ -35,8 +37,14 @@ export interface PlayerState {
   tally?: Record<string, number>;
   /** False until the player closes the welcome popup of a new game. Missing (seen) in older saves. */
   welcomeSeen?: boolean;
+  /** Version of the release notes the player has been shown. Missing in older saves, so they see the current notes once. */
+  releaseSeen?: string;
   /** Boss keys found (location key ids). Missing in saves from before keys; the server fills it in on load. */
   keys?: string[];
+  /** The Cheer Meter and its boons. Created on the first hunt; missing in older saves. */
+  cheer?: CheerState;
+  /** Random events: Santa's favour, the open boon card, and event buffs. Missing in older saves. */
+  events?: EventsState;
   /** Admin speed-run settings. Only honoured for admin accounts, and only the admin endpoint sets it. */
   speedRun?: { reward: number; odds: boolean };
 }
@@ -65,6 +73,8 @@ export function newPlayer(content: Content, now = 0): PlayerState {
     achievements: {},
     tally: {},
     welcomeSeen: false,
+    // A new game opens with the welcome popup instead of the release notes.
+    releaseSeen: content.releases[0]?.version,
   };
 }
 

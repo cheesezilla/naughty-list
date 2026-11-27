@@ -1,0 +1,31 @@
+{
+  "boons": [
+    { "id": "cookie_tin", "name": "Mrs. Claus's Cookie Tin", "from": "mrs_claus",
+      "a": { "label": "Gold (8 H)", "effects": [{ "type": "gold", "h": 8 }] },
+      "b": { "label": "5 of the best bait you can use", "effects": [{ "type": "bait", "amount": 5 }] } },
+    { "id": "gift_sack", "name": "Santa's Gift Sack", "from": "santa",
+      "a": { "label": "A random charm", "effects": [{ "type": "charm", "amount": 1 }] },
+      "b": { "label": "Gold (4 H) and 2 bait", "effects": [{ "type": "gold", "h": 4 }, { "type": "bait", "amount": 2 }] } },
+    { "id": "warm_mittens", "name": "Mrs. Claus's Warm Mittens", "from": "mrs_claus",
+      "a": { "label": "+10% power for 10 hunts", "effects": [{ "type": "buff", "stat": "powerMult", "value": 1.1, "hunts": 10, "label": "Warm Mittens: +10% power" }] },
+      "b": { "label": "Luck x1.1 for 10 hunts", "effects": [{ "type": "buff", "stat": "luckMult", "value": 1.1, "hunts": 10, "label": "Warm Mittens: luck x1.1" }] } },
+    { "id": "naughty_check", "name": "Santa's Naughty Check", "from": "santa",
+      "a": { "label": "Allure x1.5 for 5 hunts", "effects": [{ "type": "buff", "stat": "allureMult", "value": 1.5, "hunts": 5, "label": "Naughty Check: Allure x1.5" }] },
+      "b": { "label": "Gold (3 H)", "effects": [{ "type": "gold", "h": 3 }] } },
+    { "id": "cocoa_break", "name": "Mrs. Claus's Cocoa Break", "from": "mrs_claus",
+      "a": { "label": "+4 luck for 30 hunts (three Cocoa Flasks)", "effects": [{ "type": "buff", "stat": "luckAdd", "value": 4, "hunts": 30, "label": "Cocoa Flasks: +4 luck" }] },
+      "b": { "label": "Your next escape pillages nothing", "effects": [{ "type": "buff", "stat": "noPillage", "value": 1, "uses": 1, "label": "Hunt shield: next escape is safe" }] } }
+  ],
+  "grandGifts": [
+    { "id": "sleigh_delivery", "name": "Santa's Sleigh Delivery", "from": "santa", "text": "A sleigh lands with a sack of gold and bait.",
+      "effects": [{ "type": "gold", "h": 40 }, { "type": "bait", "amount": 10 }] },
+    { "id": "heirloom_charm", "name": "Mrs. Claus's Heirloom Charm", "from": "mrs_claus", "text": "A family charm that strengthens every trap.",
+      "effects": [{ "type": "buff", "stat": "powerMult", "value": 1.25, "hunts": 25, "label": "Heirloom Charm: +25% power" }] },
+    { "id": "golden_ticket", "name": "Santa's Golden Ticket", "from": "santa", "text": "The next 5 catches pay triple gold and points.",
+      "effects": [{ "type": "buff", "stat": "goldPointsMult", "value": 3, "uses": 5, "label": "Golden Ticket: next 5 catches pay x3" }] },
+    { "id": "winter_wonder", "name": "Winter Wonder", "from": "mrs_claus", "text": "The lair glitters and rare elves come out to look.",
+      "effects": [{ "type": "buff", "stat": "allureMult", "value": 3, "hunts": 15, "label": "Winter Wonder: Allure x3" }] },
+    { "id": "snow_globe", "name": "Sparkling Snow Globe", "from": "santa", "text": "The next mini boss or boss you meet cannot pillage and is easier to catch.",
+      "effects": [{ "type": "buff", "stat": "bossShield", "value": 0.2, "uses": 1, "label": "Snow Globe: next boss cannot pillage, +20% catch" }] }
+  ]
+}

@@ -10,6 +10,7 @@ import { PowerBar, useExactOdds, useRateText } from '../lib/effectiveness.js';
 import { LogRow } from './log.js';
 import { HintSheet, ObjectivePanel } from './objective.js';
 import { TypeMedal } from '../lib/medal.js';
+import { BoonCard, CheerCard } from './cheer.js';
 import { TYPE_NAME } from '../lib/format.js';
 
 /** Catch chance once an imp is attracted, averaged over the imps this bait draws. */
@@ -62,20 +63,10 @@ export function HuntScreen() {
   const base = data.items.get(player.setup.base)!;
   const bait = player.setup.bait ? data.items.get(player.setup.bait) : undefined;
   const charm = player.setup.charm ? data.items.get(player.setup.charm) : undefined;
+  // Rows present when the screen opens don't animate; rows that arrive afterwards slide in.
+  const seen = useRef<Set<number> | null>(null);
+  if (!seen.current && (log.length > 0 || player.stats.hunts === 0)) seen.current = new Set(log.map((r) => r.id));
   const huntsShown = useMemo(() => log.filter((r) => r.kind === 'hunt').length, [log]);
-  const scroller = useRef<HTMLDivElement>(null);
-  const logTop = useRef<HTMLDivElement>(null);
-
-  /** Scrolls so the Hunt log heading sits at the top of the scrolling area, then hunts. */
-  const huntAndScroll = () => {
-    const box = scroller.current, head = logTop.current;
-    if (box && head) {
-      const top = box.scrollTop + head.getBoundingClientRect().top - box.getBoundingClientRect().top;
-      const calm = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-      box.scrollTo({ top, behavior: calm ? 'auto' : 'smooth' });
-    }
-    return hunt();
-  };
 
   useEffect(() => {
     if (!prefs.spaceHunts) return;
@@ -83,7 +74,7 @@ export function HuntScreen() {
       if (sheet || hint || e.repeat) return;
       const t = e.target as HTMLElement;
       if (t instanceof HTMLInputElement || t instanceof HTMLSelectElement || t instanceof HTMLTextAreaElement) return;
-      if (e.code === 'Space') { e.preventDefault(); huntAndScroll(); }
+      if (e.code === 'Space') { e.preventDefault(); hunt(); }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -92,7 +83,7 @@ export function HuntScreen() {
   return (
     <div class="screen">
       <TopHeader />
-      <div class="scroll hunt-scroll" ref={scroller}>
+      <div class="scroll hunt-scroll">
         <div class="banner">
           <Art slot="locations" id={location.id} class="banner-art" />
           {location.homeTypes.length > 0 && (
@@ -142,12 +133,14 @@ export function HuntScreen() {
           </div>
 
           <ObjectivePanel location={location} onHint={() => setHint(true)} />
+          <BoonCard />
+          <CheerCard />
 
-          <div class="section-head" ref={logTop}><h2>Hunt log</h2><span>newest first</span></div>
+          <div class="section-head"><h2>Hunt log</h2><span>newest first</span></div>
           <div class="log">
             {log.length === 0 && <p class="muted center-pad">No hunts yet. Press Hunt to set your first trap!</p>}
             {player.stats.hunts === 0 && log.length > 0 && <p class="muted center-pad">No hunts yet. Read Santa's letter, then press Hunt to set your first trap!</p>}
-            {log.map((row) => <LogRow row={row} />)}
+            {log.map((row) => <div key={row.id} class={seen.current && !seen.current.has(row.id) ? 'log-new' : undefined}><LogRow row={row} /></div>)}
           </div>
           {player.stats.hunts > 0 && (
             <div class="log-end">
@@ -156,7 +149,7 @@ export function HuntScreen() {
             </div>
           )}
           <div class="hunt-dock">
-            <button class="hunt-btn" disabled={busy} onClick={huntAndScroll}>Hunt</button>
+            <button class="hunt-btn" disabled={busy} onClick={() => hunt()}>Hunt</button>
             {prefs.spaceHunts && <p class="hint desktop-only">or press Space</p>}
           </div>
         </div>

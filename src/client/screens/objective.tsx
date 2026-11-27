@@ -1,5 +1,6 @@
 import type { Location, Objective } from '../../content/schema.js';
 import { count, type ObjectiveState } from '../../engine/index.js';
+import { useState } from 'preact/hooks';
 import { useGame } from '../game.js';
 import { Art } from '../lib/art.js';
 import { num, TYPE_NAME } from '../lib/format.js';
@@ -48,12 +49,14 @@ type Orders = Extract<Objective, { type: 'order_board' }>;
 type Sleigh = Extract<Objective, { type: 'sleigh_run' }>;
 
 function LadderPanel({ o, location }: { o: Ladder; location: Location }) {
-  const { data, player } = useGame();
+  const { data, player, act } = useGame();
   const armed = Math.max(0, o.tiers.findIndex((t) => player.setup.bait && t.baits.includes(player.setup.bait)));
+  // The player browses tiers freely; equipping a bait doesn't move the view.
+  const [picked, setPicked] = useState<number | null>(null);
+  const sel = Math.min(picked ?? armed, o.tiers.length - 1);
+  const tier = o.tiers[sel]!;
   const owned = (t: Ladder['tiers'][number]) => t.baits.reduce((n, b) => n + count(player, b), 0);
-  // The next recipe to show: the first tier above the armed one, or the top tier's.
-  const next = o.tiers.find((t, i) => i > armed && t.recipe) ?? o.tiers.findLast((t) => t.recipe);
-  const recipe = next?.recipe ? data.recipes.get(next.recipe) : undefined;
+  const recipe = tier.recipe ? data.recipes.get(tier.recipe) : undefined;
   const boss = location.imps.find((i) => i.id === o.boss);
   const top = o.tiers.at(-1)!;
   return (
@@ -61,25 +64,45 @@ function LadderPanel({ o, location }: { o: Ladder; location: Location }) {
       <h3><Art slot="baits" id="ribbon_candy" class="panel-icon" alt="" />Bait Ladder <small>Tier {armed + 1} armed</small></h3>
       <ol class="ladder">
         {o.tiers.map((t, i) => (
-          <li class={i === armed ? 'armed' : ''}>
-            <b>{i + 1}. {t.name}</b>
-            <span>owned {num(owned(t))}</span>
+          <li class={`${i === armed ? 'armed' : ''} ${i === sel ? 'picked' : ''}`}>
+            <button type="button" class="ladder-tab" aria-pressed={i === sel} onClick={() => setPicked(i)}>
+              <b>{i + 1}. {t.name}</b>
+              <span>owned {num(owned(t))}</span>
+            </button>
           </li>
         ))}
       </ol>
-      {recipe && (
-        <div class="ladder-next">
-          <p>
-            Next: <b>{data.items.get(recipe.output.item)?.name}</b>
-            <br />
-            {Object.entries(recipe.ingredients).map(([id, need], i) => (
-              <>{i > 0 && ' · '}{data.items.get(id)?.name} <span class={count(player, id) >= need ? 'ok' : 'no'}>{num(count(player, id))}/{need}</span></>
-            ))}
-          </p>
-          <button class="small-btn" onClick={() => go('workshop')}>Make</button>
+      <div class="ladder-next">
+        <div>
+          {recipe && (
+            <p>
+              <b>{data.items.get(recipe.output.item)?.name}</b>
+              <br />
+              {Object.entries(recipe.ingredients).map(([id, need], i) => (
+                <>{i > 0 && ' · '}{data.items.get(id)?.name} <span class={count(player, id) >= need ? 'ok' : 'no'}>{num(count(player, id))}/{need}</span></>
+              ))}
+            </p>
+          )}
+          {tier.baits.map((id) => {
+            const have = count(player, id);
+            const on = player.setup.bait === id;
+            const name = data.items.get(id)?.name ?? id;
+            return (
+              <p class="ladder-bait">
+                {tier.baits.length > 1 || !recipe ? <b>{name}</b> : null} <span class="muted">owned {num(have)}</span>{' '}
+                <button class="small-btn" disabled={on || have < 1} onClick={() => act('/api/setup', { slot: 'bait', item: id }, `Equipped ${name}.`)}>{on ? 'Equipped' : 'Equip'}</button>
+              </p>
+            );
+          })}
         </div>
-      )}
+        {tier.recipe && <button class="small-btn" onClick={() => go(`workshop/${tier.recipe}`)}>Craft</button>}
+      </div>
       <p class="panel-line">{boss?.name} only comes for {top.name}s.</p>
+      {boss && (
+        <p class="panel-line">
+          <b>Prepare before the faceoff:</b> {boss.name} is weak only to the Carol power type, and Clockwork traps do half damage. Bring a Carol trap. The elves in the Workshop say they can make a Carol Horn from a bundle of bent reeds and a torn songsheet. Listen for singing drifting down from somewhere above.
+        </p>
+      )}
     </>
   );
 }
@@ -89,35 +112,40 @@ function OrderPanel({ o, s, location }: { o: Orders; s?: Extract<ObjectiveState,
   const trap = data.items.get(player.setup.trap);
   const trapType = trap?.kind === 'trap' ? trap.type : null;
   const name = (id: string) => location.imps.find((i) => i.id === id)?.name ?? id;
-  if (!s) {
+  if (!s || !s.progress) {
     return (
       <>
         <h3><Art slot="materials" id="toymakers_gear" class="panel-icon" alt="" />Order Board</h3>
-        <p class="panel-line">The elves pin your first toy order to the board when you hunt here.</p>
+        <p class="panel-line">The elves pin three toy orders to the board when you hunt here: one each for Clockwork, Starlight and Frost.</p>
       </>
     );
   }
-  const needed = s.slots[s.filled];
   const untilInspection = o.inspectionEvery - (s.ordersDone % o.inspectionEvery);
+  const rush = s.rushLeft > 0;
+  const types = ['clockwork', 'starlight', 'frost'] as const;
   return (
     <>
-      <h3><Art slot="materials" id="toymakers_gear" class="panel-icon" alt="" />{s.rush ? 'Rush order' : 'Order Board'} <small>{s.rush ? `${s.slots.length} parts` : `Order ${(s.ordersDone % o.inspectionEvery) + 1} of ${o.inspectionEvery}`}</small></h3>
-      <ol class="order-slots">
-        {s.slots.map((t, i) => (
-          <li class={i < s.filled ? 'done' : i === s.filled ? 'next' : ''}>
-            <TypeMedal type={t} size={30} />
-            <b>{TYPE_NAME[t]}</b>
-            <span>{i < s.filled ? 'filled' : i === s.filled ? 'next' : 'to do'}</span>
-          </li>
-        ))}
-      </ol>
+      <h3><Art slot="materials" id="toymakers_gear" class="panel-icon" alt="" />{rush ? 'Rush order' : 'Order Board'} <small>{rush ? `${s.rushLeft} of ${o.rushSlots} parts to go` : `${o.slots} catches each`}</small></h3>
+      {rush
+        ? <p class="panel-line">Any catch counts toward the Rush order. The three standing orders wait.</p>
+        : (
+          <ol class="order-slots">
+            {types.map((t) => (
+              <li class={`${s.progress[t] > 0 ? 'next' : ''} ${t === trapType ? 'armed' : ''}`}>
+                <TypeMedal type={t} size={30} />
+                <b>{TYPE_NAME[t]}</b>
+                <span>{s.progress[t]} of {o.slots}{t === trapType ? ' · armed' : ''}{s.finished.includes(t) ? ' · done' : ''}</span>
+              </li>
+            ))}
+          </ol>
+        )}
       {s.forced
         ? <p class="panel-line strong">{name(s.forced)} is coming! The next elf you attract here is them.</p>
-        : needed && <p class="panel-line">Next part needs <b>{TYPE_NAME[needed]}</b>. Your trap: {trap?.name} ({trapType ? TYPE_NAME[trapType] : 'none'}) <span class={trapType === needed ? 'ok' : 'no'}>{trapType === needed ? 'matches' : "doesn't match"}</span></p>}
-      {!s.rush && !s.forced && <p class="panel-line">{untilInspection === 1 ? `${name(o.miniboss)} inspects after this order.` : `${name(o.miniboss)} inspects in ${untilInspection} orders.`} Each order pays {num(o.crateGold)} gold and a bonus.</p>}
-      {s.rushReady && !s.rush && (
+        : !rush && <p class="panel-line">Every catch fills the order for your trap's type ({trap?.name}: {trapType ? TYPE_NAME[trapType] : 'none'}; Carol traps fill whichever order is furthest along). Finish all three types for a Triple Crate (+{num(o.tripleGold)} gold and every crate bonus).</p>}
+      {!rush && !s.forced && <p class="panel-line">{untilInspection === 1 ? `${name(o.miniboss)} inspects after the next finished order.` : `${name(o.miniboss)} inspects in ${untilInspection} orders.`} Each order pays {num(o.crateGold)} gold and a bonus.</p>}
+      {s.rushReady && !rush && (
         <button class="primary-btn wide" onClick={() => act('/api/objective', { action: 'rush_order' }, `Rush order pinned: ${o.rushSlots} parts. Finish it to bring ${name(o.boss)}.`)}>
-          Take a Rush order ({o.rushSlots} parts, brings {name(o.boss)})
+          Take a Rush order ({o.rushSlots} catches with any trap, brings {name(o.boss)})
         </button>
       )}
     </>

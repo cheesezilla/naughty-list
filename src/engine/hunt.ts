@@ -4,6 +4,9 @@ import { allureFactor, catchChance, effectiveness, impWeights, luckFactor, setup
 import { addItem, bump, count, rankFor, type PlayerState } from './player.js';
 import { pickWeighted, type Rng } from './rng.js';
 import { afterHunt, objectiveState, objectiveWeights, type ObjectiveResult } from './objectives.js';
+import { modsOf } from './mods.js';
+import { cheerAddPips, cheerAfterHunt, tickBoons, type CheerNote } from './cheer.js';
+import { eventsAfterHunt, tickBuffs, useBuff, type EventNote } from './events.js';
 
 export interface JournalEntry {
   outcome: 'quiet' | 'catch' | 'escape';
@@ -14,6 +17,8 @@ export interface JournalEntry {
   points: number;
   loot: { item: string; amount: number }[];
   baitUsed: number;
+  /** The armed bait and how many are left after this hunt. Missing on old entries. */
+  baitLeft?: { item: string; amount: number };
   charmUsed: boolean;
   rankUp?: number;
   rescued?: boolean;
@@ -25,6 +30,14 @@ export interface JournalEntry {
   pillage?: Pillage;
   /** What the hunt did to the location's own loop (order board, sleigh run). */
   objective?: ObjectiveResult;
+  /** What the Cheer Meter did on this hunt. Missing when the meter is off or the save is from before it. */
+  cheer?: CheerNote;
+  /** Events this hunt set off or ended: boon cards and Grand Gifts. */
+  events?: EventNote[];
+  /** A Mulligan boon turned an escape into a catch. */
+  mulligan?: boolean;
+  /** Boons and event buffs that changed this hunt, by label. */
+  boosted?: string[];
 }
 
 /** What an escaped imp took. `safe` lists kinds it went for that a safety rail stopped. */
@@ -33,6 +46,8 @@ export interface Pillage {
   points: number;
   bait?: { item: string; amount: number };
   safe?: PillageKind[];
+  /** The thief went for bait but fumbled it and came away empty-handed (the player still had bait). */
+  fumbled?: boolean;
 }
 
 export type HuntResult =
@@ -85,7 +100,9 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0, b
   }
 
   p.stats.hunts += 1;
-  const stats = setupStats(content, p.setup, location);
+  const mods = modsOf(content, p);
+  const baseStats = setupStats(content, p.setup, location, mods.attractionBonus);
+  const stats = { ...baseStats, power: baseStats.power * mods.powerMult, luck: (baseStats.luck + mods.luckAdd) * mods.luckMult };
   const entry: JournalEntry = { outcome: 'quiet', location: location.id, gold: 0, points: 0, loot: [], baitUsed: 0, charmUsed: false };
   if (rescued) entry.rescued = true;
 
@@ -106,28 +123,41 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0, b
   };
 
   p.stats.attracted += 1;
-  const idx = pickWeighted(objectiveWeights(p, location, impWeights(data, location, p.setup.bait, boost?.odds ? 1 : allureFactor(c, stats.attraction))), rng);
-  const imp = location.imps[Math.max(0, idx)]!;
+  const idx = pickWeighted(objectiveWeights(p, location, impWeights(data, location, p.setup.bait, boost?.odds ? 1 : allureFactor(c, stats.attraction) * mods.allureMult)), rng);
+  // Boss Bell: this hunt meets the area's boss, or its strongest mini boss.
+  const bellImp = mods.bossBell
+    ? location.imps.find((i) => i.tier === 'boss') ?? location.imps.filter((i) => i.tier === 'miniboss').sort((a, b) => b.power - a.power)[0]
+    : undefined;
+  const imp = bellImp ?? location.imps[Math.max(0, idx)]!;
+  const isBoss = imp.tier === 'miniboss' || imp.tier === 'boss';
   entry.imp = imp.id;
   if (location.objective?.type === 'bait_ladder' && imp.id === location.objective.boss) bump(p, 'ladderBoss');
   p.seen = { ...(p.seen ?? {}), [imp.id]: (p.seen?.[imp.id] ?? 0) + 1 };
 
   const bait = p.setup.bait!;
-  addItem(p, bait, -1);
-  entry.baitUsed = 1;
+  const baitTaken = mods.freeBait ? 0 : Math.min(mods.baitCost, count(p, bait));
+  addItem(p, bait, -baitTaken);
+  entry.baitUsed = baitTaken;
   if (p.setup.charm && count(p, p.setup.charm) > 0 && itemOfKind(data, p.setup.charm, 'charm')) {
     addItem(p, p.setup.charm, -1);
     entry.charmUsed = true;
     if (count(p, p.setup.charm) < 1) p.setup.charm = null;
   }
 
-  const chance = boost?.odds ? (effectiveness(imp, stats.type) > 0 ? 1 : 0) : catchChance(stats, imp, c.catchCap, luckFactor(c, imp));
+  let chance = boost?.odds ? (effectiveness(imp, stats.type) > 0 ? 1 : 0) : catchChance(stats, imp, c.catchCap, luckFactor(c, imp));
+  const shielded = isBoss && mods.bossShield > 0;
+  if (shielded && chance > 0) chance = Math.min(c.catchCap, chance + mods.bossShield);
   const mult = boost?.reward ?? 1;
   entry.catchChance = chance;
-  if (rng() < chance) {
+  let won = rng() < chance;
+  // Mulligan: an escape is rolled again once.
+  if (!won && mods.mulligan) { won = rng() < chance; if (won) entry.mulligan = true; }
+  if (won) {
     entry.outcome = 'catch';
-    entry.gold = imp.gold * mult;
-    entry.points = imp.points * mult;
+    const ticket = mods.ticket > 1;
+    entry.gold = Math.round(imp.gold * mult * mods.goldMult * mods.ticket);
+    entry.points = Math.round(imp.points * mult * mods.pointsMult * mods.ticket);
+    if (ticket) useBuff(p, 'goldPointsMult');
     p.gold += entry.gold;
     p.points += entry.points;
     p.stats.caught += 1;
@@ -144,10 +174,17 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0, b
     }
     for (const l of imp.loot ?? []) {
       if (boost?.odds || rng() < l.chance) {
-        const amount = l.amount ?? 1;
+        const amount = (l.amount ?? 1) * mods.lootMult;
         addItem(p, l.item, amount);
         entry.loot.push({ item: l.item, amount });
       }
+    }
+    // Full Sack: every catch drops at least one material.
+    if (mods.minLoot > 0 && entry.loot.length === 0 && imp.loot?.length) {
+      const l = imp.loot[Math.floor(rng() * imp.loot.length)]!;
+      const amount = mods.minLoot * mods.lootMult;
+      addItem(p, l.item, amount);
+      entry.loot.push({ item: l.item, amount });
     }
     track(imp, true);
     const newRank = rankFor(content, p.points);
@@ -158,10 +195,32 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0, b
   } else {
     entry.outcome = 'escape';
     streak('Escape');
-    const pillage = rollPillage(content, p, imp, bait, rng);
-    if (pillage) entry.pillage = pillage;
+    // Cosy Mittens, a hunt shield and a Snow Globe (on a mini boss or boss) each stop the pillage.
+    const hunted = mods.noPillage || mods.shield || shielded;
+    if (!hunted) {
+      const pillage = rollPillage(content, p, imp, bait, rng);
+      if (pillage) entry.pillage = pillage;
+    } else if (mods.shield && !mods.noPillage && !shielded) useBuff(p, 'noPillage');
     track(imp, false);
   }
+  if (shielded) useBuff(p, 'bossShield');
+
+  // Cheer Meter and events: after the hunt, boons and buffs count down, then the meter moves and events roll.
+  const caught = entry.outcome === 'catch';
+  const cheer = cheerAfterHunt(content, p, imp, caught, mods);
+  if (cheer) entry.cheer = cheer;
+  if (entry.objective?.orders && content.constants.cheer.enabled) {
+    const extra = cheerAddPips(content, p, content.constants.cheer.orderPips * entry.objective.orders);
+    if (extra > 0) {
+      const c = p.cheer!;
+      entry.cheer = { gained: (cheer?.gained ?? 0) + extra, lost: cheer?.lost ?? 0, pips: c.pips, ...(c.pips >= content.constants.cheer.full ? { full: true } : {}) };
+    }
+  }
+  tickBoons(p);
+  tickBuffs(p);
+  const notes = eventsAfterHunt(content, p, { imp, caught, trapType: stats.type }, rng);
+  if (notes.length) entry.events = notes;
+  if (p.setup.bait) entry.baitLeft = { item: p.setup.bait, amount: count(p, p.setup.bait) };
   return { ok: true, player: p, entry };
 }
 
@@ -200,11 +259,17 @@ export function rollPillage(content: Content, p: PlayerState, imp: Imp, bait: st
     } else {
       const [min, max] = rule.bait ?? [1, 1];
       const want = min + Math.floor(rng() * (max - min + 1));
-      const take = Math.min(want, count(p, bait));
+      // Bait the player crafted is hardest to steal; thieves often come away empty-handed.
+      const crafted = content.recipes.some((r) => r.output.item === bait);
+      const saved = rng() < (crafted ? cfg.baitSave.crafted : cfg.baitSave.bought);
+      const take = saved ? 0 : Math.min(want, count(p, bait));
       if (take > 0) {
         addItem(p, bait, -take);
         out.bait = { item: bait, amount: take };
-      } else safe.push('bait');
+      } else {
+        safe.push('bait');
+        if (saved && count(p, bait) > 0) out.fumbled = true;
+      }
     }
   }
   if (safe.length) out.safe = safe;

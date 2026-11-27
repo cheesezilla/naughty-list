@@ -34,11 +34,14 @@ export function loadContent(dir: string): Content {
   const content = Content.parse({
     constants: read('constants.json'),
     story: existsSync(join(dir, 'story.json')) ? read('story.json') : undefined,
+    releases: existsSync(join(dir, 'releases.json')) ? read('releases.json') : [],
     ranks: read('ranks.json'),
     locations,
     items,
     recipes: read('recipes.json'),
     achievements: existsSync(join(dir, 'achievements.json')) ? read('achievements.json') : [],
+    boons: existsSync(join(dir, 'boons.json')) ? read('boons.json') : [],
+    events: existsSync(join(dir, 'events.json')) ? read('events.json') : undefined,
   });
   problems.push(...checkReferences(content));
   if (problems.length > 0) {

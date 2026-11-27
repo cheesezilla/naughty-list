@@ -396,6 +396,39 @@
       "prompt": "Wind-up Key Charm: a brass wind-up key with a gear at its centre. Single item thumbnail on a transparent background, 512x512, centred, soft ground shadow. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
     },
     {
+      "id": "cheer_bauble",
+      "slot": "charms",
+      "file": "charms/cheer_bauble.svg",
+      "width": 512,
+      "height": 512,
+      "transparent": true,
+      "source": "generated",
+      "description": "Cheer Bauble: a glossy red bauble with a gold band and cap",
+      "prompt": "Cheer Bauble: a glossy red bauble with a gold band and cap. Single item thumbnail on a transparent background, 512x512, centred, soft ground shadow. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
+    },
+    {
+      "id": "tinsel_cheer_charm",
+      "slot": "charms",
+      "file": "charms/tinsel_cheer_charm.svg",
+      "width": 512,
+      "height": 512,
+      "transparent": true,
+      "source": "generated",
+      "description": "Tinsel Cheer Charm: twists of gold and red tinsel",
+      "prompt": "Tinsel Cheer Charm: twists of gold and red tinsel. Single item thumbnail on a transparent background, 512x512, centred, soft ground shadow. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
+    },
+    {
+      "id": "gold_star_cheer_charm",
+      "slot": "charms",
+      "file": "charms/gold_star_cheer_charm.svg",
+      "width": 512,
+      "height": 512,
+      "transparent": true,
+      "source": "generated",
+      "description": "Gold Star Cheer Charm: a shining five-pointed gold star",
+      "prompt": "Gold Star Cheer Charm: a shining five-pointed gold star. Single item thumbnail on a transparent background, 512x512, centred, soft ground shadow. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
+    },
+    {
       "id": "candied_peel",
       "slot": "materials",
       "file": "materials/candied_peel.webp",

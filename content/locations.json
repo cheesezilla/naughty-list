@@ -37,7 +37,7 @@
       { "id": "bow_burglar", "name": "Bow Burglar", "tier": "common", "power": 280, "gold": 70, "points": 100, "weight": 25, "effectiveness": { "starlight": 1.5, "clockwork": 0.5 }, "loot": [{ "item": "candied_peel", "chance": 0.3 }, { "item": "ribbon_candy", "chance": 0.02 }], "pillage": { "chance": 1, "takes": ["bait"], "kinds": 1, "bait": [1, 1] }, "baitWeights": { "ribbon_candy": 13, "golden_bow_bonbon": 8 } },
       { "id": "glitterbug", "name": "Glitterbug", "tier": "rare", "power": 350, "gold": 110, "points": 160, "weight": 0, "effectiveness": { "starlight": 1.5, "clockwork": 0.5 }, "loot": [{ "item": "sugar_glass", "chance": 0.5 }], "baitWeights": { "ribbon_candy": 30, "golden_bow_bonbon": 10 } },
       { "id": "spoolwick", "name": "Spoolwick", "tier": "miniboss", "power": 600, "gold": 160, "points": 300, "weight": 0, "effectiveness": { "starlight": 1.5, "clockwork": 0.5 }, "loot": [{ "item": "golden_ribbon", "chance": 1 }], "baitWeights": { "ribbon_candy": 20, "golden_bow_bonbon": 10 } },
-      { "id": "madame_shredwell", "name": "Madame Shredwell", "tier": "boss", "power": 1100, "gold": 300, "points": 550, "weight": 0, "effectiveness": { "carol": 1.5, "clockwork": 0.5 }, "loot": [{ "item": "enchanted_wrapping", "chance": 1 }, { "item": "jingle_bell_charm", "chance": 0.25, "amount": 5 }], "baitWeights": { "ribbon_candy": 0, "golden_bow_bonbon": 50 } }
+      { "id": "madame_shredwell", "name": "Madame Shredwell", "tier": "boss", "power": 2900, "gold": 300, "points": 550, "weight": 0, "effectiveness": { "carol": 1.5, "clockwork": 0.6, "starlight": 0.6, "frost": 0.6 }, "loot": [{ "item": "enchanted_wrapping", "chance": 1 }, { "item": "jingle_bell_charm", "chance": 0.25, "amount": 5 }], "baitWeights": { "ribbon_candy": 0, "golden_bow_bonbon": 50 } }
     ]
   },
   {
@@ -49,17 +49,17 @@
     "unlockCost": 1500,
     "key": { "id": "cog_key", "name": "Cog Key", "description": "A key cut from a clockwork gear, dropped by General Grimbolt. It opens the Reindeer Stables." },
     "objective": {
-      "type": "order_board", "slots": 3, "rushSlots": 5, "inspectionEvery": 3, "crateGold": 400,
+      "type": "order_board", "slots": 3, "rushSlots": 5, "inspectionEvery": 3, "crateGold": 400, "tripleGold": 800,
       "crateRewards": [{ "item": "peppermint_bark", "amount": 5 }, { "item": "windup_key_charm", "amount": 3 }, { "item": "sugar_glass", "amount": 1 }],
       "miniboss": "hammerhand", "boss": "general_grimbolt"
     },
     "imps": [
-      { "id": "cog_pincher", "name": "Cog Pincher", "tier": "common", "power": 450, "gold": 140, "points": 150, "weight": 36, "effectiveness": { "clockwork": 1.5 } },
-      { "id": "paint_smudger", "name": "Paint Smudger", "tier": "common", "power": 600, "gold": 180, "points": 190, "weight": 30, "effectiveness": { "starlight": 1.5 } },
-      { "id": "stuffing_ripper", "name": "Stuffing Ripper", "tier": "common", "power": 750, "gold": 220, "points": 230, "weight": 25, "effectiveness": { "clockwork": 1.5, "frost": 0.5 } },
+      { "id": "cog_pincher", "name": "Cog Pincher", "tier": "common", "power": 1200, "gold": 140, "points": 150, "weight": 36, "effectiveness": { "clockwork": 1.5 } },
+      { "id": "paint_smudger", "name": "Paint Smudger", "tier": "common", "power": 1500, "gold": 180, "points": 190, "weight": 30, "effectiveness": { "starlight": 1.5 } },
+      { "id": "stuffing_ripper", "name": "Stuffing Ripper", "tier": "common", "power": 1850, "gold": 220, "points": 230, "weight": 25, "effectiveness": { "clockwork": 1.5, "frost": 0.5 } },
       { "id": "windup_elf", "name": "Wind-up Elf", "tier": "rare", "power": 900, "gold": 300, "points": 320, "weight": 5, "effectiveness": { "clockwork": 1.5, "frost": 0 }, "loot": [{ "item": "sugar_glass", "chance": 0.5 }] },
-      { "id": "hammerhand", "name": "Hammerhand", "tier": "miniboss", "power": 1600, "gold": 400, "points": 650, "weight": 0, "effectiveness": { "frost": 1.5 }, "loot": [{ "item": "toymakers_gear", "chance": 1 }] },
-      { "id": "general_grimbolt", "name": "General Grimbolt", "tier": "boss", "power": 2800, "gold": 700, "points": 1300, "weight": 0, "effectiveness": { "clockwork": 1.5, "frost": 0.5 }, "loot": [{ "item": "clockwork_heart", "chance": 1 }] }
+      { "id": "hammerhand", "name": "Hammerhand", "tier": "miniboss", "power": 1600, "gold": 400, "points": 650, "weight": 0, "pillage": { "chance": 0.35, "takes": ["gold", "bait", "points"], "kinds": 2, "goldPct": 0.05, "goldCap": 2, "bait": [2, 3], "pointsPct": 0.01, "pointsCap": 2 }, "effectiveness": { "frost": 1.5 }, "loot": [{ "item": "toymakers_gear", "chance": 1 }] },
+      { "id": "general_grimbolt", "name": "General Grimbolt", "tier": "boss", "power": 2800, "gold": 700, "points": 1300, "weight": 0, "pillage": { "chance": 0.6, "takes": ["gold", "bait", "points"], "kinds": 3, "goldPct": 0.08, "goldCap": 2, "bait": [3, 5], "pointsPct": 0.02, "pointsCap": 3 }, "effectiveness": { "clockwork": 1.5, "frost": 0.5 }, "loot": [{ "item": "clockwork_heart", "chance": 1 }] }
     ]
   },
   {
@@ -75,7 +75,7 @@
       "type": "sleigh_run", "hunts": 40,
       "gain": { "common": 5, "rare": 12, "miniboss": 20 },
       "loss": { "bell_thief": 8, "harness_snipper": 5 },
-      "minibossFrom": 50, "minibossWeight": 6,
+      "bossAfterLaunches": 2, "minibossFrom": 50, "minibossWeight": 6,
       "launchGold": 2000, "launchItems": { "silver_sleighbell": 1 },
       "failGoldPerReadiness": 10,
       "miniboss": "antler_ripper", "boss": "cinderhoof"
@@ -85,8 +85,8 @@
       { "id": "bell_thief", "name": "Bell Thief", "tier": "common", "power": 1300, "gold": 380, "points": 420, "weight": 30, "effectiveness": { "frost": 1.5, "starlight": 0.5 }, "pillage": { "chance": 1, "takes": ["bait"], "kinds": 1, "bait": [1, 1] } },
       { "id": "harness_snipper", "name": "Harness Snipper", "tier": "common", "power": 1600, "gold": 450, "points": 480, "weight": 25, "effectiveness": { "clockwork": 1.5, "starlight": 0.5 } },
       { "id": "carrot_crook", "name": "Carrot Crook", "tier": "rare", "power": 2000, "gold": 600, "points": 650, "weight": 5, "effectiveness": { "frost": 1.5, "starlight": 0.5 }, "loot": [{ "item": "sugar_glass", "chance": 0.5 }] },
-      { "id": "antler_ripper", "name": "Antler Ripper", "tier": "miniboss", "power": 3500, "gold": 800, "points": 1200, "weight": 0, "effectiveness": { "frost": 1.5, "starlight": 0.5 }, "loot": [{ "item": "silver_sleighbell", "chance": 1 }] },
-      { "id": "cinderhoof", "name": "Cinderhoof", "tier": "boss", "power": 6000, "gold": 1500, "points": 3000, "weight": 0, "effectiveness": { "frost": 1.5, "starlight": 0 }, "loot": [{ "item": "brimstone_coal", "chance": 1 }] }
+      { "id": "antler_ripper", "name": "Antler Ripper", "tier": "miniboss", "power": 4100, "gold": 800, "points": 1200, "weight": 0, "effectiveness": { "frost": 1.5, "starlight": 0.5 }, "loot": [{ "item": "silver_sleighbell", "chance": 1 }] },
+      { "id": "cinderhoof", "name": "Cinderhoof", "tier": "boss", "power": 7000, "gold": 1500, "points": 3000, "weight": 0, "effectiveness": { "frost": 1.5, "starlight": 0 }, "loot": [{ "item": "brimstone_coal", "chance": 1 }] }
     ]
   },
   {

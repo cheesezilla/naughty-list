@@ -199,9 +199,20 @@ describe('pillage on escape', () => {
     expect(out?.safe).toContain('points');
   });
 
+  it('thieves often find no bait: crafted bait is saved most of the time', () => {
+    const roll = (bait: string, saveRoll: number) => {
+      const p = { ...rich(), inventory: { stale_cookie: 20, ribbon_candy: 20 } };
+      return rollPillage(content, p, imp('jarbelly'), bait, scripted(0, 0, 0, saveRoll))!;
+    };
+    expect(roll('stale_cookie', 0.6).bait).toBeDefined();
+    expect(roll('stale_cookie', 0.4).bait).toBeUndefined();
+    expect(roll('ribbon_candy', 0.6).bait).toBeUndefined();
+    expect(roll('ribbon_candy', 0.9).bait).toBeDefined();
+  });
+
   it('a mini boss takes two kinds', () => {
     const p = rich();
-    const out = rollPillage(content, p, imp('spoolwick'), 'stale_cookie', scripted(0, 0, 0, 0))!;
+    const out = rollPillage(content, p, imp('spoolwick'), 'stale_cookie', scripted(0, 0, 0, 0, 0.99))!;
     const kinds = [out.gold > 0, !!out.bait, out.points > 0].filter(Boolean).length;
     expect(kinds).toBe(2);
   });
@@ -283,10 +294,10 @@ describe('carol loft and luck', () => {
     expect(chance(powerBuild, 'general_grimbolt')).toBeGreaterThan(chance(luckBuild, 'general_grimbolt'));
   });
 
-  it('makes Madame Shredwell weak to Carol, not Starlight', () => {
+  it('makes Madame Shredwell weak to Carol and heavily resistant to the rest', () => {
     const boss = content.locations.flatMap((l) => l.imps).find((i) => i.id === 'madame_shredwell')!;
     expect(effectiveness(boss, 'carol')).toBe(1.5);
-    expect(effectiveness(boss, 'starlight')).toBe(1);
-    expect(effectiveness(boss, 'frost')).toBe(1);
+    expect(effectiveness(boss, 'starlight')).toBe(0.6);
+    expect(effectiveness(boss, 'frost')).toBe(0.6);
   });
 });

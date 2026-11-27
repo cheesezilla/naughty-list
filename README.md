@@ -4,6 +4,8 @@ A Christmas imp-trapping browser game. Scrinch's imps are raiding Santa's secret
 
 Design plan: [docs/PLAN.md](docs/PLAN.md) (updated with every PR)
 
+Strategy walkthrough: [docs/WALKTHROUGH.md](docs/WALKTHROUGH.md)
+
 ## Status
 
 - Milestones 1 to 3 are in: hunt engine, v1 content (4 locations, 24 imps), balance simulator, accounts with open sign-up, server-side hunts and SQLite saves, and a phone-first UI with original art.
@@ -56,7 +58,7 @@ Edit, then run `npm run check-content` and `npm run simulate` to see the effect.
 
 ## Deploy on the UGREEN NAS
 
-Follow [docs/DEPLOY.md](docs/DEPLOY.md). Pushing to `main` builds `ghcr.io/cheesezilla/naughty-list:latest`. In the NAS Docker app, create a project from `compose.yaml`, and the game is at `http://<nas-address>:8081`. An optional Cloudflare Tunnel in the same file lets friends play from anywhere.
+Follow [docs/DEPLOY.md](docs/DEPLOY.md). Pushing to `main` builds `ghcr.io/cheesezilla/naughty-list:latest`, and a new version number in `package.json` also publishes a pinned `:1.0.0` image, a `v1.0.0` tag and a GitHub Release. Release notes are in [CHANGELOG.md](CHANGELOG.md) and the process is in [docs/RELEASING.md](docs/RELEASING.md). In the NAS Docker app, create a project from `compose.yaml`, and the game is at `http://<nas-address>:8081`. An optional Cloudflare Tunnel in the same file lets friends play from anywhere.
 
 ## Layout
 

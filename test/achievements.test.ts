@@ -57,7 +57,7 @@ describe('earning achievements', () => {
   it('counts catches by trap type and weakness, and a boss caught with the starter trap', () => {
     const p: PlayerState = { ...newPlayer(content), location: 'toy_workshop', unlocked: ['cookie_pantry', 'toy_workshop'], rank: 3 };
     // Hammerhand is forced by an Inspection; he is weak to Frost, and the starter trap is Starlight.
-    p.objectives = { toy_workshop: { type: 'order_board', slots: ['frost', 'frost', 'frost'], filled: 0, rush: false, ordersDone: 3, rushReady: true, forced: 'hammerhand' } };
+    p.objectives = { toy_workshop: { type: 'order_board', progress: { clockwork: 0, starlight: 0, frost: 0 }, finished: [], rushLeft: 0, ordersDone: 3, rushReady: true, forced: 'hammerhand' } };
     const r = ok(hunt(content, p, scripted(0, 0, 0, 0, 0.999)));
     expect(r.entry).toMatchObject({ imp: 'hammerhand', outcome: 'catch' });
     expect(r.player.tally).toMatchObject({ catches_starlight: 1, starterBoss: 1 });

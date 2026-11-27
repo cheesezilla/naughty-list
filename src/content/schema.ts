@@ -75,6 +75,8 @@ export const Objective = z.discriminatedUnion('type', [
     /** Every this many finished orders, the mini boss inspects. */
     inspectionEvery: z.number().int().positive(),
     crateGold: z.number().int().nonnegative(),
+    /** Extra gold when all three type orders have been finished since the last Triple Crate (it also gives every crate reward). */
+    tripleGold: z.number().int().nonnegative(),
     /** One of these is added to every Toy Crate. */
     crateRewards: z.array(z.object({ item: id, amount: z.number().int().positive() })).min(1),
     miniboss: id,
@@ -87,6 +89,8 @@ export const Objective = z.discriminatedUnion('type', [
     gain: z.partialRecord(ImpTier, z.number().int().nonnegative()),
     /** Readiness taken by these imps when they escape. */
     loss: z.record(id, z.number().int().nonnegative()),
+    /** Sleigh launches needed before the boss attacks the sleigh (default 1). */
+    bossAfterLaunches: z.number().int().positive().default(1),
     minibossFrom: z.number().int().nonnegative(),
     minibossWeight: z.number().nonnegative(),
     launchGold: z.number().int().nonnegative(),
@@ -141,6 +145,8 @@ export const Bait = z.object({
 export const Charm = z.object({
   id, name: z.string(),
   power: z.number().optional(), powerBonus: z.number().optional(), luck: z.number().optional(), attraction: z.number().optional(),
+  /** Cheer charm: extra meter pips on every catch (`all`), on rare-or-better catches (`rare`), and pips an escape costs less (`escape`). At most +1 pip a catch. */
+  cheer: z.object({ all: z.number().int().min(0).max(1).optional(), rare: z.number().int().min(0).max(1).optional(), escape: z.number().int().min(0).optional() }).optional(),
   rank: z.number().int().positive(), price,
   flavour: Flavour.optional(),
 });
@@ -179,7 +185,40 @@ export const Constants = z.object({
   pillage: z.object({
     /** A pillage never takes gold below this. */
     goldFloor: z.number().int().nonnegative(),
+    /** Chance a thief that goes for bait finds none to take: for bought bait and for bait the player crafted. */
+    baitSave: z.object({ bought: z.number().min(0).max(1), crafted: z.number().min(0).max(1) }).default({ bought: 0, crafted: 0 }),
     tiers: z.object({ common: PillageRule, uncommon: PillageRule, rare: PillageRule, miniboss: PillageRule, boss: PillageRule }),
+  }),
+  /** The Cheer Meter: a streak meter that pays out pick-1-of-3 boons. `enabled: false` switches it off (for baselines). */
+  cheer: z.object({
+    enabled: z.boolean(),
+    /** Pips for a full meter, and the most an Overcharge can hold. */
+    full: z.number().int().positive(), max: z.number().int().positive(),
+    catchPips: z.number().int().nonnegative(), bigCatchPips: z.number().int().nonnegative(),
+    escapePips: z.number().int().nonnegative(), heldEscapePips: z.number().int().nonnegative(),
+    /** Pips a finished Toy Workshop order slot adds to the meter (the Workshop's own way to fill it). */
+    orderPips: z.number().int().nonnegative().default(0),
+    /** The `long` Overcharge perk makes boons last this much longer (0.5 = 50%). */
+    longBoons: z.number().nonnegative().default(0.5),
+    /** The `blessing` Overcharge perk grants this many Santa's Blessings back to back (they do not stack, so the boon lasts this many times as long). */
+    blessingCopies: z.number().int().positive().default(1),
+    /** Draws without a rare (or better) / without a legendary before one card is forced. */
+    pity: z.object({ rare: z.number().int().positive(), legendary: z.number().int().positive() }),
+    /** Draw table by pips: the last row whose `from` is at most the meter's pips applies. */
+    tiers: z.array(z.object({
+      from: z.number().int().nonnegative(), name: z.string(), cards: z.number().int().positive(), rerolls: z.number().int().nonnegative(),
+      /** Boons the player keeps from this draw (an Overcharged draw keeps two). */
+      picks: z.number().int().positive().default(1),
+      /** Overcharge perks the player may choose once on this draw: a second pick, longer boons, or a guaranteed Santa's Blessing. */
+      perks: z.array(z.enum(['second_pick', 'long', 'blessing'])).default([]),
+      weights: z.object({ common: z.number().nonnegative(), rare: z.number().nonnegative(), legendary: z.number().nonnegative() }),
+    })).min(1),
+  }),
+  /** Random events: Santa and Mrs. Claus boons and Grand Gifts. `enabled: false` switches them off. */
+  events: z.object({
+    enabled: z.boolean(),
+    chancePerHunt: chance, minHunts: z.number().int().nonnegative(), minGap: z.number().int().nonnegative(),
+    grandBase: chance, grandPerBoon: chance,
   }),
   stamina: z.object({
     enabled: z.boolean(), name: z.string(), max: z.number().int().positive(), costPerHunt: z.number().int().nonnegative(),
@@ -246,14 +285,60 @@ export const Achievement = z.object({
   when: AchievementRule,
 });
 
+/** One thing a gift, prize or penalty does. */
+export const buffStats = ['powerMult', 'luckMult', 'luckAdd', 'allureMult', 'goldPointsMult', 'noPillage', 'baitCost', 'bossShield'] as const;
+export const Effect = z.discriminatedUnion('type', [
+  /** `h` x H gold, where H is the average gold of the location's common elves. */
+  z.object({ type: z.literal('gold'), h: z.number().positive() }),
+  /** The best bait the shop sells at the player's rank. */
+  z.object({ type: z.literal('bait'), amount: z.number().int().positive() }),
+  /** Random charms the shop sells at the player's rank. */
+  z.object({ type: z.literal('charm'), amount: z.number().int().positive() }),
+  /** A timed effect: lasts `hunts` hunts and/or `uses` uses. */
+  z.object({
+    type: z.literal('buff'), stat: z.enum(buffStats), value: z.number(), label: z.string(),
+    hunts: z.number().int().positive().optional(), uses: z.number().int().positive().optional(),
+  }),
+]);
+const Sender = z.enum(['santa', 'mrs_claus']);
+export const Gift = z.object({ label: z.string(), effects: z.array(Effect).min(1) });
+export const EventsFile = z.object({
+  boons: z.array(z.object({ id, name: z.string(), from: Sender, a: Gift, b: Gift })),
+  grandGifts: z.array(z.object({ id, name: z.string(), from: Sender, text: z.string(), effects: z.array(Effect).min(1) })),
+});
+
+/** What a boon changes while it lasts. Every field is optional; see `modsOf` in src/engine/mods.ts. */
+export const BoonEffect = z.object({
+  goldMult: z.number().optional(), pointsMult: z.number().optional(), freeBait: z.boolean().optional(),
+  powerMult: z.number().optional(), luckAdd: z.number().optional(), attractionBonus: z.number().optional(),
+  noPillage: z.boolean().optional(), rareMult: z.number().optional(), lootMult: z.number().optional(), minLoot: z.number().int().optional(),
+  mulligan: z.boolean().optional(), bossBell: z.boolean().optional(), pipMult: z.number().optional(), freeEscape: z.boolean().optional(),
+}).strict();
+export const Boon = z.object({
+  id, name: z.string(), rarity: z.enum(['common', 'rare', 'legendary']), hunts: z.number().int().positive(),
+  text: z.string(), effect: BoonEffect,
+});
+
+/** content/releases.json: player-facing release notes, newest first. The first entry is the current version and must match package.json. */
+export const Release = z.object({
+  version: z.string().regex(/^\d+\.\d+\.\d+$/),
+  date: z.string().min(1).max(20),
+  title: z.string().min(1).max(60),
+  summary: z.string().min(1).max(300),
+  sections: z.array(z.object({ heading: z.string().min(1).max(60), items: z.array(z.string().min(1).max(300)).min(1).max(10) })).min(1).max(8),
+});
+
 export const Content = z.object({
   constants: Constants,
   story: Story.optional(),
+  releases: z.array(Release).default([]),
   ranks: z.array(Rank).min(1),
   locations: z.array(Location).min(1),
   items: Items,
   recipes: z.array(Recipe),
   achievements: z.array(Achievement).default([]),
+  boons: z.array(Boon).default([]),
+  events: EventsFile.default({ boons: [], grandGifts: [] }),
 });
 
 export type PowerType = z.infer<typeof PowerType>;
@@ -276,6 +361,10 @@ export type Rank = z.infer<typeof Rank>;
 export type Constants = z.infer<typeof Constants>;
 export type Content = z.infer<typeof Content>;
 export type Story = z.infer<typeof Story>;
+export type Release = z.infer<typeof Release>;
+export type Boon = z.infer<typeof Boon>;
+export type Effect = z.infer<typeof Effect>;
+export type EventsFile = z.infer<typeof EventsFile>;
 export type Achievement = z.infer<typeof Achievement>;
 export type AchievementRule = z.infer<typeof AchievementRule>;
 export type AchievementStat = z.infer<typeof AchievementStat>;

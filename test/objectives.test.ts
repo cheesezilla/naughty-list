@@ -45,13 +45,27 @@ describe('Wrapping Room bait ladder', () => {
 });
 
 describe('Toy Workshop order board', () => {
-  // Rolls: order slots (3), pick, catch, [loot...]. 0 picks Clockwork for every slot and the first imp.
-  it('fills a slot only with a catch made by the matching trap type', () => {
-    const r = ok(hunt(content, at('toy_workshop', { trap: 'jack_in_the_box' }), scripted(0, 0, 0, 0, 0, 0.99)));
-    expect(r.player.objectives?.toy_workshop).toMatchObject({ type: 'order_board', slots: ['clockwork', 'clockwork', 'clockwork'], filled: 1 });
-    expect(r.entry.objective?.notes[0]).toMatch(/slot 1 of 3 filled \(Clockwork\)/);
-    const wrong = ok(hunt(content, { ...r.player, setup: { ...r.player.setup, trap: 'star_lantern' } }, scripted(0, 0, 0.99)));
-    expect(wrong.player.objectives?.toy_workshop).toMatchObject({ filled: 1 });
+  // Rolls: pick, catch, [loot...]. 0 picks the first imp and catches it.
+  it('fills the order of the armed trap\'s type with every catch, in any order', () => {
+    const r = ok(hunt(content, at('toy_workshop', { trap: 'jack_in_the_box' }), scripted(0, 0, 0, 0, 0.99)));
+    expect(r.player.objectives?.toy_workshop).toMatchObject({ type: 'order_board', progress: { clockwork: 1, starlight: 0, frost: 0 } });
+    expect(r.entry.objective?.notes[0]).toMatch(/Clockwork order 1 of 3/);
+    const other = ok(hunt(content, { ...r.player, setup: { ...r.player.setup, trap: 'star_lantern' } }, scripted(0, 0, 0, 0, 0.99)));
+    expect(other.player.objectives?.toy_workshop).toMatchObject({ progress: { clockwork: 1 } });
+    expect(other.entry.objective?.notes[0]).toMatch(/Starlight order 1 of 3/);
+  });
+
+  it('pays a Triple Crate when all three types have finished an order, and upgrades an old saved board', () => {
+    let p = at('toy_workshop', { trap: 'jack_in_the_box' });
+    for (const trap of ['jack_in_the_box', 'star_lantern', 'icicle_jar'] as const) {
+      p = { ...p, setup: { ...p.setup, trap } };
+      for (let i = 0; i < 3; i++) p = ok(hunt(content, p, scripted(0, 0, 0, 0, 0, 0, 0, 0))).player;
+    }
+    expect(p.objectives?.toy_workshop).toMatchObject({ ordersDone: 3, finished: [] });
+    expect(p.gold).toBeGreaterThanOrEqual(3 * 400 + 800);
+    const old = { ...p, objectives: { toy_workshop: { type: 'order_board', slots: ['frost'], filled: 0, rush: false, ordersDone: 4, rushReady: true } } } as unknown as typeof p;
+    const r = ok(hunt(content, old, scripted(0, 0, 0, 0, 0.99)));
+    expect(r.player.objectives?.toy_workshop).toMatchObject({ ordersDone: 4, rushReady: true, rushLeft: 0 });
   });
 
   it('pays a Toy Crate per order and sends the mini boss every third order, then a Rush order brings the boss', () => {
@@ -70,11 +84,10 @@ describe('Toy Workshop order board', () => {
 
     const rush = objectiveAction(content, inspect.player, 'rush_order', scripted(0));
     if (!rush.ok) throw new Error(rush.error);
-    expect(rush.player.objectives?.toy_workshop).toMatchObject({ rush: true, rushReady: false, filled: 0 });
-    expect(rush.player.objectives?.toy_workshop?.type === 'order_board' && rush.player.objectives.toy_workshop.slots).toHaveLength(5);
+    expect(rush.player.objectives?.toy_workshop).toMatchObject({ rushLeft: 5, rushReady: false });
     let q = rush.player;
     for (let i = 0; i < 5; i++) q = ok(hunt(content, q, scripted(0, 0, 0, 0, 0, 0, 0))).player;
-    expect(q.objectives?.toy_workshop).toMatchObject({ forced: 'general_grimbolt', rush: false });
+    expect(q.objectives?.toy_workshop).toMatchObject({ forced: 'general_grimbolt', rushLeft: 0 });
     expect(ok(hunt(content, q, scripted(0, 0.1, 0.99, 0.99))).entry.imp).toBe('general_grimbolt');
   });
 
@@ -114,11 +127,20 @@ describe('Reindeer Stables sleigh run', () => {
     expect(r.entry.objective?.notes).toContain('Readiness 20 → 12');
   });
 
-  it('launches at 100 Readiness, pays out and sends Cinderhoof', () => {
+  it('the first launch pays out but Cinderhoof only comes after the second', () => {
     const p = start(at('reindeer_stables'));
     p.objectives!.reindeer_stables = { type: 'sleigh_run', active: true, left: 10, readiness: 98, launches: 0 };
     const r = ok(hunt(content, p, scripted(0, 0, 0, 0.99)));
-    expect(r.player.objectives?.reindeer_stables).toMatchObject({ active: false, launches: 1, forced: 'cinderhoof' });
+    expect(r.player.objectives?.reindeer_stables).toMatchObject({ active: false, launches: 1 });
+    expect(r.player.objectives?.reindeer_stables?.forced).toBeUndefined();
+    expect(r.entry.objective?.gold).toBe(2000);
+  });
+
+  it('launches at 100 Readiness, pays out and sends Cinderhoof', () => {
+    const p = start(at('reindeer_stables'));
+    p.objectives!.reindeer_stables = { type: 'sleigh_run', active: true, left: 10, readiness: 98, launches: 1 };
+    const r = ok(hunt(content, p, scripted(0, 0, 0, 0.99)));
+    expect(r.player.objectives?.reindeer_stables).toMatchObject({ active: false, launches: 2, forced: 'cinderhoof' });
     expect(r.player.inventory.silver_sleighbell).toBe(1);
     expect(r.entry.objective?.gold).toBe(2000);
     expect(objectiveAction(content, r.player, 'start_run', scripted(0)).ok).toBe(false);

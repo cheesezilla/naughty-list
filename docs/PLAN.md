@@ -19,7 +19,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | New phone-first UI (layout D2): bottom menu, hunt log with events and full history, Arsenal, Elf Emporium, Santa's Workshop, More pages, open sign-up with admin switch | Done | #11 |
 | Holly power type renamed Starlight; its three traps reworked (Starlit Stocking, Star Lantern, Constellation Wreath) with new text and SVG art, old saves migrated | In review | #17 |
 | Intro letter from Santa: the game's backstory as the first hunt-log entry of every new game, and on How to play | In review | #12 |
-| Location objectives: a simple Cookie Pantry start, then a unique loop per location (Wrapping Room bait ladder, Toy Workshop order board, Stables sleigh run), plus first-visit intros, a hint button and a mechanic panel on each Hunt screen; see [Location objectives](#location-objectives) | Done | #16 (plan), #18 (build); panel icons, sleigh marker and last-change line in #23 |
+| Location objectives: a simple Cookie Pantry start, then a unique loop per location (Wrapping Room bait ladder, Toy Workshop parallel order board, Stables sleigh run), plus first-visit intros, a hint button and a mechanic panel on each Hunt screen; see [Location objectives](#location-objectives) | Done | #16 (plan), #18 (build); panel icons, sleigh marker and last-change line in #23 |
 | Pantry goals panel on the Hunt screen: main goal (reach the next area's rank, ticked when done) and optional goal (portraits caught, e.g. 3/5) | Done | this PR |
 | Pillage on escape: escaped elves may take gold, points and bait (bosses most, mini bosses less, others rarely), with safety rails; see [Pillage on escape](#pillage-on-escape) | Done | #18 |
 | Hexed elves: new backstory (Scrinch hexed Santa's elves), 6 renamed elves, General Grimbolt and the new Stables boss Cinderhoof, home power types per location, simple SVG elf portraits, old saves migrated; see [Theme and setting](#theme-and-setting) and [Power types by location](#power-types-by-location) | In review | this PR |
@@ -28,6 +28,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Hunt screen gear card in a 2x2 grid (Trap and Bait over Base and Charm) and 3D medal icons for power types and the gold coin; see [User interface](#user-interface) | Done | #19 (plan), #23 (build) |
 | Early-game onboarding: 200 starting gold (first trap costs 300), free charms and better bait for every badge (logged in the hunt log), a close button on achievement banners and one-time beginner tips; see [Early game and tips](#early-game-and-tips) | Done | this PR |
 | Frozen top header on every main screen, auto-scroll to the Hunt log when Hunt is pressed, and the New Catch popup for the first catch of each elf (with Quiet toast); achievements show as a non-blocking banner instead of a popup; see [User interface](#user-interface) | Done | #26 |
+| Hunt-log rows for rare, mini boss and boss catches glow and shimmer in their tier colour, matching the portraits | Done | this PR |
 | Allure: attraction no longer decides whether an elf shows up. Every hunt meets an elf; attraction (now called Allure) scales the rare, mini boss and boss weights; see [Allure](#allure) | Done | this PR |
 | Trap effectiveness tiers: attraction and catch chance shown as five-tier power bars (Very weak to Very strong) instead of exact percentages; an admin toggle on More > Admin brings the percentages back for tuning; see [Trap effectiveness tiers](#trap-effectiveness-tiers) | Done | this PR |
 | Player feedback: More > Feedback box for signed-in players, saved in its own never-wiped table, readable under More > Admin | Done | this PR |
@@ -35,10 +36,12 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Boss keys: the local boss drops a key on its first catch, and the next location needs it to unlock (existing saves are granted the keys they have earned); see [Progression](#progression) | In review | this PR |
 | Branching progression (eddy): luck rework (luck helps most against commons, least against bosses), Madame Shredwell weak to a new Carol type, and the Carol Loft side area where the Carol Horn is made; see [Branching progression](#branching-progression) | In review | this PR |
 | New bases: two tiers of power, attraction and luck bases, with build affinity and a "good for" line; see [New bases](#new-bases-power-attraction-and-luck) | In review | #21 |
-| Playtest and simulation plan: what the simulator must report for Allure, Cheer Meter, events and goals, targets and how to read them (plan only); see [Playtest and simulation plan](#playtest-and-simulation-plan-eddy-27-nov-2026-plan-only) | Planned | this PR |
-| Random events after a hunt (Santa and Mrs. Claus boons with a safe or big choice, Scrinch challenges with mini objectives), plus a parked-ideas list; see [Random events](#random-events-planned-not-built) | Planned (design only) | this PR |
-| Cheer Meter and boons (eddy): a streak meter, pick 1 of 3 from 14 boons in three rarities, Overcharge and Cheer charms; see [Cheer Meter](#cheer-meter-and-boons-eddy-26-nov-2026-design-only) | Planned (design only) | this PR |
+| Playtest and simulation plan: what the simulator must report for Allure, Cheer Meter, events and goals, targets and how to read them (plan only); see [Playtest and simulation plan](#playtest-and-simulation-plan-eddy-27-nov-2026-plan-only). Baseline simulator built (Allure tiers, goals, gold flow, progress feel, `--seeds`, `--trace`); Cheer and events policies and metrics included; findings in [SIMULATION_REPORT.md](SIMULATION_REPORT.md) | In progress | this PR |
+| Random events after a hunt (Santa and Mrs. Claus boons with a safe or big choice and rare free Grand Gifts; Scrinch's random events were removed again, he stays the story villain), plus a parked-ideas list; see [Random events](#random-events-built-on-integration) | Built on `integration` (test playground), draft numbers | this PR |
+| Cheer Meter and boons (eddy): a streak meter, pick 1 of 3 from 14 boons in three rarities, Overcharge and Cheer charms; see [Cheer Meter](#cheer-meter-and-boons-eddy-26-nov-2026-built-on-integration) | Built on `integration` (test playground), draft numbers | this PR |
+| Full-game strategy walkthrough: [docs/WALKTHROUGH.md](WALKTHROUGH.md), gear, bosses and Cheer Meter use for every location | Done | this PR |
 | 5. Tune from play-test | Planned | |
+| Versioned releases: semver in `package.json`, `CHANGELOG.md`, merging a new version into `main` publishes version-tagged Docker images, a `vX.Y.Z` tag and a GitHub Release, plus in-game release notes (`content/releases.json`, What's new popup and More screen); first release 1.0.0 (integration promoted to main); see [Deployment](#deployment) and [RELEASING.md](RELEASING.md) | Done | this PR |
 
 The server runs every hunt and saves each player in SQLite. To play locally, follow "Run it locally" below.
 
@@ -157,13 +160,13 @@ Nothing here is built and no game number changes. It says what the simulator and
 
 ### What exists today
 
-`scripts/simulate.ts` (`npm run simulate`, flags `--players`, `--seed`, `--max-hunts`, `--without`, `--strict`, `--verbose`) plays seeded virtual hunters through the real engine with a greedy strategy (best setup by points plus net gold, buys bait, crafts, takes the Loft detour, plays the objectives) and reports hunts per rank against the targets (150, 250, 400, 600), per-location hunts, Allure rate, catch rate and bait cost share, pillages, gear purchase timing, boss catches, objective counts and badge timing. It does not model the Cheer Meter, events or the Goals panel, and its "attracted" column is meaningless once Allure removes quiet hunts.
+`scripts/simulate.ts` (`npm run simulate`, flags `--players`, `--seed`, `--max-hunts`, `--max-collect-hunts`, `--without`, `--strict`, `--verbose`) plays seeded virtual hunters through the real engine with a greedy strategy (best setup by points plus net gold, buys bait, crafts, takes the Loft detour, plays the objectives) and reports hunts per rank against the targets (150, 250, 400, 600), per-location hunts, Allure rate, catch rate and bait cost share, pillages, gear purchase timing, boss catches, objective counts and badge timing. It does not model the Cheer Meter, events or the Goals panel, and its "attracted" column is meaningless once Allure removes quiet hunts.
 
 ### Simulator changes needed
 
 1. **Cheer Meter and events in the loop**, with on/off flags (`--no-cheer`, `--no-events`) so each system's effect can be measured against the baseline in one run.
 2. **Boon choice policies**, because the pick is a player decision: `random`, `greedy` (rank boons by a fixed value table), and `hold` (use Overcharge up to 15 pips). Report each separately; the design is healthy only if no policy is far ahead of the others.
-3. **Event choice policies**: `safe`, `big`, `skip` (pay the Scrinch toll), `fight`.
+3. **Event choice policies**: `safe`, `big`.
 4. **Fix the Allure columns**: replace "attract rate" with the rare, mini boss and boss share of encounters, and keep catch rate per tier.
 5. **Per-hunt event trace** (`--trace out.jsonl`) with one line per hunt: tier met, outcome, pips, active boons, event fired, gold. Aggregates answer "is it balanced"; the trace answers "does it feel good".
 6. Use 1,000 players and fixed seeds 1 to 5 for any number that goes into this document. 200 players is for quick checks.
@@ -177,7 +180,7 @@ Nothing here is built and no game number changes. It says what the simulator and
 | Cheer Meter | Hunts per fill (p10, median, p90), per area; pips earned per hunt; escape pip loss per fill; boons cashed in per 100 hunts; share of hunts under any boon; share of time spent full (waiting) | The meter's tempo: how often the player gets a reward moment |
 | Boon mix | Pick rate per boon and per rarity (offered vs picked); draws per rare and per legendary (pity firing rate); Overcharge use and the average pips at cash-in; boon uptime per area | Whether the 14 boons are all worth picking, and whether Overcharge is a real choice |
 | Boon impact | Hunts to rank with and without Cheer; extra gold, points and catches during boons vs outside them | Whether boons speed the game or only decorate it |
-| Events | Events per 100 hunts (all, Santa and Mrs. Claus, Scrinch, boss-escape grudge); hunts between events (min, median, max); safe vs big pick rate under each policy; Scrinch fight win rate; toll paid; gold and points swing per event | Frequency, the safe/big choice and whether Scrinch hurts enough to matter |
+| Events | Events per 100 hunts (boon cards, Grand Gifts); hunts between events (min, median, max); safe vs big pick rate under each policy; gold and points swing per event | Frequency and the safe/big choice |
 | Economy | Gold in and out per area (catch gold, bait cost, pillage, event gifts and tolls, purchases); gold at each rank-up; share of income from events and boons; bait cost as a share of gold | Whether events and Double Haul inflate gold, and bait stays "the clock" |
 | Goals and completion | Hunts to the main goal ("rank up and move on") per area; share finishing the portrait goal (every elf caught) and the hunt it is complete; hunts to first catch of each elf (the rare and mini boss are the long tail); bosses caught per player | Whether the optional completion goal is a real target or a grind or trivial |
 | Progress feel | Hunts between "something good happens" (a catch, a pip, a rank, a new portrait, a boon, an event, a crafted item): median and the 90th percentile gap | The one number that tests eddy's rule that every hunt moves toward something |
@@ -190,9 +193,8 @@ Nothing here is built and no game number changes. It says what the simulator and
 - **Boon pick rate** tests the pool. A boon picked over 40% of the time when offered is too strong; one picked under 5% is dead weight and should be reworked. Compare pick rate with measured value (extra gold, points or catches during the boon). The three policies should finish within 10% of each other. A clear winner means a solved game.
 - **Pity firing rate** should be small (under 15% of draws). If pity fires often the base weights are too stingy.
 - **Overcharge** is a real choice only if the hold policy beats cash-in-at-10 by something, but not by a lot. Equal means nobody should hold; hold clearly ahead means the escape penalty is too small.
-- **Events per 100 hunts** at 2.5% per hunt with the guards should land near 1.5 to 1.8 (about one per 60 hunts), plus the boss-escape grudge (25% for a Scrinch event) on top. Check the grudge does not make bosses feel punishing: if more than a third of events are grudge-driven, the 25% is too high.
+- **Events per 100 hunts** at 1.5% per hunt with the guards should land near 1 (about one per 90 hunts, all Santa and Mrs. Claus).
 - **Safe vs big pick rate**: "big gifts are rare and free" is meant to feel powerful and be worth working for. If the big gift is taken under 80% of the time it is not powerful enough; if the big gift moves gold or rank pace more than 5% over a game it is too strong, since there is no cost to hold it back. Confirm it stays rare enough that most players see only a handful per game.
-- **Scrinch fight win rate** and **toll paid**: a win rate of 60 to 80% with decent gear is about right; the toll gets used if the win rate is under 50% or the loss is large. If almost nobody pays, the toll is too pricey or the threat too weak.
 - **Gold flow** answers "is the economy still bait-limited". Event and boon income over 15% of gold means they are carrying the game.
 - **Portrait completion** tells us whether the optional goal works: aim for most players to finish it for the Cookie Pantry by the time they rank up, and later areas to need a bit of extra hunting for the rare and mini boss (median 20 to 40% extra hunts after the rank-up is reached). A long tail on one elf means its Allure, power or luck weighting is wrong.
 - **Progress feel** (gap between good things): median 3 hunts or less and p90 under 10. A gap longer than that is a stretch where the hunt does nothing visible, and is where a pip, a goal tick or a materials drop should fill in.
@@ -204,7 +206,7 @@ What the simulator cannot show: whether the boon cards and event text are clear,
 Run on the `:integration` image (naughty-list-test) with the admin tools. Two or three players, one session each, about 30 minutes, played fresh with no hints.
 
 1. Fresh start through to the first Cheer fill and boon: did they notice the meter without being told, and could they say why it moved?
-2. First event: did they understand safe vs big, and did the Scrinch objective counter read clearly?
+2. First event: did they understand safe vs big?
 3. Count the moments of dead time (hunts where nothing seemed to change).
 4. Overcharge: did anyone hold, and did they regret it?
 5. The boss-escape retaliation: did it feel fair or like piling on?
@@ -233,7 +235,7 @@ Record each result as pass, fail or unsure in the PR for the tuning task.
 | 2 | Elf Deputy | 2,500 | Wrapping Room (250 gold to unlock) | 250 |
 | 3 | Hex Tracker | 12,000 | Toy Workshop (1,500 gold), Nutcracker Jaws trap | 400 |
 | 4 | Frost Warden | 46,000 | Reindeer Stables (5,000 gold), rank 4 crafting | 600 |
-| 5 | Yule Marshal | 160,000 | End of v1 | |
+| 5 | Yule Marshal | 217,000 | End of v1 | |
 
 Ranks depend on points only. Location unlock fees are paid once; travel between unlocked locations is free.
 
@@ -278,9 +280,9 @@ The numbers below mirror `content/*.json`. Types: C = Clockwork, S = Starlight, 
 | Carol Loft (side area) | Mistletoe Mumbler | Common | 320 | 48 | 70 | S | | Hymn Reed 20% |
 | Carol Loft (side area) | Silver Piper | Rare | 500 | 85 | 130 | Carol | | Hymn Reed 100% |
 | Carol Loft (side area) | Choirmaster Hollowvoice | Mini boss | 1,000 | 180 | 250 | Carol | C | Carol Songsheet 100% |
-| Toy Workshop | Cog Pincher | Common | 450 | 140 | 150 | C | | |
-| Toy Workshop | Paint Smudger | Common | 600 | 180 | 190 | S | | |
-| Toy Workshop | Stuffing Ripper | Common | 750 | 220 | 230 | C | F | |
+| Toy Workshop | Cog Pincher | Common | 1,200 | 140 | 150 | C | | |
+| Toy Workshop | Paint Smudger | Common | 1,500 | 180 | 190 | S | | |
+| Toy Workshop | Stuffing Ripper | Common | 1,850 | 220 | 230 | C | F | |
 | Toy Workshop | Wind-up Elf | Rare | 900 | 300 | 320 | C | F immune | Sugar Glass 50% |
 | Toy Workshop | Hammerhand | Mini boss | 1,600 | 400 | 650 | F | | Toymaker's Gear 100% |
 | Toy Workshop | General Grimbolt | Boss | 2,800 | 700 | 1,300 | C | F | Clockwork Heart 100% |
@@ -423,7 +425,7 @@ Luck adds a bonus of **scale x luck squared x tier weight** to the catch chance'
 
 ### One off-type boss: Madame Shredwell
 
-The Wrapping Room's elves are weak to Starlight, but **Madame Shredwell is now weak to Carol** (x1.5) and resists Clockwork, and is normal (x1) against Starlight and Frost. The Star Lantern that cleared her room is now the wrong tool, and the Icicle Jar (rank 2, 3,000 gold) is a neutral but costly answer. The best answer is a Carol trap, made in the Carol Loft. Her flavour, the Wrapping Room hint sheet and her stats row are updated. The other bosses are unchanged (one off-type boss for now, as eddy asked).
+The Wrapping Room's elves are weak to Starlight, but **Madame Shredwell is now weak to Carol** (x1.5) and **resists every other type (x0.6 for Clockwork, Starlight and Frost)**. Her power is now 2,900 (was 1,100). Targets from eddy: about 10% without Carol and about 30% with Carol, with the gear a player has when they normally reach her at rank 2 (trap + Candy Cane Platform, no Toffee Anvil). Results: Star Lantern + Candy Cane Platform 9.5% (Mistletoe Charm 9.8%), Icicle Jar + Candy Cane Platform 12.7%; Carol Horn + Candy Cane Platform 30.2% (31% with a Mistletoe Charm). Optional Toffee Anvil: 14% without Carol, 32% with. Late gear overpowers her (best rank 4 gear: 51% without Carol, 55% with Carol Horn). The best answer is a Carol trap, made in the Carol Loft. Her flavour, the Wrapping Room hint sheet and her stats row are updated. The other bosses are unchanged (one off-type boss for now, as eddy asked).
 
 ### Carol Loft: a side area
 
@@ -434,7 +436,7 @@ The Wrapping Room's elves are weak to Starlight, but **Madame Shredwell is now w
 | Elves | 3 commons (each weak to a different core type, so any trap works), a rare (Silver Piper) and a mini boss (Choirmaster Hollowvoice, weight 5), weak to Carol. No boss. Rewards are about 70% of the Wrapping Room's, so it is a detour, not a farm |
 | Drops | Hymn Reed (commons 20%, Silver Piper 100%) and Carol Songsheet (Choirmaster, 100%) |
 | Trap | Carol Horn: 5 Hymn Reed + 1 Carol Songsheet + 600 gold at rank 2. New power type **Carol** (a gold music note on rose pink), 600 power and luck 10: a luck-leaning trap that also hits Shredwell, the Piper and the Choirmaster for x1.5 |
-| Later | The Carol type is built to be reused: a later location can make its elves weak to Carol and reward Carol traps. The order board and "Three of a Kind" still use the core three types |
+| Later | The Carol type is built to be reused: a later location can make its elves weak to Carol and reward Carol traps. The order board counts a Carol trap as a joker, and "Three of a Kind" still uses the core three types |
 
 **The choice for a rank 2 player:** spend about 600 gold and roughly 100 hunts on the Loft for a Carol Horn (a luck trap that is also the best answer to Shredwell), or buy an Icicle Jar and push through the Wrapping Room with a neutral trap, or build luck and skip the detour. Key chain code ignores side areas: `keyNeeded` and `grantKeys` walk only the main chain.
 
@@ -450,7 +452,7 @@ The Wrapping Room's elves are weak to Starlight, but **Madame Shredwell is now w
 | --- | --- | --- | --- |
 | Cookie Pantry | 1 | None: hunt for gold, buy better gear and bait, rank up | No boss here |
 | Wrapping Room | 2 | Bait ladder: three bait tiers, each crafted from the last tier's drops | Tier 3 bait is armed |
-| Toy Workshop | 3 | Order board: catch with the trap type each order asks for | A Rush order is finished |
+| Toy Workshop | 3 | Order board: three standing orders (Clockwork, Starlight, Frost); every catch fills the one for your trap's type | A Rush order is finished |
 | Reindeer Stables | 4 | Sleigh run: 40 hunts to make the sleigh ready | The sleigh launches |
 
 The Tangle Meter, first planned for the Wrapping Room, is kept as a spare loop for a later location.
@@ -494,6 +496,8 @@ The first location teaches the basic loop and nothing else: catch elves, earn go
 
 eddy's loop, starting in the second location: common bait catches common elves, who drop tier 2 ingredients; tier 2 bait draws new elves, who drop tier 3 ingredients; tier 3 bait draws the boss, who drops trap parts and a little general help. It reuses the Wrapping Room's existing drops where it can.
 
+**Panel (UI).** The Hunt screen's ladder panel lets the player tap any tier to browse it, independent of the armed bait. A "Prepare before the faceoff" line under it says Madame Shredwell is weak only to the Carol power type (Clockwork resisted) and hints at the Carol Horn without naming the Carol Loft: the Workshop elves can make one from bent reeds and a torn songsheet, and singing drifts down from somewhere above (an in-world hint, not directions). The selected tier lists its baits with owned counts and an Equip button, plus a Craft button (tiers with a recipe) that opens the Workshop filtered to that one recipe.
+
 | Tier | Bait (how you get it) | Elves it draws (weight) | What they drop toward the next tier |
 | --- | --- | --- | --- |
 | 1 | Any shop bait (Stale Cookie, Sugar Cookie, later Peppermint Bark) | `ribbon_tangler` 36, `tape_biter` 30, `bow_burglar` 25. `glitterbug`, `spoolwick` and `madame_shredwell` 0 | `ribbon_tangler`: Sugar Twist 25%. `tape_biter`: Sugar Twist 20%. `bow_burglar`: Candied Peel 30% (was 10%). Any common: 2% for 1 Ribbon Candy outright |
@@ -506,17 +510,20 @@ eddy's loop, starting in the second location: common bait catches common elves, 
 - Simulator: a simulated player catches Spoolwick 1.8 times and Madame Shredwell 0.3 times on average before moving on; most players rank up before reaching the top of the ladder.
 - Panel: three bait tiers with what you own of each, and the next recipe's have / need.
 
-### Toy Workshop: the Order Board (trap-type puzzle)
+### Toy Workshop: the Order Board (parallel orders)
 
-The elves pin toy orders to a board. Each order lists parts that must be caught with a given trap type, in order. It makes the player own and swap traps of all three types, which is the known gap from the simulator (nobody bought Snow Globe Prison or Constellation Wreath).
+The elves pin three standing toy orders to the board, one for each core trap type (Clockwork, Starlight, Frost). Eddy found the first design (three slots filled in order, each needing a given type) too fiddly, because it wanted a trap swap almost every hunt, so on 27 Nov 2026 it became parallel orders. You can stay on your best trap and still make progress; swapping is now an optional bonus, not a chore.
 
-- **Order:** 3 slots, each a trap type (Clockwork, Starlight or Frost), rolled by the server when the last order finishes. A catch with the trap type of the next slot fills it. Catches with another type don't count; escapes don't undo filled slots.
-- The puzzle is matching type to elf: most Workshop elves are weak to Clockwork and resist Frost (the Wind-up Elf is immune), so Clockwork slots are easy, Starlight slots go best on Paint Smudgers, and Frost slots on Cog Pinchers or Paint Smudgers. Owning a trap of each type is part of the job here.
-- **Order done:** a Toy Crate: 400 gold and one of Peppermint Bark x5, Wind-up Key Charm x3 or Sugar Glass x1.
-- **Inspection:** every 3rd finished order, the next attracted hunt is Hammerhand (mini boss; weight 0 otherwise). He drops Toymaker's Gear as now.
-- **Rush order:** after an Inspection, the player can take a 5-slot Rush order instead of a normal one. Finishing it makes the next attracted hunt General Grimbolt (boss; weight 0 otherwise), who drops Clockwork Heart as now.
-- Panel: the order slots as type badges, filled or empty, and orders until the next Inspection.
-- Simulator: about 35 orders per player, 3.9 Hammerhand and 2.2 General Grimbolt catches. The simulated player buys the cheapest trap of any type it lacks before hunting here.
+- **Orders:** each type's order needs 3 catches (`slots` in `content/locations.json`). **Every catch fills the order for the type of the armed trap**, in any order. A Carol trap (the fourth type) is a joker and fills whichever order is furthest along. Escapes and quiet hunts change nothing, and nothing is ever undone.
+- **Order done:** a Toy Crate: 400 gold and one of Peppermint Bark x5, Wind-up Key Charm x3 or Sugar Glass x1. That type's order starts again from 0, so a one-trap player just finishes the same order over and over.
+- **Triple Crate:** the first time all three types have finished an order since the last Triple Crate, a bonus of 800 gold (`tripleGold`) and every crate reward (Peppermint Bark x5, Wind-up Key Charm x3 and Sugar Glass x1). This is the reason to own and swap to all three types: an optional decision, worth about one extra crate every 9 catches.
+- **Cheer:** every catch the board counts adds 1 Cheer pip (`constants.cheer.orderPips`, was 2 per slot when only matching catches counted).
+- **Inspection:** every 3rd finished order (of any type), the next attracted hunt is Hammerhand (mini boss; weight 0 otherwise). He drops Toymaker's Gear as now.
+- **Rush order:** after an Inspection, the player can take a Rush order instead: 5 catches with any trap (`rushSlots`). The three standing orders pause while it runs. Finishing it makes the next attracted hunt General Grimbolt (boss; weight 0 otherwise), who drops Clockwork Heart as now.
+- **Old saves:** a save with the old ordered-slots board keeps its finished order count, Rush offer and forced elf; the three new orders start at 0.
+- **Rebalance:** with swapping gone, catch rates here rose from the simulated 46% to about 90%, so the Workshop commons were made much stronger to keep rank 3 near its target: Cog Pincher power 450 to 1,200, Paint Smudger 600 to 1,500 and Stuffing Ripper 750 to 1,850 (it was 380, 510 and 640 after the 27 Nov tuning round, which was meant to offset the order board's slow fill).
+- Panel: three type medals with their catch counts (the armed trap's type is marked, finished types are marked done), orders until the next Inspection, and the Rush button.
+- Simulator: the bot never swaps for the board, only brings its best trap for an inspecting Hammerhand or General Grimbolt, and buys the cheapest trap of any type it lacks. About 30 orders per player, 4.3 Hammerhand and 2.5 General Grimbolt catches.
 
 ### Reindeer Stables: the Sleigh Run (countdown in hunts)
 
@@ -566,7 +573,7 @@ Text lives in a new `locations` block in `content/story.json`, keyed by location
 | --- | --- | --- |
 | Cookie Pantry | Santa's pantry: jars to the ceiling and crumbs on every shelf. The hexed baker elves raid it all night. Catch them, earn your pay, and kit yourself out before heading deeper into the lair. | 1. Hunt here to earn gold and points. 2. Each elf's description hints at the trap type it is weak to. Sootcap hides in shadow; Jarbelly can't resist a box. 3. Buy a better trap and base in the Elf Emporium as soon as you can afford them. 4. Sugar Cookies draw more uncommon and rare elves. 5. Reach Elf Deputy to unlock the Wrapping Room. |
 | Wrapping Room | Miles of ribbon and paper. The hexed wrappers still can't resist anything that shines, so Starlight traps work best here. The commons grab anything, but Glitterbug and Spoolwick only come for proper sweets, and Madame Shredwell only for the finest. Bake your way up. | 1. Most elves here are weak to Starlight and dodge Clockwork. Ribbon Tanglers freeze stiff in Frost. 2. Catch commons with shop bait to collect Sugar Twists and Candied Peel. 3. Make Ribbon Candy in Santa's Workshop. 4. Ribbon Candy draws Glitterbug and Spoolwick. Their drops make Golden Bow Bonbons. 5. Bonbons are the only bait Madame Shredwell will take. |
-| Toy Workshop | The hexed toymakers can't keep their hands off a wind-up, so Clockwork traps work best here. The loyal elves pin toy orders to the board, and each part must be caught with the right kind of trap. Finish enough orders and the bosses come to inspect. | 1. Most elves here are weak to Clockwork and shrug off Frost. Paint Smudgers fear Starlight; Hammerhand is forge-hot. 2. Check the order board: each slot needs a catch with that trap type, in order. 3. Swap traps to match, and pick elves that aren't immune to that type. 4. Every 3rd order brings Hammerhand. Then take a Rush order to bring General Grimbolt. |
+| Toy Workshop | The hexed toymakers can't keep their hands off a wind-up, so Clockwork traps work best here. The loyal elves pin toy orders to the board, and there is an order for each kind of trap, and every catch fills the one that matches yours. Finish enough orders and the bosses come to inspect. | 1. Most elves here are weak to Clockwork and shrug off Frost. Paint Smudgers fear Starlight; Hammerhand is forge-hot. 2. Check the order board: every catch fills the order for your trap's type, so stay on your best trap. 3. Finish all three types for a Triple Crate, or just stick with one. 4. Every 3rd order brings Hammerhand. Then take a Rush order to bring General Grimbolt. |
 | Reindeer Stables | The sleigh must be ready by Christmas Eve, and the hexed stable hands keep pinching the bells and snipping the harness. They crave warmth and bolt from the cold, so Frost traps work best here. Load the sleigh in time and Cinderhoof will try to stop the launch. | 1. Most elves here are weak to Frost and squint away Starlight. Harness Snippers snag in Clockwork. 2. Start a sleigh run: you have 40 hunts, quiet ones included. 3. Catches build Readiness. Escaped Bell Thieves and Harness Snippers take it away. 4. Hot Cocoa keeps elves coming, so fewer hunts are wasted. 5. Reach 100 to launch the sleigh and face Cinderhoof. |
 
 **Hunt screen with the new parts (all locations):**
@@ -604,12 +611,12 @@ Wrapping Room, ribbon red with a candy icon. Three tier steps; the armed tier is
 └────────────────────────────────────┘
 ```
 
-Toy Workshop, workshop green. Order slots as trap-type badges in a row; the next slot glows, filled slots are ticked. Shows the armed trap's type and whether it matches.
+Toy Workshop, workshop green. Three standing orders as trap-type badges with catch counts (parallel orders, 27 Nov 2026); the armed trap's type is marked.
 ```
-┌ Order Board ─────── Order 2 of 3 ──┐
-│ [⚙ ✓] [🌿 ▸] [❄  ]                 │
-│ Next: Starlight · your trap: Clockwork ✗│
-│ Inspection after this order        │
+┌ Order Board ───── 3 catches each ──┐
+│ [⚙ 2/3 armed] [★ 1/3] [❄ 0/3]      │
+│ Every catch fills your trap's type │
+│ Hammerhand inspects in 2 orders    │
 └────────────────────────────────────┘
 ```
 
@@ -659,7 +666,8 @@ Example: Madame Shredwell (gold 300, points 550) escapes from a player with 6,00
 **Safety rails** (so it stings but never dead-ends a player):
 - Gold never drops below 100 from a pillage.
 - Points never drop below the current rank's threshold, so a pillage can't take a rank away. Rank 1 players lose no points.
-- When a rail stops a loss the elf still counts as having pillaged, and the log says what was safe.
+- When a rail stops a loss the elf still counts as having pillaged, and the log says what was safe. A bait thief that comes away empty on the bait-save roll while the player still has bait is logged as "the thief fumbled and came away empty-handed" (`pillage.fumbled`); "no bait left to take" is only for a player with none.
+- Every hunt log entry ends with a fixed line, "Bait: <name> x<left> remaining" (`entry.baitLeft`), the armed bait count after the hunt.
 - Only the armed bait is taken, never more than is owned. Charms, gear and materials are never taken.
 - Mrs. Claus's free Stale Cookies (no bait and under 50 gold) are unchanged and still catch anyone who runs dry.
 - With the gold floor at 100, a player can always buy bait again (Stale Cookie is 8 gold).
@@ -934,7 +942,9 @@ Every trap, base, bait, charm, material and elf has text for its detail screen, 
 
 Elf descriptions and rumours hint at each elf's weaknesses and resistances, so players can work out the right trap type from the text. Loading fails if any item or elf has no text, if text names an unknown id, or if a field is over its limit. The text is a first pass; edit `flavour.json` freely, no numbers live there.
 
-## Cheer Meter and boons (eddy, 26 Nov 2026, design only)
+## Cheer Meter and boons (eddy, 26 Nov 2026, built on integration)
+
+**Built (27 Nov 2026, on the `integration` playground, draft numbers, untuned).** Code: `src/engine/cheer.ts` (meter, draw, pity, Overcharge, pick, reroll), `src/engine/mods.ts` (what active boons and buffs change in a hunt), `content/boons.json` (14 boons) and `constants.cheer` (all meter numbers and the draw table); UI in `src/client/screens/cheer.tsx`; server route `POST /api/cheer` (`draw`, `hold`, `reroll`, `pick`). `constants.cheer.enabled: false` switches the whole system off for baselines. Where the build reads the design below slightly differently: a full meter that is not held, or an open draw, neither fills nor drains (so waiting to pick costs nothing); the held state is a flag, and only a held meter takes the -5 escape (a held 10 still pays 5); the carry-over is stored as `carry` and becomes the next meter's starting pips (capped at 9). Cheer charms are three new charms (Cheer Bauble rank 2, Tinsel Cheer Charm rank 3, Gold Star Cheer Charm rank 4) with simple generated art. Admin tool: More > Admin > Speed run > Fill the Cheer Meter. UI: the Cheer card lists everything with a countdown as compact chips ("in play"): boons ("Name · 8 hunts left"), Santa and Mrs. Claus gifts and event buffs (green, hunts and/or uses left, e.g. "Golden Ticket · 5 uses left") and Scrinch penalties (red, e.g. Hexed trap, Frosted floor). Not built: the Cheer book screen, badges for boons, and simulator policies (a separate thread).
 
 A streak meter that rewards catching in a row. When it fills, the player picks 1 of 3 random boons, roguelike style, from a pool of 14 with three rarity tiers. Not built yet. It is separate from the random events plan (#43) (those are rare surprise encounters; this is a meter the player fills) and works with Allure (#44) because every boon is applied after Allure's odds are worked out.
 
@@ -942,7 +952,7 @@ A streak meter that rewards catching in a row. When it fills, the player picks 1
 
 - Shown as a 10-pip bar on the Hunt screen under the gear card.
 - **Fills:** +1 pip per catch, **+2 for a rare, mini boss or boss**. Uncommons and commons give +1.
-- **Escape:** -3 pips (never below 0). One bad roll hurts but never wipes the streak.
+- **Escape:** -3 pips (never below 0). One bad roll hurts but never wipes the streak. (eddy tried -2 on 27 Nov 2026: the meter filled too fast, so it stays at -3; the Toy Workshop fills through its order board instead.) One bad roll hurts but never wipes the streak.
 - **Full at 10:** the bar glows and a "Cash in" button appears. Pips above 10 from the same catch carry over into the next meter.
 - **Cash in:** a sheet shows 3 boon cards drawn from the pool. The player picks one, the boon starts, and the meter drops to 0. Closing the sheet keeps the meter full and the draw saved (the meter stops filling until a boon is picked, so there is no reason to delay except Overcharge, below).
 - Boons count in **hunts** (every hunt, caught or escaped). A boon of the same id picked again refreshes its hunts; different boons stack. A boon never outlasts a Start over.
@@ -987,7 +997,7 @@ At 10 the player can **Hold the charge** instead of cashing in and keep filling 
 | 10 | Full | Weights 70 / 25 / 5, 3 cards |
 | 11-12 | Warm | Weights 55 / 35 / 10, 3 cards |
 | 13-14 | Hot | Weights 40 / 42 / 18, 3 cards |
-| 15 | Blazing | Weights 25 / 50 / 25, 4 cards, plus one reroll of the whole draw |
+| 15 | Blazing (Overcharge) | Weights 0 / 55 / 45 (only rare and legendary), 2 cards (rare or legendary only), plus one reroll of the whole draw, you pick one, and you may take one **Overcharge perk** once: a second pick (two more cards, keep two), boons that last 50% longer, or two Santa's Blessings back to back (they do not stack, so six hunts of x2.5 power) |
 
 - **Harsher escape while held:** above 10 pips an escape costs **-5** (not -3) and can drop the meter below 10, so the player loses the full state and has to refill. The risk is the price of better odds.
 - Pity counters still apply. Cheer Surge pips count toward Overcharge.
@@ -1008,7 +1018,7 @@ Rails: a Cheer charm adds at most +1 pip to a catch and never refills a meter th
 ### Compatibility
 
 - **Allure (#44):** every hunt meets an elf and uses one bait, so no boon is lost to a "quiet hunt". Starfall multiplies the rare weights after Allure's factor. Sweet Tooth adds to the Allure bonus before the 95% cap.
-- **Random events (#43):** event boons and Scrinch events are separate from Cheer boons and never change the meter. If an event boon and a Cheer boon change the same stat, only the higher one counts. Events do not draw on this pool.
+- **Random events (#43):** event boons are separate from Cheer boons and never change the meter. If an event boon and a Cheer boon change the same stat, only the higher one counts. Events do not draw on this pool.
 - **Pillage, objectives, boss keys:** Cosy Mittens turns pillage off; objectives such as the Order Board and Sleigh Run still count caught elves as normal; Boss Bell never skips a key requirement.
 - **Stamina toggle:** unaffected.
 
@@ -1058,7 +1068,9 @@ Gold comes in only from catches and sales, and goes out on bait, charms, gear, l
 
 **How we check it:** `npm run simulate` plays virtual hunters through v1 with the real engine and content, reports hunts per rank, catch rates and bait cost per location, and with `--strict` fails if a rank target is missed by more than 25%.
 
-**Latest simulator run (Allure, 200 players, no retune):** all reached rank 5, median 1,289 hunts (1,652 before, because every hunt now meets an elf). Median hunts in ranks 1 to 4: 122, 266, 468, 404 (targets 150, 250, 400, 600); rank 4 is flagged "too fast". Bait cost per gold earned: 65%, 13%, 11%, 3%, 36% in the Pantry, Wrapping Room, Toy Workshop, Stables and Carol Loft. Mini boss and boss catches per player: Spoolwick 3.2, Madame Shredwell 1.3, Hammerhand 2.6, General Grimbolt 1.2, Antler Ripper 3.8, Cinderhoof 2.6, Choirmaster Hollowvoice 1.6. Median 48 of 55 badges. A retune (cheaper pace or higher bait cost) is left for eddy to decide.
+**Latest simulator run (full-collection benchmark added, 1,000 players, seed 42, PR 66 included: median 1,226 hunts to rank 5; all 28 elves caught by 100% of players, mean 1,252 hunts, median 1,240, p10 1,123, p90 1,400; Report 7). Previous run (Shredwell power 2,900 and x0.6 off-type: median 1,220 hunts to rank 5, ranks 117, 241, 329, 540, Wrapping Room 168 hunts at 86% catch rate, 5% pillage cost there, Shredwell 1.1 catches per player). Previous run (Scrinch events removed: median 1,208 hunts to rank 5, ranks 117, 236, 325, 533, 0.92 boon cards and 0.23 Grand Gifts per 100 hunts; see Report 6). Previous run (parallel Toy Workshop orders, 1,000 players, seed 42, Cheer and events on):** all reached rank 5, median 1,212 hunts (1,359 in the 27 Nov tuning round; the Workshop is a little faster because the simulated player no longer swaps traps for the board). Median hunts in ranks 1 to 4: 118, 237, 324, 532 (targets 150, 250, 400, 600, all ok). Toy Workshop: catch rate 54% (46% before, when the bot swapped to off-best traps for slots), bait 8% of gold, pillage 15% of gold earned there, about 30 orders per player, Hammerhand 4.3 and General Grimbolt 2.5 catches per player, and 3.6 Cheer fills per 100 hunts there (4.2 before; each counted catch now adds 1 pip, not 2). Overall Cheer: 3.4 draws per 100 hunts. It needed a rebalance: with no swapping the Workshop commons were caught about 90% of the time and rank 3 took only about 210 hunts, so their power went to 1,200, 1,500 and 1,850. See `docs/SIMULATION_REPORT.md` Report 5.
+
+Previous run (Allure, 200 players, no retune): all reached rank 5, median 1,289 hunts (1,652 before, because every hunt now meets an elf). Median hunts in ranks 1 to 4: 122, 266, 468, 404 (targets 150, 250, 400, 600); rank 4 is flagged "too fast". Bait cost per gold earned: 65%, 13%, 11%, 3%, 36% in the Pantry, Wrapping Room, Toy Workshop, Stables and Carol Loft. Mini boss and boss catches per player: Spoolwick 3.2, Madame Shredwell 1.3, Hammerhand 2.6, General Grimbolt 1.2, Antler Ripper 3.8, Cinderhoof 2.6, Choirmaster Hollowvoice 1.6. Median 48 of 55 badges. A retune (cheaper pace or higher bait cost) is left for eddy to decide.
 
 Previous run (early-game onboarding, 200 players): all reached rank 5, median 1,652 hunts; details in [Early game and tips](#early-game-and-tips).
 
@@ -1105,8 +1117,8 @@ Phone first (layout D2, chosen by eddy on 25 Nov 2026; mockups: https://claude.a
 | Quick bait and charm sheet | Owned bait or charms as picture cards, a preview of catch chance and attraction before and after, Use. Crafted bait asks once more if the setting is on |
 | Arsenal | Full screen with Trap, Base, Bait, Charm tabs. Tap an item to preview the setup and power, luck, attraction and catch before → after, then Equip. Unowned shop items are listed with their price |
 | Item details | Picture, stats, how you get it, tagline, description and backstory from `flavour.json`, Compare and Equip |
-| Naughty List | Portrait grid per location with caught counts. **Cards are styled by rarity (eddy, 26 Nov 2026), same tier colours as the New Catch popup:** common green, uncommon teal, rare purple, mini boss orange, boss gold. Each tier has its own card background, portrait border and rarity label (uppercase, coloured; rare ✦, mini boss ◆, boss ★ with gold text). Effects escalate: common a plain border, uncommon a soft glow, rare a stronger glow and a slow shine, mini boss a double border, orange glow and shine, boss a gold gradient border, strong glow, gradient background and shine (shine off with reduced motion). Locked cards stay grey with a dashed portrait border and a muted label, so nothing is spoiled. Uncaught elves show "?" and "seen N times, never caught". Every card, locked ones too, shows a **Weak to** row with the medal of each power type the elf is weak to (x1.5), or "none" |
-| Elf file | Caught: portrait, power, gold, points, catches, weaknesses, drops, first-catch time, tagline, description, backstory. Not caught: "?", only the rumour and "File sealed" |
+| Naughty List | Portrait grid per location with caught counts. **Opens on the tab of the player's current location, and an All tab (first, with caught/total) lists every elf from every location rarest first: boss, mini boss, rare, uncommon, common, keeping location order within a tier (eddy, 27 Nov 2026).** **Cards are styled by rarity (eddy, 26 Nov 2026), same tier colours as the New Catch popup:** common green, uncommon teal, rare purple, mini boss orange, boss gold. Each tier has its own card background, portrait border and rarity label (uppercase, coloured; rare ✦, mini boss ◆, boss ★ with gold text). Effects escalate: common a plain border, uncommon a soft glow, rare a stronger glow and a slow shine, mini boss a double border, orange glow and shine, boss a gold gradient border, strong glow, gradient background and shine (shine off with reduced motion). Locked cards stay grey with a dashed portrait border and a muted label, so nothing is spoiled. Uncaught elves show "?" and "seen N times, never caught". Every card, locked ones too, shows a **Weak to** row with the medal of each power type the elf is weak to (x1.5), or "none" |
+| Elf file | Caught: portrait, power, gold, points, catches, weaknesses, drops, first-catch time, tagline, description, backstory. Not caught: the name and weaknesses always show; the portrait is the "?" card, power, gold and points are "???", and the description and backstory stay behind "File sealed" (only the rumour shows). The Naughty List cards show the name and Weak to medals for every elf |
 | Elf Emporium | Traps, Bases, Bait, Charms, Sell tabs. Cards with thumbnail, stats, description, price and amount owned. Bait and charms have an amount picker and "Buy for N"; gear is bought once. Next-rank items are greyed with the rank that unlocks them |
 | Santa's Workshop | Type filters with counts and "Only show what I can craft now". Each recipe: result, amount, owned, rank needed, ingredient thumbnails with have / need (green or red), gold fee, and a button that says what is missing or "Craft ×N" |
 | More | Travel map (lair map with pins, unlock and go), Hunters (leaderboard by points or Naughty List size, and a feed of rare and boss catches and rank-ups; elves the viewer hasn't caught stay "?"), My profile (Stats and Achievements tabs; tapping your rank badge or name in the player bar opens it too), How to play (one picture per topic), Settings, Admin (admin only), Account, Log out |
@@ -1176,7 +1188,7 @@ The first account you create is the admin. Friends create their own accounts fro
 
 ## Deployment
 
-The game ships as one Docker image (`ghcr.io/cheesezilla/naughty-list`), built and published by GitHub Actions on each push to `main`. The UGREEN DXP4800 has an Intel x86 processor, so the amd64 image works.
+The game ships as one Docker image (`ghcr.io/cheesezilla/naughty-list`), built and published by GitHub Actions: each push to `main` publishes `:latest`, each push to `integration` publishes `:integration`, and a `main` push with a new `package.json` version also publishes `:1.0.0` and `:1.0`, tags `v1.0.0` and creates a GitHub Release. Release process: [docs/RELEASING.md](RELEASING.md); player-facing history: [CHANGELOG.md](../CHANGELOG.md). The UGREEN DXP4800 has an Intel x86 processor, so the amd64 image works.
 
 Step-by-step guide: [docs/DEPLOY.md](DEPLOY.md). In short:
 
@@ -1195,23 +1207,24 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 **Backups:** the save is one SQLite file (plus its `-wal` file) in the data folder; a UGOS scheduled backup of that folder is enough.
 
-## Random events (planned, not built)
+## Random events (built on integration)
 
-**Ask (eddy, 26 Nov 2026):** rare random events after a hunt. Santa or Mrs. Claus offer boons, and Scrinch events take something away unless the player finishes a mini objective. **Answers (27 Nov 2026):** 2.5% per hunt; 25% for a Scrinch event when a boss escapes; Scrinch events can be skipped by paying gold; **big gifts are rare and free, with no sacrifice**, so the player feels powerful and has something to work toward; events can happen in every location including the Cookie Pantry. eddy's focus is refinement, not balance: every hunt should make tangible short-term progress toward something. Tuning is a separate task. Design only; nothing is built and no game number changes. Written for Allure (PR #44): every hunt meets an elf, so triggers and objectives are per hunt.
+**Built (27 Nov 2026, on the `integration` playground, draft numbers, untuned).** Code: `src/engine/events.ts` (roll, offer, answer, Grand Gifts, buffs), content in `content/events.json` (5 boons, 5 Grand Gifts) and `constants.events` (1.5% per hunt, 30-hunt start guard, 20-hunt gap, Grand Gift 10% +5% per boon without one). UI in `src/client/screens/cheer.tsx` (boon card, an always-visible Santa's favour bar); server route `POST /api/event` (`a`, `b`, `decline`). `constants.events.enabled: false` switches events off. Differences from the design: Mrs. Claus's three Cocoa Flasks are one timed +4 luck buff for 30 hunts; "best-affordable bait" is the best bait the shop sells at the player's rank. Admin tool: More > Admin > Speed run > Trigger an event (boon or Grand Gift). Not built: event badges (Good Elf, Santa's Favourite). **Scrinch events removed (27 Nov 2026, eddy):** the threats, gold toll, mini objectives, boss-escape grudge and their penalty buffs and UI are gone; Scrinch stays the story villain. Old saves still load: the pending challenge, its counters, the escape tracker and any penalty buffs are dropped when a player's events state is read. The chance per hunt went from 2.5% to 1.5% so boons come as often as before (they were 60% of the old 2.5%).
 
-**Relationship to the Cheer Meter.** The [Cheer Meter](#cheer-meter-and-boons-eddy-26-nov-2026-design-only) is the player-earned, streak-driven pick-1-of-3 boon system, the medium-term mini game. Random events are the unscheduled layer on top. They share the hunt-log card and pending-prompt plumbing, but have separate triggers and pools. Event rewards and losses never fill or drain Cheer pips, and an event boon does not use an Overcharge. Only one prompt is open at a time (`pendingEvent` and the Cheer draw share a slot).
+**Ask (eddy, 26 Nov 2026):** rare random events after a hunt. Santa or Mrs. Claus offer boons. **Answers (27 Nov 2026):** **big gifts are rare and free, with no sacrifice**, so the player feels powerful and has something to work toward; events can happen in every location including the Cookie Pantry. eddy's focus is refinement, not balance: every hunt should make tangible short-term progress toward something. Written for Allure (PR #44): every hunt meets an elf, so triggers are per hunt. **Update (27 Nov 2026, eddy):** Scrinch events (threats, tolls, fights, grudge) were dropped from the design; the sections below describe only what is kept.
+
+**Relationship to the Cheer Meter.** The [Cheer Meter](#cheer-meter-and-boons-eddy-26-nov-2026-built-on-integration) is the player-earned, streak-driven pick-1-of-3 boon system, the medium-term mini game. Random events are the unscheduled layer on top. They share the hunt-log card and pending-prompt plumbing, but have separate triggers and pools. Event rewards and losses never fill or drain Cheer pips, and an event boon does not use an Overcharge. Only one prompt is open at a time (`pendingEvent` and the Cheer draw share a slot).
 
 ### How the system works
 
-- **Trigger.** After any hunt, roll 2.5%. Guards: none in the first 30 hunts of a game, at least 20 hunts between events, never while another is open. **Scrinch's grudge:** when a mini boss or boss escapes, a Scrinch event follows with 25% chance (minimum gap 10 hunts). Caught bosses never trigger it. That is about one event per 60 hunts plus grudges. All numbers go in `content/constants.json` > `events`; the roll uses the server random source.
-- **Who.** 60% a boon from Santa or Mrs. Claus, 40% a Scrinch event. No rank limit, so the Cookie Pantry gets events too.
+- **Trigger.** After any hunt, roll 1.5%. Guards: none in the first 30 hunts of a game, at least 20 hunts between events, never while another is open. That is about one event per 90 hunts. All numbers go in `content/constants.json` > `events`; the roll uses the server random source.
+- **Who.** Always a boon from Santa or Mrs. Claus. No rank limit, so the Cookie Pantry gets events too.
 - **Scale.** Rewards and penalties are multiples of **H**, the average gold of the current location's common elves, so an event matters equally everywhere.
 - **Boon card (the decision).** The sender's portrait and **two small gifts of different kinds** (for example gold or bait), at low or no cost, so the player picks what they need now. No sacrifice is asked. A "No thanks" link does nothing. The card survives a reload.
-- **Grand Gift (rare, free, no choice).** Each boon has a 10% chance to be a Grand Gift instead: a big, free reward shown with a gold-framed card and a sparkle (see table below). **Santa's favour** is the thing to work for: every Scrinch event the player beats adds +15% to the next boon's Grand Gift chance, and every boon without a Grand Gift adds +5% (a pity counter). The chance resets to 10% after one is given. The next-boon chance is visible as a small "Santa's favour" bar, so fighting Scrinch has a clear payoff.
-- **Scrinch card (fight or pay).** Shows the threat, the mini objective and a live counter pinned above the Hunt button ("Catch 5 of 8: 2/5, 6 hunts left"). Objectives count hunts, not time, and ask for catches out of hunts (every hunt is an encounter). Beat it: threat cancelled, a small prize, and Santa's favour. Fail it: the penalty lands once. Or pay the **skip toll** in gold at any time before it ends.
+- **Grand Gift (rare, free, no choice).** Each boon has a 10% chance to be a Grand Gift instead: a big, free reward shown with a gold-framed card and a sparkle (see table below). **Santa's favour** is the thing to watch: every boon without a Grand Gift adds +5% (a pity counter). The chance resets to 10% after one is given. The next-boon chance is visible as a small "Santa's favour" bar.
 - **Rails** (same spirit as pillage): gold never drops below 100, points never cost a rank, gear, keys and Naughty List cards are never touched, and a penalty only takes what the player has.
-- **Log and badges.** Every offer, choice and result is a hunt-log event. Badge ideas: "Good Elf" (take 5 boons), "Santa's Favourite" (get a Grand Gift), "Scrinch Slayer" (beat 10 challenges).
-- **Build.** `events.json` plus `src/engine/events.ts` (roll, offer, apply, resolve), `pendingEvent` and the favour counter in the save, one POST route to answer, a card, the counter and the favour bar in the UI. Simulator gets an events flag and a policy (always the first gift, always fight, always pay the toll). Small to medium effort.
+- **Log and badges.** Every offer and choice is a hunt-log event. Badge ideas: "Good Elf" (take 5 boons), "Santa's Favourite" (get a Grand Gift).
+- **Build.** `events.json` plus `src/engine/events.ts` (roll, offer, apply, resolve), `pendingEvent` and the favour counter in the save, one POST route to answer, a card and the favour bar in the UI. Simulator gets an events flag and a policy (always the first gift, or always the second).
 
 ### Boons (Santa and Mrs. Claus)
 
@@ -1237,21 +1250,10 @@ One is picked at random. Each is big enough to notice and cost the player nothin
 | G4 | Winter Wonder | Allure x3 for 15 hunts (many rare and boss visits) |
 | G5 | Sparkling Snow Globe | The next boss or mini boss you meet cannot pillage (and gets +20% catch chance) |
 
-### Scrinch events
-
-| # | Event | Threat if you fail | Mini objective | Prize on success | Skip toll |
-| --- | --- | --- | --- | --- | --- |
-| 6 | Soot Snatch | Hounds steal 10% of your gold (at most 8 H) | Catch 5 of the next 8 elves | Keep the gold, plus 3 H | Pay 3% gold |
-| 7 | Bait Bandits | 6 of your armed bait are taken | Catch 3 in a row (within 10 hunts) | Keep the bait, plus 3 bait | Pay 2 H gold |
-| 8 | Hex on the Trap | Trap power -25% for 30 hunts | Catch one rare elf or better within 30 hunts (Allure gear helps) | Hex lifted, plus a charm | Pay 4 H gold |
-| 9 | Toll Booth | Lose 10% of your gold (at most 12 H) | Catch 8 of the next 12 elves | 4 H gold | Pay 4% gold |
-| 10 | Frosted Footing | The next 8 hunts use 2 bait each | Catch an elf with a trap of the location's home type within 8 hunts | Normal bait use, plus 2 bait | Pay 3 H gold |
-
 ### Decided by eddy (27 Nov 2026)
 
-- Grand Gift rates stay at 10% base, +15% per Scrinch win, +5% per boon without one, until play-testing.
+- Grand Gift rates stay at 10% base, +5% per boon without one, until play-testing.
 - The Santa's favour bar always shows.
-- Scrinch's grudge stops after the same boss escapes twice in a row (the 25% trigger is skipped on a third escape from that boss until the player catches it once).
 
 ## Parked ideas (eddy, 26 Nov 2026: not now)
 
@@ -1275,14 +1277,34 @@ The first idea (replace the attraction roll where no elf takes the bait) is trac
 ## Changelog
 
 | Date | PR | Change |
+| --- | --- | --- |
+| 2026-11-27 | this PR | **Release 1.0.0 and a release process (eddy).** `integration` is promoted to `main` as version 1.0.0. Added `CHANGELOG.md` (player-facing notes, Keep a Changelog and semver), `docs/RELEASING.md`, `package.json` version 1.0.0, and the Docker workflow, when `main` gets a `package.json` version with no tag yet, also publishes `:X.Y.Z` and `:X.Y` and creates the tag and GitHub Release from the changelog. **Release notes in the game:** `content/releases.json` (newest first, first entry must equal the `package.json` version, tested), `releaseSeen` on the player (new games start as seen, older saves see it once), `POST /api/release-seen`, a What's new popup after an update and More > What's new listing every version. `/api/health` reports the release version. No game numbers changed |
+| 2026-11-27 | this PR | **Simulator: second game-length benchmark.** Besides median hunts to rank 5, every report now gives hunts to catch all 28 elves (100% of portraits, Carol Loft and bosses included). The bot keeps hunting after rank 5 in rooms with uncaught elves, up to `--max-collect-hunts` (20,000). 1,000 players, seed 42, PR 66 included: rank 5 median 1,226; full collection by 100% of players, mean 1,252, median 1,240, p10 1,123, p90 1,400. See `docs/SIMULATION_REPORT.md` Report 7 |
+| 2026-11-27 | #66 | **Madame Shredwell much harder without Carol (eddy).** Power 1,100 to 2,900; effectiveness Carol x1.5 and x0.6 against Clockwork, Starlight and Frost (was x0.5 Clockwork, x1 the others). With rank 2 gear (trap + Candy Cane Platform): about 10% without Carol (was 31%), about 30% with the Carol Horn (was 56%). Simulator (200 players, seed 1): median 1,220 hunts to rank 5 (1,211 before); ranks 117, 241, 329, 540; Wrapping Room 168 hunts (was 123); Shredwell 1.1 catches per player |
+| 2026-11-27 | this PR | **Scrinch's random events removed (eddy).** Threats, gold toll, mini objectives, boss-escape grudge, their penalty buffs, the Scrinch counter card, `tollGold`, the `toll` event action and the admin Scrinch trigger are gone; Santa and Mrs. Claus boons and Grand Gifts stay, and Scrinch stays the story villain. `constants.events`: `chancePerHunt` 2.5% to 1.5% (keeps the boon rate), `scrinchShare`, `grudge*` and `grandPerScrinchWin` removed; `events.json` loses its `scrinch` list. Old saves load: the pending challenge, its counters, the escape tracker and penalty buffs are stripped when the events state is read (test added). Simulator: `skip` and `fight` policies and Scrinch stats removed. 1,000 players, seed 42: median 1,208 hunts to rank 5 (1,212 in Report 5), ranks 117, 236, 325, 533, all within target; 0.92 boon cards and 0.23 Grand Gifts per 100 hunts. See `docs/SIMULATION_REPORT.md` Report 6 |
+| 2026-11-27 | this PR | UI only: uncaught elves in the Naughty List show their name and power-type weakness (list cards and elf file); only the portrait, stats and description stay locked |
+| 2026-11-27 | this PR | Docs only: added docs/WALKTHROUGH.md, a short start-to-finish strategy guide worked out from the content files and formulas. Keep it in step with balance changes |
+| 2026-11-27 | this PR | UI only: rare, mini boss and boss catches in the hunt log now glow and shimmer like their portraits, in the tier colour (purple, orange, gold); escapes and reduced-motion are unchanged |
+| 2026-11-27 | this PR | Fix: the hunt-log slide-in stopped replaying after a few hunts (rows were matched by position, so the top row kept its old class); rows are now keyed by id. UI only |
+| 2026-11-27 | this PR | UI motion only: Cheer Meter pips pop in when they fill and sink when they drain, Santa's favour bar pulses gold when it rises and shakes when it falls, and a new hunt-log row slides in after a hunt (rows already there on opening do not animate); reduced-motion turns it off |
+| 2026-11-27 | this PR | **Parallel Toy Workshop orders (eddy).** The Order Board no longer asks for trap types in order, which needed a swap almost every hunt. Three standing orders (Clockwork, Starlight, Frost) need 3 catches each, and every catch fills the order for the armed trap's type (Carol traps are jokers). Each finished order pays the Toy Crate; finishing all three types pays a Triple Crate (800 gold and every crate reward, `tripleGold`). The Rush order is 5 catches with any trap and pauses the standing orders. Inspection still comes every 3rd order. Cheer `orderPips` 2 to 1 per counted catch, Workshop commons power 1,200 / 1,500 / 1,850 (were 380 / 510 / 640) because catch rates rose with no swapping. Old saves keep their order count and start the new orders at 0. The simulator bot no longer swaps for the board. Result: median 1,212 hunts to rank 5, Toy Workshop catch rate 54% (Report 5) |
+| 2026-11-27 | this PR | **Tuning round from the first simulation report (eddy).** Rank 5 now needs 217,000 points (was 160,000). Scrinch skip tolls tripled (percent 9 to 12% of gold, flat 6 to 12 H). Toy Workshop: commons 15% weaker (power 380, 510, 640), Hammerhand and General Grimbolt pillage gold capped at 2 times their gold, and each finished order slot adds 2 Cheer pips (`constants.cheer.orderPips`). An Overcharged (Blazing) draw shows two cards, both rare or legendary, you pick one, and you can take one perk first: a second pick, boons 50% longer, or two Santa's Blessings in a row (`perks` on the draw table, `POST /api/cheer` action `perk`). Thieves now often find no bait to take (`pillage.baitSave`: 50% for bought bait, 85% for crafted bait). Antler Ripper power 3,500 to 4,100 and Cinderhoof 6,000 to 7,000, and Cinderhoof only attacks the sleigh after the second launch (`bossAfterLaunches`). Cheer escape penalty stays 3 (tried 2: too fast). Simulator (1,000 players, Cheer and events on): median 1,359 hunts to rank 5 (1,221 before); ranks 118, 242, 409, 568; Toy Workshop fills 4.1 per 100 hunts (was 0.2); Workshop catch rate 45% (was 40%) and pillage 29% of gold earned there (was 43%); fighting Scrinch wins 59% (was 52%), paying every toll costs 19% of gold earned and is 2% slower than fighting; holding for Overcharge is 2.3% slower than cashing in at 10 with no perk, 1% faster with the second pick, 0.4% slower with longer boons and 0.4% slower with two Santa's Blessings (see Report 4). See `docs/SIMULATION_REPORT.md` Report 4 |
+| 2026-11-27 | this PR | UI polish (CSS and layout only, no rules or numbers): boss, mini boss and rare shimmer now starts at once on portrait cards and also plays on the New Catch popup frame; bait ladder panel lists each bait as a row with a compact Equip button, and the shop Buy row wraps instead of overflowing; Cheer Meter pips and Santa's favour bar are animated with a moving sheen, light sweep and glow; rare (blue) and legendary (gold) boon cards in the pick screen get a pulsing aura and shine; after picking, each active boon in the Cheer card shows its effect text under its name and hunts left; the Santa and Mrs. Claus event box is shiny gold with a pulsing glow, light sweep and twinkle |
+| 2026-11-27 | this PR | Wrapping Room ladder panel: the Carol Horn line is now an in-world hint (bent reeds, torn songsheet, singing from above) instead of naming the Carol Loft. UI text only |
+| 2026-11-27 | this PR | Wrapping Room bait ladder panel: tap any tier to browse it (the view no longer follows the equipped bait); each tier shows its bait with Equip, and Craft where a recipe exists, which opens the Workshop on that exact recipe (`#/workshop/<recipeId>`, "All recipes" link back); a "Prepare before the faceoff" line names the Carol weakness and the Carol Loft. UI only, no game numbers changed |
+| 2026-11-27 | this PR | Naughty List opens on the current location's tab and gains an All tab: every elf from every location, rarest first (boss to common). No game numbers changed |
+| 2026-11-27 | this PR | Hunt no longer auto-scrolls to the hunt log, so the Cheer Meter and the rest of the screen stay in view. No game numbers changed |
+| 2026-11-27 | this PR | **Cheer Meter and random events built on `integration` (eddy's playground).** `cheer` and `events` blocks in constants (both with an `enabled` flag), `boons.json` (14 boons), `events.json` (15 events), three Cheer charms, engine `cheer.ts`, `events.ts`, `mods.ts`, `hunt()` applies them, `POST /api/cheer` and `/api/event`, Hunt screen meter, boon card, Scrinch counter and favour bar, hunt-log lines, two admin tools, tests. Draft numbers, no tuning. Existing simulator (does not pick boons or answer events): 200/200 reach rank 5, median 1,288 hunts |
+| 2026-11-27 | this PR | Simulator extended for the playtest plan: encounter mix and catch rate per tier, escape streaks, portrait goal and first-catch timing, gold flow, progress-feel gaps, `--seeds N` pooling, `--trace out.jsonl`, and parsed (not yet active) `--no-cheer`, `--no-events`, `--boon-policy random|greedy|hold`, `--event-policy safe|big|skip|fight` and Cheer and event reports. Reports in `docs/SIMULATION_REPORT.md`: baseline median 1,286 hunts to rank 5; Cheer alone -1.9%, events alone -3.3%, both -5.1% (1,221); the meter rarely fills in the Toy Workshop (0.2 draws per 100 hunts) because an escape costs 3 pips; no game numbers changed |
 | 2026-11-27 | this PR | Plan only: playtest and simulation plan (numbers to report, conclusions each supports, targets, human checklist) for Allure, Cheer Meter, events and goals. No game numbers changed |
 | 2026-11-27 | this PR | Player feedback: More > Feedback screen (write a note, see your own), `feedback` table kept apart from every reset path, admin list on More > Admin; tests prove it survives Start over, admin tools and reopening the database. No game numbers changed |
 | 2026-11-26 | this PR | Emporium cards and Santa's Workshop recipe cards now share one `ItemStatBlock` component: power type medal (traps; bases show their affinity types), then small stat tiles (Power, Luck, Attraction (exact % for admins; charms show "Boost"), Rares) and a small note line for Good for and Affinity, in the same order. UI only, no numbers changed |
-| --- | --- | --- |
 | 2026-11-26 | this PR | **Allure (eddy).** Attraction no longer rolls for an encounter: every hunt meets an elf and uses bait, and attraction / 0.8 multiplies rare, mini boss and boss weights. New `allure.baseline` in constants; `impWeights` and `huntOdds` take it; UI says Allure; Silent Night badge now needs 4 escapes in a row. Not retuned. Simulator: 200/200 reach rank 5, median 1,289 hunts (was 1,652) |
 | 2026-11-26 | this PR | Design only: random events after a hunt (boons from Santa and Mrs. Claus, Scrinch challenges) with 10 draft events, and a parked-ideas list. Reworked 27 Nov for Allure (#44) and eddy's answers: 2.5% per hunt, 25% boss-escape grudge, skip tolls, free rare Grand Gifts with a Santa's favour bar, events in every location. No game number changes |
 | 2026-11-26 | this PR | Planned the Cheer Meter: +1 pip per catch (+2 rare or better), -3 on an escape, full at 10, then pick 1 of 3 boons from a pool of 14 (6 common, 5 rare, 3 legendary), Overcharge up to 15 pips with better draw odds and a -5 escape, and three Cheer charms that fill the meter faster. Design only, no numbers changed |
 | 2026-11-27 | this PR | Cookie Pantry goals panel on the Hunt screen: "Rank up and move on" ticks at the next area's rank, optional "Unlock every portrait" shows caught/total. Client only, no rule changes |
+| 2026-11-27 | this PR | Cheer card shows all active buffs (boons, gifts, event effects) with hunts or uses left. Client only, no rule changes |
+| 2026-11-27 | this PR | Bait pillage fumble wording fixed (was "no bait left to take" even with bait in the sack); every hunt log entry shows the armed bait remaining |
 | 2026-11-26 | #40 | Bases are drawn 30% lower under the trap in the trap stack. Imported all 97 custom art pictures (elves, traps, bases, baits, charms, materials, trap types, ranks, locations, map, brand, how-to) as resized WebP, replacing the generated SVGs and older PNGs; icons stay SVG; favicon now WebP. No rule or balance change |
 | 2026-11-26 | this PR | Hunt log escapes now show the effectiveness tier ("Escaped. Weak chance") instead of the exact percentage; admins with the exact-odds toggle still see the percentage. Checked the New Catch popup and Hunters feed: they show no odds. Imp-file drop and pillage-risk percentages are unchanged |
 | 2026-11-26 | #36 | Santa's Workshop recipe cards show the output's stats (power, luck, Good for, base type bonus, charm bonuses), traps show their power type medal; attraction stays behind the admin exact-odds toggle. Base type bonus now also shows on item lines in the Emporium and Arsenal |

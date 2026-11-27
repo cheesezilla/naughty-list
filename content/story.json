@@ -33,11 +33,11 @@
       ]
     },
     "toy_workshop": {
-      "intro": "The hexed toymakers can't keep their hands off a wind-up, so Clockwork traps work best here. The loyal elves pin toy orders to the board, and each part must be caught with the right kind of trap. Finish enough orders and the bosses come to inspect.",
+      "intro": "The hexed toymakers can't keep their hands off a wind-up, so Clockwork traps work best here. The loyal elves pin toy orders to the board, and there is an order for each kind of trap, and every catch fills the one that matches yours. Finish enough orders and the bosses come to inspect.",
       "hint": [
         "Most elves here are weak to Clockwork and shrug off Frost. Paint Smudgers fear Starlight; Hammerhand is forge-hot.",
-        "Check the order board: each slot needs a catch with that trap type, in order.",
-        "Swap traps to match, and pick elves that aren't immune to that type.",
+        "Check the order board: every catch fills the order for your trap's type, so stay on your best trap.",
+        "Finish all three types for a Triple Crate, or just stick with one.",
         "Every 3rd order brings Hammerhand. Then take a Rush order to bring General Grimbolt."
       ]
     },

@@ -35,7 +35,10 @@
   "charms": [
     { "id": "mistletoe_charm", "name": "Mistletoe Charm", "luck": 4, "rank": 1, "price": 30 },
     { "id": "jingle_bell_charm", "name": "Jingle Bell Charm", "attraction": 0.15, "rank": 2, "price": 25 },
-    { "id": "windup_key_charm", "name": "Wind-up Key Charm", "powerBonus": 0.2, "rank": 3, "price": 60 }
+    { "id": "windup_key_charm", "name": "Wind-up Key Charm", "powerBonus": 0.2, "rank": 3, "price": 60 },
+    { "id": "cheer_bauble", "name": "Cheer Bauble", "cheer": { "rare": 1 }, "rank": 2, "price": 40 },
+    { "id": "tinsel_cheer_charm", "name": "Tinsel Cheer Charm", "cheer": { "all": 1 }, "rank": 3, "price": 90 },
+    { "id": "gold_star_cheer_charm", "name": "Gold Star Cheer Charm", "cheer": { "all": 1, "escape": 1 }, "rank": 4, "price": 180 }
   ],
   "materials": [
     { "id": "candied_peel", "name": "Candied Peel", "sellPrice": 5 },

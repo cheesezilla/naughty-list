@@ -9,6 +9,7 @@ import { useRateText } from '../lib/effectiveness.js';
 import { go } from '../lib/route.js';
 import { BackRow, MainScreen, Tabs } from '../ui.js';
 import { BadgeMedal } from '../lib/medal.js';
+import { HuntExtras } from './cheer.js';
 
 /** An imp's portrait, or the "?" card until this player has caught it once. */
 export function ImpThumb({ id, size = 52 }: { id: string; size?: number }) {
@@ -29,13 +30,19 @@ export function pillageText(p: Pillage, itemName: (id: string) => string): strin
   const safe = p.safe ?? [];
   if (safe.includes('points')) parts.push('your rank is safe');
   if (safe.includes('gold')) parts.push('your gold is safe');
-  if (safe.includes('bait')) parts.push('no bait left to take');
+  if (safe.includes('bait')) parts.push(p.fumbled ? 'the thief fumbled and came away empty-handed' : 'no bait left to take');
   return parts.join(', ') || 'nothing worth taking';
 }
 
 function ObjectiveNote({ o, itemName }: { o: NonNullable<JournalEntry['objective']>; itemName: (id: string) => string }) {
   const reward = [o.gold ? `+${num(o.gold)} gold` : '', ...(o.items ?? []).map((i) => `+${num(i.amount)} ${itemName(i.item)}`)].filter(Boolean).join(', ');
   return <div class="objective-note">{o.notes.join('. ')}{reward && `: ${reward}`}</div>;
+}
+
+/** Fixed last line of every hunt entry: how much of the armed bait is left. */
+function BaitLeft({ e, itemName }: { e: JournalEntry; itemName: (id: string) => string }) {
+  if (!e.baitLeft) return null;
+  return <div class="bait-left">Bait: {itemName(e.baitLeft.item)} x{num(e.baitLeft.amount)} remaining</div>;
 }
 
 function HuntRow({ row }: { row: JournalRow & { kind: 'hunt' } }) {
@@ -55,7 +62,7 @@ function HuntRow({ row }: { row: JournalRow & { kind: 'hunt' } }) {
       return (
         <div class="log-row quiet">
           <span class="empty-thumb" aria-hidden="true">empty</span>
-          <div class="row-body"><b>Quiet hunt</b><br />Nothing took the bait.{e.rescued && ' Mrs. Claus slipped you 10 Stale Cookies.'}{e.objective && <ObjectiveNote o={e.objective} itemName={itemName} />}</div>
+          <div class="row-body"><b>Quiet hunt</b><br />Nothing took the bait.{e.rescued && ' Mrs. Claus slipped you 10 Stale Cookies.'}{e.objective && <ObjectiveNote o={e.objective} itemName={itemName} />}<HuntExtras e={e} /><BaitLeft e={e} itemName={itemName} /></div>
           {time}
         </div>
       );
@@ -79,6 +86,8 @@ function HuntRow({ row }: { row: JournalRow & { kind: 'hunt' } }) {
               ? <>Escaped and pillaged you: {pillageText(e.pillage, itemName)}. {rateText(e.catchChance ?? 0)} chance</>
               : <>Escaped. {rateText(e.catchChance ?? 0)} chance</>}
           {e.objective && <ObjectiveNote o={e.objective} itemName={itemName} />}
+          <HuntExtras e={e} />
+          <BaitLeft e={e} itemName={itemName} />
         </div>
         {time}
       </button>
@@ -99,12 +108,14 @@ function HuntRow({ row }: { row: JournalRow & { kind: 'hunt' } }) {
   );
 }
 
-export function eventText(ev: GameEvent, itemName: (id: string) => string, locName: (id: string) => string) {
+export function eventText(ev: GameEvent, itemName: (id: string) => string, locName: (id: string) => string, boonName: (id: string) => string = (id) => id) {
   switch (ev.type) {
     case 'buy': return <>Bought <b>{num(ev.amount)} {itemName(ev.item)}</b> for {num(ev.gold)} gold</>;
     case 'sell': return <>Sold <b>{num(ev.amount)} {itemName(ev.item)}</b> for {num(ev.gold)} gold</>;
     case 'craft': return <>Crafted <b>{ev.amount > 1 ? `${num(ev.amount)} ` : ''}{itemName(ev.item)}</b> for {num(ev.gold)} gold and materials</>;
     case 'intro': return <>The story so far</>;
+    case 'cheer_pick': return <>Cheer boon: <b>{boonName(ev.boon)}</b></>;
+    case 'event_answer': return <><b>{ev.name}</b>: {ev.text}</>;
     case 'achievement': return <>Achievement{ev.ids.length > 1 ? 's' : ''}</>;
     case 'arrival': return <>Arrived in the <b>{locName(ev.location)}</b></>;
     case 'objective': return ev.action === 'start_run' ? <>Started a <b>sleigh run</b></> : <>Took a <b>Rush order</b></>;
@@ -116,16 +127,16 @@ export function eventText(ev: GameEvent, itemName: (id: string) => string, locNa
   }
 }
 
-const BADGE: Record<GameEvent['type'], string> = { buy: 'Buy', sell: 'Sell', craft: 'Craft', travel: 'Travel', equip: 'Gear', intro: 'Story', arrival: 'Arrived', objective: 'Goal', achievement: 'Badge' };
+const BADGE: Record<GameEvent['type'], string> = { buy: 'Buy', sell: 'Sell', craft: 'Craft', travel: 'Travel', equip: 'Gear', intro: 'Story', arrival: 'Arrived', objective: 'Goal', achievement: 'Badge', cheer_pick: 'Cheer', event_answer: 'Event' };
 
 function EventRow({ row }: { row: JournalRow & { kind: 'event' } }) {
-  const { data } = useGame();
+  const { data, content } = useGame();
   const prefs = usePrefs();
   const ev = row.entry;
   return (
     <div class="log-row event">
       <span class={`badge badge-${ev.type}`}>{BADGE[ev.type]}</span>
-      <div class="row-body">{eventText(ev, (id) => data.items.get(id)?.name ?? id, (id) => data.locations.get(id)?.name ?? id)}</div>
+      <div class="row-body">{eventText(ev, (id) => data.items.get(id)?.name ?? id, (id) => data.locations.get(id)?.name ?? id, (id) => content.boons.find((b) => b.id === id)?.name ?? id)}</div>
       <span class="row-time">{when(row.at, prefs.clock24)}</span>
     </div>
   );
