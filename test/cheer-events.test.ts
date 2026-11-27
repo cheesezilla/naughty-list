@@ -29,6 +29,25 @@ describe('cheer meter extras', () => {
     expect(done.ok && done.player.cheer!.active).toHaveLength(1);
   });
 
+  it('Overcharge perks: second pick, longer boons, guaranteed Santa\'s Blessing', () => {
+    const held = () => cheerAction(content, fresh((q) => { cheerOf(q).pips = 15; cheerOf(q).held = true; }), 'draw', seededRng(5));
+    const r = held();
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.player.cheer!.draw!.perks).toEqual(['second_pick', 'long', 'blessing']);
+    const sp = cheerAction(content, r.player, 'perk', seededRng(5), 'second_pick');
+    expect(sp.ok && sp.player.cheer!.draw!.picks).toBe(2);
+    const lg = cheerAction(content, r.player, 'perk', seededRng(5), 'long');
+    if (!lg.ok) throw new Error('perk failed');
+    const card = lg.player.cheer!.draw!.cards[0]!;
+    const picked = cheerAction(content, lg.player, 'pick', seededRng(5), card);
+    const base = content.boons.find((b) => b.id === card)!.hunts;
+    expect(picked.ok && picked.player.cheer!.active[0]!.hunts).toBe(Math.ceil(base * 1.5));
+    const bl = cheerAction(content, r.player, 'perk', seededRng(5), 'blessing');
+    expect(bl.ok && bl.player.cheer!.draw!.cards).toEqual(['santas_blessing']);
+    expect(cheerAction(content, fresh((q) => { cheerOf(q).pips = 10; }), 'draw', seededRng(5)).ok).toBe(true);
+  });
+
   it('a finished Workshop order slot adds Cheer pips', () => {
     const p = fresh((q) => { cheerOf(q).pips = 4; });
     expect(cheerAddPips(content, p, content.constants.cheer.orderPips)).toBe(content.constants.cheer.orderPips);

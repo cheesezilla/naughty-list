@@ -97,6 +97,14 @@ function CheerSheet({ onClose }: { onClose: () => void }) {
           </button>
         ))}
       </div>
+      {(draw.perks?.length ?? 0) > 0 && (
+        <div class="boon-perks">
+          <p class="muted">Overcharge perk (choose one, once):</p>
+          {draw.perks!.includes('second_pick') && <button class="outline-btn" onClick={() => act('/api/cheer', { action: 'perk', boon: 'second_pick' })}>A second pick (and two more cards)</button>}
+          {draw.perks!.includes('long') && <button class="outline-btn" onClick={() => act('/api/cheer', { action: 'perk', boon: 'long' })}>Boons last 50% longer</button>}
+          {draw.perks!.includes('blessing') && <button class="outline-btn" onClick={() => act('/api/cheer', { action: 'perk', boon: 'blessing' })}>Santa's Blessing, guaranteed</button>}
+        </div>
+      )}
       {draw.rerolls > 0 && <button class="outline-btn" onClick={() => act('/api/cheer', { action: 'reroll' })}>Reroll the draw ({draw.rerolls})</button>}
     </Sheet>
   );

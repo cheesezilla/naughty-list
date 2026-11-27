@@ -11,6 +11,7 @@
  * Cheer Meter and events run inside hunt(); the simulated player answers them:
  *   --no-cheer / --no-events                switch a system off (baselines)
  *   --boon-policy random|greedy|hold       which boon card to pick; hold uses Overcharge up to the max before cashing in
+ *   --overcharge-perk none|second_pick|long|blessing   which perk the hold policy takes on an Overcharged draw
  *   --event-policy safe|big|skip|fight     boon card option a (safe) or b (big); skip pays the Scrinch toll, fight never pays
  */
 import { writeFileSync } from 'node:fs';
@@ -39,6 +40,7 @@ const VERBOSE = args.includes('--verbose');
 const strOpt = (name: string, def = '') => { const i = args.indexOf(`--${name}`); return i >= 0 ? (args[i + 1] ?? def) : def; };
 const TRACE = strOpt('trace');
 const TRACE_PLAYERS = opt('trace-players', 1);
+const OC_PERK = strOpt('overcharge-perk', 'none');
 const NO_CHEER = args.includes('--no-cheer');
 const NO_EVENTS = args.includes('--no-events');
 const BOON_POLICY = strOpt('boon-policy', 'greedy');
@@ -265,8 +267,13 @@ function answer(p: PlayerState, rng: Rng, log: Log, n: number): PlayerState {
   const c = content.constants.cheer;
   if (!c.enabled || !p.cheer) return p;
   const s = p.cheer;
-  if (s.draw) {
-    const cards = s.draw.cards;
+  if (s.draw?.perks?.length && OC_PERK !== 'none' && s.draw.perks.includes(OC_PERK)) {
+    const r0 = cheerAction(content, p, 'perk', rng, OC_PERK);
+    if (r0.ok) p = r0.player;
+    return answer(p, rng, log, n);
+  }
+  if (p.cheer!.draw) {
+    const cards = p.cheer!.draw.cards;
     const pick = BOON_POLICY === 'random' ? cards[Math.floor(rng() * cards.length)]! : [...cards].sort((a, b) => (BOON_VALUE[b] ?? 0) - (BOON_VALUE[a] ?? 0))[0]!;
     for (const id of cards) log.cheer.offered[id] = (log.cheer.offered[id] ?? 0) + 1;
     log.cheer.picks[pick] = (log.cheer.picks[pick] ?? 0) + 1;

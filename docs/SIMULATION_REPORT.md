@@ -95,7 +95,7 @@ eddy approved: rank 5 at 217,000 points; Scrinch tolls x3; Toy Workshop commons 
 
 | Measure | Before | After |
 | --- | --- | --- |
-| Hunts to rank 5 (median) | 1,221 | 1,358 |
+| Hunts to rank 5 (median) | 1,221 | 1,342 |
 | Hunts in ranks 1 to 4 | 118, 242, 450, 377 | 118, 242, 409, 568 |
 | Cheer fills per 100 hunts: Pantry, Wrapping Room, Workshop, Stables, Loft | 1.5, 7.2, 0.2, 3.2, 1.1 | 1.5, 7.2, 4.1, 3.3, 1.1 |
 | Hunts per fill (p10 / median / p90) | 9 / 14 / 98 | 7 / 15 / 63 |
@@ -103,7 +103,7 @@ eddy approved: rank 5 at 217,000 points; Scrinch tolls x3; Toy Workshop commons 
 | Toy Workshop pillage as share of gold earned | 43% | 29% |
 | Scrinch fight win rate | 52% | 59% |
 | Paying every toll: gold per player, pace against fighting | 10,100 (7%), +0.7% | 39,600 (19%), +2.1% |
-| Overcharge (hold) against cash-in | 0.0% | 2.1% slower (1,387 against 1,358) |
+| Overcharge (hold, no perk) against cash-in | 0.0% | 2.3% slower (1,373 against 1,342); second pick 1.0% faster |
 | Median catches per player: Antler Ripper, Cinderhoof | 3.7, 2.6 | 5.7, 4.2 |
 
 Findings:
@@ -111,6 +111,7 @@ Findings:
 - **The Toy Workshop now fills the meter** about once per 25 hunts of order work, 4.1 per 100 hunts (was 0.2). That is close to the Stables (3.3) and not far under the Wrapping Room (7.2). If it feels like too much, `orderPips` 2 to 1 halves it.
 - **The pillage cap only works at 2 times the elf's gold.** At 5 times it never binds (the 8% share of held gold is lower), and pillage stayed at 41%; at 2 times it falls to 29%. The Stables boss pillage (30% of gold earned there) is now the highest.
 - **The portrait goal still finishes well before the rank-up in the Stables:** Cinderhoof first caught around hunt 1,004, rank-up about 1,358, so 323 hunts early. Requiring five launches moves Cinderhoof to 1,094 (255 early). The Stables are 512 hunts long now, so the portrait cannot be the long pole unless the boss gate is much later or the area's loop is made longer. Suggestions: a 5-launch gate, or Cinderhoof only at a higher Readiness run (for example a Rush run), or accept the portrait as a bonus for the first half of the area.
-- **Overcharge is now a losing gamble.** A held draw is two rare-or-better cards (pick one), and holding finishes 2.1% slower than cashing in at 10 (1,387 against 1,358): it gets 1.3 draws per 100 hunts against 3.5, with a p90 wait of 191 hunts. Keep-two-of-four was 0.7% faster. If you want Overcharge to be a real option, give the held draw a second pick, longer boons or a bigger pay (for example Santa's Blessing guaranteed).
+- **Overcharge perks (one per held draw, you choose):** against cashing in at 10 (1,342 hunts), holding with no perk is 2.3% slower (1,373); with a second pick 1.0% faster (1,329); with boons 50% longer 0.4% slower (1,347); with a guaranteed Santa's Blessing 2.5% slower (1,375). Only the second pick makes Overcharge pay, because a held draw is rare, so the perk needs to beat three times as many cash-ins. Longer boons and the Blessing are close to even and fine as flavour; if you want them to tempt, raise them (boons 100% longer, or Blessing plus a pick).
+- **Bait pillage cut:** a thief going for bait now finds none 50% of the time for bought bait and 85% for crafted bait. Gold lost to pillage over a game is 51,000 per player (52,400 before) and pillage cost as a share of gold earned in the Pantry falls from 5% to 3%; bait theft was a small part of the loss, so the change is mostly about feel (crafted ladder bait, which is hard to rebuy, is now almost safe).
 - **Gold:** earned per player rises to about 205,600 (from 149,000) because the game is longer; pillage losses 52,400. Gold still piles up late.
 - **Progress feel:** any good thing gap p90 2, milestones p90 3, worst dry spell for the median player 25 hunts (11 counting catches).

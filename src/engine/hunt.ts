@@ -254,7 +254,10 @@ export function rollPillage(content: Content, p: PlayerState, imp: Imp, bait: st
     } else {
       const [min, max] = rule.bait ?? [1, 1];
       const want = min + Math.floor(rng() * (max - min + 1));
-      const take = Math.min(want, count(p, bait));
+      // Bait the player crafted is hardest to steal; thieves often come away empty-handed.
+      const crafted = content.recipes.some((r) => r.output.item === bait);
+      const saved = rng() < (crafted ? cfg.baitSave.crafted : cfg.baitSave.bought);
+      const take = saved ? 0 : Math.min(want, count(p, bait));
       if (take > 0) {
         addItem(p, bait, -take);
         out.bait = { item: bait, amount: take };
