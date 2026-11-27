@@ -15,21 +15,18 @@ function fresh(patch: (p: PlayerState) => void = () => {}): PlayerState {
 }
 
 describe('cheer meter extras', () => {
-  it('an Overcharged draw keeps two boons and the rest of the pips reset after the second', () => {
+  it('an Overcharged draw offers two rare-or-better boons and you pick one', () => {
     const p = fresh((q) => { cheerOf(q).pips = 15; cheerOf(q).held = true; });
     const r = cheerAction(content, p, 'draw', seededRng(3));
     expect(r.ok).toBe(true);
     if (!r.ok) return;
     const draw = r.player.cheer!.draw!;
-    expect(draw.picks).toBe(2);
+    expect(draw.cards).toHaveLength(2);
+    expect(draw.picks).toBe(1);
     expect(draw.cards.every((id) => content.boons.find((b) => b.id === id)!.rarity !== 'common')).toBe(true);
-    const one = cheerAction(content, r.player, 'pick', seededRng(3), draw.cards[0]);
-    expect(one.ok && one.player.cheer!.draw?.picks).toBe(1);
-    if (!one.ok) return;
-    expect(one.player.cheer!.active).toHaveLength(1);
-    const two = cheerAction(content, one.player, 'pick', seededRng(3), one.player.cheer!.draw!.cards[0]);
-    expect(two.ok && two.player.cheer!.draw).toBeUndefined();
-    expect(two.ok && two.player.cheer!.active).toHaveLength(2);
+    const done = cheerAction(content, r.player, 'pick', seededRng(3), draw.cards[0]);
+    expect(done.ok && done.player.cheer!.draw).toBeUndefined();
+    expect(done.ok && done.player.cheer!.active).toHaveLength(1);
   });
 
   it('a finished Workshop order slot adds Cheer pips', () => {
@@ -65,7 +62,7 @@ describe('cheer meter', () => {
     expect(done.ok && done.player.cheer).toMatchObject({ pips: 1, carry: 0, held: false });
   });
 
-  it('Overcharge fills to 15, escapes cost 5, and 15 pips give 4 cards and a reroll', () => {
+  it('Overcharge fills to 15, escapes cost 5, and 15 pips give 2 rare-or-better cards and a reroll', () => {
     const p = fresh((q) => { cheerOf(q).pips = 10; });
     const held = cheerAction(content, p, 'hold', seededRng(1));
     expect(held.ok).toBe(true);
@@ -74,7 +71,7 @@ describe('cheer meter', () => {
     expect(held.player.cheer!.pips).toBe(15);
     const d = cheerAction(content, held.player, 'draw', seededRng(2));
     expect(d.ok && d.player.cheer!.draw).toMatchObject({ tier: 'Blazing', rerolls: 1 });
-    expect(d.ok && d.player.cheer!.draw!.cards).toHaveLength(4);
+    expect(d.ok && d.player.cheer!.draw!.cards).toHaveLength(2);
     const e = structuredClone(held.player);
     cheerAfterHunt(content, e, common, false, none);
     expect(e.cheer!.pips).toBe(10);
