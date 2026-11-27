@@ -1,38 +1,38 @@
 # Releasing The Naughty List
 
-Versions follow [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`, with the current one in `package.json`. The history is in [CHANGELOG.md](../CHANGELOG.md), and every release is also a GitHub Release, a git tag and a Docker image.
+A release is **merging `integration` into `main` and deploying `main` on the NAS**. Everything else happens by itself.
 
-## What the numbers mean
+Versions follow [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`, with the current one in `package.json`.
 
 | Bump | When | Example |
 | --- | --- | --- |
-| **MAJOR** | A change that restarts or breaks saves, or rebuilds the game's core loop | 2.0.0 |
-| **MINOR** | New content or features, or balance changes players will notice: an area, a mechanic, retuned numbers | 1.1.0 |
+| **MAJOR** | A change that restarts or breaks saves, or rebuilds the core loop | 2.0.0 |
+| **MINOR** | New content, features or balance changes players will notice | 1.1.0 |
 | **PATCH** | Bug fixes, wording, art and UI polish with no rule changes | 1.0.1 |
 
-## Branches and images
+## Before the integration → main PR
 
-| Branch or tag | Docker image | Used by |
-| --- | --- | --- |
-| `integration` | `:integration` | NAS test project (port 8082); threads may push here directly |
-| `main` | `:latest` | The main NAS project (port 8081). Pull-request only |
-| tag `v1.2.3` | `:1.2.3` and `:1.2` | Pin to an exact version, or roll back |
+Do these on `integration` (a normal pull request into it, or the release PR itself):
 
-Every image also carries its commit as a tag. `/api/health` reports the running version: `1.2.3` for a release image, the commit for `:latest` and `:integration`.
+1. Bump `version` in `package.json` and the root entries of `package-lock.json`.
+2. In `CHANGELOG.md`, rename `## [Unreleased]` to `## [X.Y.Z] - date` (plus a new empty `[Unreleased]` above it and the compare links at the bottom). Write for players.
+3. Add the same notes to the top of `content/releases.json` (newest first). This is the **What's new** popup, shown once to every player after an update, and the **More > What's new** screen. A test fails if its first version differs from `package.json` or is missing from `CHANGELOG.md`.
+4. Add a `docs/PLAN.md` changelog row.
 
-## Cutting a release
+Between releases, add a line under `[Unreleased]` in every pull request that players would notice.
 
-1. **Prepare on a branch from `integration`.** Move the `[Unreleased]` entries in `CHANGELOG.md` under a new `## [X.Y.Z] - date` heading, written for players (what changed in the game, not how). Add the compare link at the bottom. Set the same version in `package.json` and the root entries of `package-lock.json`. Add a row to the `docs/PLAN.md` changelog and update its status table if needed.
-2. **Open a pull request into `integration`**, let CI pass, and merge it. Try `:integration` on the test project.
-3. **Promote:** open a pull request `integration` → `main` with the release notes as its description, and merge it once CI is green. This publishes `:latest`.
-4. **Tag the merge commit on `main`:** `git tag -a vX.Y.Z -m "X.Y.Z" <commit> && git push origin vX.Y.Z`. The tag must equal the `package.json` version, or the workflow stops.
-5. **The tag does the rest.** The **Docker image** workflow publishes `ghcr.io/cheesezilla/naughty-list:X.Y.Z` and `:X.Y`, then creates the GitHub Release with that version's `CHANGELOG.md` section as the notes. If it fails because the changelog section is missing, fix the changelog on `main` and re-run the workflow.
-6. **Republish the doc pages** that changed (see the project rules), and tell the NAS owner to update.
+## What happens when `integration` is merged into `main`
 
-Between releases, add a line under `## [Unreleased]` in every pull request that players would notice. Docs-only and internal changes need no line.
+The **Docker image** workflow runs on the `main` push:
 
-## Updating the NAS
+- publishes `ghcr.io/cheesezilla/naughty-list:latest` (the image the NAS pulls),
+- if `package.json` has a version with no git tag yet, it also publishes `:X.Y.Z` and `:X.Y`, then creates the tag `vX.Y.Z` and a GitHub Release using that version's `CHANGELOG.md` section as the notes. If the section is missing, the release step fails: fix the changelog on `main` and re-run the workflow.
+- a push to `main` with the same version as before only refreshes `:latest`, so the version tag is never overwritten.
 
-- **Follow the latest release (default):** nothing to change in the compose file. Pull `latest` and redeploy as in [DEPLOY.md](DEPLOY.md#updating-to-a-new-version).
-- **Pin a version:** set `image: ghcr.io/cheesezilla/naughty-list:1.0.0`. Nothing changes until you edit the number.
-- **Roll back:** change the image line to the previous version tag and redeploy. Saves are upgraded in place by newer versions and older versions may not read them, so copy `/volume1/docker/naughty-list` first.
+`/api/health` shows the running version: `X.Y.Z` for a release image, the commit for other images.
+
+## Deploying on the NAS
+
+After the workflow finishes (about 3 minutes), pull `latest` and redeploy the project, as in [DEPLOY.md](DEPLOY.md#updating-to-a-new-version). The first time each player opens the game after the update, they see the What's new popup.
+
+To stay on a version or roll back, set the image line to `ghcr.io/cheesezilla/naughty-list:1.0.0`. Newer versions upgrade saves in place and older ones may not read them, so copy `/volume1/docker/naughty-list` first.

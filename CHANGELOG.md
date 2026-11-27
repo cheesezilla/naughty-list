@@ -43,6 +43,7 @@ The first full release. The big change since the earlier builds: **there are no 
 - **Feedback:** More > Feedback lets you send notes to the admin. Your notes are never wiped by Start over.
 
 ### For admins and the curious
+- **Release notes in the game:** the first time you open the game after an update you see **What's new**, and you can read every version's notes any time under **More > What's new**.
 - A strategy **walkthrough** (docs/WALKTHROUGH.md) takes you from the Cookie Pantry to the last boss.
 - The simulator now reports how many hunts it takes to reach rank 5 **and** to catch every elf (about 1,250 hunts for a full collection).
 

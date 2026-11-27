@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'preact/hooks';
-import type { Achievement, Content } from '../../content/schema.js';
+import type { Achievement, Content, Release } from '../../content/schema.js';
 import { achievementProgress } from '../../engine/index.js';
 import { api } from '../api.js';
 import { useGame } from '../game.js';
@@ -122,6 +122,42 @@ export function WelcomePopup({ onClose }: { onClose: (readLetter: boolean) => vo
           <button class="hunt-btn wide" onClick={() => onClose(false)}>{w.button}</button>
           <button class="text-btn underline" onClick={() => onClose(true)}>Read Santa's letter</button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+/** One version's notes: used in the popup and on More > What's new. */
+export function ReleaseNotes({ release }: { release: Release }) {
+  return (
+    <div class="release">
+      <p class="release-summary">{release.summary}</p>
+      {release.sections.map((s) => (
+        <div key={s.heading}>
+          <h3>{s.heading}</h3>
+          <ul>{s.items.map((i) => <li key={i}>{i}</li>)}</ul>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Shown once per version, the first time a player loads the game after an update. */
+export function ReleasePopup({ onClose }: { onClose: (all: boolean) => void }) {
+  const { content } = useGame();
+  const r = content.releases[0];
+  useCloseKeys(() => onClose(false));
+  if (!r) return null;
+  return (
+    <div class="popup-backdrop">
+      <div class="popup release-popup" role="dialog" aria-modal="true" aria-label={`What's new in ${r.version}`}>
+        <div class="popup-kicker">What's new · version {r.version}</div>
+        <h2>{r.title}</h2>
+        <div class="release-scroll"><ReleaseNotes release={r} /></div>
+        <div class="popup-buttons">
+          <button class="hunt-btn" onClick={() => onClose(false)}>Got it</button>
+        </div>
+        <button class="text-btn underline" onClick={() => onClose(true)}>All release notes</button>
       </div>
     </div>
   );

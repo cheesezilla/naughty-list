@@ -55,7 +55,7 @@ After a pull request is merged, wait for the **Docker image** check on GitHub to
 
 Saves are kept, because they live in the shared folder rather than in the container.
 
-Every numbered release (for example `1.0.0`) is also published as its own image, `ghcr.io/cheesezilla/naughty-list:1.0.0`. Use that tag in the compose file to stay on one version or to roll back. See [RELEASING.md](RELEASING.md) for how releases are made.
+Merging `integration` into `main` is a release. When the version in `package.json` is new, the same build also publishes a numbered image (for example `1.0.0`), `ghcr.io/cheesezilla/naughty-list:1.0.0`. Use that tag in the compose file to stay on one version or to roll back. See [RELEASING.md](RELEASING.md) for how releases are made.
 
 ### Trying a pull request before it is merged
 

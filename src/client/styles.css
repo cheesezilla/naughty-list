@@ -730,3 +730,12 @@ body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
 .log-row.catch.tier-rare::after { animation-duration: 7s; opacity: 0.6; }
 .log-row.catch.tier-miniboss::after { animation-duration: 5.5s; }
 @media (prefers-reduced-motion: reduce) { .log-row.catch::after { animation: none !important; display: none; } }
+
+/* Release notes: popup and More > What's new */
+.release h3 { font-size: 15px; margin: 12px 0 4px; color: var(--pine); }
+.release ul { margin: 0; padding-left: 18px; }
+.release li { margin: 3px 0; font-size: 14px; line-height: 1.35; }
+.release-summary { font-weight: 600; margin: 6px 0; }
+.release-popup { padding: 18px; display: flex; flex-direction: column; gap: 8px; max-height: 85vh; }
+.release-popup h2 { color: var(--pine); font-size: 22px; margin: 0; }
+.release-scroll { overflow-y: auto; max-height: 50vh; }

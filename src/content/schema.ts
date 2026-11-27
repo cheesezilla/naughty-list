@@ -319,9 +319,19 @@ export const Boon = z.object({
   text: z.string(), effect: BoonEffect,
 });
 
+/** content/releases.json: player-facing release notes, newest first. The first entry is the current version and must match package.json. */
+export const Release = z.object({
+  version: z.string().regex(/^\d+\.\d+\.\d+$/),
+  date: z.string().min(1).max(20),
+  title: z.string().min(1).max(60),
+  summary: z.string().min(1).max(300),
+  sections: z.array(z.object({ heading: z.string().min(1).max(60), items: z.array(z.string().min(1).max(300)).min(1).max(10) })).min(1).max(8),
+});
+
 export const Content = z.object({
   constants: Constants,
   story: Story.optional(),
+  releases: z.array(Release).default([]),
   ranks: z.array(Rank).min(1),
   locations: z.array(Location).min(1),
   items: Items,
@@ -351,6 +361,7 @@ export type Rank = z.infer<typeof Rank>;
 export type Constants = z.infer<typeof Constants>;
 export type Content = z.infer<typeof Content>;
 export type Story = z.infer<typeof Story>;
+export type Release = z.infer<typeof Release>;
 export type Boon = z.infer<typeof Boon>;
 export type Effect = z.infer<typeof Effect>;
 export type EventsFile = z.infer<typeof EventsFile>;

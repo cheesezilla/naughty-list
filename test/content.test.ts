@@ -1,7 +1,18 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { checkReferences } from '../src/content/check.js';
 import { mergeFlavour } from '../src/content/load.js';
 import { content } from './helpers.js';
+
+describe('release notes', () => {
+  it('start with the version in package.json and match CHANGELOG.md', () => {
+    const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
+    expect(content.releases[0]?.version).toBe(pkg.version);
+    expect(readFileSync('CHANGELOG.md', 'utf8')).toContain(`## [${pkg.version}]`);
+    const versions = content.releases.map((r) => r.version);
+    expect(new Set(versions).size).toBe(versions.length);
+  });
+});
 
 describe('content files', () => {
   it("include Santa's intro letter", () => {
