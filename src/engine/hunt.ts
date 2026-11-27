@@ -5,7 +5,7 @@ import { addItem, bump, count, rankFor, type PlayerState } from './player.js';
 import { pickWeighted, type Rng } from './rng.js';
 import { afterHunt, objectiveState, objectiveWeights, type ObjectiveResult } from './objectives.js';
 import { modsOf } from './mods.js';
-import { cheerAfterHunt, tickBoons, type CheerNote } from './cheer.js';
+import { cheerAddPips, cheerAfterHunt, tickBoons, type CheerNote } from './cheer.js';
 import { eventsAfterHunt, tickBuffs, useBuff, type EventNote } from './events.js';
 
 export interface JournalEntry {
@@ -205,6 +205,13 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0, b
   const caught = entry.outcome === 'catch';
   const cheer = cheerAfterHunt(content, p, imp, caught, mods);
   if (cheer) entry.cheer = cheer;
+  if (entry.objective?.orders && content.constants.cheer.enabled) {
+    const extra = cheerAddPips(content, p, content.constants.cheer.orderPips * entry.objective.orders);
+    if (extra > 0) {
+      const c = p.cheer!;
+      entry.cheer = { gained: (cheer?.gained ?? 0) + extra, lost: cheer?.lost ?? 0, pips: c.pips, ...(c.pips >= content.constants.cheer.full ? { full: true } : {}) };
+    }
+  }
   tickBoons(p);
   tickBuffs(p);
   const notes = eventsAfterHunt(content, p, { imp, caught, trapType: stats.type }, rng);
@@ -247,7 +254,10 @@ export function rollPillage(content: Content, p: PlayerState, imp: Imp, bait: st
     } else {
       const [min, max] = rule.bait ?? [1, 1];
       const want = min + Math.floor(rng() * (max - min + 1));
-      const take = Math.min(want, count(p, bait));
+      // Bait the player crafted is hardest to steal; thieves often come away empty-handed.
+      const crafted = content.recipes.some((r) => r.output.item === bait);
+      const saved = rng() < (crafted ? cfg.baitSave.crafted : cfg.baitSave.bought);
+      const take = saved ? 0 : Math.min(want, count(p, bait));
       if (take > 0) {
         addItem(p, bait, -take);
         out.bait = { item: bait, amount: take };

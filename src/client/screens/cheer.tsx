@@ -86,10 +86,10 @@ function CheerSheet({ onClose }: { onClose: () => void }) {
   const cards = draw.cards.map((id) => content.boons.find((b) => b.id === id)!).filter(Boolean);
   return (
     <Sheet title={`Pick a boon · ${draw.tier}`} onClose={onClose}>
-      <p class="muted">Choose one. It lasts a number of hunts. Closing this keeps your draw.</p>
+      <p class="muted">{(draw.picks ?? 1) > 1 ? `Overcharged: choose ${draw.picks} of these.` : 'Choose one.'} It lasts a number of hunts. Closing this keeps your draw.</p>
       <div class="boon-cards">
         {cards.map((b) => (
-          <button class={`boon-card ${b.rarity}`} onClick={async () => { if (await act('/api/cheer', { action: 'pick', boon: b.id })) onClose(); }}>
+          <button class={`boon-card ${b.rarity}`} onClick={async () => { if (await act('/api/cheer', { action: 'pick', boon: b.id }) && (draw.picks ?? 1) <= 1) onClose(); }}>
             <small>{RARITY[b.rarity]}</small>
             <b>{b.name}</b>
             <span>{b.text}</span>
@@ -97,6 +97,14 @@ function CheerSheet({ onClose }: { onClose: () => void }) {
           </button>
         ))}
       </div>
+      {(draw.perks?.length ?? 0) > 0 && (
+        <div class="boon-perks">
+          <p class="muted">Overcharge perk (choose one, once):</p>
+          {draw.perks!.includes('second_pick') && <button class="outline-btn" onClick={() => act('/api/cheer', { action: 'perk', boon: 'second_pick' })}>A second pick (and two more cards)</button>}
+          {draw.perks!.includes('long') && <button class="outline-btn" onClick={() => act('/api/cheer', { action: 'perk', boon: 'long' })}>Boons last 50% longer</button>}
+          {draw.perks!.includes('blessing') && <button class="outline-btn" onClick={() => act('/api/cheer', { action: 'perk', boon: 'blessing' })}>Two Santa's Blessings, guaranteed</button>}
+        </div>
+      )}
       {draw.rerolls > 0 && <button class="outline-btn" onClick={() => act('/api/cheer', { action: 'reroll' })}>Reroll the draw ({draw.rerolls})</button>}
     </Sheet>
   );

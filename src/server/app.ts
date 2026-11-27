@@ -340,7 +340,7 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
     // Cheer Meter: draw (cash in), hold (Overcharge), reroll and pick. Only a pick is logged.
     game.post('/api/cheer', playerAction((p, b) => {
       const action = str(b.action);
-      if (!['draw', 'hold', 'reroll', 'pick'].includes(action)) return { ok: false, error: 'Unknown Cheer action.' };
+      if (!['draw', 'hold', 'reroll', 'pick', 'perk'].includes(action)) return { ok: false, error: 'Unknown Cheer action.' };
       return cheerAction(content, p, action as CheerAction, rng, str(b.boon));
     }, (_before, _after, b) => (str(b.action) === 'pick' ? { type: 'cheer_pick', boon: str(b.boon) } : null)));
     // Random events: answer the boon card (a, b, decline) or pay the Scrinch skip toll.

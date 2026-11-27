@@ -19,13 +19,13 @@ export interface CheerState {
   /** The boon picked last time cannot appear in the next draw. */
   lastPicked?: string;
   /** An open draw: the cards are saved until one is picked. */
-  draw?: { cards: string[]; rerolls: number; tier: string };
+  draw?: { cards: string[]; rerolls: number; tier: string; picks?: number; perks?: string[]; longer?: boolean; copies?: number };
 }
 
 export const cheerOf = (p: PlayerState): CheerState =>
   (p.cheer ??= { pips: 0, held: false, carry: 0, active: [], sinceRare: 0, sinceLegendary: 0 });
 
-export type CheerAction = 'draw' | 'hold' | 'reroll' | 'pick';
+export type CheerAction = 'draw' | 'hold' | 'reroll' | 'pick' | 'perk';
 
 /** What the meter did on one hunt, for the hunt log. */
 export interface CheerNote { gained: number; lost: number; pips: number; full?: boolean }
@@ -83,7 +83,7 @@ function eligible(content: Content, p: PlayerState): Boon[] {
 }
 
 /** Draws the cards for the meter's current pips, with the pity rules, and updates the pity counters on `p`. */
-export function drawCards(content: Content, p: PlayerState, rng: Rng): { cards: string[]; rerolls: number; tier: string } {
+export function drawCards(content: Content, p: PlayerState, rng: Rng): { cards: string[]; rerolls: number; tier: string; picks: number; perks: string[] } {
   const c = content.constants.cheer;
   const s = cheerOf(p);
   const tier = drawTier(content, s.pips);
@@ -110,7 +110,7 @@ export function drawCards(content: Content, p: PlayerState, rng: Rng): { cards: 
   }
   if (cards.some((b) => b.rarity !== 'common')) s.sinceRare = 0; else s.sinceRare += 1;
   if (cards.some((b) => b.rarity === 'legendary')) s.sinceLegendary = 0; else s.sinceLegendary += 1;
-  return { cards: cards.map((b) => b.id), rerolls: tier.rerolls, tier: tier.name };
+  return { cards: cards.map((b) => b.id), rerolls: tier.rerolls, tier: tier.name, picks: Math.min(tier.picks ?? 1, cards.length), perks: [...(tier.perks ?? [])] };
 }
 
 /**
@@ -139,13 +139,35 @@ export function cheerAction(content: Content, player: PlayerState, action: Cheer
       s.draw = { ...drawCards(content, p, rng), rerolls };
       return { ok: true, player: p };
     }
+    case 'perk': {
+      // Overcharge: before picking, trade the draw for one perk (once).
+      if (!s.draw || !s.draw.perks?.includes(boonId ?? '')) return { ok: false, error: 'There is no such perk on this draw.' };
+      if (boonId === 'second_pick') {
+        const more = drawCards(content, p, rng).cards.filter((id) => !s.draw!.cards.includes(id));
+        s.draw = { ...s.draw, cards: [...s.draw.cards, ...more], picks: 2, perks: [] };
+        s.draw.picks = Math.min(2, s.draw.cards.length);
+      } else if (boonId === 'long') {
+        s.draw = { ...s.draw, longer: true, perks: [] };
+      } else {
+        const bless = content.boons.find((b) => b.id === 'santas_blessing');
+        if (!bless) return { ok: false, error: 'Santa has no blessing to give.' };
+        s.draw = { ...s.draw, cards: [bless.id], picks: 1, perks: [], copies: c.blessingCopies };
+      }
+      return { ok: true, player: p };
+    }
     case 'pick': {
       if (!s.draw) return { ok: false, error: 'There is no draw open.' };
       const boon = content.boons.find((b) => b.id === boonId);
       if (!boon || !s.draw.cards.includes(boon.id)) return { ok: false, error: 'Pick one of the cards on offer.' };
+      const hunts = (s.draw.longer ? Math.ceil(boon.hunts * (1 + c.longBoons)) : boon.hunts) * (s.draw.copies ?? 1);
       const have = s.active.find((a) => a.id === boon.id);
-      if (have) have.hunts = boon.hunts; else s.active.push({ id: boon.id, hunts: boon.hunts });
+      if (have) have.hunts = hunts; else s.active.push({ id: boon.id, hunts });
       s.lastPicked = boon.id;
+      if ((s.draw.picks ?? 1) > 1) {
+        // Overcharge: keep picking from what is left.
+        s.draw = { ...s.draw, cards: s.draw.cards.filter((x) => x !== boon.id), picks: (s.draw.picks ?? 1) - 1 };
+        return { ok: true, player: p };
+      }
       s.draw = undefined;
       s.held = false;
       s.pips = Math.min(c.full - 1, s.carry);
@@ -163,4 +185,17 @@ export function cheerFill(content: Content, player: PlayerState): PlayerState {
   s.held = true;
   s.draw = undefined;
   return p;
+}
+
+/** Adds pips from outside a catch (a finished Workshop order slot). Same rules as a catch: a full meter or an open draw waits. */
+export function cheerAddPips(content: Content, p: PlayerState, n: number): number {
+  const c = content.constants.cheer;
+  if (!c.enabled || n <= 0) return 0;
+  const s = cheerOf(p);
+  if (s.draw || (s.pips >= c.full && !s.held)) return 0;
+  const before = s.pips;
+  const total = s.pips + n;
+  s.pips = Math.min(s.held ? c.max : c.full, total);
+  if (!s.held && total > c.full) s.carry += total - c.full;
+  return s.pips - before;
 }

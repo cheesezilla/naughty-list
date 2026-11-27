@@ -114,11 +114,20 @@ describe('Reindeer Stables sleigh run', () => {
     expect(r.entry.objective?.notes).toContain('Readiness 20 → 12');
   });
 
-  it('launches at 100 Readiness, pays out and sends Cinderhoof', () => {
+  it('the first launch pays out but Cinderhoof only comes after the second', () => {
     const p = start(at('reindeer_stables'));
     p.objectives!.reindeer_stables = { type: 'sleigh_run', active: true, left: 10, readiness: 98, launches: 0 };
     const r = ok(hunt(content, p, scripted(0, 0, 0, 0.99)));
-    expect(r.player.objectives?.reindeer_stables).toMatchObject({ active: false, launches: 1, forced: 'cinderhoof' });
+    expect(r.player.objectives?.reindeer_stables).toMatchObject({ active: false, launches: 1 });
+    expect(r.player.objectives?.reindeer_stables?.forced).toBeUndefined();
+    expect(r.entry.objective?.gold).toBe(2000);
+  });
+
+  it('launches at 100 Readiness, pays out and sends Cinderhoof', () => {
+    const p = start(at('reindeer_stables'));
+    p.objectives!.reindeer_stables = { type: 'sleigh_run', active: true, left: 10, readiness: 98, launches: 1 };
+    const r = ok(hunt(content, p, scripted(0, 0, 0, 0.99)));
+    expect(r.player.objectives?.reindeer_stables).toMatchObject({ active: false, launches: 2, forced: 'cinderhoof' });
     expect(r.player.inventory.silver_sleighbell).toBe(1);
     expect(r.entry.objective?.gold).toBe(2000);
     expect(objectiveAction(content, r.player, 'start_run', scripted(0)).ok).toBe(false);

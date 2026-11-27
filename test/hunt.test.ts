@@ -199,9 +199,20 @@ describe('pillage on escape', () => {
     expect(out?.safe).toContain('points');
   });
 
+  it('thieves often find no bait: crafted bait is saved most of the time', () => {
+    const roll = (bait: string, saveRoll: number) => {
+      const p = { ...rich(), inventory: { stale_cookie: 20, ribbon_candy: 20 } };
+      return rollPillage(content, p, imp('jarbelly'), bait, scripted(0, 0, 0, saveRoll))!;
+    };
+    expect(roll('stale_cookie', 0.6).bait).toBeDefined();
+    expect(roll('stale_cookie', 0.4).bait).toBeUndefined();
+    expect(roll('ribbon_candy', 0.6).bait).toBeUndefined();
+    expect(roll('ribbon_candy', 0.9).bait).toBeDefined();
+  });
+
   it('a mini boss takes two kinds', () => {
     const p = rich();
-    const out = rollPillage(content, p, imp('spoolwick'), 'stale_cookie', scripted(0, 0, 0, 0))!;
+    const out = rollPillage(content, p, imp('spoolwick'), 'stale_cookie', scripted(0, 0, 0, 0, 0.99))!;
     const kinds = [out.gold > 0, !!out.bait, out.points > 0].filter(Boolean).length;
     expect(kinds).toBe(2);
   });

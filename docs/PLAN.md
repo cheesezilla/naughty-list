@@ -233,7 +233,7 @@ Record each result as pass, fail or unsure in the PR for the tuning task.
 | 2 | Elf Deputy | 2,500 | Wrapping Room (250 gold to unlock) | 250 |
 | 3 | Hex Tracker | 12,000 | Toy Workshop (1,500 gold), Nutcracker Jaws trap | 400 |
 | 4 | Frost Warden | 46,000 | Reindeer Stables (5,000 gold), rank 4 crafting | 600 |
-| 5 | Yule Marshal | 160,000 | End of v1 | |
+| 5 | Yule Marshal | 217,000 | End of v1 | |
 
 Ranks depend on points only. Location unlock fees are paid once; travel between unlocked locations is free.
 
@@ -946,7 +946,7 @@ A streak meter that rewards catching in a row. When it fills, the player picks 1
 
 - Shown as a 10-pip bar on the Hunt screen under the gear card.
 - **Fills:** +1 pip per catch, **+2 for a rare, mini boss or boss**. Uncommons and commons give +1.
-- **Escape:** -3 pips (never below 0). One bad roll hurts but never wipes the streak.
+- **Escape:** -3 pips (never below 0). One bad roll hurts but never wipes the streak. (eddy tried -2 on 27 Nov 2026: the meter filled too fast, so it stays at -3; the Toy Workshop fills through its order board instead.) One bad roll hurts but never wipes the streak.
 - **Full at 10:** the bar glows and a "Cash in" button appears. Pips above 10 from the same catch carry over into the next meter.
 - **Cash in:** a sheet shows 3 boon cards drawn from the pool. The player picks one, the boon starts, and the meter drops to 0. Closing the sheet keeps the meter full and the draw saved (the meter stops filling until a boon is picked, so there is no reason to delay except Overcharge, below).
 - Boons count in **hunts** (every hunt, caught or escaped). A boon of the same id picked again refreshes its hunts; different boons stack. A boon never outlasts a Start over.
@@ -991,7 +991,7 @@ At 10 the player can **Hold the charge** instead of cashing in and keep filling 
 | 10 | Full | Weights 70 / 25 / 5, 3 cards |
 | 11-12 | Warm | Weights 55 / 35 / 10, 3 cards |
 | 13-14 | Hot | Weights 40 / 42 / 18, 3 cards |
-| 15 | Blazing | Weights 25 / 50 / 25, 4 cards, plus one reroll of the whole draw |
+| 15 | Blazing (Overcharge) | Weights 0 / 55 / 45 (only rare and legendary), 2 cards (rare or legendary only), plus one reroll of the whole draw, you pick one, and you may take one **Overcharge perk** once: a second pick (two more cards, keep two), boons that last 50% longer, or two Santa's Blessings back to back (they do not stack, so six hunts of x2.5 power) |
 
 - **Harsher escape while held:** above 10 pips an escape costs **-5** (not -3) and can drop the meter below 10, so the player loses the full state and has to refill. The risk is the price of better odds.
 - Pity counters still apply. Cheer Surge pips count toward Overcharge.
@@ -1282,6 +1282,7 @@ The first idea (replace the attraction roll where no elf takes the bait) is trac
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-27 | this PR | **Tuning round from the first simulation report (eddy).** Rank 5 now needs 217,000 points (was 160,000). Scrinch skip tolls tripled (percent 9 to 12% of gold, flat 6 to 12 H). Toy Workshop: commons 15% weaker (power 380, 510, 640), Hammerhand and General Grimbolt pillage gold capped at 2 times their gold, and each finished order slot adds 2 Cheer pips (`constants.cheer.orderPips`). An Overcharged (Blazing) draw shows two cards, both rare or legendary, you pick one, and you can take one perk first: a second pick, boons 50% longer, or two Santa's Blessings in a row (`perks` on the draw table, `POST /api/cheer` action `perk`). Thieves now often find no bait to take (`pillage.baitSave`: 50% for bought bait, 85% for crafted bait). Antler Ripper power 3,500 to 4,100 and Cinderhoof 6,000 to 7,000, and Cinderhoof only attacks the sleigh after the second launch (`bossAfterLaunches`). Cheer escape penalty stays 3 (tried 2: too fast). Simulator (1,000 players, Cheer and events on): median 1,359 hunts to rank 5 (1,221 before); ranks 118, 242, 409, 568; Toy Workshop fills 4.1 per 100 hunts (was 0.2); Workshop catch rate 45% (was 40%) and pillage 29% of gold earned there (was 43%); fighting Scrinch wins 59% (was 52%), paying every toll costs 19% of gold earned and is 2% slower than fighting; holding for Overcharge is 2.3% slower than cashing in at 10 with no perk, 1% faster with the second pick, 0.4% slower with longer boons and 0.4% slower with two Santa's Blessings (see Report 4). See `docs/SIMULATION_REPORT.md` Report 4 |
 | 2026-11-27 | this PR | Wrapping Room ladder panel: the Carol Horn line is now an in-world hint (bent reeds, torn songsheet, singing from above) instead of naming the Carol Loft. UI text only |
 | 2026-11-27 | this PR | Wrapping Room bait ladder panel: tap any tier to browse it (the view no longer follows the equipped bait); each tier shows its bait with Equip, and Craft where a recipe exists, which opens the Workshop on that exact recipe (`#/workshop/<recipeId>`, "All recipes" link back); a "Prepare before the faceoff" line names the Carol weakness and the Carol Loft. UI only, no game numbers changed |
 | 2026-11-27 | this PR | Naughty List opens on the current location's tab and gains an All tab: every elf from every location, rarest first (boss to common). No game numbers changed |

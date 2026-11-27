@@ -87,6 +87,8 @@ export const Objective = z.discriminatedUnion('type', [
     gain: z.partialRecord(ImpTier, z.number().int().nonnegative()),
     /** Readiness taken by these imps when they escape. */
     loss: z.record(id, z.number().int().nonnegative()),
+    /** Sleigh launches needed before the boss attacks the sleigh (default 1). */
+    bossAfterLaunches: z.number().int().positive().default(1),
     minibossFrom: z.number().int().nonnegative(),
     minibossWeight: z.number().nonnegative(),
     launchGold: z.number().int().nonnegative(),
@@ -181,6 +183,8 @@ export const Constants = z.object({
   pillage: z.object({
     /** A pillage never takes gold below this. */
     goldFloor: z.number().int().nonnegative(),
+    /** Chance a thief that goes for bait finds none to take: for bought bait and for bait the player crafted. */
+    baitSave: z.object({ bought: z.number().min(0).max(1), crafted: z.number().min(0).max(1) }).default({ bought: 0, crafted: 0 }),
     tiers: z.object({ common: PillageRule, uncommon: PillageRule, rare: PillageRule, miniboss: PillageRule, boss: PillageRule }),
   }),
   /** The Cheer Meter: a streak meter that pays out pick-1-of-3 boons. `enabled: false` switches it off (for baselines). */
@@ -190,11 +194,21 @@ export const Constants = z.object({
     full: z.number().int().positive(), max: z.number().int().positive(),
     catchPips: z.number().int().nonnegative(), bigCatchPips: z.number().int().nonnegative(),
     escapePips: z.number().int().nonnegative(), heldEscapePips: z.number().int().nonnegative(),
+    /** Pips a finished Toy Workshop order slot adds to the meter (the Workshop's own way to fill it). */
+    orderPips: z.number().int().nonnegative().default(0),
+    /** The `long` Overcharge perk makes boons last this much longer (0.5 = 50%). */
+    longBoons: z.number().nonnegative().default(0.5),
+    /** The `blessing` Overcharge perk grants this many Santa's Blessings back to back (they do not stack, so the boon lasts this many times as long). */
+    blessingCopies: z.number().int().positive().default(1),
     /** Draws without a rare (or better) / without a legendary before one card is forced. */
     pity: z.object({ rare: z.number().int().positive(), legendary: z.number().int().positive() }),
     /** Draw table by pips: the last row whose `from` is at most the meter's pips applies. */
     tiers: z.array(z.object({
       from: z.number().int().nonnegative(), name: z.string(), cards: z.number().int().positive(), rerolls: z.number().int().nonnegative(),
+      /** Boons the player keeps from this draw (an Overcharged draw keeps two). */
+      picks: z.number().int().positive().default(1),
+      /** Overcharge perks the player may choose once on this draw: a second pick, longer boons, or a guaranteed Santa's Blessing. */
+      perks: z.array(z.enum(['second_pick', 'long', 'blessing'])).default([]),
       weights: z.object({ common: z.number().nonnegative(), rare: z.number().nonnegative(), legendary: z.number().nonnegative() }),
     })).min(1),
   }),
