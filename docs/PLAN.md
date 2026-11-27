@@ -1279,6 +1279,7 @@ The first idea (replace the attraction roll where no elf takes the bait) is trac
 ## Changelog
 
 | Date | PR | Change |
+| 2026-11-27 | this PR | Hunt no longer auto-scrolls to the hunt log, so the Cheer Meter and the rest of the screen stay in view. No game numbers changed |
 | 2026-11-27 | this PR | **Cheer Meter and random events built on `integration` (eddy's playground).** `cheer` and `events` blocks in constants (both with an `enabled` flag), `boons.json` (14 boons), `events.json` (15 events), three Cheer charms, engine `cheer.ts`, `events.ts`, `mods.ts`, `hunt()` applies them, `POST /api/cheer` and `/api/event`, Hunt screen meter, boon card, Scrinch counter and favour bar, hunt-log lines, two admin tools, tests. Draft numbers, no tuning. Existing simulator (does not pick boons or answer events): 200/200 reach rank 5, median 1,288 hunts |
 | 2026-11-27 | this PR | Plan only: playtest and simulation plan (numbers to report, conclusions each supports, targets, human checklist) for Allure, Cheer Meter, events and goals. No game numbers changed |
 | 2026-11-27 | this PR | Player feedback: More > Feedback screen (write a note, see your own), `feedback` table kept apart from every reset path, admin list on More > Admin; tests prove it survives Start over, admin tools and reopening the database. No game numbers changed |
