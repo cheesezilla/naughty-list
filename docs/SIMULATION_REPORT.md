@@ -150,3 +150,7 @@ New standard metric: hunts until every one of the 28 elves has been caught. The 
 
 - **Reading it:** the collection is essentially complete by the time rank 5 is reached, so the two benchmarks differ by only about 14 hunts at the median. Boss keys, the Loft detour and the Pantry-to-Stables chain mean a player who ranks up has already met nearly every elf. The Naughty List does not add a long tail for this bot.
 - **Caveat:** the bot hunts to rank up and keep catching bosses, so it is a fairly thorough collector. A human who skips the Carol Loft or the mini bosses would take longer, because rank 5 does not need the Loft side area. If eddy wants collection to be a real second goal, the elves to watch are the rare ones and the Loft elves (see the first-catch tail table in the full run).
+
+## Report 8: Cheer Meter resets on travel (200 players, seed 42)
+
+Travelling now clears pips, Overcharge, carry-over, an open draw and active boons. The simulated player cashes in a full meter right away and rarely holds a charge across a move, so nothing shifted: median **1,234 hunts to rank 5**, and **1,243 hunts to catch every elf** (100% of players; mean 1,253, p10 1,134, p90 1,374). Cheer tempo is unchanged: median 16 hunts per fill (p10 9, p90 65), 3.3 draws per 100 hunts. The reset closes the loophole of stockpiling a meter in an easy area and cashing it at a harder one; the simulator does not play that exploit, so it cannot measure what the reset prevents.

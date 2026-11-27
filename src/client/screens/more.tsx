@@ -68,6 +68,7 @@ export function TravelScreen() {
             );
           })}
         </div>
+        <p class="small muted">Travelling starts a fresh Cheer Meter: pips, an Overcharge, an open draw and boons in play are lost.</p>
         {content.locations.map((l) => {
           const open = player.unlocked.includes(l.id);
           const here = l.id === player.location;
