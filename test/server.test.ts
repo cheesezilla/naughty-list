@@ -18,7 +18,7 @@ beforeEach(async () => {
   clock = 1_000_000;
   // Every roll is 0: always attracted, always the first imp (Crumb Elf, which has no loot), always caught.
   // Achievements are off here so the log checks stay about one thing; they have their own tests below.
-  app = await buildApp({ content: { ...content, achievements: [] }, store, version: 'test', now: () => clock, rng: () => 0 });
+  app = await buildApp({ content: { ...content, achievements: [], constants: { ...content.constants, events: { ...content.constants.events, enabled: false } } }, store, version: 'test', now: () => clock, rng: () => 0 });
 });
 afterEach(async () => {
   await app.close();

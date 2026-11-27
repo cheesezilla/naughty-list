@@ -528,6 +528,40 @@ export const charms: Record<string, () => string> = {
       glint(246, 320, 0.7),
       sparkle(420, 360, 16), sparkle(90, 380, 12),
     ),
+
+  cheer_bauble: () =>
+    g(
+      {},
+      shadow(256, 450, 130),
+      rect(226, 70, 60, 50, ol(P.gold), 10),
+      path('M256 70 C256 40 300 40 300 70', line(10, P.ink)),
+      circle(256, 280, 150, ol(P.red)),
+      path('M130 250 Q256 300 382 250', line(22, P.gold)),
+      path('M124 310 Q256 360 388 310', line(10, P.goldBright)),
+      glint(200, 200, 1.4),
+      sparkle(410, 140, 18), sparkle(96, 380, 14),
+    ),
+
+  tinsel_cheer_charm: () =>
+    g(
+      {},
+      shadow(256, 450, 140),
+      path('M110 200 C170 120 220 280 280 200 C340 120 380 260 410 190', line(40, P.ink)),
+      path('M110 200 C170 120 220 280 280 200 C340 120 380 260 410 190', line(26, P.gold)),
+      path('M100 320 C170 250 230 400 290 320 C350 250 390 380 420 310', line(40, P.ink)),
+      path('M100 320 C170 250 230 400 290 320 C350 250 390 380 420 310', line(26, P.red)),
+      sparkle(150, 100, 18), sparkle(400, 410, 20), sparkle(250, 60, 14),
+    ),
+
+  gold_star_cheer_charm: () =>
+    g(
+      {},
+      shadow(256, 460, 140),
+      path('M256 60 L306 190 L446 198 L336 286 L374 424 L256 346 L138 424 L176 286 L66 198 L206 190 Z', ol(P.gold, 12)),
+      path('M256 120 L290 206 L384 212 L312 272 L336 364 L256 312 L176 364 L200 272 L128 212 L222 206 Z', { fill: P.goldBright }),
+      glint(220, 190, 1.2),
+      sparkle(430, 90, 18), sparkle(80, 380, 14),
+    ),
 };
 
 // ---------------------------------------------------------------- materials (512 square)

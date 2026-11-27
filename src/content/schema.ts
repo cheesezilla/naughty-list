@@ -141,6 +141,8 @@ export const Bait = z.object({
 export const Charm = z.object({
   id, name: z.string(),
   power: z.number().optional(), powerBonus: z.number().optional(), luck: z.number().optional(), attraction: z.number().optional(),
+  /** Cheer charm: extra meter pips on every catch (`all`), on rare-or-better catches (`rare`), and pips an escape costs less (`escape`). At most +1 pip a catch. */
+  cheer: z.object({ all: z.number().int().min(0).max(1).optional(), rare: z.number().int().min(0).max(1).optional(), escape: z.number().int().min(0).optional() }).optional(),
   rank: z.number().int().positive(), price,
   flavour: Flavour.optional(),
 });
@@ -180,6 +182,31 @@ export const Constants = z.object({
     /** A pillage never takes gold below this. */
     goldFloor: z.number().int().nonnegative(),
     tiers: z.object({ common: PillageRule, uncommon: PillageRule, rare: PillageRule, miniboss: PillageRule, boss: PillageRule }),
+  }),
+  /** The Cheer Meter: a streak meter that pays out pick-1-of-3 boons. `enabled: false` switches it off (for baselines). */
+  cheer: z.object({
+    enabled: z.boolean(),
+    /** Pips for a full meter, and the most an Overcharge can hold. */
+    full: z.number().int().positive(), max: z.number().int().positive(),
+    catchPips: z.number().int().nonnegative(), bigCatchPips: z.number().int().nonnegative(),
+    escapePips: z.number().int().nonnegative(), heldEscapePips: z.number().int().nonnegative(),
+    /** Draws without a rare (or better) / without a legendary before one card is forced. */
+    pity: z.object({ rare: z.number().int().positive(), legendary: z.number().int().positive() }),
+    /** Draw table by pips: the last row whose `from` is at most the meter's pips applies. */
+    tiers: z.array(z.object({
+      from: z.number().int().nonnegative(), name: z.string(), cards: z.number().int().positive(), rerolls: z.number().int().nonnegative(),
+      weights: z.object({ common: z.number().nonnegative(), rare: z.number().nonnegative(), legendary: z.number().nonnegative() }),
+    })).min(1),
+  }),
+  /** Random events: Santa and Mrs. Claus boons, Grand Gifts and Scrinch threats. `enabled: false` switches them off. */
+  events: z.object({
+    enabled: z.boolean(),
+    chancePerHunt: chance, minHunts: z.number().int().nonnegative(), minGap: z.number().int().nonnegative(),
+    scrinchShare: chance,
+    grudgeChance: chance, grudgeGap: z.number().int().nonnegative(),
+    /** The grudge is skipped once the same boss has escaped this many times in a row. */
+    grudgeMaxStreak: z.number().int().positive(),
+    grandBase: chance, grandPerScrinchWin: chance, grandPerBoon: chance,
   }),
   stamina: z.object({
     enabled: z.boolean(), name: z.string(), max: z.number().int().positive(), costPerHunt: z.number().int().nonnegative(),
@@ -246,6 +273,64 @@ export const Achievement = z.object({
   when: AchievementRule,
 });
 
+/** One thing a gift, prize or penalty does. */
+export const buffStats = ['powerMult', 'luckMult', 'luckAdd', 'allureMult', 'goldPointsMult', 'noPillage', 'baitCost', 'bossShield'] as const;
+export const Effect = z.discriminatedUnion('type', [
+  /** `h` x H gold, where H is the average gold of the location's common elves. */
+  z.object({ type: z.literal('gold'), h: z.number().positive() }),
+  /** The best bait the shop sells at the player's rank. */
+  z.object({ type: z.literal('bait'), amount: z.number().int().positive() }),
+  /** Random charms the shop sells at the player's rank. */
+  z.object({ type: z.literal('charm'), amount: z.number().int().positive() }),
+  /** A timed effect: lasts `hunts` hunts and/or `uses` uses. */
+  z.object({
+    type: z.literal('buff'), stat: z.enum(buffStats), value: z.number(), label: z.string(),
+    hunts: z.number().int().positive().optional(), uses: z.number().int().positive().optional(),
+  }),
+]);
+export const Threat = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('goldPct'), pct: chance, capH: z.number().positive() }),
+  z.object({ type: z.literal('baitLoss'), amount: z.number().int().positive() }),
+  z.object({
+    type: z.literal('buff'), stat: z.enum(buffStats), value: z.number(), label: z.string(),
+    hunts: z.number().int().positive().optional(), uses: z.number().int().positive().optional(),
+  }),
+]);
+export const ScrinchGoal = z.discriminatedUnion('type', [
+  /** Catch `need` of the next `window` hunts. */
+  z.object({ type: z.literal('catches'), need: z.number().int().positive(), window: z.number().int().positive() }),
+  /** Catch `need` in a row within `window` hunts. */
+  z.object({ type: z.literal('streak'), need: z.number().int().positive(), window: z.number().int().positive() }),
+  /** Catch one rare elf or better within `window` hunts. */
+  z.object({ type: z.literal('rare'), window: z.number().int().positive() }),
+  /** Catch an elf with a trap of the location's home type within `window` hunts. */
+  z.object({ type: z.literal('homeType'), window: z.number().int().positive() }),
+]);
+const Sender = z.enum(['santa', 'mrs_claus']);
+export const Gift = z.object({ label: z.string(), effects: z.array(Effect).min(1) });
+export const EventsFile = z.object({
+  boons: z.array(z.object({ id, name: z.string(), from: Sender, a: Gift, b: Gift })),
+  grandGifts: z.array(z.object({ id, name: z.string(), from: Sender, text: z.string(), effects: z.array(Effect).min(1) })),
+  scrinch: z.array(z.object({
+    id, name: z.string(), text: z.string(), threat: Threat, goal: ScrinchGoal, goalText: z.string(),
+    prize: z.array(Effect).min(1), prizeText: z.string(), failText: z.string(),
+    /** Skip toll: `h` x H gold or `pct` of the player's gold. */
+    toll: z.object({ h: z.number().positive().optional(), pct: chance.optional() }),
+  })),
+});
+
+/** What a boon changes while it lasts. Every field is optional; see `modsOf` in src/engine/mods.ts. */
+export const BoonEffect = z.object({
+  goldMult: z.number().optional(), pointsMult: z.number().optional(), freeBait: z.boolean().optional(),
+  powerMult: z.number().optional(), luckAdd: z.number().optional(), attractionBonus: z.number().optional(),
+  noPillage: z.boolean().optional(), rareMult: z.number().optional(), lootMult: z.number().optional(), minLoot: z.number().int().optional(),
+  mulligan: z.boolean().optional(), bossBell: z.boolean().optional(), pipMult: z.number().optional(), freeEscape: z.boolean().optional(),
+}).strict();
+export const Boon = z.object({
+  id, name: z.string(), rarity: z.enum(['common', 'rare', 'legendary']), hunts: z.number().int().positive(),
+  text: z.string(), effect: BoonEffect,
+});
+
 export const Content = z.object({
   constants: Constants,
   story: Story.optional(),
@@ -254,6 +339,8 @@ export const Content = z.object({
   items: Items,
   recipes: z.array(Recipe),
   achievements: z.array(Achievement).default([]),
+  boons: z.array(Boon).default([]),
+  events: EventsFile.default({ boons: [], grandGifts: [], scrinch: [] }),
 });
 
 export type PowerType = z.infer<typeof PowerType>;
@@ -276,6 +363,11 @@ export type Rank = z.infer<typeof Rank>;
 export type Constants = z.infer<typeof Constants>;
 export type Content = z.infer<typeof Content>;
 export type Story = z.infer<typeof Story>;
+export type Boon = z.infer<typeof Boon>;
+export type Effect = z.infer<typeof Effect>;
+export type Threat = z.infer<typeof Threat>;
+export type ScrinchGoal = z.infer<typeof ScrinchGoal>;
+export type EventsFile = z.infer<typeof EventsFile>;
 export type Achievement = z.infer<typeof Achievement>;
 export type AchievementRule = z.infer<typeof AchievementRule>;
 export type AchievementStat = z.infer<typeof AchievementStat>;

@@ -39,6 +39,8 @@ export function loadContent(dir: string): Content {
     items,
     recipes: read('recipes.json'),
     achievements: existsSync(join(dir, 'achievements.json')) ? read('achievements.json') : [],
+    boons: existsSync(join(dir, 'boons.json')) ? read('boons.json') : [],
+    events: existsSync(join(dir, 'events.json')) ? read('events.json') : undefined,
   });
   problems.push(...checkReferences(content));
   if (problems.length > 0) {

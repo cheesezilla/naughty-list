@@ -242,7 +242,7 @@ export class Store {
       case 'catches': where.push("kind = 'hunt'", "json_extract(entry, '$.outcome') = 'catch'"); break;
       case 'escapes': where.push("kind = 'hunt'", "json_extract(entry, '$.outcome') = 'escape'"); break;
       case 'pillaged': where.push("kind = 'hunt'", "json_extract(entry, '$.pillage') IS NOT NULL"); break;
-      case 'events': where.push("(kind = 'event' OR json_extract(entry, '$.rankUp') IS NOT NULL)"); break;
+      case 'events': where.push("(kind = 'event' OR json_extract(entry, '$.rankUp') IS NOT NULL OR json_extract(entry, '$.events') IS NOT NULL)"); break;
       case 'bosses': {
         const ids = opts.bossIds ?? [];
         where.push("kind = 'hunt'", `json_extract(entry, '$.imp') IN (${ids.map(() => '?').join(',') || "''"})`);

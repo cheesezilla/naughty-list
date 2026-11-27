@@ -376,6 +376,16 @@ function SpeedRun() {
           <button class="chip" onClick={() => run({ action: 'portraits' }, 'Every elf is on your Naughty List.')}>Unlock</button>
         </div>
         <div class="admin-row">
+          <span><b>Fill the Cheer Meter</b><small>Sets it to 15 and holds the charge</small></span>
+          <button class="chip" onClick={() => run({ action: 'cheer' }, 'Cheer Meter filled.')}>Fill</button>
+        </div>
+        <div class="admin-row">
+          <span><b>Trigger an event</b><small>Replaces any open card or challenge</small></span>
+          <span class="chips">
+            {(['boon', 'grand', 'scrinch'] as const).map((k) => <button class="chip" onClick={() => run({ action: 'event', kind: k }, `Event: ${k}.`)}>{k}</button>)}
+          </span>
+        </div>
+        <div class="admin-row">
           <span><b>Stock up</b><small>Tops up every bait and charm to 200, every material to 50</small></span>
           <button class="chip" onClick={() => run({ action: 'supplies' }, 'Stocked up.')}>Add</button>
         </div>
