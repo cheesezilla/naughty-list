@@ -1,5 +1,6 @@
 import type { Location, Objective } from '../../content/schema.js';
 import { count, type ObjectiveState } from '../../engine/index.js';
+import { useState } from 'preact/hooks';
 import { useGame } from '../game.js';
 import { Art } from '../lib/art.js';
 import { num, TYPE_NAME } from '../lib/format.js';
@@ -48,12 +49,14 @@ type Orders = Extract<Objective, { type: 'order_board' }>;
 type Sleigh = Extract<Objective, { type: 'sleigh_run' }>;
 
 function LadderPanel({ o, location }: { o: Ladder; location: Location }) {
-  const { data, player } = useGame();
+  const { data, player, act } = useGame();
   const armed = Math.max(0, o.tiers.findIndex((t) => player.setup.bait && t.baits.includes(player.setup.bait)));
+  // The player browses tiers freely; equipping a bait doesn't move the view.
+  const [picked, setPicked] = useState<number | null>(null);
+  const sel = Math.min(picked ?? armed, o.tiers.length - 1);
+  const tier = o.tiers[sel]!;
   const owned = (t: Ladder['tiers'][number]) => t.baits.reduce((n, b) => n + count(player, b), 0);
-  // The next recipe to show: the first tier above the armed one, or the top tier's.
-  const next = o.tiers.find((t, i) => i > armed && t.recipe) ?? o.tiers.findLast((t) => t.recipe);
-  const recipe = next?.recipe ? data.recipes.get(next.recipe) : undefined;
+  const recipe = tier.recipe ? data.recipes.get(tier.recipe) : undefined;
   const boss = location.imps.find((i) => i.id === o.boss);
   const top = o.tiers.at(-1)!;
   return (
@@ -61,25 +64,45 @@ function LadderPanel({ o, location }: { o: Ladder; location: Location }) {
       <h3><Art slot="baits" id="ribbon_candy" class="panel-icon" alt="" />Bait Ladder <small>Tier {armed + 1} armed</small></h3>
       <ol class="ladder">
         {o.tiers.map((t, i) => (
-          <li class={i === armed ? 'armed' : ''}>
-            <b>{i + 1}. {t.name}</b>
-            <span>owned {num(owned(t))}</span>
+          <li class={`${i === armed ? 'armed' : ''} ${i === sel ? 'picked' : ''}`}>
+            <button type="button" class="ladder-tab" aria-pressed={i === sel} onClick={() => setPicked(i)}>
+              <b>{i + 1}. {t.name}</b>
+              <span>owned {num(owned(t))}</span>
+            </button>
           </li>
         ))}
       </ol>
-      {recipe && (
-        <div class="ladder-next">
-          <p>
-            Next: <b>{data.items.get(recipe.output.item)?.name}</b>
-            <br />
-            {Object.entries(recipe.ingredients).map(([id, need], i) => (
-              <>{i > 0 && ' · '}{data.items.get(id)?.name} <span class={count(player, id) >= need ? 'ok' : 'no'}>{num(count(player, id))}/{need}</span></>
-            ))}
-          </p>
-          <button class="small-btn" onClick={() => go('workshop')}>Make</button>
+      <div class="ladder-next">
+        <div>
+          {recipe && (
+            <p>
+              <b>{data.items.get(recipe.output.item)?.name}</b>
+              <br />
+              {Object.entries(recipe.ingredients).map(([id, need], i) => (
+                <>{i > 0 && ' · '}{data.items.get(id)?.name} <span class={count(player, id) >= need ? 'ok' : 'no'}>{num(count(player, id))}/{need}</span></>
+              ))}
+            </p>
+          )}
+          {tier.baits.map((id) => {
+            const have = count(player, id);
+            const on = player.setup.bait === id;
+            const name = data.items.get(id)?.name ?? id;
+            return (
+              <p class="ladder-bait">
+                {tier.baits.length > 1 || !recipe ? <b>{name}</b> : null} <span class="muted">owned {num(have)}</span>{' '}
+                <button class="small-btn" disabled={on || have < 1} onClick={() => act('/api/setup', { slot: 'bait', item: id }, `Equipped ${name}.`)}>{on ? 'Equipped' : 'Equip'}</button>
+              </p>
+            );
+          })}
         </div>
-      )}
+        {tier.recipe && <button class="small-btn" onClick={() => go(`workshop/${tier.recipe}`)}>Craft</button>}
+      </div>
       <p class="panel-line">{boss?.name} only comes for {top.name}s.</p>
+      {boss && (
+        <p class="panel-line">
+          <b>Prepare before the faceoff:</b> {boss.name} is weak only to the Carol power type, and Clockwork traps do half damage. Bring a Carol trap. Carol Horns are made in Santa's Workshop from Hymn Reeds and a Carol Songsheet, both found in the optional Carol Loft, the side area above the Wrapping Room.
+        </p>
+      )}
     </>
   );
 }

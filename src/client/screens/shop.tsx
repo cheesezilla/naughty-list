@@ -107,7 +107,7 @@ export function EmporiumScreen({ tab }: { tab: ShopTab }) {
 }
 
 type CraftFilter = 'all' | 'trap' | 'base' | 'bait' | 'charm';
-export function WorkshopScreen() {
+export function WorkshopScreen({ focus }: { focus?: string }) {
   const { content, data, player, act } = useGame();
   const exact = useExactOdds();
   const [filter, setFilter] = useState<CraftFilter>('all');
@@ -116,7 +116,8 @@ export function WorkshopScreen() {
     r.rank <= player.rank && player.gold >= r.gold && Object.entries(r.ingredients).every(([id, n]) => count(player, id) >= n);
   const kindOf = (r: (typeof content.recipes)[number]) => data.items.get(r.output.item)!.kind;
   const counts = (k: CraftFilter) => content.recipes.filter((r) => k === 'all' || kindOf(r) === k).length;
-  const shown = content.recipes.filter((r) => (filter === 'all' || kindOf(r) === filter) && (!onlyNow || canCraft(r)));
+  const focused = focus ? content.recipes.find((r) => r.id === focus) : undefined;
+  const shown = focused ? [focused] : content.recipes.filter((r) => (filter === 'all' || kindOf(r) === filter) && (!onlyNow || canCraft(r)));
   const tabs: { id: CraftFilter; label: string }[] = [
     { id: 'all', label: `All ${counts('all')}` }, { id: 'trap', label: `Traps ${counts('trap')}` }, { id: 'base', label: `Bases ${counts('base')}` },
     { id: 'bait', label: `Bait ${counts('bait')}` }, { id: 'charm', label: `Charms ${counts('charm')}` },
@@ -128,8 +129,14 @@ export function WorkshopScreen() {
           <h1 class="screen-title">Santa's Workshop</h1>
           <p class="sub">Elves turn loot into gear</p>
         </div>
-        <Tabs label="Type" tabs={tabs} value={filter} onChange={setFilter} />
-        <label class="check"><input type="checkbox" checked={onlyNow} onChange={(e) => setOnlyNow((e.target as HTMLInputElement).checked)} /> Only show what I can craft now</label>
+        {focused ? (
+          <button class="link" onClick={() => go('workshop', true)}>← All recipes</button>
+        ) : (
+          <>
+            <Tabs label="Type" tabs={tabs} value={filter} onChange={setFilter} />
+            <label class="check"><input type="checkbox" checked={onlyNow} onChange={(e) => setOnlyNow((e.target as HTMLInputElement).checked)} /> Only show what I can craft now</label>
+          </>
+        )}
         {shown.map((r) => {
           const out = data.items.get(r.output.item)!;
           const rankName = content.ranks[r.rank - 1]?.name ?? `rank ${r.rank}`;
