@@ -15,13 +15,13 @@ function fresh(patch: (p: PlayerState) => void = () => {}): PlayerState {
 }
 
 describe('cheer meter', () => {
-  it('fills +1 per catch, +2 for a rare, drains 3 on an escape and stops at full', () => {
+  it('fills +1 per catch, +2 for a rare, drains 2 on an escape and stops at full', () => {
     const p = fresh();
     cheerAfterHunt(content, p, common, true, none);
     cheerAfterHunt(content, p, rare, true, none);
     expect(p.cheer!.pips).toBe(3);
     cheerAfterHunt(content, p, common, false, none);
-    expect(p.cheer!.pips).toBe(0);
+    expect(p.cheer!.pips).toBe(1);
     for (let i = 0; i < 12; i++) cheerAfterHunt(content, p, common, true, none);
     expect(p.cheer!.pips).toBe(10);
     cheerAfterHunt(content, p, common, false, none);
