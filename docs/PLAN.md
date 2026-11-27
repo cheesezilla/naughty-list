@@ -926,8 +926,8 @@ Rails: a Cheer charm adds at most +1 pip to a catch and never refills a meter th
 
 ### Open questions
 
-- Should the meter reset on Start over only, or also when the player changes location? (Proposed: only Start over; the meter carries across locations.)
-- Is -5 while Overcharged too harsh, or the right amount of risk?
+- **Decided (eddy, 27 Nov 2026):** the meter resets on Start over (player reset) only and carries across locations; an escape costs 5 pips while Overcharged, as proposed. Tuning is a separate task.
+- **Still open:** Santa's Blessing gives bosses +40% catch chance instead of a guaranteed catch (kept as proposed).
 - Do players want to see the pool and drop weights in a "Cheer book" screen? (Proposed: yes, a simple list under More > Cheer book, with unseen boons shown as "?".)
 - Simulator rule for a boon pick: the first draw card by rarity, so it does not skew balance. Real balance needs a play-test.
 
@@ -1104,47 +1104,61 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 ## Random events (planned, not built)
 
-**Ask (eddy, 26 Nov 2026):** rare random events after a hunt. Santa or Mrs. Claus offer a boon where the player chooses between a small safe gain and a big gain that costs something. Scrinch events take something away unless the player finishes a mini objective. Design only; nothing is built yet and no game number changes. Reworked on 27 Nov 2026 for Allure (PR #44): every hunt meets an elf, so triggers and objectives are per hunt and objective targets assume about a 70% catch chance on common elves.
+**Ask (eddy, 26 Nov 2026):** rare random events after a hunt. Santa or Mrs. Claus offer boons, and Scrinch events take something away unless the player finishes a mini objective. **Answers (27 Nov 2026):** 2.5% per hunt; 25% for a Scrinch event when a boss escapes; Scrinch events can be skipped by paying gold; **big gifts are rare and free, with no sacrifice**, so the player feels powerful and has something to work toward; events can happen in every location including the Cookie Pantry. eddy's focus is refinement, not balance: every hunt should make tangible short-term progress toward something. Tuning is a separate task. Design only; nothing is built and no game number changes. Written for Allure (PR #44): every hunt meets an elf, so triggers and objectives are per hunt.
 
-**Relationship to the Cheer Meter.** The [Cheer Meter](#cheer-meter-and-boons-eddy-26-nov-2026-design-only) is the player-earned, streak-driven pick-1-of-3 boon system. Random events are the unscheduled layer on top: Santa or Mrs. Claus appear by chance with a safe or big choice, and Scrinch interrupts with a threat. They share the hunt-log card and pending-choice plumbing, but have separate triggers and pools. Event rewards and losses never fill or drain Cheer pips, and an event boon does not use an Overcharge. Share one `pendingEvent` / `pendingBoon` slot so only one prompt is open at a time.
+**Relationship to the Cheer Meter.** The [Cheer Meter](#cheer-meter-and-boons-eddy-26-nov-2026-design-only) is the player-earned, streak-driven pick-1-of-3 boon system, the medium-term mini game. Random events are the unscheduled layer on top. They share the hunt-log card and pending-prompt plumbing, but have separate triggers and pools. Event rewards and losses never fill or drain Cheer pips, and an event boon does not use an Overcharge. Only one prompt is open at a time (`pendingEvent` and the Cheer draw share a slot).
 
 ### How the system works
 
-- **Trigger (reworked for Allure, PR #44, which removes quiet hunts).** Every hunt now meets an elf, so the roll is per hunt: 2.5% after any hunt. Guards: none in the first 30 hunts of a game, at least 20 hunts between events, and never while another event is open. That is about one event per 60 hunts. **Scrinch's grudge:** when a mini boss or boss escapes, the next hunt-end roll is a Scrinch event at 15% (minimum gap 10 hunts), so a lost boss fight can bring the retaliation. Bosses that are caught never trigger it. All numbers go in `content/constants.json` > `events`; the roll uses the same server random source as hunts, so the browser can't edit it.
-- **Who.** 60% a boon from Santa or Mrs. Claus, 40% a Scrinch event. Scrinch events start at rank 2 (rank 1 only gets boons).
-- **Scale.** Rewards and penalties are multiples of **H**, the average gold of the current location's common elves, so an event matters equally in every location.
-- **Boon card.** A card in the hunt log with the sender's portrait and two buttons: **Take the safe gift** (free or nearly) or **Take the big gift** (costs something, spelled out on the button). A third link, "No thanks", does nothing. The player must answer before the next hunt so choices are not missed; the card survives a reload (saved as `pendingEvent`).
-- **Scrinch card.** Objectives are counted per hunt and tuned for Allure: because every hunt is now an encounter, they ask for catches out of hunts, not catches out of attracted hunts. Shows the threat and the mini objective with a live counter pinned above the Hunt button ("Catch 3 elves: 1/3, 6 hunts left"). Objectives count hunts, not time. Beat it and the threat is cancelled, plus a small prize. Fail and the penalty lands once. Some Scrinch events let the player pay a toll to skip, which is the safe choice.
-- **Rails** (same spirit as pillage): gold never drops below 100, points never cost a rank, gear, keys and Naughty List cards are never touched, and a penalty can only take what the player has.
-- **Log and badges.** Every offer, choice and result is a hunt-log event. Possible badges later (not planned in detail): "Good Elf" (take 5 safe gifts), "High Roller" (take 5 big gifts), "Scrinch Slayer" (beat 10 challenges).
-- **Build.** An `events.json` table plus `src/engine/events.ts` (roll, offer, apply, resolve), a `pendingEvent` field in the save, one POST route to answer, and a card and counter in the UI. Simulator gets an event on/off flag and a "always take safe" and "always take big" policy so the balance can be checked. Small to medium effort.
+- **Trigger.** After any hunt, roll 2.5%. Guards: none in the first 30 hunts of a game, at least 20 hunts between events, never while another is open. **Scrinch's grudge:** when a mini boss or boss escapes, a Scrinch event follows with 25% chance (minimum gap 10 hunts). Caught bosses never trigger it. That is about one event per 60 hunts plus grudges. All numbers go in `content/constants.json` > `events`; the roll uses the server random source.
+- **Who.** 60% a boon from Santa or Mrs. Claus, 40% a Scrinch event. No rank limit, so the Cookie Pantry gets events too.
+- **Scale.** Rewards and penalties are multiples of **H**, the average gold of the current location's common elves, so an event matters equally everywhere.
+- **Boon card (the decision).** The sender's portrait and **two small gifts of different kinds** (for example gold or bait), at low or no cost, so the player picks what they need now. No sacrifice is asked. A "No thanks" link does nothing. The card survives a reload.
+- **Grand Gift (rare, free, no choice).** Each boon has a 10% chance to be a Grand Gift instead: a big, free reward shown with a gold-framed card and a sparkle (see table below). **Santa's favour** is the thing to work for: every Scrinch event the player beats adds +15% to the next boon's Grand Gift chance, and every boon without a Grand Gift adds +5% (a pity counter). The chance resets to 10% after one is given. The next-boon chance is visible as a small "Santa's favour" bar, so fighting Scrinch has a clear payoff.
+- **Scrinch card (fight or pay).** Shows the threat, the mini objective and a live counter pinned above the Hunt button ("Catch 5 of 8: 2/5, 6 hunts left"). Objectives count hunts, not time, and ask for catches out of hunts (every hunt is an encounter). Beat it: threat cancelled, a small prize, and Santa's favour. Fail it: the penalty lands once. Or pay the **skip toll** in gold at any time before it ends.
+- **Rails** (same spirit as pillage): gold never drops below 100, points never cost a rank, gear, keys and Naughty List cards are never touched, and a penalty only takes what the player has.
+- **Log and badges.** Every offer, choice and result is a hunt-log event. Badge ideas: "Good Elf" (take 5 boons), "Santa's Favourite" (get a Grand Gift), "Scrinch Slayer" (beat 10 challenges).
+- **Build.** `events.json` plus `src/engine/events.ts` (roll, offer, apply, resolve), `pendingEvent` and the favour counter in the save, one POST route to answer, a card, the counter and the favour bar in the UI. Simulator gets an events flag and a policy (always the first gift, always fight, always pay the toll). Small to medium effort.
 
 ### Boons (Santa and Mrs. Claus)
 
-| # | Event | Safe gift (free) | Big gift (the sacrifice) |
+Two small gifts per boon; the player takes one.
+
+| # | Event | Gift A | Gift B |
 | --- | --- | --- | --- |
-| 1 | Mrs. Claus's Cookie Tin | 8 H gold | Give up 20% of your gold (at most 15 H) for 3 Cocoa Flask charms (+luck, 10 hunts each) |
-| 2 | Santa's Sleigh Drop | 5 of your best-affordable bait | Skip the next 10 hunts' worth of bait: all your armed bait is taken, you get 3 x that amount of a better bait |
-| 3 | Santa's Gift Sack | 1 random charm | Trade 1% of your points (never a rank) for 40 H gold |
-| 4 | Mrs. Claus's Warm Mittens | +10% power for the next 10 hunts | Burn your equipped charm for +30% power for the next 25 hunts |
-| 5 | Santa's Naughty Check | Allure x1.5 for the next 5 hunts (more rare, mini boss and boss visits) | Pay 10% of your gold (at most 10 H) for Allure x3 for the next 10 hunts |
+| 1 | Mrs. Claus's Cookie Tin | 8 H gold | 5 of your best-affordable bait |
+| 2 | Santa's Gift Sack | 1 random charm | 4 H gold and 2 bait |
+| 3 | Mrs. Claus's Warm Mittens | +10% power for the next 10 hunts | +10% luck-strength (luck x1.1) for the next 10 hunts |
+| 4 | Santa's Naughty Check | Allure x1.5 for the next 5 hunts | 3 H gold |
+| 5 | Mrs. Claus's Cocoa Break | 3 Cocoa Flask charms (+luck, 10 hunts each) | Your next escape pillages nothing (one hunt shield) |
+
+### Grand Gifts (rare, free)
+
+One is picked at random. Each is big enough to notice and cost the player nothing.
+
+| # | Grand Gift | What the player gets |
+| --- | --- | --- |
+| G1 | Santa's Sleigh Delivery | 40 H gold and 10 best-affordable bait |
+| G2 | Mrs. Claus's Heirloom Charm | A one-time charm: +25% power for 25 hunts |
+| G3 | Santa's Golden Ticket | The next 5 catches pay triple gold and points |
+| G4 | Winter Wonder | Allure x3 for 15 hunts (many rare and boss visits) |
+| G5 | Sparkling Snow Globe | The next boss or mini boss you meet cannot pillage (and gets +20% catch chance) |
 
 ### Scrinch events
 
 | # | Event | Threat if you fail | Mini objective | Prize on success | Skip toll |
 | --- | --- | --- | --- | --- | --- |
-| 6 | Soot Snatch | Hounds steal 10% of your gold (at most 8 H) | Catch 5 of the next 8 elves (about 80% for decent gear) | Keep the gold, plus 3 H | Pay 3% gold |
+| 6 | Soot Snatch | Hounds steal 10% of your gold (at most 8 H) | Catch 5 of the next 8 elves | Keep the gold, plus 3 H | Pay 3% gold |
 | 7 | Bait Bandits | 6 of your armed bait are taken | Catch 3 in a row (within 10 hunts) | Keep the bait, plus 3 bait | Pay 2 H gold |
-| 8 | Hex on the Trap | Trap power -25% for 30 hunts | Catch one rare elf or better within 30 hunts (Allure gear helps here) | Hex lifted, plus a charm | None |
-| 9 | Toll Booth | Lose 10% of your gold (at most 12 H) | Catch 8 of the next 12 elves, or pay now | 4 H gold | Pay 4% gold |
-| 10 | Frosted Footing | The next 8 hunts use 2 bait each | Catch an elf with a trap of the location's home type within 8 hunts | Normal bait use, plus 2 bait | None |
+| 8 | Hex on the Trap | Trap power -25% for 30 hunts | Catch one rare elf or better within 30 hunts (Allure gear helps) | Hex lifted, plus a charm | Pay 4 H gold |
+| 9 | Toll Booth | Lose 10% of your gold (at most 12 H) | Catch 8 of the next 12 elves | 4 H gold | Pay 4% gold |
+| 10 | Frosted Footing | The next 8 hunts use 2 bait each | Catch an elf with a trap of the location's home type within 8 hunts | Normal bait use, plus 2 bait | Pay 3 H gold |
 
 ### Open questions for eddy
 
-1. Is 2.5% per hunt with a 20-hunt gap (about one event per 60 hunts) right, or should events be rarer? And do you like the boss-escape grudge trigger?
-2. Should the Scrinch skip toll exist, or must every Scrinch event be fought?
-3. Should the sacrifice on big gifts ever touch points, or only gold, bait and charms? (Draft: rarely, event 3 only, never rank.)
-4. Can events appear in the Cookie Pantry, or only from location 2 on?
+1. Are the Grand Gift rates right (10% base, +15% after beating Scrinch, +5% pity per boon without one)?
+2. Should the favour bar be visible all the time, or only after the first Scrinch event?
+3. Should Scrinch's grudge also stop after the same boss escapes twice in a row, so a hard boss isn't punished again and again?
 
 ## Parked ideas (eddy, 26 Nov 2026: not now)
 
@@ -1169,7 +1183,7 @@ The first idea (replace the attraction roll where no elf takes the bait) is trac
 
 | Date | PR | Change |
 | --- | --- | --- |
-| 2026-11-26 | this PR | Design only: random events after a hunt (boons from Santa and Mrs. Claus, Scrinch challenges) with 10 draft events, and a parked-ideas list. Reworked 27 Nov for Allure (#44): per-hunt trigger at 2.5%, boss-escape grudge, objectives retuned. No game number changes |
+| 2026-11-26 | this PR | Design only: random events after a hunt (boons from Santa and Mrs. Claus, Scrinch challenges) with 10 draft events, and a parked-ideas list. Reworked 27 Nov for Allure (#44) and eddy's answers: 2.5% per hunt, 25% boss-escape grudge, skip tolls, free rare Grand Gifts with a Santa's favour bar, events in every location. No game number changes |
 | 2026-11-26 | this PR | Planned the Cheer Meter: +1 pip per catch (+2 rare or better), -3 on an escape, full at 10, then pick 1 of 3 boons from a pool of 14 (6 common, 5 rare, 3 legendary), Overcharge up to 15 pips with better draw odds and a -5 escape, and three Cheer charms that fill the meter faster. Design only, no numbers changed |
 | 2026-11-26 | #40 | Bases are drawn 30% lower under the trap in the trap stack. Imported all 97 custom art pictures (elves, traps, bases, baits, charms, materials, trap types, ranks, locations, map, brand, how-to) as resized WebP, replacing the generated SVGs and older PNGs; icons stay SVG; favicon now WebP. No rule or balance change |
 | 2026-11-26 | this PR | Hunt log escapes now show the effectiveness tier ("Escaped. Weak chance") instead of the exact percentage; admins with the exact-odds toggle still see the percentage. Checked the New Catch popup and Hunters feed: they show no odds. Imp-file drop and pillage-risk percentages are unchanged |
