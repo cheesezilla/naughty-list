@@ -87,6 +87,8 @@ export const Objective = z.discriminatedUnion('type', [
     gain: z.partialRecord(ImpTier, z.number().int().nonnegative()),
     /** Readiness taken by these imps when they escape. */
     loss: z.record(id, z.number().int().nonnegative()),
+    /** Sleigh launches needed before the boss attacks the sleigh (default 1). */
+    bossAfterLaunches: z.number().int().positive().default(1),
     minibossFrom: z.number().int().nonnegative(),
     minibossWeight: z.number().nonnegative(),
     launchGold: z.number().int().nonnegative(),
@@ -190,11 +192,15 @@ export const Constants = z.object({
     full: z.number().int().positive(), max: z.number().int().positive(),
     catchPips: z.number().int().nonnegative(), bigCatchPips: z.number().int().nonnegative(),
     escapePips: z.number().int().nonnegative(), heldEscapePips: z.number().int().nonnegative(),
+    /** Pips a finished Toy Workshop order slot adds to the meter (the Workshop's own way to fill it). */
+    orderPips: z.number().int().nonnegative().default(0),
     /** Draws without a rare (or better) / without a legendary before one card is forced. */
     pity: z.object({ rare: z.number().int().positive(), legendary: z.number().int().positive() }),
     /** Draw table by pips: the last row whose `from` is at most the meter's pips applies. */
     tiers: z.array(z.object({
       from: z.number().int().nonnegative(), name: z.string(), cards: z.number().int().positive(), rerolls: z.number().int().nonnegative(),
+      /** Boons the player keeps from this draw (an Overcharged draw keeps two). */
+      picks: z.number().int().positive().default(1),
       weights: z.object({ common: z.number().nonnegative(), rare: z.number().nonnegative(), legendary: z.number().nonnegative() }),
     })).min(1),
   }),

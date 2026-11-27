@@ -186,7 +186,7 @@ Nothing here is built and no game number changes. It says what the simulator and
 
 - **Hunts per rank and per area** can show a rank that is too fast or too slow against the targets, and which system moved it, by turning Cheer and events off one at a time. They cannot say a rank is fun. Aim: stay within 25% of the targets, and have Cheer plus events speed total hunts by 10 to 20% (they are a reward, not the engine of progress). If Cheer alone moves it more than 25%, the boons are too strong; if under 5%, the meter is decoration.
 - **Hunts per Cheer fill** is the key short-loop number. Aim: a median of 15 to 25 hunts per fill early (so a boon arrives every minute or two of play), with p90 under 45 so no one waits too long, and p10 over 8 so it is never spam. If the median is under 10 the boons stop feeling special; over 30 and the meter is forgotten. The share of time spent full should stay under 5% unless Overcharge is being used on purpose.
-- **Escape pip loss** says whether the -2 (was -3; and -5 while held) hurts: if a typical fill loses more than 40% of its pips to escapes, the meter punishes catching bosses, which are the hunts the player is working for. That would mean the penalty is too high for off-type bosses.
+- **Escape pip loss** says whether the -3 (and -5 while held) hurts: if a typical fill loses more than 40% of its pips to escapes, the meter punishes catching bosses, which are the hunts the player is working for. That would mean the penalty is too high for off-type bosses.
 - **Boon pick rate** tests the pool. A boon picked over 40% of the time when offered is too strong; one picked under 5% is dead weight and should be reworked. Compare pick rate with measured value (extra gold, points or catches during the boon). The three policies should finish within 10% of each other. A clear winner means a solved game.
 - **Pity firing rate** should be small (under 15% of draws). If pity fires often the base weights are too stingy.
 - **Overcharge** is a real choice only if the hold policy beats cash-in-at-10 by something, but not by a lot. Equal means nobody should hold; hold clearly ahead means the escape penalty is too small.
@@ -233,7 +233,7 @@ Record each result as pass, fail or unsure in the PR for the tuning task.
 | 2 | Elf Deputy | 2,500 | Wrapping Room (250 gold to unlock) | 250 |
 | 3 | Hex Tracker | 12,000 | Toy Workshop (1,500 gold), Nutcracker Jaws trap | 400 |
 | 4 | Frost Warden | 46,000 | Reindeer Stables (5,000 gold), rank 4 crafting | 600 |
-| 5 | Yule Marshal | 160,000 | End of v1 | |
+| 5 | Yule Marshal | 217,000 | End of v1 | |
 
 Ranks depend on points only. Location unlock fees are paid once; travel between unlocked locations is free.
 
@@ -944,7 +944,7 @@ A streak meter that rewards catching in a row. When it fills, the player picks 1
 
 - Shown as a 10-pip bar on the Hunt screen under the gear card.
 - **Fills:** +1 pip per catch, **+2 for a rare, mini boss or boss**. Uncommons and commons give +1.
-- **Escape:** -2 pips (never below 0; eddy cut it from -3 on 27 Nov 2026 after the simulator showed the meter almost never filling outside the Wrapping Room). One bad roll hurts but never wipes the streak.
+- **Escape:** -3 pips (never below 0). One bad roll hurts but never wipes the streak. (eddy tried -2 on 27 Nov 2026: the meter filled too fast, so it stays at -3; the Toy Workshop fills through its order board instead.) One bad roll hurts but never wipes the streak.
 - **Full at 10:** the bar glows and a "Cash in" button appears. Pips above 10 from the same catch carry over into the next meter.
 - **Cash in:** a sheet shows 3 boon cards drawn from the pool. The player picks one, the boon starts, and the meter drops to 0. Closing the sheet keeps the meter full and the draw saved (the meter stops filling until a boon is picked, so there is no reason to delay except Overcharge, below).
 - Boons count in **hunts** (every hunt, caught or escaped). A boon of the same id picked again refreshes its hunts; different boons stack. A boon never outlasts a Start over.
@@ -989,9 +989,9 @@ At 10 the player can **Hold the charge** instead of cashing in and keep filling 
 | 10 | Full | Weights 70 / 25 / 5, 3 cards |
 | 11-12 | Warm | Weights 55 / 35 / 10, 3 cards |
 | 13-14 | Hot | Weights 40 / 42 / 18, 3 cards |
-| 15 | Blazing | Weights 25 / 50 / 25, 4 cards, plus one reroll of the whole draw |
+| 15 | Blazing (Overcharge) | Weights 0 / 55 / 45 (only rare and legendary), 4 cards, plus one reroll of the whole draw, and **you keep two of the four boons** |
 
-- **Harsher escape while held:** above 10 pips an escape costs **-5** (not -2) and can drop the meter below 10, so the player loses the full state and has to refill. The risk is the price of better odds.
+- **Harsher escape while held:** above 10 pips an escape costs **-5** (not -3) and can drop the meter below 10, so the player loses the full state and has to refill. The risk is the price of better odds.
 - Pity counters still apply. Cheer Surge pips count toward Overcharge.
 - It is a choice each time: cash in early and safe, or push for a better draw.
 
@@ -1280,7 +1280,7 @@ The first idea (replace the attraction roll where no elf takes the bait) is trac
 
 | Date | PR | Change |
 | --- | --- | --- |
-| 2026-11-27 | this PR | **Cheer Meter escape penalty -3 to -2 (eddy).** `constants.cheer.escapePips` 3 to 2; the held (Overcharge) penalty stays 5. Simulator (1,000 players, all on): median 1,205 hunts to rank 5 (1,221 before); hunts per fill median 13, p90 73 (was 98); pips lost to escapes 62% of pips earned (was 70%); draws per 100 hunts Pantry 2.1, Wrapping Room 7.6, Toy Workshop 0.2, Stables 4.3, Carol Loft 1.4 (was 1.5, 7.2, 0.2, 3.2, 1.1) |
+| 2026-11-27 | this PR | **Tuning round from the first simulation report (eddy).** Rank 5 now needs 217,000 points (was 160,000). Scrinch skip tolls tripled (percent 9 to 12% of gold, flat 6 to 12 H). Toy Workshop: commons 15% weaker (power 380, 510, 640), Hammerhand and General Grimbolt pillage gold capped at 2 times their gold, and each finished order slot adds 2 Cheer pips (`constants.cheer.orderPips`). An Overcharged (Blazing) draw shows only rare and legendary boons and lets you keep two (`picks` on the draw table). Antler Ripper power 3,500 to 4,100 and Cinderhoof 6,000 to 7,000, and Cinderhoof only attacks the sleigh after the second launch (`bossAfterLaunches`). Cheer escape penalty stays 3 (tried 2: too fast). Simulator (1,000 players, Cheer and events on): median 1,359 hunts to rank 5 (1,221 before); ranks 118, 242, 409, 568; Toy Workshop fills 4.1 per 100 hunts (was 0.2); Workshop catch rate 45% (was 40%) and pillage 29% of gold earned there (was 43%); fighting Scrinch wins 59% (was 52%), paying every toll costs 19% of gold earned and is 2% slower than fighting; holding for Overcharge is now 0.7% faster than cashing in. See `docs/SIMULATION_REPORT.md` Report 4 |
 | 2026-11-27 | this PR | Naughty List opens on the current location's tab and gains an All tab: every elf from every location, rarest first (boss to common). No game numbers changed |
 | 2026-11-27 | this PR | Hunt no longer auto-scrolls to the hunt log, so the Cheer Meter and the rest of the screen stay in view. No game numbers changed |
 | 2026-11-27 | this PR | **Cheer Meter and random events built on `integration` (eddy's playground).** `cheer` and `events` blocks in constants (both with an `enabled` flag), `boons.json` (14 boons), `events.json` (15 events), three Cheer charms, engine `cheer.ts`, `events.ts`, `mods.ts`, `hunt()` applies them, `POST /api/cheer` and `/api/event`, Hunt screen meter, boon card, Scrinch counter and favour bar, hunt-log lines, two admin tools, tests. Draft numbers, no tuning. Existing simulator (does not pick boons or answer events): 200/200 reach rank 5, median 1,288 hunts |

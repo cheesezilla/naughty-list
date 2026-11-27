@@ -73,9 +73,9 @@ Not measured: whether the cards and event text read clearly and whether a choice
 
 ## Report 3: tweak suggestions and what they do (1,000 players each, all systems on, greedy boons, safe events)
 
-Reference run (before any tweak): 1,221 hunts to rank 5; ranks 118, 242, 450, 377; Cheer fills per 100 hunts Pantry 1.5, Wrapping Room 7.2, Toy Workshop 0.2, Stables 3.2, Loft 1.1. The variants below were run on copies of `content/` (`--content <dir>`); only the first change is in the PR.
+Reference run (before any tweak): 1,221 hunts to rank 5; ranks 118, 242, 450, 377; Cheer fills per 100 hunts Pantry 1.5, Wrapping Room 7.2, Toy Workshop 0.2, Stables 3.2, Loft 1.1. The variants below were run on copies of `content/` (`--content <dir>`).
 
-**Decided and in this PR: Cheer escape penalty 3 to 2 (held stays 5).** Median 1,205 hunts (-1.3%), hunts per fill median 13 (p90 73, was 98), pips lost to escapes 62% (was 70%). Fills per 100 hunts: Pantry 2.1, Wrapping Room 7.6, Toy Workshop 0.2, Stables 4.3, Loft 1.4. It helps the Stables most, but the Toy Workshop stays at 0.2 (one boon per 500 hunts) because a 42% catch rate cannot beat a -2 penalty at +1 a catch.
+**Tried and reverted (eddy: the meter filled too fast): Cheer escape penalty 3 to 2 (held stays 5).** Median 1,205 hunts (-1.3%), hunts per fill median 13 (p90 73, was 98), pips lost to escapes 62% (was 70%). Fills per 100 hunts: Pantry 2.1, Wrapping Room 7.6, Toy Workshop 0.2, Stables 4.3, Loft 1.4. It helps the Stables most, but the Toy Workshop stays at 0.2 (one boon per 500 hunts) because a 42% catch rate cannot beat a -2 penalty at +1 a catch.
 
 | Issue | Suggestion | Simulated effect |
 | --- | --- | --- |
@@ -88,3 +88,29 @@ Reference run (before any tweak): 1,221 hunts to rank 5; ranks 118, 242, 450, 37
 **Why the Toy Workshop is rough.** Three things stack. (1) The elves are tough for the gear on hand: commons have 450 to 750 power and the trap at that point is the 900-power Nutcracker Jaws or a weaker one, so a typical common is caught 42% of the time (the Wrapping Room 86%, Stables 78%), and bosses only 9% (mini bosses 20%). (2) Escapes are expensive there: mini bosses and bosses are 6% of encounters but pillage on 35% and 60% of escapes, and their pillage takes a percentage of gold you are carrying (5% and 8%, capped at 10 and 15 times the elf's gold, up to about 10,000 gold), while the Workshop pays only about 70 gold a hunt. So 43% of the gold earned there is lost to pillage (3 to 18% elsewhere). (3) It is the longest stay: a median 553 hunts, with a longest escape streak around 12 and a dry spell of 25 hunts at the worst, and Cheer never fills there. Suggestions: lift the commons' catch rate to about 55% by lowering their power a little (about -15%) or adding a Workshop trap or base at the start; cap the pillage gold in the Workshop at about 5 times the elf's gold; and give the area some pips.
 
 **Portrait goal and a harder boss.** Making the rare elves rarer does nothing useful: with every rare weight at 40% the Stables portrait finishes 146 hunts before the rank-up (171 before), and the Pantry and Stables portraits drop to a 65 to 78% completion rate. Making mini bosses and bosses 40% stronger (together with the 217,000 threshold) does push the Toy Workshop portrait to 56 hunts after the rank-up and the Wrapping Room to 96 after, but the Stables portrait is still done 329 hunts before the rank-up (hunt 1,162 against 1,484), and the Workshop pillage cost rises to 53% and the Stables to 30%. Reason: the rank-up threshold, not the boss, is the long pole in the Stables. Raising the threshold alone makes the portrait goal even easier. So a harder boss only works where the boss is the last thing a player needs: suggestion is a medium rise (+15 to 20% power on Antler Ripper and Cinderhoof only, not Workshop bosses, which already hurt), and to treat the portrait as a bonus that is finished "about 20 to 40% of hunts after the rank-up" by moving the boss to the end of the area's loop (for example the sleigh run launching only after 60 hunts), not by making catches rarer.
+
+## Report 4: the tuning round that was built (1,000 players, Cheer and events on, greedy boons, safe events)
+
+eddy approved: rank 5 at 217,000 points; Scrinch tolls x3; Toy Workshop commons 15% weaker, a pillage cap and Cheer pips from the order board; an Overcharged draw keeps two boons; Antler Ripper and Cinderhoof stronger and Cinderhoof only after the second sleigh launch; escape penalty back to 3. Note: I read "choose one of 2 rare and above boons" as "keep two of the (rare or better) boons on offer"; if you meant a pick of one from two cards, it is one number (`picks: 1`, `cards: 2`) in `constants.cheer.tiers`.
+
+| Measure | Before | After |
+| --- | --- | --- |
+| Hunts to rank 5 (median) | 1,221 | 1,358 |
+| Hunts in ranks 1 to 4 | 118, 242, 450, 377 | 118, 242, 409, 568 |
+| Cheer fills per 100 hunts: Pantry, Wrapping Room, Workshop, Stables, Loft | 1.5, 7.2, 0.2, 3.2, 1.1 | 1.5, 7.2, 4.1, 3.3, 1.1 |
+| Hunts per fill (p10 / median / p90) | 9 / 14 / 98 | 7 / 15 / 63 |
+| Toy Workshop catch rate (commons) | 40% (42%) | 45% (48%) |
+| Toy Workshop pillage as share of gold earned | 43% | 29% |
+| Scrinch fight win rate | 52% | 59% |
+| Paying every toll: gold per player, pace against fighting | 10,100 (7%), +0.7% | 39,600 (19%), +2.1% |
+| Overcharge (hold) against cash-in | 0.0% | 0.7% faster (1,350 against 1,359) |
+| Median catches per player: Antler Ripper, Cinderhoof | 3.7, 2.6 | 5.7, 4.2 |
+
+Findings:
+- **Pace is on target again.** All four ranks are within 25% of target, including rank 4 (568 against 600). Total 1,358 against the old 1,221 is the intended cost of the higher rank 5 threshold; Cheer and events still shave about 6% off (1,453 without them).
+- **The Toy Workshop now fills the meter** about once per 25 hunts of order work, 4.1 per 100 hunts (was 0.2). That is close to the Stables (3.3) and not far under the Wrapping Room (7.2). If it feels like too much, `orderPips` 2 to 1 halves it.
+- **The pillage cap only works at 2 times the elf's gold.** At 5 times it never binds (the 8% share of held gold is lower), and pillage stayed at 41%; at 2 times it falls to 29%. The Stables boss pillage (30% of gold earned there) is now the highest.
+- **The portrait goal still finishes well before the rank-up in the Stables:** Cinderhoof first caught around hunt 1,004, rank-up about 1,358, so 323 hunts early. Requiring five launches moves Cinderhoof to 1,094 (255 early). The Stables are 512 hunts long now, so the portrait cannot be the long pole unless the boss gate is much later or the area's loop is made longer. Suggestions: a 5-launch gate, or Cinderhoof only at a higher Readiness run (for example a Rush run), or accept the portrait as a bonus for the first half of the area.
+- **Overcharge now pays slightly:** two rare-or-better boons per held draw makes holding about 0.7% faster than cashing in (1,350 against 1,359), with draws at 1.3 against 3.5 per 100 hunts, and a p90 wait of 200 hunts. Still a modest gamble. Giving a held draw a third pick, or more hunts per boon, would make it clearly worth it.
+- **Gold:** earned per player rises to about 205,600 (from 149,000) because the game is longer; pillage losses 52,400. Gold still piles up late.
+- **Progress feel:** any good thing gap p90 2, milestones p90 3, worst dry spell for the median player 25 hunts (11 counting catches).

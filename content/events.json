@@ -31,18 +31,18 @@
   "scrinch": [
     { "id": "soot_snatch", "name": "Soot Snatch", "text": "Scrinch's hounds are after your gold!",
       "threat": { "type": "goldPct", "pct": 0.1, "capH": 8 }, "goal": { "type": "catches", "need": 5, "window": 8 }, "goalText": "Catch 5 of the next 8 elves",
-      "prize": [{ "type": "gold", "h": 3 }], "prizeText": "Keep your gold, plus 3 H gold", "failText": "The hounds steal some gold.", "toll": { "pct": 0.03 } },
+      "prize": [{ "type": "gold", "h": 3 }], "prizeText": "Keep your gold, plus 3 H gold", "failText": "The hounds steal some gold.", "toll": { "pct": 0.09 } },
     { "id": "bait_bandits", "name": "Bait Bandits", "text": "Scrinch's bandits are eyeing your bait.",
       "threat": { "type": "baitLoss", "amount": 6 }, "goal": { "type": "streak", "need": 3, "window": 10 }, "goalText": "Catch 3 in a row within 10 hunts",
-      "prize": [{ "type": "bait", "amount": 3 }], "prizeText": "Keep your bait, plus 3 bait", "failText": "The bandits make off with your bait.", "toll": { "h": 2 } },
+      "prize": [{ "type": "bait", "amount": 3 }], "prizeText": "Keep your bait, plus 3 bait", "failText": "The bandits make off with your bait.", "toll": { "h": 6 } },
     { "id": "hex_on_the_trap", "name": "Hex on the Trap", "text": "Scrinch hexes your trap!",
       "threat": { "type": "buff", "stat": "powerMult", "value": 0.75, "hunts": 30, "label": "Hexed trap: -25% power" }, "goal": { "type": "rare", "window": 30 }, "goalText": "Catch one rare elf or better within 30 hunts",
-      "prize": [{ "type": "charm", "amount": 1 }], "prizeText": "The hex lifts, plus a charm", "failText": "Your trap is hexed: -25% power for 30 hunts.", "toll": { "h": 4 } },
+      "prize": [{ "type": "charm", "amount": 1 }], "prizeText": "The hex lifts, plus a charm", "failText": "Your trap is hexed: -25% power for 30 hunts.", "toll": { "h": 12 } },
     { "id": "toll_booth", "name": "Toll Booth", "text": "Scrinch has set up a toll booth on your path.",
       "threat": { "type": "goldPct", "pct": 0.1, "capH": 12 }, "goal": { "type": "catches", "need": 8, "window": 12 }, "goalText": "Catch 8 of the next 12 elves",
-      "prize": [{ "type": "gold", "h": 4 }], "prizeText": "4 H gold", "failText": "You pay the toll.", "toll": { "pct": 0.04 } },
+      "prize": [{ "type": "gold", "h": 4 }], "prizeText": "4 H gold", "failText": "You pay the toll.", "toll": { "pct": 0.12 } },
     { "id": "frosted_footing", "name": "Frosted Footing", "text": "Scrinch freezes the floor and your bait slips away.",
       "threat": { "type": "buff", "stat": "baitCost", "value": 2, "hunts": 8, "label": "Frosted floor: 2 bait a hunt" }, "goal": { "type": "homeType", "window": 8 }, "goalText": "Catch an elf with a trap of this area's home type within 8 hunts",
-      "prize": [{ "type": "bait", "amount": 2 }], "prizeText": "Normal bait use, plus 2 bait", "failText": "Each hunt uses 2 bait for 8 hunts.", "toll": { "h": 3 } }
+      "prize": [{ "type": "bait", "amount": 2 }], "prizeText": "Normal bait use, plus 2 bait", "failText": "Each hunt uses 2 bait for 8 hunts.", "toll": { "h": 9 } }
   ]
 }

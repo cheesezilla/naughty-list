@@ -30,6 +30,8 @@ export interface ObjectiveResult {
   notes: string[];
   gold?: number;
   items?: { item: string; amount: number }[];
+  /** Order-board slots filled by this hunt (they add Cheer pips). */
+  orders?: number;
 }
 
 const TYPE_NAME: Record<PowerType, string> = { clockwork: 'Clockwork', starlight: 'Starlight', frost: 'Frost', carol: 'Carol' };
@@ -92,6 +94,7 @@ export function afterHunt(
   if (o.type === 'order_board' && s.type === 'order_board') {
     if (!imp || !caught || trapType !== s.slots[s.filled]) return undefined;
     s.filled += 1;
+    out.orders = 1;
     out.notes.push(`${s.rush ? 'Rush order' : 'Order'} slot ${s.filled} of ${s.slots.length} filled (${TYPE_NAME[trapType as PowerType]})`);
     if (s.filled >= s.slots.length) {
       if (s.rush) {
@@ -128,12 +131,12 @@ export function afterHunt(
     if (s.readiness >= 100) {
       s.active = false;
       s.launches += 1;
-      s.forced = o.boss;
+      if (s.launches >= o.bossAfterLaunches) s.forced = o.boss;
       if (s.left >= 10) bump(p, 'expressLaunches');
       p.gold += o.launchGold;
       out.gold = o.launchGold;
       for (const [item, amount] of Object.entries(o.launchItems)) give(item, amount);
-      out.notes.push(`The sleigh launches! ${name(o.boss)} attacks it.`);
+      out.notes.push(s.forced ? `The sleigh launches! ${name(o.boss)} attacks it.` : `The sleigh launches! Launch ${s.launches} of ${o.bossAfterLaunches} before ${name(o.boss)} shows up.`);
     } else if (s.left <= 0) {
       s.active = false;
       bump(p, 'sleighFails');

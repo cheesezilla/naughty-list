@@ -39,7 +39,6 @@ const VERBOSE = args.includes('--verbose');
 const strOpt = (name: string, def = '') => { const i = args.indexOf(`--${name}`); return i >= 0 ? (args[i + 1] ?? def) : def; };
 const TRACE = strOpt('trace');
 const TRACE_PLAYERS = opt('trace-players', 1);
-const BLAZING_PICKS = opt('blazing-picks', 1);
 const NO_CHEER = args.includes('--no-cheer');
 const NO_EVENTS = args.includes('--no-events');
 const BOON_POLICY = strOpt('boon-policy', 'greedy');
@@ -274,15 +273,7 @@ function answer(p: PlayerState, rng: Rng, log: Log, n: number): PlayerState {
     const r = cheerAction(content, p, 'pick', rng, pick);
     if (r.ok) {
       p = r.player;
-      // Experiment: a Blazing (Overcharged) draw lets the player keep more than one card.
-      if (BLAZING_PICKS > 1 && s.draw.tier === 'Blazing') {
-        const rest = cards.filter((c) => c !== pick).sort((a, b) => (BOON_VALUE[b] ?? 0) - (BOON_VALUE[a] ?? 0));
-        for (const extra of rest.slice(0, BLAZING_PICKS - 1)) {
-          const b = content.boons.find((x) => x.id === extra)!;
-          const have = p.cheer!.active.find((a) => a.id === b.id);
-          if (have) have.hunts = b.hunts; else p.cheer!.active.push({ id: b.id, hunts: b.hunts });
-        }
-      }
+      if (p.cheer?.draw) p = answer(p, rng, log, n);
     }
     return p;
   }

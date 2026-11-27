@@ -26,13 +26,13 @@
     }
   },
   "cheer": {
-    "enabled": true, "full": 10, "max": 15, "catchPips": 1, "bigCatchPips": 2, "escapePips": 2, "heldEscapePips": 5,
+    "enabled": true, "full": 10, "max": 15, "catchPips": 1, "bigCatchPips": 2, "escapePips": 3, "heldEscapePips": 5, "orderPips": 2,
     "pity": { "rare": 3, "legendary": 8 },
     "tiers": [
       { "from": 0, "name": "Full", "cards": 3, "rerolls": 0, "weights": { "common": 70, "rare": 25, "legendary": 5 } },
       { "from": 11, "name": "Warm", "cards": 3, "rerolls": 0, "weights": { "common": 55, "rare": 35, "legendary": 10 } },
       { "from": 13, "name": "Hot", "cards": 3, "rerolls": 0, "weights": { "common": 40, "rare": 42, "legendary": 18 } },
-      { "from": 15, "name": "Blazing", "cards": 4, "rerolls": 1, "weights": { "common": 25, "rare": 50, "legendary": 25 } }
+      { "from": 15, "name": "Blazing", "cards": 4, "rerolls": 1, "picks": 2, "weights": { "common": 0, "rare": 55, "legendary": 45 } }
     ]
   },
   "events": {

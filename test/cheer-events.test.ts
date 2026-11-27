@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cheerAction, cheerAfterHunt, cheerOf, drawCards, eventAction, eventsAfterHunt, eventsOf, forceEvent, hunt, modsOf, newPlayer, seededRng, tollGold, unitH, type PlayerState } from '../src/engine/index.js';
+import { cheerAddPips, cheerAction, cheerAfterHunt, cheerOf, drawCards, eventAction, eventsAfterHunt, eventsOf, forceEvent, hunt, modsOf, newPlayer, seededRng, tollGold, unitH, type PlayerState } from '../src/engine/index.js';
 import { content } from './helpers.js';
 
 const pantry = content.locations.find((l) => l.id === 'cookie_pantry')!;
@@ -14,14 +14,39 @@ function fresh(patch: (p: PlayerState) => void = () => {}): PlayerState {
   return p;
 }
 
+describe('cheer meter extras', () => {
+  it('an Overcharged draw keeps two boons and the rest of the pips reset after the second', () => {
+    const p = fresh((q) => { cheerOf(q).pips = 15; cheerOf(q).held = true; });
+    const r = cheerAction(content, p, 'draw', seededRng(3));
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    const draw = r.player.cheer!.draw!;
+    expect(draw.picks).toBe(2);
+    expect(draw.cards.every((id) => content.boons.find((b) => b.id === id)!.rarity !== 'common')).toBe(true);
+    const one = cheerAction(content, r.player, 'pick', seededRng(3), draw.cards[0]);
+    expect(one.ok && one.player.cheer!.draw?.picks).toBe(1);
+    if (!one.ok) return;
+    expect(one.player.cheer!.active).toHaveLength(1);
+    const two = cheerAction(content, one.player, 'pick', seededRng(3), one.player.cheer!.draw!.cards[0]);
+    expect(two.ok && two.player.cheer!.draw).toBeUndefined();
+    expect(two.ok && two.player.cheer!.active).toHaveLength(2);
+  });
+
+  it('a finished Workshop order slot adds Cheer pips', () => {
+    const p = fresh((q) => { cheerOf(q).pips = 4; });
+    expect(cheerAddPips(content, p, content.constants.cheer.orderPips)).toBe(content.constants.cheer.orderPips);
+    expect(p.cheer!.pips).toBe(4 + content.constants.cheer.orderPips);
+  });
+});
+
 describe('cheer meter', () => {
-  it('fills +1 per catch, +2 for a rare, drains 2 on an escape and stops at full', () => {
+  it('fills +1 per catch, +2 for a rare, drains 3 on an escape and stops at full', () => {
     const p = fresh();
     cheerAfterHunt(content, p, common, true, none);
     cheerAfterHunt(content, p, rare, true, none);
     expect(p.cheer!.pips).toBe(3);
     cheerAfterHunt(content, p, common, false, none);
-    expect(p.cheer!.pips).toBe(1);
+    expect(p.cheer!.pips).toBe(0);
     for (let i = 0; i < 12; i++) cheerAfterHunt(content, p, common, true, none);
     expect(p.cheer!.pips).toBe(10);
     cheerAfterHunt(content, p, common, false, none);
