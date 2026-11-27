@@ -39,6 +39,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Playtest and simulation plan: what the simulator must report for Allure, Cheer Meter, events and goals, targets and how to read them (plan only); see [Playtest and simulation plan](#playtest-and-simulation-plan-eddy-27-nov-2026-plan-only). Baseline simulator built (Allure tiers, goals, gold flow, progress feel, `--seeds`, `--trace`); Cheer and events policies and metrics included; findings in [SIMULATION_REPORT.md](SIMULATION_REPORT.md) | In progress | this PR |
 | Random events after a hunt (Santa and Mrs. Claus boons with a safe or big choice, Scrinch challenges with mini objectives), plus a parked-ideas list; see [Random events](#random-events-built-on-integration) | Built on `integration` (test playground), draft numbers | this PR |
 | Cheer Meter and boons (eddy): a streak meter, pick 1 of 3 from 14 boons in three rarities, Overcharge and Cheer charms; see [Cheer Meter](#cheer-meter-and-boons-eddy-26-nov-2026-built-on-integration) | Built on `integration` (test playground), draft numbers | this PR |
+| Full-game strategy walkthrough: [docs/WALKTHROUGH.md](WALKTHROUGH.md), gear, bosses and Cheer Meter use for every location | Done | this PR |
 | 5. Tune from play-test | Planned | |
 
 The server runs every hunt and saves each player in SQLite. To play locally, follow "Run it locally" below.
@@ -1288,6 +1289,7 @@ The first idea (replace the attraction roll where no elf takes the bait) is trac
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-27 | this PR | Docs only: added docs/WALKTHROUGH.md, a short start-to-finish strategy guide worked out from the content files and formulas. Keep it in step with balance changes |
 | 2026-11-27 | this PR | UI only: rare, mini boss and boss catches in the hunt log now glow and shimmer like their portraits, in the tier colour (purple, orange, gold); escapes and reduced-motion are unchanged |
 | 2026-11-27 | this PR | Fix: the hunt-log slide-in stopped replaying after a few hunts (rows were matched by position, so the top row kept its old class); rows are now keyed by id. UI only |
 | 2026-11-27 | this PR | UI motion only: Cheer Meter pips pop in when they fill and sink when they drain, Santa's favour bar pulses gold when it rises and shakes when it falls, and a new hunt-log row slides in after a hunt (rows already there on opening do not animate); reduced-motion turns it off |

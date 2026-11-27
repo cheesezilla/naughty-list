@@ -4,6 +4,8 @@ A Christmas imp-trapping browser game. Scrinch's imps are raiding Santa's secret
 
 Design plan: [docs/PLAN.md](docs/PLAN.md) (updated with every PR)
 
+Strategy walkthrough: [docs/WALKTHROUGH.md](docs/WALKTHROUGH.md)
+
 ## Status
 
 - Milestones 1 to 3 are in: hunt engine, v1 content (4 locations, 24 imps), balance simulator, accounts with open sign-up, server-side hunts and SQLite saves, and a phone-first UI with original art.
