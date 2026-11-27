@@ -45,6 +45,9 @@ describe('cheer meter extras', () => {
     expect(picked.ok && picked.player.cheer!.active[0]!.hunts).toBe(Math.ceil(base * 1.5));
     const bl = cheerAction(content, r.player, 'perk', seededRng(5), 'blessing');
     expect(bl.ok && bl.player.cheer!.draw!.cards).toEqual(['santas_blessing']);
+    if (!bl.ok) throw new Error('perk failed');
+    const blessed = cheerAction(content, bl.player, 'pick', seededRng(5), 'santas_blessing');
+    expect(blessed.ok && blessed.player.cheer!.active[0]!.hunts).toBe(content.boons.find((b) => b.id === 'santas_blessing')!.hunts * 2);
     expect(cheerAction(content, fresh((q) => { cheerOf(q).pips = 10; }), 'draw', seededRng(5)).ok).toBe(true);
   });
 

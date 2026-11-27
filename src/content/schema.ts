@@ -198,6 +198,8 @@ export const Constants = z.object({
     orderPips: z.number().int().nonnegative().default(0),
     /** The `long` Overcharge perk makes boons last this much longer (0.5 = 50%). */
     longBoons: z.number().nonnegative().default(0.5),
+    /** The `blessing` Overcharge perk grants this many Santa's Blessings back to back (they do not stack, so the boon lasts this many times as long). */
+    blessingCopies: z.number().int().positive().default(1),
     /** Draws without a rare (or better) / without a legendary before one card is forced. */
     pity: z.object({ rare: z.number().int().positive(), legendary: z.number().int().positive() }),
     /** Draw table by pips: the last row whose `from` is at most the meter's pips applies. */

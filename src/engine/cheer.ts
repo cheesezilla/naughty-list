@@ -19,7 +19,7 @@ export interface CheerState {
   /** The boon picked last time cannot appear in the next draw. */
   lastPicked?: string;
   /** An open draw: the cards are saved until one is picked. */
-  draw?: { cards: string[]; rerolls: number; tier: string; picks?: number; perks?: string[]; longer?: boolean };
+  draw?: { cards: string[]; rerolls: number; tier: string; picks?: number; perks?: string[]; longer?: boolean; copies?: number };
 }
 
 export const cheerOf = (p: PlayerState): CheerState =>
@@ -151,7 +151,7 @@ export function cheerAction(content: Content, player: PlayerState, action: Cheer
       } else {
         const bless = content.boons.find((b) => b.id === 'santas_blessing');
         if (!bless) return { ok: false, error: 'Santa has no blessing to give.' };
-        s.draw = { ...s.draw, cards: [bless.id], picks: 1, perks: [] };
+        s.draw = { ...s.draw, cards: [bless.id], picks: 1, perks: [], copies: c.blessingCopies };
       }
       return { ok: true, player: p };
     }
@@ -159,7 +159,7 @@ export function cheerAction(content: Content, player: PlayerState, action: Cheer
       if (!s.draw) return { ok: false, error: 'There is no draw open.' };
       const boon = content.boons.find((b) => b.id === boonId);
       if (!boon || !s.draw.cards.includes(boon.id)) return { ok: false, error: 'Pick one of the cards on offer.' };
-      const hunts = s.draw.longer ? Math.ceil(boon.hunts * (1 + c.longBoons)) : boon.hunts;
+      const hunts = (s.draw.longer ? Math.ceil(boon.hunts * (1 + c.longBoons)) : boon.hunts) * (s.draw.copies ?? 1);
       const have = s.active.find((a) => a.id === boon.id);
       if (have) have.hunts = hunts; else s.active.push({ id: boon.id, hunts });
       s.lastPicked = boon.id;
