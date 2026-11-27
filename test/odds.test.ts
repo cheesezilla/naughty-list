@@ -6,15 +6,9 @@ import type { Imp, Location } from '../src/content/schema.js';
 const imp = (over: Partial<Imp> = {}): Imp => ({ id: 'x', name: 'X', tier: 'common', power: 90, gold: 0, points: 0, weight: 1, ...over });
 
 describe('catch chance', () => {
-  it('matches the worked example in the plan: (170 x 1.5 + 4) / (170 x 1.5 + 90)', () => {
+  it('matches the worked example in the plan: (170 + 4) / (170 + 90)', () => {
     const stats = { power: 170, luck: 2, attraction: 1, type: 'clockwork' };
-    expect(catchChance(stats, imp({ effectiveness: { clockwork: 1.5 } }), 0.98)).toBeCloseTo((255 + 4) / (255 + 90), 6);
-  });
-
-  it('ignores luck against a neutral or resisted elf', () => {
-    const stats = { power: 170, luck: 2, attraction: 1, type: 'clockwork' };
-    expect(catchChance(stats, imp(), 0.98)).toBeCloseTo(170 / 260, 6);
-    expect(catchChance(stats, imp({ effectiveness: { clockwork: 0.5 } }), 0.98)).toBeCloseTo(85 / 175, 6);
+    expect(catchChance(stats, imp(), 0.98)).toBeCloseTo(174 / 260, 6);
   });
 
   it('applies weakness and resistance to power', () => {

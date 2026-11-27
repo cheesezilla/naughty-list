@@ -5,7 +5,7 @@ From sign-up to a full Naughty List (all 28 elves, rank 5). Built from `content/
 ## Rules that decide everything
 
 - **Catch** = (Power x weakness + luck bonus) / (Power x weakness + elf power). Weak to your trap type is x1.5, resists x0.5, immune 0.
-- **Luck** only counts when your trap's type is what the elf is weak to (x1.5). Against an elf that is neutral to your trap or resists it, luck adds nothing and only power counts. Where it does count, it helps most against commons and uncommons; power helps against bosses (luck counts a tenth as much there).
+- **Luck** helps most against commons and uncommons. Power helps against bosses (luck counts a tenth as much there).
 - Ranks come from points only. A new room needs the rank, its gold fee and the previous boss's key (the Pantry has no boss, so the Wrapping Room needs only rank 2 and 250 gold).
 - Allure (bait) mostly changes how often rare elves show up. Bosses and mini bosses come only through each room's objective.
 

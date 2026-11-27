@@ -306,24 +306,13 @@ describe('carol loft and luck', () => {
   });
 
   it('gives luck more say against commons than bosses, and power more against bosses', () => {
-    const luckBuild = { power: 1500, luck: 12, attraction: 1, type: 'starlight' };
-    const powerBuild = { power: 1800, luck: 8, attraction: 1, type: 'starlight' };
+    const luckBuild = { power: 1500, luck: 12, attraction: 1, type: 'carol' };
+    const powerBuild = { power: 1800, luck: 8, attraction: 1, type: 'carol' };
     const all = content.locations.flatMap((l) => l.imps);
     const get = (id: string) => all.find((i) => i.id === id)!;
     const chance = (s: typeof luckBuild, id: string) => catchChance(s, get(id), 0.98, luckFactor(content.constants, get(id)));
     expect(chance(luckBuild, 'paint_smudger')).toBeGreaterThan(chance(powerBuild, 'paint_smudger'));
-    const clock = (s: typeof luckBuild) => ({ ...s, type: 'clockwork' });
-    expect(chance(clock(powerBuild), 'general_grimbolt')).toBeGreaterThan(chance(clock(luckBuild), 'general_grimbolt'));
-  });
-
-  it('only counts luck when the trap type is what the elf is weak to', () => {
-    const all = content.locations.flatMap((l) => l.imps);
-    const smudger = all.find((i) => i.id === 'paint_smudger')!; // weak to starlight
-    const f = luckFactor(content.constants, smudger);
-    const withLuck = (type: string, luck: number) => catchChance({ power: 1500, luck, attraction: 1, type }, smudger, 0.98, f);
-    expect(withLuck('starlight', 12)).toBeGreaterThan(withLuck('starlight', 0));
-    expect(withLuck('carol', 12)).toBe(withLuck('carol', 0));
-    expect(withLuck('frost', 12)).toBe(withLuck('frost', 0));
+    expect(chance(powerBuild, 'general_grimbolt')).toBeGreaterThan(chance(luckBuild, 'general_grimbolt'));
   });
 
   it('makes Madame Shredwell weak to Carol and heavily resistant to the rest', () => {
