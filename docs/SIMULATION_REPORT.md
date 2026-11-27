@@ -172,3 +172,21 @@ eddy: Cinderhoof's catch rate with maxed gear was too high for a boss. The best 
 
 - **Reading it:** rank 4 takes about 40 hunts longer (538 to 577), since the sleigh launch needs Cinderhoof to come and go, and the full collection about 40 more (3%). Both stay inside the rank targets (rank 4: 577 against 600). The 6% who never catch him reach rank 5 without it, because rank 5 needs points, not the boss.
 - **Not retuned:** gear that is not maxed now catches him well under 25% (for example a Frost trap with 3,000 power is about 13%), so most players need several sleigh launches and the crafted gear; that is the intent.
+
+## Report 10: luck only counts on weakness matches (1,000 players, seed 42, Cheer and events on, greedy boons, safe events)
+
+eddy: balance luck by letting it apply only when the trap's power type matches the elf's weakness. `catchChance` now adds f x L^2 only when E > 1.
+
+| Metric | Before | After |
+| --- | --- | --- |
+| Hunts to rank 5 | median 1,264 | median 1,405 |
+| Hunts to catch all 28 elves | mean 1,300, median 1,277, p10 1,161, p90 1,439 | mean 1,442, median 1,413, p10 1,282, p90 1,597 |
+| Ranks 1 to 4 (median hunts) | 117, 237, 333, 575 | 119, 260, 422, 598 |
+| Commons catch rate: Wrapping Room / Toy Workshop / Stables | 88% / 56% / 80% | 76% / 42% / 75% |
+| Boss catch rate: Shredwell area / Workshop / Stables | 33% / 26% / 19% | 33% / 33% / 21% |
+| Carol Loft catch rate | 58% | 53% |
+
+- **Carol Horn in the Stables:** best Carol build (Wishing Star Pedestal, Mistletoe) is 59 to 70% on the commons against 90 to 97% for the best non-Carol build, 53% on Carrot Crook (74%), 36% on Antler Ripper (58%), 12% on Cinderhoof (25%). The overpowered case is gone. With the old formula it was 98% on commons.
+- **Off-type bosses:** Shredwell with Carol Horn on a Candy Cane Platform and Mistletoe stays about 31% (luck still counts, she is weak to Carol); Star Lantern and Icicle Jar builds stay 9 to 13%. Cinderhoof with the best Frost build stays 25%.
+- **Sleigh-Bell Snapper:** still marginal. Luck 6 only counts against Harness Snipper (weak to Clockwork), so it still only wins there.
+- **Retuning:** the game is about 11% longer. Every rank is within 25% of target (rank 3 is 422 against 400). The Toy Workshop commons catch rate (42%) is now below the 55 to 65% target; if eddy wants it back, lower the Workshop common powers about 10%. The Wrapping Room (76%) is nearer its target than before. Not retuned yet.

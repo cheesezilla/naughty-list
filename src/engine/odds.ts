@@ -51,12 +51,16 @@ export function luckFactor(constants: Content['constants'] | undefined, imp: Imp
   return l ? l.scale * l.tierWeight[imp.tier] : 1;
 }
 
-/** C = clamp((P*E + f*L^2) / (P*E + M), 0, cap), f = luckFactor; luck only counts when E > 0. */
+/**
+ * C = clamp((P*E + f*L^2) / (P*E + M), 0, cap), f = luckFactor. Luck only counts when the trap's type
+ * is what the elf is weak to (E > 1); against a neutral or resisted elf it adds nothing.
+ */
 export function catchChance(stats: SetupStats, imp: Imp, cap: number, luckMult = 1): number {
   const e = effectiveness(imp, stats.type);
   if (e <= 0) return 0;
   const pe = stats.power * e;
-  const c = (pe + luckMult * stats.luck * stats.luck) / (pe + imp.power);
+  const lucky = e > 1 ? luckMult * stats.luck * stats.luck : 0;
+  const c = (pe + lucky) / (pe + imp.power);
   return Math.max(0, Math.min(cap, c));
 }
 
