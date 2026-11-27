@@ -1,5 +1,5 @@
 import { useRef, useState } from 'preact/hooks';
-import { tollGold, type Buff, type EventNote, type JournalEntry } from '../../engine/index.js';
+import { type EventNote, type JournalEntry } from '../../engine/index.js';
 import type { Boon } from '../../content/schema.js';
 import { useGame } from '../game.js';
 import { num } from '../lib/format.js';
@@ -54,7 +54,7 @@ export function CheerCard() {
       )}
       <ActiveBuffs />
       {content.constants.events.enabled && (
-        <div class="favour" title="Every boon from Santa or Mrs. Claus has this chance to be a free Grand Gift. Beating Scrinch raises it.">
+        <div class="favour" title="Every boon from Santa or Mrs. Claus has this chance to be a free Grand Gift.">
           <span>Santa's favour</span>
           <span class={`favour-bar ${favourMove}`}><i style={{ width: `${Math.round(favour * 100)}%` }} /></span>
           <b>{Math.round(favour * 100)}%</b>
@@ -66,10 +66,7 @@ export function CheerCard() {
 }
 
 const left = (n: number, unit: string) => `${n} ${unit}${n === 1 ? '' : 's'} left`;
-/** A buff that hurts the player: a Scrinch penalty (weaker power, luck or Allure, or dearer bait). */
-const isPenalty = (b: Buff) => b.stat === 'baitCost' || (/Mult$/.test(b.stat) && b.value < 1);
-
-/** Everything in play with a countdown: boons, Santa's gifts, event effects and Scrinch penalties. */
+/** Everything in play with a countdown: boons, Santa's gifts, and event effects. */
 function ActiveBuffs() {
   const { content, player } = useGame();
   const boons = content.constants.cheer.enabled ? player.cheer?.active ?? [] : [];
@@ -82,7 +79,7 @@ function ActiveBuffs() {
         return <span class={`boon-chip boon-effect ${b?.rarity}`}><b>{b?.name} · {left(a.hunts, 'hunt')}</b><small>{b?.text}</small></span>;
       })}
       {buffs.map((b) => (
-        <span class={`boon-chip ${isPenalty(b) ? 'penalty' : 'gift'}`}>
+        <span class={`boon-chip gift`}>
           {b.label} · {[b.hunts !== undefined && left(b.hunts, 'hunt'), b.uses !== undefined && left(b.uses, b.stat === 'noPillage' || b.stat === 'bossShield' ? 'try' : 'use')].filter(Boolean).join(', ')}
         </span>
       ))}
@@ -136,28 +133,6 @@ export function BoonCard() {
         <button class="gift" onClick={() => act('/api/event', { action: 'b' })}>{def.b.label}</button>
       </div>
       <button class="text-btn" onClick={() => act('/api/event', { action: 'decline' })}>No thanks</button>
-    </div>
-  );
-}
-
-/** The live Scrinch counter, pinned above the Hunt button, with the skip toll. */
-export function ScrinchCard() {
-  const { content, player, act } = useGame();
-  const sc = player.events?.scrinch;
-  const def = sc && content.events.scrinch.find((s) => s.id === sc.id);
-  if (!sc || !def) return null;
-  const g = def.goal;
-  const left = g.window - sc.hunts;
-  const progress =
-    g.type === 'catches' ? `${sc.caught}/${g.need} caught` :
-    g.type === 'streak' ? `${sc.run}/${g.need} in a row` : 'not yet';
-  const toll = tollGold(content, player, sc.id);
-  return (
-    <div class="card scrinch-card">
-      <div class="cheer-head"><b>Scrinch: {def.name}</b><span>{left} {left === 1 ? 'hunt' : 'hunts'} left</span></div>
-      <p>{def.goalText} · <b>{progress}</b></p>
-      <p class="muted">Fail and: {def.failText} Win: {def.prizeText}.</p>
-      <button class="outline-btn" disabled={player.gold < toll} onClick={() => act('/api/event', { action: 'toll' })}>Pay {num(toll)} gold to skip</button>
     </div>
   );
 }

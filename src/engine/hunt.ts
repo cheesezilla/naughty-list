@@ -30,7 +30,7 @@ export interface JournalEntry {
   objective?: ObjectiveResult;
   /** What the Cheer Meter did on this hunt. Missing when the meter is off or the save is from before it. */
   cheer?: CheerNote;
-  /** Events this hunt set off or ended: boon cards, Grand Gifts, Scrinch challenges and their results. */
+  /** Events this hunt set off or ended: boon cards and Grand Gifts. */
   events?: EventNote[];
   /** A Mulligan boon turned an escape into a catch. */
   mulligan?: boolean;

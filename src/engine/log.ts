@@ -16,7 +16,7 @@ export type GameEvent =
   | { type: 'intro' }
   /** A Cheer boon picked from the draw. */
   | { type: 'cheer_pick'; boon: string }
-  /** An answer to a boon card (`text` says what was taken) or a paid Scrinch skip toll. */
+  /** An answer to a boon card (`text` says what was taken). */
   | { type: 'event_answer'; id: string; name: string; text: string };
 export type LogKind = 'hunt' | 'event';
 /** One hunt-log row. Hunts carry a JournalEntry; events carry a GameEvent and the hunt number they follow. */

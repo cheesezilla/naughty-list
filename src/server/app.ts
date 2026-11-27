@@ -343,10 +343,10 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
       if (!['draw', 'hold', 'reroll', 'pick', 'perk'].includes(action)) return { ok: false, error: 'Unknown Cheer action.' };
       return cheerAction(content, p, action as CheerAction, rng, str(b.boon));
     }, (_before, _after, b) => (str(b.action) === 'pick' ? { type: 'cheer_pick', boon: str(b.boon) } : null)));
-    // Random events: answer the boon card (a, b, decline) or pay the Scrinch skip toll.
+    // Random events: answer the boon card (a, b, decline).
     game.post('/api/event', playerAction((p, b) => {
       const action = str(b.action);
-      if (!['a', 'b', 'decline', 'toll'].includes(action)) return { ok: false, error: 'Unknown event action.' };
+      if (!['a', 'b', 'decline'].includes(action)) return { ok: false, error: 'Unknown event action.' };
       return eventAction(content, p, action as EventAction, rng);
     }, (before, _after, b) => ({ type: 'event_answer', ...eventChoiceText(content, before, str(b.action) as EventAction) })));
   });
@@ -399,7 +399,7 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
         }
         case 'event': {
           const kind = str(b.kind);
-          if (kind !== 'boon' && kind !== 'grand' && kind !== 'scrinch') return reply.code(400).send({ error: 'Pick boon, grand or scrinch.' });
+          if (kind !== 'boon' && kind !== 'grand') return reply.code(400).send({ error: 'Pick boon or grand.' });
           const r = forceEvent(content, p, kind, rng);
           Object.assign(p, r.player);
           if (r.note) store.addJournal(userId, p.stats.hunts, { type: 'event_answer', id: r.note.id, name: r.note.name, text: `Admin triggered: ${r.note.text}` }, now(), 'event');

@@ -10,7 +10,7 @@ import { PowerBar, useExactOdds, useRateText } from '../lib/effectiveness.js';
 import { LogRow } from './log.js';
 import { HintSheet, ObjectivePanel } from './objective.js';
 import { TypeMedal } from '../lib/medal.js';
-import { BoonCard, CheerCard, ScrinchCard } from './cheer.js';
+import { BoonCard, CheerCard } from './cheer.js';
 import { TYPE_NAME } from '../lib/format.js';
 
 /** Catch chance once an imp is attracted, averaged over the imps this bait draws. */
@@ -149,7 +149,6 @@ export function HuntScreen() {
             </div>
           )}
           <div class="hunt-dock">
-            <ScrinchCard />
             <button class="hunt-btn" disabled={busy} onClick={() => hunt()}>Hunt</button>
             {prefs.spaceHunts && <p class="hint desktop-only">or press Space</p>}
           </div>

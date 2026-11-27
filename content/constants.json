@@ -37,9 +37,8 @@
     ]
   },
   "events": {
-    "enabled": true, "chancePerHunt": 0.025, "minHunts": 30, "minGap": 20, "scrinchShare": 0.4,
-    "grudgeChance": 0.25, "grudgeGap": 10, "grudgeMaxStreak": 2,
-    "grandBase": 0.1, "grandPerScrinchWin": 0.15, "grandPerBoon": 0.05
+    "enabled": true, "chancePerHunt": 0.015, "minHunts": 30, "minGap": 20,
+    "grandBase": 0.1, "grandPerBoon": 0.05
   },
   "stamina": { "enabled": false, "name": "Cocoa", "max": 100, "costPerHunt": 1, "refillPerMinute": 1, "buyPrice": 5 }
 }
