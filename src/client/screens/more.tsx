@@ -31,6 +31,7 @@ export function MoreMenu() {
           {item('menu_stats', 'My profile', `${num(player.stats.hunts)} hunts, ${Object.keys(player.achievements ?? {}).length} of ${content.achievements.length} badges`, 'more/profile')}
           {item('menu_howto', 'How to play', 'Power, luck, bait and traps', 'more/howto')}
           {item('menu_settings', 'Settings', 'Sound, clock and shortcuts', 'more/settings')}
+          {item('menu_settings', 'Feedback', 'Tell us what to fix or add', 'more/feedback')}
           {user.isAdmin && item('menu_admin', 'Admin', 'Only you can see this', 'more/admin')}
         </div>
         <h2 class="list-head">Account</h2>
@@ -389,6 +390,7 @@ export function AdminScreen() {
   const players = useAsync(() => api<{ players: AdminPlayer[] }>('GET', '/api/admin/players'));
   const settings = useAsync(() => api<{ settings: { allowSignups: boolean }; cocoaMeter: boolean }>('GET', '/api/admin/settings'));
   const restarts = useAsync(() => api<{ restarts: Restart[] }>('GET', '/api/admin/restarts'));
+  const feedback = useAsync(() => api<{ feedback: FeedbackItem[] }>('GET', '/api/admin/feedback'));
   const setSignups = async (v: boolean) => {
     try {
       await api('POST', '/api/admin/settings', { allowSignups: v });
@@ -422,6 +424,15 @@ export function AdminScreen() {
           <Toggle label="Show exact attraction and catch rates" hint="Adds the real percentages next to the tier bars and on item cards (bait, charms, traps, shop). Admins only, this device only." checked={prefs.exactOdds} onChange={(v) => setPref('exactOdds', v)} />
         </div>
         <SpeedRun />
+        <h2 class="list-head">Player feedback ({feedback.data?.feedback.length ?? '…'})</h2>
+        <div class="card list-card">
+          {feedback.data?.feedback.length === 0 && <p class="small muted">No feedback yet.</p>}
+          {feedback.data?.feedback.map((f) => (
+            <div class="admin-row">
+              <span><b>{f.username}</b><small>{when(f.at, prefs.clock24)}</small><small style="white-space:pre-wrap">{f.message}</small></span>
+            </div>
+          ))}
+        </div>
         <h2 class="list-head">Restart log</h2>
         <div class="card list-card">
           {restarts.data?.restarts.length === 0 && <p class="small muted">Nobody has started over yet.</p>}
@@ -430,6 +441,44 @@ export function AdminScreen() {
               <span><b>{r.username}</b><small>{when(r.at, prefs.clock24)}</small></span>
               <small class="r">rank {r.summary.rank} · {num(r.summary.points)} pts · {num(r.summary.gold)} gold<br />{num(r.summary.hunts)} hunts · {num(r.summary.caught)} caught · {r.summary.impsOnList} elves</small>
             </div>
+          ))}
+        </div>
+      </div>
+    </MainScreen>
+  );
+}
+
+interface FeedbackItem { id: number; username: string; at: number; message: string }
+
+export function FeedbackScreen() {
+  const { toast } = useGame();
+  const prefs = usePrefs();
+  const mine = useAsync(() => api<{ feedback: FeedbackItem[] }>('GET', '/api/feedback'));
+  const [text, setText] = useState('');
+  const [busy, setBusy] = useState(false);
+  const send = async () => {
+    setBusy(true);
+    try {
+      await api('POST', '/api/feedback', { message: text });
+      setText('');
+      toast('Thanks! Your feedback was saved.', 'good');
+      mine.reload();
+    } catch (e) { toast((e as Error).message, 'bad'); }
+    setBusy(false);
+  };
+  return (
+    <MainScreen tab="more">
+      <BackRow to="more" title="Feedback" sub="Bugs, ideas, anything. Saved for good." />
+      <div class="pad stack">
+        <div class="card stack">
+          <textarea rows={6} maxLength={2000} placeholder="What should we fix, change or add?" value={text} onInput={(e) => setText((e.target as HTMLTextAreaElement).value)} style="width:100%;box-sizing:border-box" />
+          <button class="primary-btn" disabled={busy || text.trim().length < 3} onClick={send}>Send feedback</button>
+        </div>
+        <h2 class="list-head">Your notes</h2>
+        <div class="card list-card">
+          {mine.data?.feedback.length === 0 && <p class="small muted">You haven't sent any feedback yet.</p>}
+          {mine.data?.feedback.map((f) => (
+            <div class="admin-row"><span><b>{when(f.at, prefs.clock24)}</b><small style="white-space:pre-wrap">{f.message}</small></span></div>
           ))}
         </div>
       </div>

@@ -1,3 +1,6 @@
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { FastifyInstance, LightMyRequestResponse } from 'fastify';
 import { buildApp } from '../src/server/app.js';
@@ -289,6 +292,53 @@ describe('start over', () => {
     // and the player can play straight away
     clock += 1000;
     expect((await post('/api/hunt', {}, sam)).statusCode).toBe(200);
+  });
+});
+
+describe('feedback', () => {
+  it('saves player feedback, shows it to the admin only, and validates it', async () => {
+    const admin = await signupAdmin();
+    const sam = cookieOf(await post('/api/auth/signup', { username: 'sam', password: 'candycane123' }));
+    expect((await post('/api/feedback', { message: 'hi' })).statusCode).toBe(401);
+    expect((await post('/api/feedback', { message: ' ' }, sam)).statusCode).toBe(400);
+    expect((await post('/api/feedback', { message: 'x'.repeat(2001) }, sam)).statusCode).toBe(400);
+    expect((await post('/api/feedback', { message: 'More bait please' }, sam)).statusCode).toBe(200);
+    expect((await post('/api/feedback', { message: 'again' }, sam)).statusCode).toBe(429);
+    expect((await get('/api/feedback', sam)).json().feedback).toHaveLength(1);
+    expect((await get('/api/feedback', admin)).json().feedback).toHaveLength(0);
+    expect((await get('/api/admin/feedback', sam)).statusCode).toBe(403);
+    expect((await get('/api/admin/feedback', admin)).json().feedback[0]).toMatchObject({ username: 'sam', message: 'More bait please' });
+  });
+
+  it('survives Start over, admin tools and a restart of the store', async () => {
+    const admin = await signupAdmin();
+    const sam = cookieOf(await post('/api/auth/signup', { username: 'sam', password: 'candycane123' }));
+    await post('/api/feedback', { message: 'Love it' }, sam);
+    clock += 10_000;
+    await post('/api/feedback', { message: 'Admin note' }, admin);
+    expect((await post('/api/restart', { confirm: true }, sam)).statusCode).toBe(200);
+    expect((await post('/api/restart', { confirm: true }, admin)).statusCode).toBe(200);
+    for (const action of [{ action: 'gold', amount: 100 }, { action: 'rank', rank: 3 }, { action: 'unlock' }, { action: 'portraits' }]) {
+      await post('/api/admin/speedrun', action, admin);
+    }
+    const all = (await get('/api/admin/feedback', admin)).json().feedback;
+    expect(all.map((f: { message: string }) => f.message)).toEqual(['Admin note', 'Love it']);
+  });
+
+  it('keeps feedback in the database file across reopening, even with progress tables emptied', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'nl-fb-'));
+    const file = join(dir, 'game.db');
+    try {
+      const a = new Store(file);
+      const id = a.createUser('sam', 'x', false, 0);
+      a.addFeedback(id, 'sam', 'Please keep me', 5);
+      a.restartPlayer(id, newPlayer(content, 6), { gold: 0, points: 0, rank: 1, hunts: 0, caught: 0, impsOnList: 0, location: 'x' }, 6);
+      a.db.exec('DELETE FROM journal; DELETE FROM players; DELETE FROM restarts; DELETE FROM sessions;');
+      a.close();
+      const b = new Store(file);
+      expect(b.feedback()).toMatchObject([{ username: 'sam', message: 'Please keep me' }]);
+      b.close();
+    } finally { rmSync(dir, { recursive: true, force: true }); }
   });
 });
 
