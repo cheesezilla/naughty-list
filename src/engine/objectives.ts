@@ -6,10 +6,12 @@ import type { Rng } from './rng.js';
 export type ObjectiveState =
   | {
     type: 'order_board';
-    /** Trap type each slot of the current order needs, in order. */
-    slots: PowerType[];
-    filled: number;
-    rush: boolean;
+    /** Catches so far toward each core type's standing order (parallel orders: any catch fills the order of its trap's type). */
+    progress: Record<CoreType, number>;
+    /** Types whose order was finished since the last Triple Crate. */
+    finished: CoreType[];
+    /** Catches left on a Rush order (0 when none is active). While it runs, standing orders pause. */
+    rushLeft: number;
     ordersDone: number;
     /** After an Inspection the player may take a Rush order. */
     rushReady: boolean;
@@ -30,15 +32,14 @@ export interface ObjectiveResult {
   notes: string[];
   gold?: number;
   items?: { item: string; amount: number }[];
-  /** Order-board slots filled by this hunt (they add Cheer pips). */
+  /** Order-board catches counted by this hunt (they add Cheer pips). */
   orders?: number;
 }
 
-const TYPE_NAME: Record<PowerType, string> = { clockwork: 'Clockwork', starlight: 'Starlight', frost: 'Frost', carol: 'Carol' };
+export type CoreType = 'clockwork' | 'starlight' | 'frost';
+export const coreTypes: CoreType[] = ['clockwork', 'starlight', 'frost'];
 
-function rollOrder(n: number, rng: Rng): PowerType[] {
-  return Array.from({ length: n }, () => powerTypes[Math.floor(rng() * powerTypes.length)]!);
-}
+const TYPE_NAME: Record<PowerType, string> = { clockwork: 'Clockwork', starlight: 'Starlight', frost: 'Frost', carol: 'Carol' };
 
 /** The saved state for a location's loop, created on first use. Bait ladders have none. */
 export function objectiveState(p: PlayerState, location: Location, rng?: Rng): ObjectiveState | undefined {
@@ -46,10 +47,15 @@ export function objectiveState(p: PlayerState, location: Location, rng?: Rng): O
   if (!o || o.type === 'bait_ladder') return undefined;
   const all = (p.objectives ??= {});
   let s = all[location.id];
+  // Saves from the old ordered-slots board have no `progress`: keep the order count, start the new board fresh.
+  if (s?.type === 'order_board' && !s.progress) {
+    const old = s as unknown as { ordersDone?: number; rushReady?: boolean; forced?: string };
+    s = { type: 'order_board', progress: { clockwork: 0, starlight: 0, frost: 0 }, finished: [], rushLeft: 0, ordersDone: old.ordersDone ?? 0, rushReady: old.rushReady ?? false, ...(old.forced ? { forced: old.forced } : {}) };
+    all[location.id] = s;
+  }
   if (!s || s.type !== o.type) {
     if (o.type === 'order_board') {
-      if (!rng) return undefined;
-      s = { type: 'order_board', slots: rollOrder(o.slots, rng), filled: 0, rush: false, ordersDone: 0, rushReady: false };
+      s = { type: 'order_board', progress: { clockwork: 0, starlight: 0, frost: 0 }, finished: [], rushLeft: 0, ordersDone: 0, rushReady: false };
     } else {
       s = { type: 'sleigh_run', active: false, left: 0, readiness: 0, launches: 0 };
     }
@@ -92,31 +98,46 @@ export function afterHunt(
   if (imp && s.forced === imp.id) delete s.forced;
 
   if (o.type === 'order_board' && s.type === 'order_board') {
-    if (!imp || !caught || trapType !== s.slots[s.filled]) return undefined;
-    s.filled += 1;
-    out.orders = 1;
-    out.notes.push(`${s.rush ? 'Rush order' : 'Order'} slot ${s.filled} of ${s.slots.length} filled (${TYPE_NAME[trapType as PowerType]})`);
-    if (s.filled >= s.slots.length) {
-      if (s.rush) {
+    if (!imp || !caught) return undefined;
+    if (s.rushLeft > 0) {
+      s.rushLeft -= 1;
+      out.orders = 1;
+      out.notes.push(`Rush order: ${s.rushLeft} part${s.rushLeft === 1 ? '' : 's'} to go`);
+      if (s.rushLeft === 0) {
         s.forced = o.boss;
         bump(p, 'rushOrders');
         out.notes.push(`Rush order done! ${name(o.boss)} is coming to see it.`);
-      } else {
-        s.ordersDone += 1;
-        const extra = o.crateRewards[Math.floor(rng() * o.crateRewards.length)]!;
-        p.gold += o.crateGold;
-        out.gold = o.crateGold;
-        give(extra.item, extra.amount);
-        out.notes.push(`Order done: a Toy Crate`);
-        if (s.ordersDone % o.inspectionEvery === 0) {
-          s.forced = o.miniboss;
-          s.rushReady = true;
-          out.notes.push(`Inspection! ${name(o.miniboss)} is coming. A Rush order is now on offer.`);
-        }
       }
-      s.rush = false;
-      s.slots = rollOrder(o.slots, rng);
-      s.filled = 0;
+      return out;
+    }
+    // A trap of the fourth type (Carol) is a joker: it fills the order that is furthest along.
+    const t = coreTypes.includes(trapType as CoreType)
+      ? (trapType as CoreType)
+      : [...coreTypes].sort((a, b) => s.progress[b] - s.progress[a])[0]!;
+    s.progress[t] += 1;
+    out.orders = 1;
+    out.notes.push(`${TYPE_NAME[t]} order ${s.progress[t]} of ${o.slots}`);
+    if (s.progress[t] >= o.slots) {
+      s.progress[t] = 0;
+      s.ordersDone += 1;
+      const extra = o.crateRewards[Math.floor(rng() * o.crateRewards.length)]!;
+      p.gold += o.crateGold;
+      out.gold = o.crateGold;
+      give(extra.item, extra.amount);
+      out.notes.push(`${TYPE_NAME[t]} order done: a Toy Crate`);
+      if (!s.finished.includes(t)) s.finished.push(t);
+      if (coreTypes.every((c) => s.finished.includes(c))) {
+        s.finished = [];
+        p.gold += o.tripleGold;
+        out.gold = (out.gold ?? 0) + o.tripleGold;
+        for (const r of o.crateRewards) give(r.item, r.amount);
+        out.notes.push('All three orders done since the last time: a Triple Crate!');
+      }
+      if (s.ordersDone % o.inspectionEvery === 0) {
+        s.forced = o.miniboss;
+        s.rushReady = true;
+        out.notes.push(`Inspection! ${name(o.miniboss)} is coming. A Rush order is now on offer.`);
+      }
     }
     return out;
   }
@@ -167,7 +188,7 @@ export function objectiveAction(content: Content, player: PlayerState, action: O
   }
   if (action === 'rush_order' && o.type === 'order_board' && s?.type === 'order_board') {
     if (!s.rushReady) return { ok: false, error: 'No Rush order is on offer right now.' };
-    Object.assign(s, { rushReady: false, rush: true, slots: rollOrder(o.rushSlots, rng), filled: 0 });
+    Object.assign(s, { rushReady: false, rushLeft: o.rushSlots });
     return { ok: true, player: p };
   }
   return { ok: false, error: 'You can\'t do that here.' };

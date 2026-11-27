@@ -75,6 +75,8 @@ export const Objective = z.discriminatedUnion('type', [
     /** Every this many finished orders, the mini boss inspects. */
     inspectionEvery: z.number().int().positive(),
     crateGold: z.number().int().nonnegative(),
+    /** Extra gold when all three type orders have been finished since the last Triple Crate (it also gives every crate reward). */
+    tripleGold: z.number().int().nonnegative(),
     /** One of these is added to every Toy Crate. */
     crateRewards: z.array(z.object({ item: id, amount: z.number().int().positive() })).min(1),
     miniboss: id,
