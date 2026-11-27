@@ -275,7 +275,7 @@ function StatsTab() {
 
 const HOWTO: { id: string; title: string; text: string }[] = [
   { id: 'hunt', title: 'Hunt', text: 'Press Hunt as often as you like: there is no timer. Each time a hexed elf shows up it eats one bait, and your trap tries to catch it.' },
-  { id: 'attraction', title: 'Attraction', text: 'Your bait sets how often an elf shows up. Better bait, plus attraction bonuses from gear, means fewer quiet hunts. Quiet hunts cost nothing.' },
+  { id: 'attraction', title: 'Allure', text: 'Every hunt meets an elf. Your bait, plus allure bonuses from gear, sets how strongly it pulls the rarer elves: more rare, mini boss and boss visits.' },
   { id: 'power', title: 'Power', text: "Your trap, base and charm add up to your power. The higher it is compared with the elf's power, the better your catch chance." },
   { id: 'luck', title: 'Luck', text: 'Luck adds a bonus that ignores weakness and resistance. It is strongest against common elves and weakest against bosses, so build luck to catch the small fry quickly and power to catch bosses. Charms are the easiest way to get more.' },
   { id: 'trap_types', title: 'Trap types', text: "Clockwork, Starlight and Frost, plus Carol, made in the Carol Loft. Some elves are weak to a type (×1.5 power) and some resist it (×0.5) or are immune. Each room's elves mostly share one weakness: Starlight in the Wrapping Room, Clockwork in the Toy Workshop, Frost in the Reindeer Stables. An elf's file and rumour hint at it." },

@@ -3,7 +3,7 @@ import { hunt } from '../src/engine/hunt.js';
 import { huntOdds } from '../src/engine/odds.js';
 import { objectiveAction } from '../src/engine/objectives.js';
 import { newPlayer, type PlayerState } from '../src/engine/player.js';
-import { content, scripted } from './helpers.js';
+import { content, scripted, withConstants } from './helpers.js';
 
 const at = (location: string, setup: Partial<PlayerState['setup']> = {}, inventory: Record<string, number> = {}): PlayerState => {
   const p = newPlayer(content);
@@ -18,8 +18,12 @@ const ok = (r: ReturnType<typeof hunt>) => {
   if (!r.ok) throw new Error(r.error);
   return r;
 };
-const encounter = (p: PlayerState, bait: string) =>
-  Object.fromEntries(huntOdds(content, { ...p.setup, bait }, p.location).imps.map((o) => [o.imp.id, o.encounter]));
+// Allure is made neutral (baseline = the setup's attraction) so these read the plain bait weights.
+const encounter = (p: PlayerState, bait: string) => {
+  const setup = { ...p.setup, bait };
+  const a = huntOdds(content, setup, p.location).stats.attraction || 1;
+  return Object.fromEntries(huntOdds(withConstants({ allure: { baseline: a } }), setup, p.location).imps.map((o) => [o.imp.id, o.encounter]));
+};
 
 describe('Wrapping Room bait ladder', () => {
   it('shop bait only draws the commons', () => {
@@ -41,12 +45,12 @@ describe('Wrapping Room bait ladder', () => {
 });
 
 describe('Toy Workshop order board', () => {
-  // Rolls: order slots (3), attract, pick, catch, [loot...]. 0 picks Clockwork for every slot and the first imp.
+  // Rolls: order slots (3), pick, catch, [loot...]. 0 picks Clockwork for every slot and the first imp.
   it('fills a slot only with a catch made by the matching trap type', () => {
-    const r = ok(hunt(content, at('toy_workshop', { trap: 'jack_in_the_box' }), scripted(0, 0, 0, 0, 0, 0, 0.99)));
+    const r = ok(hunt(content, at('toy_workshop', { trap: 'jack_in_the_box' }), scripted(0, 0, 0, 0, 0, 0.99)));
     expect(r.player.objectives?.toy_workshop).toMatchObject({ type: 'order_board', slots: ['clockwork', 'clockwork', 'clockwork'], filled: 1 });
     expect(r.entry.objective?.notes[0]).toMatch(/slot 1 of 3 filled \(Clockwork\)/);
-    const wrong = ok(hunt(content, { ...r.player, setup: { ...r.player.setup, trap: 'star_lantern' } }, scripted(0, 0, 0, 0.99)));
+    const wrong = ok(hunt(content, { ...r.player, setup: { ...r.player.setup, trap: 'star_lantern' } }, scripted(0, 0, 0.99)));
     expect(wrong.player.objectives?.toy_workshop).toMatchObject({ filled: 1 });
   });
 
@@ -104,7 +108,7 @@ describe('Reindeer Stables sleigh run', () => {
     const p = start(at('reindeer_stables'));
     p.objectives!.reindeer_stables = { type: 'sleigh_run', active: true, left: 30, readiness: 20, launches: 0 };
     // Bell Thief is the second imp: weights 36 + 30 of 91
-    const r = ok(hunt(content, p, scripted(0, 0.5, 0.999, 0.999)));
+    const r = ok(hunt(content, p, scripted(0.5, 0.999, 0.999)));
     expect(r.entry.imp).toBe('bell_thief');
     expect(r.player.objectives?.reindeer_stables).toMatchObject({ readiness: 12 });
     expect(r.entry.objective?.notes).toContain('Readiness 20 → 12');
@@ -129,7 +133,7 @@ describe('Reindeer Stables sleigh run', () => {
     expect(encounter(p, 'hot_cocoa').cinderhoof).toBe(0);
     p.objectives!.reindeer_stables = { type: 'sleigh_run', active: true, left: 10, readiness: 50, launches: 0 };
     // huntOdds shows plain weights; the hunt applies the run's weights, so roll into the mini boss slot
-    const r = ok(hunt(content, p, scripted(0, 0.99, 0.999, 0.999)));
+    const r = ok(hunt(content, p, scripted(0.99, 0.999, 0.999)));
     expect(r.entry.imp).toBe('antler_ripper');
   });
 });

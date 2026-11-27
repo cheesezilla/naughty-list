@@ -44,7 +44,7 @@ function baitPrice(id: string): number {
 /** Score of a setup: points plus net gold per hunt, so both progress and profit count. */
 function score(setup: Setup, location: string) {
   const o = huntOdds(content, setup, location);
-  const net = o.expectedGold - o.stats.attraction * baitPrice(setup.bait ?? '');
+  const net = o.expectedGold - baitPrice(setup.bait ?? '');
   return { odds: o, net, value: o.expectedPoints + net };
 }
 

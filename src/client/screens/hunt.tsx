@@ -14,7 +14,7 @@ import { TYPE_NAME } from '../lib/format.js';
 
 /** Catch chance once an imp is attracted, averaged over the imps this bait draws. */
 export function catchIfAttracted(odds: ReturnType<typeof huntOdds>) {
-  return odds.stats.attraction > 0 ? odds.catchPerHunt / odds.stats.attraction : odds.imps.reduce((s, o) => s + o.encounter * o.catchChance, 0);
+  return odds.catchPerHunt;
 }
 
 export function StatRow({ setup }: { setup: Setup }) {
@@ -34,7 +34,7 @@ export function RateBars({ setup }: { setup: Setup }) {
   const odds = huntOdds(content, setup, player.location);
   return (
     <div class="rate-bars">
-      <div><span>Attraction</span><PowerBar rate={odds.stats.attraction} /></div>
+      <div><span>Allure</span><PowerBar rate={odds.stats.attraction} /></div>
       <div class="catch"><span>Catch</span><PowerBar rate={catchIfAttracted(odds)} /></div>
     </div>
   );
@@ -257,7 +257,7 @@ function BaitSheet({ initial, onClose }: { initial: 'bait' | 'charm'; onClose: (
       {chosen !== current && (
         <div class="preview-box">
           {item?.flavour && <p><b>{item.name}:</b> {item.flavour.description}</p>}
-          <p class="small">Catch chance {change(catchIfAttracted(before), catchIfAttracted(after), rateText)}; attraction {change(before.stats.attraction, after.stats.attraction, rateText)}; power {change(before.stats.power, after.stats.power, num)}; luck {change(before.stats.luck, after.stats.luck, num)}</p>
+          <p class="small">Catch chance {change(catchIfAttracted(before), catchIfAttracted(after), rateText)}; allure {change(before.stats.attraction, after.stats.attraction, rateText)}; power {change(before.stats.power, after.stats.power, num)}; luck {change(before.stats.luck, after.stats.luck, num)}</p>
           <button class="primary-btn wide" onClick={use}>
             {confirming ? `Yes, use ${item?.name}` : chosen ? `Use ${item?.name}` : 'Take off charm'}
           </button>

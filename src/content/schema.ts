@@ -168,6 +168,8 @@ export const Constants = z.object({
   /** Free items for each badge frame (item id → amount), granted when a badge is earned unless the badge sets its own `reward`. */
   achievementRewards: z.object({ bronze: z.record(id, z.number().int().positive()), silver: z.record(id, z.number().int().positive()), gold: z.record(id, z.number().int().positive()) }),
   attractionCap: chance,
+  /** Allure: attraction no longer decides whether an elf shows up; it scales the rare, mini boss and boss weights by attraction / baseline. */
+  allure: z.object({ baseline: z.number().positive() }),
   catchCap: chance,
   /** Luck: its bonus is `scale` x luck squared x the weight of the elf's tier, so luck helps most against common elves and least against bosses. */
   luck: z.object({ scale: z.number().nonnegative(), tierWeight: z.object({ common: z.number(), uncommon: z.number(), rare: z.number(), miniboss: z.number(), boss: z.number() }) }),
