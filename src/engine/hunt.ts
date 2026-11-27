@@ -17,6 +17,8 @@ export interface JournalEntry {
   points: number;
   loot: { item: string; amount: number }[];
   baitUsed: number;
+  /** The armed bait and how many are left after this hunt. Missing on old entries. */
+  baitLeft?: { item: string; amount: number };
   charmUsed: boolean;
   rankUp?: number;
   rescued?: boolean;
@@ -44,6 +46,8 @@ export interface Pillage {
   points: number;
   bait?: { item: string; amount: number };
   safe?: PillageKind[];
+  /** The thief went for bait but fumbled it and came away empty-handed (the player still had bait). */
+  fumbled?: boolean;
 }
 
 export type HuntResult =
@@ -216,6 +220,7 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0, b
   tickBuffs(p);
   const notes = eventsAfterHunt(content, p, { imp, caught, trapType: stats.type }, rng);
   if (notes.length) entry.events = notes;
+  if (p.setup.bait) entry.baitLeft = { item: p.setup.bait, amount: count(p, p.setup.bait) };
   return { ok: true, player: p, entry };
 }
 
@@ -261,7 +266,10 @@ export function rollPillage(content: Content, p: PlayerState, imp: Imp, bait: st
       if (take > 0) {
         addItem(p, bait, -take);
         out.bait = { item: bait, amount: take };
-      } else safe.push('bait');
+      } else {
+        safe.push('bait');
+        if (saved && count(p, bait) > 0) out.fumbled = true;
+      }
     }
   }
   if (safe.length) out.safe = safe;

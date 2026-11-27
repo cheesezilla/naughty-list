@@ -181,6 +181,7 @@ body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
 .arrival-card h3 { margin: 0; font-family: 'Lilita One', sans-serif; font-weight: 400; font-size: 18px; flex: 1; }
 .arrival-card p { margin: 0; font-size: 14px; line-height: 1.4; }
 .objective-note { font-size: 12px; font-weight: 800; color: #1d4466; margin-top: 2px; }
+.bait-left { font-size: 12px; font-weight: 700; color: #6b5a45; margin-top: 2px; }
 .day { font-size: 16px; color: var(--mint); margin-top: 8px; }
 .log-end { text-align: center; display: flex; flex-direction: column; gap: 8px; align-items: center; padding: 8px 0 4px; font-size: 14px; color: var(--mint); }
 .hunt-dock { position: sticky; bottom: 0; padding: 8px 0 2px; margin: 0 -14px; padding-left: 14px; padding-right: 14px; background: linear-gradient(to bottom, rgba(15, 61, 46, 0), var(--pine) 40%); }
