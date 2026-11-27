@@ -8,15 +8,17 @@
  *   npm run simulate -- --players 1000 --seeds 5   # pool seeds 1..5 (the numbers that go into PLAN.md)
  *   npm run simulate -- --trace out.jsonl          # one JSON line per hunt for the first player (--trace-players N for more)
  *
- * Cheer Meter and random events are not in the engine on every branch. The flags `--no-cheer`, `--no-events`,
- * `--boon-policy random|greedy|hold` and `--event-policy safe|big|skip|fight` are parsed and printed in the
- * report header; they take effect once the engine exposes those systems (see HOOKS below).
+ * Cheer Meter and events run inside hunt(); the simulated player answers them:
+ *   --no-cheer / --no-events                switch a system off (baselines)
+ *   --boon-policy random|greedy|hold       which boon card to pick; hold uses Overcharge up to the max before cashing in
+ *   --event-policy safe|big|skip|fight     boon card option a (safe) or b (big); skip pays the Scrinch toll, fight never pays
  */
 import { writeFileSync } from 'node:fs';
 import { loadContent } from '../src/content/load.js';
 import type { Content } from '../src/content/schema.js';
 import { gameData, priceOf } from '../src/engine/data.js';
 import { hunt } from '../src/engine/hunt.js';
+import { cheerAction, eventAction, tollGold } from '../src/engine/index.js';
 import { checkAchievements } from '../src/engine/achievements.js';
 import { objectiveAction } from '../src/engine/objectives.js';
 import { huntOdds } from '../src/engine/odds.js';
@@ -41,9 +43,8 @@ const NO_CHEER = args.includes('--no-cheer');
 const NO_EVENTS = args.includes('--no-events');
 const BOON_POLICY = strOpt('boon-policy', 'greedy');
 const EVENT_POLICY = strOpt('event-policy', 'safe');
-/** HOOKS: the Cheer Meter and events live in the engine on the branch that builds them; until then the report says they are absent. */
-const HAS_CHEER = false;
-const HAS_EVENTS = false;
+const HAS_CHEER = true;
+const HAS_EVENTS = true;
 const traceLines: string[] = [];
 /** `--without a,b` leaves those items out of the run: neither bought nor crafted (e.g. to check optional bases barely move the pace). */
 const WITHOUT = new Set((args[args.indexOf('--without') + 1] ?? '').split(',').filter((x) => args.includes('--without') && x));
@@ -52,6 +53,8 @@ const WITHOUT = new Set((args[args.indexOf('--without') + 1] ?? '').split(',').f
 const TARGET_HUNTS_IN_RANK: Record<number, number> = { 1: 150, 2: 250, 3: 400, 4: 600 };
 
 const content: Content = loadContent('content');
+content.constants.cheer.enabled = !NO_CHEER;
+content.constants.events.enabled = !NO_EVENTS;
 const data = gameData(content);
 const finalRank = content.ranks.at(-1)!.rank;
 
@@ -113,6 +116,8 @@ interface Log {
   baitSpent: number;
   pillageLost: number;
   lootHunts: number;
+  cheer: { fills: number[]; pipsGained: number; pipsLost: number; draws: number; held: number; heldPips: number[]; boonHunts: number; fullWait: number; picks: Record<string, number>; offered: Record<string, number>; rareDraws: number; legDraws: number; pityForced: number; goldUnder: number; goldOutside: number; huntsOutside: number; caughtUnder: number; caughtOutside: number; pointsUnder: number; pointsOutside: number };
+  events: { n: number; byType: Record<string, number>; hunts: number[]; wins: number; fails: number; tolls: number; tollGold: number; boonGold: number; boonsA: number; boonsB: number; declined: number; grudge: number };
 }
 
 function plan(p: PlayerState, log: Log, huntNo: number): PlayerState {
@@ -233,9 +238,73 @@ function playObjective(p: PlayerState, rng: Rng, log: Log): PlayerState {
   return p;
 }
 
+/** Boon value table for the greedy policy: higher is picked first. */
+const BOON_VALUE: Record<string, number> = {
+  santas_blessing: 9, cocoa_rush: 8, points_parade: 8, starfall: 7, mulligan: 7, boss_bell: 7, steady_hands: 6, double_haul: 6, cheer_surge: 6,
+  lucky_stocking: 5, sweet_tooth: 5, full_sack: 4, free_bait: 3, cosy_mittens: 2,
+};
+
+/** The simulated player answers an open boon card, a Scrinch challenge and the Cheer Meter, as the chosen policies say. */
+function answer(p: PlayerState, rng: Rng, log: Log, n: number): PlayerState {
+  const ev = p.events;
+  if (ev?.pending) {
+    const before = p.gold;
+    const act = EVENT_POLICY === 'big' ? 'b' : 'a';
+    const r = eventAction(content, p, act, rng);
+    if (r.ok) {
+      p = r.player;
+      log.events.boonGold += p.gold - before;
+      if (act === 'a') log.events.boonsA++; else log.events.boonsB++;
+    }
+  }
+  if (p.events?.scrinch && EVENT_POLICY === 'skip') {
+    const toll = tollGold(content, p, p.events.scrinch.id);
+    const r = eventAction(content, p, 'toll', rng);
+    if (r.ok) { p = r.player; log.events.tolls++; log.events.tollGold += toll; }
+  }
+  const c = content.constants.cheer;
+  if (!c.enabled || !p.cheer) return p;
+  const s = p.cheer;
+  if (s.draw) {
+    const cards = s.draw.cards;
+    const pick = BOON_POLICY === 'random' ? cards[Math.floor(rng() * cards.length)]! : [...cards].sort((a, b) => (BOON_VALUE[b] ?? 0) - (BOON_VALUE[a] ?? 0))[0]!;
+    for (const id of cards) log.cheer.offered[id] = (log.cheer.offered[id] ?? 0) + 1;
+    log.cheer.picks[pick] = (log.cheer.picks[pick] ?? 0) + 1;
+    const r = cheerAction(content, p, 'pick', rng, pick);
+    if (r.ok) p = r.player;
+    return p;
+  }
+  if (s.pips >= c.full) {
+    if (BOON_POLICY === 'hold' && !s.held && s.pips < c.max) {
+      const r = cheerAction(content, p, 'hold', rng);
+      if (r.ok) { p = r.player; log.cheer.held++; }
+      return p;
+    }
+    if (BOON_POLICY === 'hold' && s.held && s.pips < c.max) { log.cheer.fullWait++; return p; }
+    const pity = c.pity;
+    const sr = s.sinceRare, sl = s.sinceLegendary;
+    const pips = s.pips;
+    const r = cheerAction(content, p, 'draw', rng);
+    if (r.ok) {
+      p = r.player;
+      log.cheer.draws++;
+      log.cheer.fills.push(n - lastFillOf(log));
+      log.cheer.heldPips.push(pips);
+      if (sl >= pity.legendary || sr >= pity.rare) log.cheer.pityForced++;
+      const cs = p.cheer!.draw!.cards.map((id) => content.boons.find((b) => b.id === id)!);
+      if (cs.some((b) => b.rarity !== 'common')) log.cheer.rareDraws++;
+      if (cs.some((b) => b.rarity === 'legendary')) log.cheer.legDraws++;
+      p = answer(p, rng, log, n);
+    }
+  }
+  return p;
+}
+const lastFillOf = (log: Log) => log.cheer.fills.reduce((a, b) => a + b, 0);
+
 function play(rng: Rng, playerNo: number): Log {
   let p = newPlayer(content);
-  const log: Log = { rankAt: { 1: 0 }, goldAtRank: {}, purchases: [], byLocation: {}, bossCatches: 0, finished: false, hunts: 0, objectives: { runs: 0, launches: 0, orders: 0 }, bosses: {}, badges: {}, tiers: {}, tiersAt: {}, worstEscapes: 0, firstCatch: {}, portraitDone: {}, goodAny: [], goodMilestone: [], goldIn: 0, baitSpent: 0, pillageLost: 0, lootHunts: 0 };
+  const log: Log = { rankAt: { 1: 0 }, goldAtRank: {}, purchases: [], byLocation: {}, bossCatches: 0, finished: false, hunts: 0, objectives: { runs: 0, launches: 0, orders: 0 }, bosses: {}, badges: {}, tiers: {}, tiersAt: {}, worstEscapes: 0, firstCatch: {}, portraitDone: {}, goodAny: [], goodMilestone: [], goldIn: 0, baitSpent: 0, pillageLost: 0, lootHunts: 0, cheer: { fills: [], pipsGained: 0, pipsLost: 0, draws: 0, held: 0, heldPips: [], boonHunts: 0, fullWait: 0, picks: {}, offered: {}, rareDraws: 0, legDraws: 0, pityForced: 0, goldUnder: 0, goldOutside: 0, huntsOutside: 0, caughtUnder: 0, caughtOutside: 0, pointsUnder: 0, pointsOutside: 0 }, events: { n: 0, byType: {}, hunts: [], wins: 0, fails: 0, tolls: 0, tollGold: 0, boonGold: 0, boonsA: 0, boonsB: 0, declined: 0, grudge: 0 } };
+  let lastFill = 0;
   const traceMe = !!TRACE && playerNo < TRACE_PLAYERS;
   let escRun = 0;
   let badgesBefore = 0;
@@ -243,8 +312,10 @@ function play(rng: Rng, playerNo: number): Log {
   for (let n = 1; n <= MAX_HUNTS; n++) {
     if (n === 1 || n % 20 === 0 || !p.setup.bait || count(p, p.setup.bait) === 0) p = plan(p, log, n);
     p = playObjective(p, rng, log);
+    p = answer(p, rng, log, n);
     const loc = p.location;
     const baitBefore = p.setup.bait;
+    const underBoon = (p.cheer?.active.length ?? 0) > 0;
     const r = hunt(content, p, rng);
     if (!r.ok) { p = plan(p, log, n); continue; }
     p = r.player;
@@ -285,14 +356,33 @@ function play(rng: Rng, playerNo: number): Log {
       const here = data.locations.get(loc)!;
       if (!log.portraitDone[loc] && here.imps.every((i) => (p.catches[i.id] ?? 0) > 0)) log.portraitDone[loc] = n;
     }
+    const ch = log.cheer, evs = log.events;
+    if (e.cheer) {
+      ch.pipsGained += e.cheer.gained;
+      ch.pipsLost += e.cheer.lost;
+      if (e.cheer.full && BOON_POLICY !== 'hold') ch.fullWait += 0;
+    }
+    if (underBoon) {
+      ch.boonHunts++; ch.goldUnder += e.gold; ch.pointsUnder += e.points; if (e.outcome === 'catch') ch.caughtUnder++;
+    } else {
+      ch.huntsOutside++; ch.goldOutside += e.gold; ch.pointsOutside += e.points; if (e.outcome === 'catch') ch.caughtOutside++;
+    }
+    for (const note of e.events ?? []) {
+      evs.n++;
+      evs.byType[note.type] = (evs.byType[note.type] ?? 0) + 1;
+      if (note.type === 'boon' || note.type === 'grand' || note.type === 'scrinch') evs.hunts.push(n);
+      if (note.type === 'scrinch_win') evs.wins++;
+      if (note.type === 'scrinch_fail') evs.fails++;
+      if (note.text.startsWith('Scrinch holds a grudge')) evs.grudge++;
+    }
     const badgesNow = Object.keys(p.achievements ?? {}).length;
-    const milestone = !!(e.firstCatch || e.rankUp || e.key || e.loot.length || e.objective?.notes?.length || badgesNow > badgesBefore || log.purchases.length > purchasesBefore);
+    const milestone = !!(e.firstCatch || e.rankUp || e.key || e.loot.length || e.objective?.notes?.length || badgesNow > badgesBefore || log.purchases.length > purchasesBefore || (e.events?.length ?? 0) > 0 || (e.cheer?.full ?? false));
     badgesBefore = badgesNow;
     purchasesBefore = log.purchases.length;
     if (e.outcome === 'catch' || milestone) log.goodAny.push(n);
     if (milestone) log.goodMilestone.push(n);
     if (traceMe) {
-      traceLines.push(JSON.stringify({ n, location: loc, tier: t, imp: e.imp, outcome: e.outcome, chance: e.catchChance && Math.round(e.catchChance * 1000) / 1000, gold: e.gold, points: e.points, loot: e.loot.map((l) => `${l.item}x${l.amount}`), firstCatch: e.firstCatch, rankUp: e.rankUp, pillage: e.pillage?.gold, goldTotal: p.gold, good: milestone, pips: null, boons: null, event: null }));
+      traceLines.push(JSON.stringify({ n, location: loc, tier: t, imp: e.imp, outcome: e.outcome, chance: e.catchChance && Math.round(e.catchChance * 1000) / 1000, gold: e.gold, points: e.points, loot: e.loot.map((l) => `${l.item}x${l.amount}`), firstCatch: e.firstCatch, rankUp: e.rankUp, pillage: e.pillage?.gold, goldTotal: p.gold, good: milestone, pips: e.cheer?.pips ?? null, boons: (p.cheer?.active ?? []).map((a) => `${a.id}:${a.hunts}`), event: e.events?.map((x) => x.id) ?? null }));
     }
     if (p.rank >= finalRank) { log.finished = true; break; }
   }
@@ -415,19 +505,52 @@ console.log(`  Earned from catches ${fmt(quant(done.map((l) => l.goldIn), 0.5))}
 console.log('  Gold in hand at rank-up (median): ' + content.ranks.slice(1).map((r) => `R${r.rank} ${fmt(quant(logs.map((l) => l.goldAtRank[r.rank]).filter((x): x is number => x !== undefined), 0.5))}`).join(', '));
 console.log(`  Hunts that dropped loot: ${pct(sumOf((l) => l.lootHunts) / sumOf((l) => l.hunts))}`);
 
-const gaps = (xs: number[]) => {
+function gaps(xs: number[]) {
   const out: number[] = [];
   let prev = 0;
   for (const x of xs) { out.push(x - prev); prev = x; }
   return out;
-};
+}
 const gapsAny = done.flatMap((l) => gaps(l.goodAny));
 const gapsMile = done.flatMap((l) => gaps(l.goodMilestone));
 const longest = (set: Log[], f: (l: Log) => number[]) => quant(set.map((l) => Math.max(...gaps(f(l)))), 0.5);
 console.log('\nProgress feel: hunts between good things (a milestone is a first catch, loot, rank-up, key, objective step, badge or purchase)');
 console.log(`  Any catch or milestone: median gap ${fmt(quant(gapsAny, 0.5))}, p90 ${fmt(quant(gapsAny, 0.9))}, p99 ${fmt(quant(gapsAny, 0.99))}, longest dry spell (median player) ${fmt(longest(done, (l) => l.goodAny))}`);
 console.log(`  Milestones only (plain catches excluded): median gap ${fmt(quant(gapsMile, 0.5))}, p90 ${fmt(quant(gapsMile, 0.9))}, p99 ${fmt(quant(gapsMile, 0.99))}, longest dry spell (median player) ${fmt(longest(done, (l) => l.goodMilestone))}`);
-if (!HAS_CHEER || !HAS_EVENTS) console.log('  (pips, boons and events are not counted: they are not in this engine yet)');
+
+// ---------- Cheer Meter and events ----------
+const totalHunts = logs.reduce((a, l) => a + l.hunts, 0);
+const sumC = (f: (c: Log['cheer']) => number) => logs.reduce((a, l) => a + f(l.cheer), 0);
+if (HAS_CHEER && !NO_CHEER) {
+  const fills = logs.flatMap((l) => l.cheer.fills);
+  const perFill = logs.flatMap((l) => l.cheer.fills.map((_, i) => l.cheer.fills[i]!));
+  void perFill;
+  const draws = sumC((c) => c.draws);
+  console.log(`\nCheer Meter (boon policy: ${BOON_POLICY})`);
+  console.log(`  Hunts per fill: p10 ${fmt(quant(fills, 0.1))}, median ${fmt(quant(fills, 0.5))}, p90 ${fmt(quant(fills, 0.9))}. Draws per 100 hunts: ${(draws / totalHunts * 100).toFixed(1)}`);
+  console.log(`  Pips earned per hunt ${(sumC((c) => c.pipsGained) / totalHunts).toFixed(2)}; pips lost to escapes ${pct(sumC((c) => c.pipsLost) / Math.max(1, sumC((c) => c.pipsGained)))} of pips earned`);
+  console.log(`  Hunts under a boon: ${pct(sumC((c) => c.boonHunts) / totalHunts)}. Hunts spent holding a full meter (Overcharge): ${pct(sumC((c) => c.fullWait) / totalHunts)}. Overcharge started on ${fmt(sumC((c) => c.held))} of ${fmt(draws)} fills`);
+  console.log(`  Pips at cash-in: median ${fmt(quant(logs.flatMap((l) => l.cheer.heldPips), 0.5))}, p90 ${fmt(quant(logs.flatMap((l) => l.cheer.heldPips), 0.9))}. Draws that showed a rare or better ${pct(sumC((c) => c.rareDraws) / draws)}, a legendary ${pct(sumC((c) => c.legDraws) / draws)}; pity forced ${pct(sumC((c) => c.pityForced) / draws)}`);
+  const rate = (a: number, b: number) => (b ? a / b : NaN);
+  console.log(`  Under a boon vs outside (per hunt): gold ${fmt(rate(sumC((c) => c.goldUnder), sumC((c) => c.boonHunts)))} vs ${fmt(rate(sumC((c) => c.goldOutside), sumC((c) => c.huntsOutside)))}, points ${fmt(rate(sumC((c) => c.pointsUnder), sumC((c) => c.boonHunts)))} vs ${fmt(rate(sumC((c) => c.pointsOutside), sumC((c) => c.huntsOutside)))}, catch rate ${pct(rate(sumC((c) => c.caughtUnder), sumC((c) => c.boonHunts)))} vs ${pct(rate(sumC((c) => c.caughtOutside), sumC((c) => c.huntsOutside)))}`);
+  console.log('  Boon                 Rarity     Offered   Picked   Pick rate when offered');
+  for (const b of content.boons) {
+    const off = sumC((c) => c.offered[b.id] ?? 0), pk = sumC((c) => c.picks[b.id] ?? 0);
+    console.log(`  ${b.name.padEnd(21)}${b.rarity.padEnd(11)}${fmt(off / TOTAL).padStart(7)}${(pk / TOTAL).toFixed(1).padStart(9)}   ${pct(pk / off)}`);
+  }
+}
+if (HAS_EVENTS && !NO_EVENTS) {
+  const sumE = (f: (e: Log['events']) => number) => logs.reduce((a, l) => a + f(l.events), 0);
+  const gapsE = logs.flatMap((l) => gaps(l.events.hunts));
+  const started = sumE((e) => e.hunts.length);
+  const count2 = (t: string) => sumE((e) => e.byType[t] ?? 0);
+  console.log(`\nEvents (policy: ${EVENT_POLICY})`);
+  console.log(`  Events per 100 hunts: ${(started / totalHunts * 100).toFixed(2)} (boon cards ${(count2('boon') / totalHunts * 100).toFixed(2)}, Grand Gifts ${(count2('grand') / totalHunts * 100).toFixed(2)}, Scrinch ${(count2('scrinch') / totalHunts * 100).toFixed(2)}; grudge-driven ${pct(sumE((e) => e.grudge) / Math.max(1, count2('scrinch')))} of Scrinch events)`);
+  console.log(`  Hunts between events: min ${fmt(Math.min(...gapsE))}, median ${fmt(quant(gapsE, 0.5))}, p90 ${fmt(quant(gapsE, 0.9))}, max ${fmt(Math.max(...gapsE))}. Events per player: median ${fmt(quant(logs.map((l) => l.events.hunts.length), 0.5))}, Grand Gifts per player ${(count2('grand') / TOTAL).toFixed(1)}`);
+  const wins = sumE((e) => e.wins), fails = sumE((e) => e.fails);
+  console.log(`  Scrinch challenges: won ${fmt(wins / TOTAL)} lost ${fmt(fails / TOTAL)} per player (win rate ${pct(wins / Math.max(1, wins + fails))}); tolls paid ${(sumE((e) => e.tolls) / TOTAL).toFixed(1)} per player, ${fmt(sumE((e) => e.tollGold) / TOTAL)} gold`);
+  console.log(`  Boon cards: option a ${fmt(sumE((e) => e.boonsA) / TOTAL)}, option b ${fmt(sumE((e) => e.boonsB) / TOTAL)} per player; gold from boon cards ${fmt(sumE((e) => e.boonGold) / TOTAL)} per player (${pct(sumE((e) => e.boonGold) / Math.max(1, logs.reduce((a, l) => a + l.goldIn, 0)))} of gold earned)`);
+}
 if (TRACE) {
   writeFileSync(TRACE, traceLines.join('\n') + '\n');
   console.log(`\nTrace: ${traceLines.length} hunts written to ${TRACE}`);
