@@ -20,7 +20,7 @@ Start: 200 gold, 100 Stale Cookies, a Starlit Stocking. Elves: Crumb Elf, Sprink
 
 ## 2. Wrapping Room (rank 2, to 12,000 points)
 
-Commons: Ribbon Tangler (weak Frost), Tape Biter and Bow Burglar (weak Starlight; Bow Burglar resists Clockwork and steals bait). Rare Glitterbug, mini boss Spoolwick and boss Madame Shredwell come only for ladder baits. Shredwell is weak to Carol (x1.5) and resists every other type heavily (x0.17).
+Commons: Ribbon Tangler (weak Frost), Tape Biter and Bow Burglar (weak Starlight; Bow Burglar resists Clockwork and steals bait). Rare Glitterbug, mini boss Spoolwick and boss Madame Shredwell come only for ladder baits. Shredwell is weak to Carol (x1.5) and resists every other type (x0.6).
 
 | Step | What to do |
 | --- | --- |
@@ -28,22 +28,7 @@ Commons: Ribbon Tangler (weak Frost), Tape Biter and Bow Burglar (weak Starlight
 | Bait tier 1 | Any shop bait. Commons drop Sugar Twist and Candied Peel. |
 | Bait tier 2 | 2 Sugar Twist + 1 Candied Peel + 30 g = 3 **Ribbon Candy**. Draws Glitterbug (Sugar Glass 50%) and Spoolwick (always a Golden Ribbon). |
 | Bait tier 3 | 1 Sugar Glass + 1 Golden Ribbon + 100 g = 2 **Golden Bow Bonbons**. The only bait that draws Shredwell (half of visits). Craft 4 to 6, because she steals bait when she escapes. |
-| Boss gear | Madame Shredwell is a wall. The best possible non-Carol build (Sleigh-Bell Snapper, Sleigh Runner, Wind-up Key Charm) gives about 10%, and rank 2 gear gives about 2%. The best Carol build (Carol Horn, Sleigh Runner, Wind-up Key Charm) gives about 30%; a Carol Horn plus Toffee Anvil gives about 17% at rank 2 and about 22% with Yule Log Base at rank 3. Do the Carol Loft, then come back for her with the best gear and Cheer boons (Santa's Blessing, Boss Bell). She steals bait when she escapes, so craft plenty of Bonbons. |
-
-Shredwell drops Enchanted Wrapping (the Constellation Wreath needs 3) and the Gift-Tag Key on the first catch.
-
-### Optional: Carol Loft (rank 2, 600 g, needs the Wrapping Room)
-
-Go once you have the Candy Cane Platform and about 600 spare gold. Every elf is weak to a different type, so any trap works. Hunt until you have 5 Hymn Reeds (commons 20%, rare Silver Piper 100%) and a Carol Songsheet (Choirmaster Hollowvoice, about 5% of visits, always drops it). Craft the **Carol Horn** (+600 g): 600 power, luck 10, x1.5 on Shredwell, and a joker on the Toy Workshop order board. Shredwell is the only boss that needs it, but without it she is about 2% with rank 2 gear and 10% even with the best gear, so it is the intended route. Expect to return to her later.
-
-## 3. Toy Workshop (rank 3, to 46,000 points; 1,500 g + Gift-Tag Key)
-
-Commons are tough (1,200 to 1,850 power). Cog Pincher and Stuffing Ripper are weak to Clockwork, Paint Smudger to Starlight. The rare Wind-up Elf is weak to Clockwork and immune to Frost.
-
-- **Main build:** Nutcracker Jaws (9,000 g, Clockwork 900), Ice Block (8,000 g) then the crafted Yule Log Base (3 Toymaker's Gear, 1 Golden Ribbon, 2 Sugar Glass, 4,000 g), and a Wind-up Key Charm (+20% power; gold badges and Toy Crates give them). About 74% on Cog Pincher, 63% on Stuffing Ripper.
-- **Order board:** every catch fills the order for the armed trap's type. Stay on Clockwork, and once you own Starlight and Frost traps swap for a few catches to finish all three for the Triple Crate (800 g + every crate reward). Each order gives a Toy Crate: 400 g plus Peppermint Bark, Wind-up Key Charms or Sugar Glass.
-- Every 3rd order brings **Hammerhand** (mini boss, weak Frost, 1,600 power). Jaws gives about 54%. He always drops Toymaker's Gear: 3 for the Yule Log Base, 2 more for the Sleigh Runner.
-- After an Inspection take the **Rush order** (5 catches, any trap). When it finishes, the next hunt is **General Grimbolt** (2,800 power, weak Clockwork), about 49% with Jaws, Yule Log and the charm. He drops the Cog Key and a Clockwork Heart, and steals gold, bait and points on an escape, so carry spare bait.
+| Boss gear | Madame Shredwell is tough without Carol. With the rank 2 setup (Star Lantern or Icicle Jar on a Candy Cane Platform) she is about 10 to 13%. A Carol Horn on the same platform gives about 30%, 31% with a Mistletoe Charm; a Toffee Anvil base adds a couple of points. Use a Cheer boon (Santa's Blessing, Boss Bell) and craft plenty of Bonbons, because she steals bait when she escapes.
 - Also craft the **Constellation Wreath** (3 Enchanted Wrapping + 2 Brass Spring + 6,000 g; Brass Spring drops from the Rascal at 15%). A Starlight trap that takes Paint Smudger to about 76%.
 
 ## 4. Reindeer Stables (rank 4, to 217,000 points; 5,000 g + Cog Key)
