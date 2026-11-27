@@ -294,10 +294,10 @@ describe('carol loft and luck', () => {
     expect(chance(powerBuild, 'general_grimbolt')).toBeGreaterThan(chance(luckBuild, 'general_grimbolt'));
   });
 
-  it('makes Madame Shredwell weak to Carol, not Starlight', () => {
+  it('makes Madame Shredwell weak to Carol and heavily resistant to the rest', () => {
     const boss = content.locations.flatMap((l) => l.imps).find((i) => i.id === 'madame_shredwell')!;
     expect(effectiveness(boss, 'carol')).toBe(1.5);
-    expect(effectiveness(boss, 'starlight')).toBe(1);
-    expect(effectiveness(boss, 'frost')).toBe(1);
+    expect(effectiveness(boss, 'starlight')).toBe(0.6);
+    expect(effectiveness(boss, 'frost')).toBe(0.6);
   });
 });
