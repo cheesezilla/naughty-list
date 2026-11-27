@@ -3,7 +3,7 @@ import type { Content, Imp, PowerType } from '../../content/schema.js';
 import { api } from '../api.js';
 import { useGame } from '../game.js';
 import { Art } from '../lib/art.js';
-import { num, pct, TIER_NAME, TYPE_NAME, when } from '../lib/format.js';
+import { num, pct, TIER_NAME, TIER_ORDER, TYPE_NAME, when } from '../lib/format.js';
 import { usePrefs } from '../lib/prefs.js';
 import { go } from '../lib/route.js';
 import { TypeMedal } from '../lib/medal.js';
@@ -14,7 +14,10 @@ export function NaughtyListScreen() {
   const [loc, setLoc] = useState(player.location);
   const total = content.locations.reduce((n, l) => n + l.imps.length, 0);
   const caught = Object.keys(player.catches).length;
-  const location = content.locations.find((l) => l.id === loc)!;
+  const location = content.locations.find((l) => l.id === loc);
+  const all = loc === 'all';
+  // All tab: every elf, rarest first (boss to common), keeping location order within a tier.
+  const imps = all ? content.locations.flatMap((l) => l.imps).map((imp, i) => ({ imp, i })).sort((a, b) => TIER_ORDER[b.imp.tier] - TIER_ORDER[a.imp.tier] || a.i - b.i).map((x) => x.imp) : location!.imps;
   const seen = player.seen ?? {};
   return (
     <MainScreen tab="list">
@@ -27,11 +30,11 @@ export function NaughtyListScreen() {
           label="Location"
           value={loc}
           onChange={setLoc}
-          tabs={content.locations.map((l) => ({ id: l.id, label: <>{l.name} <small>{l.imps.filter((i) => player.catches[i.id]).length}/{l.imps.length}</small></> }))}
+          tabs={[{ id: 'all', label: <>All <small>{caught}/{total}</small></> }, ...content.locations.map((l) => ({ id: l.id, label: <>{l.name} <small>{l.imps.filter((i) => player.catches[i.id]).length}/{l.imps.length}</small></> }))]}
         />
-        {location.homeTypes.length > 0 && <span class="weak-row"><small>Best traps here</small>{location.homeTypes.map((t) => <TypeMedal type={t} size={22} />)}</span>}
+        {location && location.homeTypes.length > 0 && <span class="weak-row"><small>Best traps here</small>{location.homeTypes.map((t) => <TypeMedal type={t} size={22} />)}</span>}
         <div class="portrait-grid">
-          {location.imps.map((imp) => {
+          {imps.map((imp) => {
             const n = player.catches[imp.id] ?? 0;
             const s = seen[imp.id] ?? 0;
             const weak = Object.entries(imp.effectiveness ?? {}).filter(([, e]) => e > 1).map(([t]) => t as PowerType);
