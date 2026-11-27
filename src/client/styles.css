@@ -417,6 +417,13 @@ body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
 .ladder { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; text-align: center; font-size: 12px; line-height: 1.25; }
 .ladder li { background: #fff; border: 1px solid var(--edge); border-radius: 10px; padding: 6px 2px; display: flex; flex-direction: column; }
 .ladder li.armed { background: var(--accent); color: #fff; border-color: var(--accent); }
+.goals { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.goals li { display: flex; align-items: center; gap: 10px; font-size: 14px; line-height: 1.3; }
+.goals li span:last-child { display: flex; flex-direction: column; }
+.goals small { font-size: 12.5px; opacity: .8; }
+.goals i { font-style: normal; font-weight: 600; opacity: .7; font-size: 12px; }
+.goals .tick { flex: none; width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--accent); display: grid; place-items: center; font-weight: 800; color: #fff; }
+.goals .done .tick { background: #1f6b3a; border-color: #1f6b3a; }
 .ladder-next { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .ladder-next p { margin: 0; font-size: 13px; line-height: 1.4; }
 .small-btn { font: inherit; font-weight: 800; font-size: 13px; min-height: 40px; padding: 0 14px; border-radius: 10px; border: 0; background: var(--accent, var(--pine)); color: #fff; }
@@ -595,3 +602,10 @@ body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
 .rank-hero-pts { font-weight: 700; color: #1d2a24; }
 .rank-hero-next { grid-column: 1 / -1; color: var(--green); font-size: 14px; font-weight: 700; text-align: center; }
 .rank-hero .rank-progress { grid-column: 1 / -1; border-radius: 6px; }
+.stat-block { display: flex; flex-direction: column; gap: 2px; align-items: flex-start; width: 100%; }
+.stat-block .type-chip { margin-left: 0; margin-bottom: 2px; }
+.stat-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(64px, 1fr)); gap: 6px; width: 100%; }
+.stat-tile { display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 4px 6px; border: 1px solid rgba(0,0,0,.12); border-radius: 8px; background: rgba(0,0,0,.04); font-size: 10px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.stat-tile b { font-size: 13px; letter-spacing: 0; text-transform: none; color: var(--ink); }
+.stat-note { margin: 0; font-size: 11px; line-height: 1.3; color: var(--muted); }
+.stat-note b { color: var(--ink); }

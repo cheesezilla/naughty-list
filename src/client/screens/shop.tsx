@@ -2,12 +2,12 @@ import { useState } from 'preact/hooks';
 import { count, priceOf, sellValue, type AnyItem } from '../../engine/index.js';
 import { useGame } from '../game.js';
 import { Art } from '../lib/art.js';
-import { num, TYPE_NAME } from '../lib/format.js';
+import { num } from '../lib/format.js';
 import { go } from '../lib/route.js';
 import { MainScreen, Stepper, Tabs } from '../ui.js';
-import { GoldCoin, TypeMedal } from '../lib/medal.js';
+import { GoldCoin } from '../lib/medal.js';
 import { useExactOdds } from '../lib/effectiveness.js';
-import { ItemThumb, itemStats } from './gear.js';
+import { ItemStatBlock, ItemThumb } from './gear.js';
 
 type ShopTab = 'traps' | 'bases' | 'bait' | 'charms' | 'sell';
 const SHOP_TABS: { id: ShopTab; label: string }[] = [
@@ -32,9 +32,8 @@ function BuyCard({ item }: { item: AnyItem }) {
       <div class="shop-main">
         <div class="row-head">
           <b>{item.name}</b>
-          {item.kind === 'trap' && <span class="type-chip"><TypeMedal type={item.type} size={20} />{TYPE_NAME[item.type]}</span>}
         </div>
-        <small>{itemStats(item, exact)}</small>
+        <ItemStatBlock item={item} exact={exact} />
         <span class="price-line"><b>{num(price)} gold</b>{stackable ? ' each' : ''} · you own {num(own)}</span>
         {item.flavour && <p class="small desc">{item.flavour.description}</p>}
         {locked ? <p class="small locked-note">Unlocks at {content.ranks[rank - 1]?.name} (rank {rank})</p>
@@ -148,8 +147,7 @@ export function WorkshopScreen() {
                 <div>
                   <b>{out.name}</b> <span class="muted">×{r.output.amount}</span><br />
                   <small>{kindName} · you own {num(count(player, out.id))}</small><br />
-                  {out.kind === 'trap' && <span class="type-chip"><TypeMedal type={out.type} size={20} />{TYPE_NAME[out.type]}</span>}
-                  {out.kind !== 'material' && <small class="recipe-stats">{itemStats(out, exact)}<br /></small>}
+                  <ItemStatBlock item={out} exact={exact} />
                   <small>Rank: {rankName}</small>
                 </div>
               </div>
