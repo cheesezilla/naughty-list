@@ -144,7 +144,7 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0, b
     if (count(p, p.setup.charm) < 1) p.setup.charm = null;
   }
 
-  let chance = boost?.odds ? (effectiveness(imp, stats.type) > 0 ? 1 : 0) : catchChance(stats, imp, c.catchCap, luckFactor(c, imp));
+  let chance = boost?.odds ? 1 : catchChance(stats, imp, c.catchCap, luckFactor(c, imp));
   const shielded = isBoss && mods.bossShield > 0;
   if (shielded && chance > 0) chance = Math.min(c.catchCap, chance + mods.bossShield);
   const mult = boost?.reward ?? 1;

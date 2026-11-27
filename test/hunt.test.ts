@@ -246,6 +246,27 @@ describe('boss keys', () => {
     expect(cur.keys).toEqual(['gift_tag_key']);
   });
 
+  it('admin always-catch catches immune bosses too', () => {
+    const p: PlayerState = { ...fresh(), location: 'reindeer_stables', rank: 4, gold: 1e6 };
+    p.setup.trap = 'star_lantern';
+    p.inventory.star_lantern = 1;
+    p.inventory.ribbon_candy = 5000;
+    p.setup.bait = 'ribbon_candy';
+    const cinder = content.locations.find((l) => l.id === 'reindeer_stables')!.imps.find((i) => i.id === 'cinderhoof')!;
+    expect((cinder.effectiveness as Record<string, number>).starlight).toBe(0);
+    const rng = seededRng(7);
+    let cur = p;
+    let bosses = 0;
+    for (let i = 0; i < 400; i++) {
+      cur.objectives = { reindeer_stables: { type: 'sleigh_run', active: true, readiness: 40, forced: 'cinderhoof' } } as never;
+      const r = hunt(content, cur, rng, 0, { reward: 1, odds: true });
+      if (!r.ok) throw new Error(r.error);
+      cur = r.player;
+      if (r.entry.imp === 'cinderhoof') { bosses++; expect(r.entry.outcome).toBe('catch'); }
+    }
+    expect(bosses).toBeGreaterThan(0);
+  });
+
   it('migrates old saves: keys for caught bosses and already-unlocked locations', () => {
     const old = { ...fresh(), catches: { madame_shredwell: 2 }, unlocked: ['cookie_pantry', 'wrapping_room', 'toy_workshop', 'reindeer_stables'] };
     expect(grantKeys(content, old)).toBe(true);
