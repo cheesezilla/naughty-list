@@ -884,7 +884,7 @@ Durations are hunts. Numbers are a first guess and get tuned with the simulator.
 | 9 | **Cocoa Rush** | Rare | 3 | +50% power. |
 | 10 | **Points Parade** | Rare | 5 | Rank points from catches x2. |
 | 11 | **Mulligan** | Rare | 5 | An escape is rolled again once, and the better result counts. |
-| 12 | **Santa's Blessing** | Legendary | 3 | Every hunt is a guaranteed catch of commons, uncommons, rares and mini bosses. A boss still gets a flat +40% catch chance, so it never replaces the boss fight. |
+| 12 | **Santa's Blessing** | Legendary | 3 | A big trap power boost for the boon's duration (draft: trap power x2.5, tuned later) instead of a flat catch-rate bump, so strong gear and the right power type still matter and bosses stay a real fight (eddy, 27 Nov 2026). |
 | 13 | **Boss Bell** | Legendary | 1 | The next hunt meets the area's boss (or the strongest mini boss where the area has no boss, such as the Cookie Pantry and Carol Loft). Boss keys still come only from a catch. |
 | 14 | **Cheer Surge** | Legendary | 5 | Meter pips from catches x2 and escapes cost nothing, so the next boon comes fast. |
 
@@ -927,7 +927,7 @@ Rails: a Cheer charm adds at most +1 pip to a catch and never refills a meter th
 ### Open questions
 
 - **Decided (eddy, 27 Nov 2026):** the meter resets on Start over (player reset) only and carries across locations; an escape costs 5 pips while Overcharged, as proposed. Tuning is a separate task.
-- **Still open:** Santa's Blessing gives bosses +40% catch chance instead of a guaranteed catch (kept as proposed).
+- **Decided (eddy, 27 Nov 2026):** Santa's Blessing is a great trap power boost, not a guaranteed or flat catch-rate boost.
 - Do players want to see the pool and drop weights in a "Cheer book" screen? (Proposed: yes, a simple list under More > Cheer book, with unseen boons shown as "?".)
 - Simulator rule for a boon pick: the first draw card by rarity, so it does not skew balance. Real balance needs a play-test.
 
@@ -1154,11 +1154,11 @@ One is picked at random. Each is big enough to notice and cost the player nothin
 | 9 | Toll Booth | Lose 10% of your gold (at most 12 H) | Catch 8 of the next 12 elves | 4 H gold | Pay 4% gold |
 | 10 | Frosted Footing | The next 8 hunts use 2 bait each | Catch an elf with a trap of the location's home type within 8 hunts | Normal bait use, plus 2 bait | Pay 3 H gold |
 
-### Open questions for eddy
+### Decided by eddy (27 Nov 2026)
 
-1. Are the Grand Gift rates right (10% base, +15% after beating Scrinch, +5% pity per boon without one)?
-2. Should the favour bar be visible all the time, or only after the first Scrinch event?
-3. Should Scrinch's grudge also stop after the same boss escapes twice in a row, so a hard boss isn't punished again and again?
+- Grand Gift rates stay at 10% base, +15% per Scrinch win, +5% per boon without one, until play-testing.
+- The Santa's favour bar always shows.
+- Scrinch's grudge stops after the same boss escapes twice in a row (the 25% trigger is skipped on a third escape from that boss until the player catches it once).
 
 ## Parked ideas (eddy, 26 Nov 2026: not now)
 
