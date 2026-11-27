@@ -33,6 +33,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Branching progression (eddy): luck rework (luck helps most against commons, least against bosses), Madame Shredwell weak to a new Carol type, and the Carol Loft side area where the Carol Horn is made; see [Branching progression](#branching-progression) | In review | this PR |
 | New bases: two tiers of power, attraction and luck bases, with build affinity and a "good for" line; see [New bases](#new-bases-power-attraction-and-luck) | In review | #21 |
 | Random events after a hunt (Santa and Mrs. Claus boons with a safe or big choice, Scrinch challenges with mini objectives), plus a parked-ideas list; see [Random events](#random-events-planned-not-built) | Planned (design only) | this PR |
+| Cheer Meter and boons (eddy): a streak meter, pick 1 of 3 from 14 boons in three rarities, Overcharge and Cheer charms; see [Cheer Meter](#cheer-meter-and-boons-eddy-26-nov-2026-design-only) | Planned (design only) | this PR |
 | 5. Tune from play-test | Planned | |
 
 The server runs every hunt and saves each player in SQLite. To play locally, follow "Run it locally" below.
@@ -845,6 +846,99 @@ Every trap, base, bait, charm, material and elf has text for its detail screen, 
 
 Elf descriptions and rumours hint at each elf's weaknesses and resistances, so players can work out the right trap type from the text. Loading fails if any item or elf has no text, if text names an unknown id, or if a field is over its limit. The text is a first pass; edit `flavour.json` freely, no numbers live there.
 
+## Cheer Meter and boons (eddy, 26 Nov 2026, design only)
+
+A streak meter that rewards catching in a row. When it fills, the player picks 1 of 3 random boons, roguelike style, from a pool of 14 with three rarity tiers. Not built yet. It is separate from the random events plan (#43) (those are rare surprise encounters; this is a meter the player fills) and works with Allure (#44) because every boon is applied after Allure's odds are worked out.
+
+### The meter
+
+- Shown as a 10-pip bar on the Hunt screen under the gear card.
+- **Fills:** +1 pip per catch, **+2 for a rare, mini boss or boss**. Uncommons and commons give +1.
+- **Escape:** -3 pips (never below 0). One bad roll hurts but never wipes the streak.
+- **Full at 10:** the bar glows and a "Cash in" button appears. Pips above 10 from the same catch carry over into the next meter.
+- **Cash in:** a sheet shows 3 boon cards drawn from the pool. The player picks one, the boon starts, and the meter drops to 0. Closing the sheet keeps the meter full and the draw saved (the meter stops filling until a boon is picked, so there is no reason to delay except Overcharge, below).
+- Boons count in **hunts** (every hunt, caught or escaped). A boon of the same id picked again refreshes its hunts; different boons stack. A boon never outlasts a Start over.
+- The meter and active boons are saved per player (`cheer`: pips, held flag, active boons with hunts left, draws since the last rare, draws since the last legendary).
+
+### The draw
+
+- Weights: **Common 70, Rare 25, Legendary 5** (per card, before Overcharge).
+- Three different boons per draw; the boon just picked cannot appear in the next draw, so the pool keeps rotating.
+- **Pity:** if the last 3 draws showed no rare or legendary, one card of the next draw is forced to be rare or better. If the last 8 draws showed no legendary, one card is forced to be legendary.
+- Boons that do nothing right now are never drawn: Boss Bell needs an unlocked area with a boss or mini boss, Mulligan needs at least one escape chance (always true).
+
+### The boon pool (14)
+
+Durations are hunts. Numbers are a first guess and get tuned with the simulator.
+
+| # | Boon | Rarity | Hunts | Effect |
+| --- | --- | --- | --- | --- |
+| 1 | **Double Haul** | Common | 5 | Gold from catches x2. |
+| 2 | **Free Bait** | Common | 6 | The armed bait is not used up. Its Allure still counts. |
+| 3 | **Steady Hands** | Common | 5 | +30% power. |
+| 4 | **Lucky Stocking** | Common | 5 | +6 luck. |
+| 5 | **Sweet Tooth** | Common | 6 | +25% Allure (Allure bonus, so it still caps at 95% like every other source). |
+| 6 | **Cosy Mittens** | Common | 8 | No pillage on escape (nothing is stolen). |
+| 7 | **Starfall** | Rare | 4 | Rare, mini boss and boss weights x2 after Allure. Pairs with a high-Allure bait. |
+| 8 | **Full Sack** | Rare | 4 | Loot drops x2 and every catch drops at least one material. |
+| 9 | **Cocoa Rush** | Rare | 3 | +50% power. |
+| 10 | **Points Parade** | Rare | 5 | Rank points from catches x2. |
+| 11 | **Mulligan** | Rare | 5 | An escape is rolled again once, and the better result counts. |
+| 12 | **Santa's Blessing** | Legendary | 3 | Every hunt is a guaranteed catch of commons, uncommons, rares and mini bosses. A boss still gets a flat +40% catch chance, so it never replaces the boss fight. |
+| 13 | **Boss Bell** | Legendary | 1 | The next hunt meets the area's boss (or the strongest mini boss where the area has no boss, such as the Cookie Pantry and Carol Loft). Boss keys still come only from a catch. |
+| 14 | **Cheer Surge** | Legendary | 5 | Meter pips from catches x2 and escapes cost nothing, so the next boon comes fast. |
+
+Each boon needs a name, a one-line flavour text in `content/flavour.json` and an icon (a candy-cane-striped medal, rarity-coloured like the Naughty List cards: grey, blue, gold).
+
+### Overcharge (optional, works alongside everything)
+
+At 10 the player can **Hold the charge** instead of cashing in and keep filling up to **15 pips**.
+
+| Pips | Name | Draw changes |
+| --- | --- | --- |
+| 10 | Full | Weights 70 / 25 / 5, 3 cards |
+| 11-12 | Warm | Weights 55 / 35 / 10, 3 cards |
+| 13-14 | Hot | Weights 40 / 42 / 18, 3 cards |
+| 15 | Blazing | Weights 25 / 50 / 25, 4 cards, plus one reroll of the whole draw |
+
+- **Harsher escape while held:** above 10 pips an escape costs **-5** (not -3) and can drop the meter below 10, so the player loses the full state and has to refill. The risk is the price of better odds.
+- Pity counters still apply. Cheer Surge pips count toward Overcharge.
+- It is a choice each time: cash in early and safe, or push for a better draw.
+
+### Cheer charms (a separate, independent source)
+
+Cheer charms sit in the charm slot, are used one per hunt like other charms, and work with or without a boon in play. They only fill the meter faster, so the player trades a luck, power or Allure charm for streak speed.
+
+| Charm | Rank | Price | Effect |
+| --- | --- | --- | --- |
+| **Cheer Bauble** | 2 | 40 gold | +1 pip on rare, mini boss and boss catches. |
+| **Tinsel Cheer Charm** | 3 | 90 gold | +1 pip on every catch. |
+| **Gold Star Cheer Charm** | 4 | 180 gold | +1 pip on every catch, and an escape costs 1 pip less. |
+
+Rails: a Cheer charm adds at most +1 pip to a catch and never refills a meter that is already full. They cannot be crafted into anything else, and Cheer Surge's x2 applies after the charm's +1. Art follows the existing charm style (image slot per charm id, same size).
+
+### Compatibility
+
+- **Allure (#44):** every hunt meets an elf and uses one bait, so no boon is lost to a "quiet hunt". Starfall multiplies the rare weights after Allure's factor. Sweet Tooth adds to the Allure bonus before the 95% cap.
+- **Random events (#43):** event boons and Scrinch events are separate from Cheer boons and never change the meter. If an event boon and a Cheer boon change the same stat, only the higher one counts. Events do not draw on this pool.
+- **Pillage, objectives, boss keys:** Cosy Mittens turns pillage off; objectives such as the Order Board and Sleigh Run still count caught elves as normal; Boss Bell never skips a key requirement.
+- **Stamina toggle:** unaffected.
+
+### Open questions
+
+- Should the meter reset on Start over only, or also when the player changes location? (Proposed: only Start over; the meter carries across locations.)
+- Is -5 while Overcharged too harsh, or the right amount of risk?
+- Do players want to see the pool and drop weights in a "Cheer book" screen? (Proposed: yes, a simple list under More > Cheer book, with unseen boons shown as "?".)
+- Simulator rule for a boon pick: the first draw card by rarity, so it does not skew balance. Real balance needs a play-test.
+
+### Build order (later)
+
+1. `content/boons.json` and `cheer` constants (fill, penalty, draw weights, Overcharge table, pity), validated in `check-content`; three Cheer charms in `items.json`.
+2. Engine `src/engine/cheer.ts`: meter updates, draw with pity, boon effects applied in the hunt and odds code; tests for each boon and for Overcharge.
+3. Server endpoints for cash in, hold and reroll; `cheer` in the save.
+4. UI: meter on the Hunt screen, draw sheet, active boon chips, Cheer book.
+5. Simulator: add a boon policy and check the median hunts to rank 5.
+
 ## Economy
 
 Gold comes in only from catches and sales, and goes out on bait, charms, gear, location unlocks and crafting fees.
@@ -1012,6 +1106,8 @@ The container starts as root only to fix the save folder's ownership, then drops
 
 **Ask (eddy, 26 Nov 2026):** rare random events after a hunt. Santa or Mrs. Claus offer a boon where the player chooses between a small safe gain and a big gain that costs something. Scrinch events take something away unless the player finishes a mini objective. Design only; nothing is built yet and no game number changes. Reworked on 27 Nov 2026 for Allure (PR #44): every hunt meets an elf, so triggers and objectives are per hunt and objective targets assume about a 70% catch chance on common elves.
 
+**Relationship to the Cheer Meter.** The [Cheer Meter](#cheer-meter-and-boons-eddy-26-nov-2026-design-only) is the player-earned, streak-driven pick-1-of-3 boon system. Random events are the unscheduled layer on top: Santa or Mrs. Claus appear by chance with a safe or big choice, and Scrinch interrupts with a threat. They share the hunt-log card and pending-choice plumbing, but have separate triggers and pools. Event rewards and losses never fill or drain Cheer pips, and an event boon does not use an Overcharge. Share one `pendingEvent` / `pendingBoon` slot so only one prompt is open at a time.
+
 ### How the system works
 
 - **Trigger (reworked for Allure, PR #44, which removes quiet hunts).** Every hunt now meets an elf, so the roll is per hunt: 2.5% after any hunt. Guards: none in the first 30 hunts of a game, at least 20 hunts between events, and never while another event is open. That is about one event per 60 hunts. **Scrinch's grudge:** when a mini boss or boss escapes, the next hunt-end roll is a Scrinch event at 15% (minimum gap 10 hunts), so a lost boss fight can bring the retaliation. Bosses that are caught never trigger it. All numbers go in `content/constants.json` > `events`; the roll uses the same server random source as hunts, so the browser can't edit it.
@@ -1074,6 +1170,7 @@ The first idea (replace the attraction roll where no elf takes the bait) is trac
 | Date | PR | Change |
 | --- | --- | --- |
 | 2026-11-26 | this PR | Design only: random events after a hunt (boons from Santa and Mrs. Claus, Scrinch challenges) with 10 draft events, and a parked-ideas list. Reworked 27 Nov for Allure (#44): per-hunt trigger at 2.5%, boss-escape grudge, objectives retuned. No game number changes |
+| 2026-11-26 | this PR | Planned the Cheer Meter: +1 pip per catch (+2 rare or better), -3 on an escape, full at 10, then pick 1 of 3 boons from a pool of 14 (6 common, 5 rare, 3 legendary), Overcharge up to 15 pips with better draw odds and a -5 escape, and three Cheer charms that fill the meter faster. Design only, no numbers changed |
 | 2026-11-26 | #40 | Bases are drawn 30% lower under the trap in the trap stack. Imported all 97 custom art pictures (elves, traps, bases, baits, charms, materials, trap types, ranks, locations, map, brand, how-to) as resized WebP, replacing the generated SVGs and older PNGs; icons stay SVG; favicon now WebP. No rule or balance change |
 | 2026-11-26 | this PR | Hunt log escapes now show the effectiveness tier ("Escaped. Weak chance") instead of the exact percentage; admins with the exact-odds toggle still see the percentage. Checked the New Catch popup and Hunters feed: they show no odds. Imp-file drop and pillage-risk percentages are unchanged |
 | 2026-11-26 | #36 | Santa's Workshop recipe cards show the output's stats (power, luck, Good for, base type bonus, charm bonuses), traps show their power type medal; attraction stays behind the admin exact-odds toggle. Base type bonus now also shows on item lines in the Emporium and Arsenal |
