@@ -41,7 +41,7 @@ export function NaughtyListScreen() {
             return (
               <button class={`portrait-card tier-${imp.tier} ${n ? '' : 'locked'}`} onClick={() => go(`imp/${imp.id}`)}>
                 <Art slot="imps" id={n ? imp.id : '_locked'} alt={n ? imp.name : 'Not caught yet'} class="portrait" />
-                <b>{n ? imp.name : '???'}</b>
+                <b>{imp.name}</b>
                 <span class="weak-row" aria-label={weak.length ? `Weak to ${weak.map((t) => TYPE_NAME[t]).join(' and ')}` : 'No weakness'}>
                   <small>Weak to</small>
                   {weak.length ? weak.map((t) => <TypeMedal type={t} size={22} />) : <small>none</small>}
@@ -74,7 +74,7 @@ export function ImpScreen({ id }: { id: string }) {
 
   return (
     <FullScreen class="detail">
-      <BackRow to="list" title={known || seen ? imp.name : '???'} sub={`${TIER_NAME[imp.tier]} · ${location.name}`} />
+      <BackRow to="list" title={imp.name} sub={`${TIER_NAME[imp.tier]} · ${location.name}`} />
       <div class={`hero-art imp-hero tier-${imp.tier}`}>
         <Art slot="imps" id={known ? id : '_locked'} alt={known ? imp.name : 'Not caught yet'} class="hero-portrait" />
       </div>
@@ -104,10 +104,16 @@ export function ImpScreen({ id }: { id: string }) {
           </>
         ) : (
           <>
+            {(weak.length > 0 || resists.length > 0) && (
+              <p class="small">
+                {weak.length > 0 && <>Weak to {weak.join(', ')}. </>}
+                {resists.length > 0 && <>Resists {resists.join(', ')}.</>}
+              </p>
+            )}
             {imp.flavour && <div class="flavour"><p class="label">Rumour</p><p class="tagline">{imp.flavour.rumour}</p></div>}
             <div class="sealed">
               <b>File sealed</b>
-              <p>Catch this elf once to unlock its portrait, description and backstory.</p>
+              <p>Catch this elf once to unlock its portrait, stats and description.</p>
             </div>
             {!player.unlocked.includes(location.id) && <p class="small muted">Found in the {location.name}, which opens at {content.ranks[location.rank - 1]?.name}.</p>}
           </>
