@@ -163,7 +163,6 @@ body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
 .row-time { font-size: 12px; color: var(--muted); align-self: start; text-align: right; white-space: nowrap; line-height: 1.35; }
 .log-row.escape { background: var(--red-soft); }
 .log-row.first { background: var(--gold-soft); box-shadow: inset 0 0 0 2px var(--gold-2); }
-.log-row.tier-boss.catch, .log-row.tier-miniboss.catch { box-shadow: inset 0 0 0 2px var(--gold-2); }
 .log-row.quiet { background: var(--pine-line); color: var(--mint); }
 .log-row.quiet .row-time { color: var(--mint-2); }
 .log-row.quiet .empty-thumb { border-color: #4f8676; color: var(--mint-2); }
@@ -724,3 +723,12 @@ body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
 .favour-bar.down { animation: favour-down 0.5s ease-out; }
 .log-new { animation: log-in 0.45s ease-out; border-radius: 14px; }
 @media (prefers-reduced-motion: reduce) { .pip.pop, .pip.drop, .favour-bar.up, .favour-bar.down, .log-new { animation: none !important; } }
+/* ---------- Hunt log: rare / miniboss / boss catches glow like their portraits ---------- */
+.log-row.catch.tier-rare, .log-row.catch.tier-miniboss, .log-row.catch.tier-boss { position: relative; overflow: hidden; }
+.log-row.catch.tier-rare { background: #ece3f7; box-shadow: inset 0 0 0 2px #5a2f96, 0 0 10px color-mix(in srgb, #5a2f96 55%, transparent); }
+.log-row.catch.tier-miniboss { background: linear-gradient(160deg, #fff1de, #fbd5a6); box-shadow: inset 0 0 0 3px #d9731a, 0 0 14px 1px rgba(217, 115, 26, 0.6); }
+.log-row.catch.tier-boss { background: linear-gradient(160deg, #fff8dc, #ffe9a0); box-shadow: inset 0 0 0 3px #d8a52a, 0 0 18px 3px rgba(216, 165, 42, 0.7); }
+.log-row.catch.tier-rare::after, .log-row.catch.tier-miniboss::after, .log-row.catch.tier-boss::after { content: ''; position: absolute; top: 0; bottom: 0; left: -60%; width: 40%; background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.55), transparent); transform: skewX(-18deg); animation: tier-shine 4.5s ease-in-out infinite; pointer-events: none; }
+.log-row.catch.tier-rare::after { animation-duration: 7s; opacity: 0.6; }
+.log-row.catch.tier-miniboss::after { animation-duration: 5.5s; }
+@media (prefers-reduced-motion: reduce) { .log-row.catch::after { animation: none !important; display: none; } }
