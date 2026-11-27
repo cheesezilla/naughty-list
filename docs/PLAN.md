@@ -41,6 +41,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Cheer Meter and boons (eddy): a streak meter, pick 1 of 3 from 14 boons in three rarities, Overcharge and Cheer charms; see [Cheer Meter](#cheer-meter-and-boons-eddy-26-nov-2026-built-on-integration) | Built on `integration` (test playground), draft numbers | this PR |
 | Full-game strategy walkthrough: [docs/WALKTHROUGH.md](WALKTHROUGH.md), gear, bosses and Cheer Meter use for every location | Done | this PR |
 | 5. Tune from play-test | Planned | |
+| Versioned releases: semver in `package.json`, `CHANGELOG.md`, merging a new version into `main` publishes version-tagged Docker images, a `vX.Y.Z` tag and a GitHub Release, plus in-game release notes (`content/releases.json`, What's new popup and More screen); first release 1.0.0 (integration promoted to main); see [Deployment](#deployment) and [RELEASING.md](RELEASING.md) | Done | this PR |
 
 The server runs every hunt and saves each player in SQLite. To play locally, follow "Run it locally" below.
 
@@ -1187,7 +1188,7 @@ The first account you create is the admin. Friends create their own accounts fro
 
 ## Deployment
 
-The game ships as one Docker image (`ghcr.io/cheesezilla/naughty-list`), built and published by GitHub Actions on each push to `main`. The UGREEN DXP4800 has an Intel x86 processor, so the amd64 image works.
+The game ships as one Docker image (`ghcr.io/cheesezilla/naughty-list`), built and published by GitHub Actions: each push to `main` publishes `:latest`, each push to `integration` publishes `:integration`, and a `main` push with a new `package.json` version also publishes `:1.0.0` and `:1.0`, tags `v1.0.0` and creates a GitHub Release. Release process: [docs/RELEASING.md](RELEASING.md); player-facing history: [CHANGELOG.md](../CHANGELOG.md). The UGREEN DXP4800 has an Intel x86 processor, so the amd64 image works.
 
 Step-by-step guide: [docs/DEPLOY.md](DEPLOY.md). In short:
 
@@ -1277,6 +1278,7 @@ The first idea (replace the attraction roll where no elf takes the bait) is trac
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-27 | this PR | **Release 1.0.0 and a release process (eddy).** `integration` is promoted to `main` as version 1.0.0. Added `CHANGELOG.md` (player-facing notes, Keep a Changelog and semver), `docs/RELEASING.md`, `package.json` version 1.0.0, and the Docker workflow, when `main` gets a `package.json` version with no tag yet, also publishes `:X.Y.Z` and `:X.Y` and creates the tag and GitHub Release from the changelog. **Release notes in the game:** `content/releases.json` (newest first, first entry must equal the `package.json` version, tested), `releaseSeen` on the player (new games start as seen, older saves see it once), `POST /api/release-seen`, a What's new popup after an update and More > What's new listing every version. `/api/health` reports the release version. No game numbers changed |
 | 2026-11-27 | this PR | **Simulator: second game-length benchmark.** Besides median hunts to rank 5, every report now gives hunts to catch all 28 elves (100% of portraits, Carol Loft and bosses included). The bot keeps hunting after rank 5 in rooms with uncaught elves, up to `--max-collect-hunts` (20,000). 1,000 players, seed 42, PR 66 included: rank 5 median 1,226; full collection by 100% of players, mean 1,252, median 1,240, p10 1,123, p90 1,400. See `docs/SIMULATION_REPORT.md` Report 7 |
 | 2026-11-27 | #66 | **Madame Shredwell much harder without Carol (eddy).** Power 1,100 to 2,900; effectiveness Carol x1.5 and x0.6 against Clockwork, Starlight and Frost (was x0.5 Clockwork, x1 the others). With rank 2 gear (trap + Candy Cane Platform): about 10% without Carol (was 31%), about 30% with the Carol Horn (was 56%). Simulator (200 players, seed 1): median 1,220 hunts to rank 5 (1,211 before); ranks 117, 241, 329, 540; Wrapping Room 168 hunts (was 123); Shredwell 1.1 catches per player |
 | 2026-11-27 | this PR | **Scrinch's random events removed (eddy).** Threats, gold toll, mini objectives, boss-escape grudge, their penalty buffs, the Scrinch counter card, `tollGold`, the `toll` event action and the admin Scrinch trigger are gone; Santa and Mrs. Claus boons and Grand Gifts stay, and Scrinch stays the story villain. `constants.events`: `chancePerHunt` 2.5% to 1.5% (keeps the boon rate), `scrinchShare`, `grudge*` and `grandPerScrinchWin` removed; `events.json` loses its `scrinch` list. Old saves load: the pending challenge, its counters, the escape tracker and penalty buffs are stripped when the events state is read (test added). Simulator: `skip` and `fight` policies and Scrinch stats removed. 1,000 players, seed 42: median 1,208 hunts to rank 5 (1,212 in Report 5), ranks 117, 236, 325, 533, all within target; 0.92 boon cards and 0.23 Grand Gifts per 100 hunts. See `docs/SIMULATION_REPORT.md` Report 6 |

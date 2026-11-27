@@ -34,6 +34,7 @@ export function loadContent(dir: string): Content {
   const content = Content.parse({
     constants: read('constants.json'),
     story: existsSync(join(dir, 'story.json')) ? read('story.json') : undefined,
+    releases: existsSync(join(dir, 'releases.json')) ? read('releases.json') : [],
     ranks: read('ranks.json'),
     locations,
     items,

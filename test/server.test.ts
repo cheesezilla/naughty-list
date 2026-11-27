@@ -404,6 +404,21 @@ describe('store', () => {
   });
 });
 
+describe('release notes', () => {
+  it('are already seen by a new game, and an older save sees the current version once', async () => {
+    const cookie = await signupAdmin();
+    const latest = content.releases[0]!.version;
+    expect((await get('/api/me', cookie)).json().player.releaseSeen).toBe(latest);
+    const row = store.player(1)!;
+    const old = JSON.parse(JSON.stringify(row));
+    delete old.releaseSeen;
+    store.savePlayer(1, old, clock);
+    expect((await get('/api/me', cookie)).json().player.releaseSeen).toBeUndefined();
+    expect((await post('/api/release-seen', {}, cookie)).json().player.releaseSeen).toBe(latest);
+    expect((await get('/api/me', cookie)).json().player.releaseSeen).toBe(latest);
+  });
+});
+
 describe('achievements and the welcome popup', () => {
   beforeEach(async () => {
     await app.close();

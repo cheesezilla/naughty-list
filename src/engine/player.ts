@@ -37,6 +37,8 @@ export interface PlayerState {
   tally?: Record<string, number>;
   /** False until the player closes the welcome popup of a new game. Missing (seen) in older saves. */
   welcomeSeen?: boolean;
+  /** Version of the release notes the player has been shown. Missing in older saves, so they see the current notes once. */
+  releaseSeen?: string;
   /** Boss keys found (location key ids). Missing in saves from before keys; the server fills it in on load. */
   keys?: string[];
   /** The Cheer Meter and its boons. Created on the first hunt; missing in older saves. */
@@ -71,6 +73,8 @@ export function newPlayer(content: Content, now = 0): PlayerState {
     achievements: {},
     tally: {},
     welcomeSeen: false,
+    // A new game opens with the welcome popup instead of the release notes.
+    releaseSeen: content.releases[0]?.version,
   };
 }
 

@@ -223,6 +223,17 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
       return { player: p };
     });
 
+    // The release notes popup was closed: remember the current version.
+    game.post('/api/release-seen', async (req) => {
+      const p = loadPlayer(req.user!.id);
+      const v = content.releases[0]?.version;
+      if (v && p.releaseSeen !== v) {
+        p.releaseSeen = v;
+        store.savePlayer(req.user!.id, p, now());
+      }
+      return { player: p };
+    });
+
     game.get<{ Querystring: { before?: string; filter?: string; limit?: string } }>('/api/history', async (req) => {
       const filters: HistoryFilter[] = ['all', 'catches', 'escapes', 'pillaged', 'events', 'bosses'];
       const filter = filters.includes(req.query.filter as HistoryFilter) ? (req.query.filter as HistoryFilter) : 'all';

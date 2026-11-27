@@ -1,0 +1,54 @@
+[
+  {
+    "version": "1.0.0",
+    "date": "2026-11-27",
+    "title": "Every hunt finds an elf",
+    "summary": "The first full release. There are no quiet hunts any more: every hunt now attracts an elf and uses your bait.",
+    "sections": [
+      {
+        "heading": "Every hunt attracts an elf (Allure)",
+        "items": [
+          "Quiet hunts are gone. Every hunt meets an elf and uses your bait.",
+          "Attraction is now called Allure. It sets how strongly your bait pulls rare elves, mini bosses and bosses.",
+          "The Silent Night badge now asks for 4 escapes in a row.",
+          "Rank 5 comes faster: about 1,200 hunts instead of about 1,650."
+        ]
+      },
+      {
+        "heading": "Cheer Meter, boons and Overcharge",
+        "items": [
+          "Catches fill the Cheer Meter and escapes drain it. When it is full, pick 1 of 3 boons.",
+          "Hold on past full to Overcharge: two rare-or-better cards to choose from, plus a perk (a second pick, longer boons or two Santa's Blessings).",
+          "Three new Cheer charms fill the meter faster, and the Cheer card shows every buff and its hunts left."
+        ]
+      },
+      {
+        "heading": "Santa and Mrs. Claus",
+        "items": [
+          "After a hunt, Santa or Mrs. Claus may step in with a boon, or a free rare Grand Gift. Santa's favour tracks how well you are doing.",
+          "Scrinch's random events were cut. He stays the villain of the story."
+        ]
+      },
+      {
+        "heading": "Toy Workshop and other areas",
+        "items": [
+          "Toy Workshop orders now fill in parallel: every catch counts for the order of your armed trap's type, so no more swapping every hunt.",
+          "Madame Shredwell is much tougher without a Carol trap. Prepare before you face her.",
+          "Thieves often find no bait to steal, and crafted bait is almost safe.",
+          "Stables bosses are tougher, and Cinderhoof attacks only after your second launch.",
+          "Rank 5 now needs 217,000 points. The Cookie Pantry has a goals panel."
+        ]
+      },
+      {
+        "heading": "Naughty List and interface",
+        "items": [
+          "The Naughty List opens on your current area and has an All tab, rarest first.",
+          "Uncaught elves now show their name and weakness.",
+          "The Wrapping Room bait ladder lets you browse tiers and jump to the Workshop recipe.",
+          "Hunt no longer scrolls away from your Cheer Meter. Rare and boss catches glow in the hunt log.",
+          "More > Feedback sends notes to the admin, and Start over never wipes them."
+        ]
+      }
+    ]
+  }
+]
