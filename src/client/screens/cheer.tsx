@@ -69,7 +69,7 @@ function ActiveBuffs() {
     <div class="boon-chips" aria-label="Active effects">
       {boons.map((a) => {
         const b = content.boons.find((x) => x.id === a.id);
-        return <span class={`boon-chip ${b?.rarity}`} title={b?.text}>{b?.name} · {left(a.hunts, 'hunt')}</span>;
+        return <span class={`boon-chip boon-effect ${b?.rarity}`}><b>{b?.name} · {left(a.hunts, 'hunt')}</b><small>{b?.text}</small></span>;
       })}
       {buffs.map((b) => (
         <span class={`boon-chip ${isPenalty(b) ? 'penalty' : 'gift'}`}>

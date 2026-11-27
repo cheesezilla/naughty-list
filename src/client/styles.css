@@ -266,7 +266,7 @@ body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
 .portrait-card.tier-boss .tier-label::before { content: '★ '; }
 .portrait-card.tier-miniboss .tier-label::before { content: '◆ '; }
 .portrait-card.tier-rare .tier-label::before { content: '✦ '; }
-@keyframes tier-shine { 0%, 60% { left: -60%; } 100% { left: 130%; } }
+@keyframes tier-shine { 0% { left: -60%; } 35%, 100% { left: 130%; } }
 @media (prefers-reduced-motion: reduce) { .portrait-card::after { animation: none !important; display: none; } }
 .portrait-card.locked, .portrait-card.locked.tier-uncommon, .portrait-card.locked.tier-rare, .portrait-card.locked.tier-miniboss, .portrait-card.locked.tier-boss { background: #e9dfcd; box-shadow: none; }
 .portrait-card.locked::after { display: none; }
@@ -648,3 +648,66 @@ body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
 .event-note.cheer { background: var(--green-soft); }
 .event-note.scrinch, .event-note.scrinch_fail { background: var(--red-soft); }
 .event-note.grand, .event-note.scrinch_win { background: #fff1c2; }
+
+/* ---------- UI polish: early shimmer, ladder layout, meters, boon auras ---------- */
+.nc-frame { position: relative; overflow: hidden; }
+.newcatch.tier-rare .nc-frame::after, .newcatch.tier-miniboss .nc-frame::after, .newcatch.tier-boss .nc-frame::after { content: ''; position: absolute; top: 0; bottom: 0; left: -60%; width: 40%; background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.6), transparent); transform: skewX(-18deg); animation: tier-shine 3.5s ease-in-out infinite; pointer-events: none; }
+.newcatch.tier-boss .nc-frame { box-shadow: 0 0 22px 4px rgba(216, 165, 42, 0.75); }
+.newcatch.tier-miniboss .nc-frame { box-shadow: 0 0 18px 3px rgba(217, 115, 26, 0.65); }
+@media (prefers-reduced-motion: reduce) { .nc-frame::after { animation: none !important; display: none; } }
+
+.ladder-next { flex-direction: column; align-items: stretch; }
+.ladder-next > div { display: flex; flex-direction: column; gap: 6px; }
+.ladder-bait { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2px 8px; margin: 0; padding: 6px 8px; background: #fff; border-radius: 10px; border: 1px solid var(--edge); }
+.ladder-bait .muted { grid-column: 1; }
+.ladder-bait b { grid-column: 1; }
+.ladder-bait .small-btn { grid-column: 2; grid-row: 1 / span 2; min-height: 34px; padding: 0 12px; font-size: 12px; white-space: nowrap; }
+.ladder-bait .small-btn:disabled { background: var(--green-soft); color: var(--green); }
+.ladder-next > .small-btn { align-self: flex-start; }
+
+.buy-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; width: 100%; }
+.buy-row .primary-btn { flex: 1 1 110px; min-width: 0; min-height: 40px; padding: 8px 10px; font-size: 14px; white-space: nowrap; }
+
+/* meters: animated and shiny */
+@keyframes meter-sheen { from { background-position: 0 0; } to { background-position: 40px 0; } }
+@keyframes meter-sweep { 0%, 20% { left: -40%; } 70%, 100% { left: 120%; } }
+@keyframes pip-pulse { from { box-shadow: inset 0 1px 2px rgba(0,0,0,.2), 0 0 0 rgba(255,120,80,0); } to { box-shadow: inset 0 1px 2px rgba(0,0,0,.2), 0 0 10px rgba(255,140,90,.9); } }
+.pip { position: relative; overflow: hidden; transition: background 0.3s; }
+.pip.on { background: repeating-linear-gradient(115deg, rgba(255,255,255,.22) 0 8px, transparent 8px 16px) 0 0 / 40px 100%, linear-gradient(#f0594b, #a91f17); animation: meter-sheen 1.4s linear infinite; box-shadow: inset 0 1px 1px rgba(255,255,255,.55), 0 0 6px rgba(224,72,60,.55); }
+.pip.over.on { background: repeating-linear-gradient(115deg, rgba(255,255,255,.35) 0 8px, transparent 8px 16px) 0 0 / 40px 100%, linear-gradient(#ffe48a, #d9a21a); }
+.pip.on::after { content: ''; position: absolute; top: 0; bottom: 0; width: 40%; left: -40%; background: linear-gradient(100deg, transparent, rgba(255,255,255,.75), transparent); animation: meter-sweep 2.6s ease-in-out infinite; }
+.pips.full .pip.on { animation: meter-sheen 1.4s linear infinite, pip-pulse 0.9s ease-in-out infinite alternate; }
+.favour-bar { position: relative; height: 14px; border-radius: 7px; background: #e3d5bd; box-shadow: inset 0 1px 3px rgba(0,0,0,.25); }
+.favour-bar i { position: relative; overflow: hidden; height: 100%; border-radius: 7px; min-width: 6px; background: repeating-linear-gradient(115deg, rgba(255,255,255,.3) 0 8px, transparent 8px 16px) 0 0 / 40px 100%, linear-gradient(#ffe48a, #d9a21a 60%, #b8860b); box-shadow: 0 0 8px rgba(255, 200, 60, .8), inset 0 1px 1px rgba(255,255,255,.7); animation: meter-sheen 1.8s linear infinite; transition: width 0.5s ease-out; }
+.favour-bar i::after { content: ''; position: absolute; top: 0; bottom: 0; width: 40%; left: -40%; background: linear-gradient(100deg, transparent, rgba(255,255,255,.85), transparent); animation: meter-sweep 3s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .pip.on, .pip.on::after, .favour-bar i, .favour-bar i::after, .pips.full .pip.on, .boon-card.rare, .boon-card.legendary, .boon-card.rare::before, .boon-card.legendary::before { animation: none !important; } }
+
+/* boon cards: rare and legendary glow */
+.boon-card { position: relative; overflow: hidden; }
+.boon-card > * { position: relative; z-index: 1; }
+@keyframes aura-rare { from { box-shadow: 0 0 6px 1px rgba(43,108,176,.45), inset 0 0 10px rgba(43,108,176,.15); } to { box-shadow: 0 0 16px 3px rgba(80,150,230,.75), inset 0 0 18px rgba(80,150,230,.3); } }
+@keyframes aura-legend { from { box-shadow: 0 0 10px 2px rgba(217,162,26,.6), inset 0 0 14px rgba(255,214,90,.3); } to { box-shadow: 0 0 24px 6px rgba(255,200,60,.95), inset 0 0 24px rgba(255,214,90,.55); } }
+@keyframes boon-sweep { 0%, 30% { left: -60%; } 80%, 100% { left: 130%; } }
+.boon-card.rare { background: linear-gradient(150deg, #eaf3fc, #c4dcf3 55%, #e3effb); animation: aura-rare 1.8s ease-in-out infinite alternate; }
+.boon-card.legendary { background: linear-gradient(150deg, #fff8dc, #ffe48a 50%, #fff3c0); border-color: #d9a21a; animation: aura-legend 1.5s ease-in-out infinite alternate; }
+.boon-card.rare::before, .boon-card.legendary::before { content: ''; position: absolute; top: 0; bottom: 0; left: -60%; width: 40%; z-index: 0; background: linear-gradient(100deg, transparent, rgba(255,255,255,.7), transparent); transform: skewX(-18deg); animation: boon-sweep 3.5s ease-in-out infinite; pointer-events: none; }
+.boon-card.legendary small:first-child { color: #8a6410; font-weight: 800; }
+.boon-card.legendary small:first-child::before { content: '★ '; }
+.boon-card.rare small:first-child { color: #1d4f85; font-weight: 800; }
+.boon-card.rare small:first-child::before { content: '✦ '; }
+
+/* Santa / Mrs. Claus event box: shiny gold with glimmer */
+@keyframes gold-pulse { from { box-shadow: 0 0 10px 2px rgba(217,162,26,.55), inset 0 0 14px rgba(255,214,90,.35); } to { box-shadow: 0 0 24px 6px rgba(255,200,60,.95), inset 0 0 26px rgba(255,214,90,.6); } }
+@keyframes gold-sweep { 0%, 25% { left: -60%; } 75%, 100% { left: 130%; } }
+@keyframes gold-twinkle { 0%, 100% { opacity: 0; transform: scale(.4); } 50% { opacity: 1; transform: scale(1); } }
+.event-card { position: relative; overflow: hidden; border-color: #d9a21a; background: linear-gradient(150deg, #fff8dc, #ffe48a 45%, #fff3c0 70%, #ffdc70); animation: gold-pulse 1.6s ease-in-out infinite alternate; }
+.event-card > * { position: relative; z-index: 1; }
+.event-card::before { content: ''; position: absolute; top: 0; bottom: 0; left: -60%; width: 40%; z-index: 0; background: linear-gradient(100deg, transparent, rgba(255,255,255,.8), transparent); transform: skewX(-18deg); animation: gold-sweep 3.2s ease-in-out infinite; pointer-events: none; }
+.event-card::after { content: '✦'; position: absolute; top: 8px; right: 12px; font-size: 18px; color: #fff; text-shadow: 0 0 6px #d9a21a, 0 0 12px #ffd76a; animation: gold-twinkle 2.2s ease-in-out infinite; pointer-events: none; }
+.event-card .muted { color: #6b4a00; }
+.event-card .gift { background: linear-gradient(#fffdf0, #ffe9a0); box-shadow: 0 1px 0 #fff inset, 0 2px 4px rgba(138,100,16,.3); }
+@media (prefers-reduced-motion: reduce) { .event-card, .event-card::before, .event-card::after { animation: none !important; } }
+
+.boon-chip.boon-effect { display: flex; flex-direction: column; gap: 1px; border-radius: 12px; padding: 5px 10px; flex: 1 1 100%; }
+.boon-chip.boon-effect b { font-size: 12px; }
+.boon-chip.boon-effect small { font-weight: 600; font-size: 12px; line-height: 1.3; }
