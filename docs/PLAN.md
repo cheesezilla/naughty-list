@@ -494,6 +494,8 @@ The first location teaches the basic loop and nothing else: catch elves, earn go
 
 eddy's loop, starting in the second location: common bait catches common elves, who drop tier 2 ingredients; tier 2 bait draws new elves, who drop tier 3 ingredients; tier 3 bait draws the boss, who drops trap parts and a little general help. It reuses the Wrapping Room's existing drops where it can.
 
+**Panel (UI).** The Hunt screen's ladder panel lets the player tap any tier to browse it, independent of the armed bait. The selected tier lists its baits with owned counts and an Equip button, plus a Craft button (tiers with a recipe) that opens the Workshop filtered to that one recipe.
+
 | Tier | Bait (how you get it) | Elves it draws (weight) | What they drop toward the next tier |
 | --- | --- | --- | --- |
 | 1 | Any shop bait (Stale Cookie, Sugar Cookie, later Peppermint Bark) | `ribbon_tangler` 36, `tape_biter` 30, `bow_burglar` 25. `glitterbug`, `spoolwick` and `madame_shredwell` 0 | `ribbon_tangler`: Sugar Twist 25%. `tape_biter`: Sugar Twist 20%. `bow_burglar`: Candied Peel 30% (was 10%). Any common: 2% for 1 Ribbon Candy outright |
@@ -1280,6 +1282,7 @@ The first idea (replace the attraction roll where no elf takes the bait) is trac
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-27 | this PR | Wrapping Room bait ladder panel: tap any tier to browse it (the view no longer follows the equipped bait); each tier shows its bait with Equip, and Craft where a recipe exists, which opens the Workshop on that exact recipe (`#/workshop/<recipeId>`, "All recipes" link back). UI only, no game numbers changed |
 | 2026-11-27 | this PR | Naughty List opens on the current location's tab and gains an All tab: every elf from every location, rarest first (boss to common). No game numbers changed |
 | 2026-11-27 | this PR | Hunt no longer auto-scrolls to the hunt log, so the Cheer Meter and the rest of the screen stay in view. No game numbers changed |
 | 2026-11-27 | this PR | **Cheer Meter and random events built on `integration` (eddy's playground).** `cheer` and `events` blocks in constants (both with an `enabled` flag), `boons.json` (14 boons), `events.json` (15 events), three Cheer charms, engine `cheer.ts`, `events.ts`, `mods.ts`, `hunt()` applies them, `POST /api/cheer` and `/api/event`, Hunt screen meter, boon card, Scrinch counter and favour bar, hunt-log lines, two admin tools, tests. Draft numbers, no tuning. Existing simulator (does not pick boons or answer events): 200/200 reach rank 5, median 1,288 hunts |
