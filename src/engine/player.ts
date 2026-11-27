@@ -1,6 +1,8 @@
 import type { Content } from '../content/schema.js';
 import { gameData, itemOfKind, priceOf, sellValue } from './data.js';
 import type { ObjectiveState } from './objectives.js';
+import type { CheerState } from './cheer.js';
+import type { EventsState } from './events.js';
 
 export interface Setup {
   trap: string;
@@ -37,6 +39,10 @@ export interface PlayerState {
   welcomeSeen?: boolean;
   /** Boss keys found (location key ids). Missing in saves from before keys; the server fills it in on load. */
   keys?: string[];
+  /** The Cheer Meter and its boons. Created on the first hunt; missing in older saves. */
+  cheer?: CheerState;
+  /** Random events: Santa's favour, the open boon card, an active Scrinch challenge and event buffs. Missing in older saves. */
+  events?: EventsState;
   /** Admin speed-run settings. Only honoured for admin accounts, and only the admin endpoint sets it. */
   speedRun?: { reward: number; odds: boolean };
 }

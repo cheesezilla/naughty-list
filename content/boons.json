@@ -1,0 +1,16 @@
+[
+  { "id": "double_haul", "name": "Double Haul", "rarity": "common", "hunts": 5, "text": "Gold from catches x2.", "effect": { "goldMult": 2 } },
+  { "id": "free_bait", "name": "Free Bait", "rarity": "common", "hunts": 6, "text": "Your armed bait is not used up. Its Allure still counts.", "effect": { "freeBait": true } },
+  { "id": "steady_hands", "name": "Steady Hands", "rarity": "common", "hunts": 5, "text": "+30% trap power.", "effect": { "powerMult": 1.3 } },
+  { "id": "lucky_stocking", "name": "Lucky Stocking", "rarity": "common", "hunts": 5, "text": "+6 luck.", "effect": { "luckAdd": 6 } },
+  { "id": "sweet_tooth", "name": "Sweet Tooth", "rarity": "common", "hunts": 6, "text": "+25% Allure, so rarer elves show up more.", "effect": { "attractionBonus": 0.25 } },
+  { "id": "cosy_mittens", "name": "Cosy Mittens", "rarity": "common", "hunts": 8, "text": "No pillage on an escape: nothing is stolen.", "effect": { "noPillage": true } },
+  { "id": "starfall", "name": "Starfall", "rarity": "rare", "hunts": 4, "text": "Rare elves, mini bosses and bosses are twice as likely to show up.", "effect": { "rareMult": 2 } },
+  { "id": "full_sack", "name": "Full Sack", "rarity": "rare", "hunts": 4, "text": "Loot drops x2 and every catch drops at least one material.", "effect": { "lootMult": 2, "minLoot": 1 } },
+  { "id": "cocoa_rush", "name": "Cocoa Rush", "rarity": "rare", "hunts": 3, "text": "+50% trap power.", "effect": { "powerMult": 1.5 } },
+  { "id": "points_parade", "name": "Points Parade", "rarity": "rare", "hunts": 5, "text": "Rank points from catches x2.", "effect": { "pointsMult": 2 } },
+  { "id": "mulligan", "name": "Mulligan", "rarity": "rare", "hunts": 5, "text": "An escape is rolled again once; the better result counts.", "effect": { "mulligan": true } },
+  { "id": "santas_blessing", "name": "Santa's Blessing", "rarity": "legendary", "hunts": 3, "text": "A huge trap power boost (x2.5). Strong gear and the right power type still matter.", "effect": { "powerMult": 2.5 } },
+  { "id": "boss_bell", "name": "Boss Bell", "rarity": "legendary", "hunts": 1, "text": "The next hunt meets this area's boss (or its strongest mini boss).", "effect": { "bossBell": true } },
+  { "id": "cheer_surge", "name": "Cheer Surge", "rarity": "legendary", "hunts": 5, "text": "Meter pips from catches x2 and escapes cost nothing.", "effect": { "pipMult": 2, "freeEscape": true } }
+]

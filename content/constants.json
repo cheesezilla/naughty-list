@@ -25,5 +25,20 @@
       "boss": { "chance": 0.6, "takes": ["gold", "bait", "points"], "kinds": 3, "goldPct": 0.08, "goldCap": 15, "bait": [3, 5], "pointsPct": 0.02, "pointsCap": 3 }
     }
   },
+  "cheer": {
+    "enabled": true, "full": 10, "max": 15, "catchPips": 1, "bigCatchPips": 2, "escapePips": 3, "heldEscapePips": 5,
+    "pity": { "rare": 3, "legendary": 8 },
+    "tiers": [
+      { "from": 0, "name": "Full", "cards": 3, "rerolls": 0, "weights": { "common": 70, "rare": 25, "legendary": 5 } },
+      { "from": 11, "name": "Warm", "cards": 3, "rerolls": 0, "weights": { "common": 55, "rare": 35, "legendary": 10 } },
+      { "from": 13, "name": "Hot", "cards": 3, "rerolls": 0, "weights": { "common": 40, "rare": 42, "legendary": 18 } },
+      { "from": 15, "name": "Blazing", "cards": 4, "rerolls": 1, "weights": { "common": 25, "rare": 50, "legendary": 25 } }
+    ]
+  },
+  "events": {
+    "enabled": true, "chancePerHunt": 0.025, "minHunts": 30, "minGap": 20, "scrinchShare": 0.4,
+    "grudgeChance": 0.25, "grudgeGap": 10, "grudgeMaxStreak": 2,
+    "grandBase": 0.1, "grandPerScrinchWin": 0.15, "grandPerBoon": 0.05
+  },
   "stamina": { "enabled": false, "name": "Cocoa", "max": 100, "costPerHunt": 1, "refillPerMinute": 1, "buyPrice": 5 }
 }
