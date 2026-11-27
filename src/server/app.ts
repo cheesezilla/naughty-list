@@ -343,6 +343,8 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
     game.post('/api/travel', playerAction((p, b) => travel(content, p, str(b.location)), (before, after) => {
       if (before.location === after.location) return null;
       const moved: GameEvent = { type: 'travel', location: after.location, unlockCost: before.gold - after.gold };
+      const b = before.cheer;
+      if (b && (b.pips || b.active.length || b.held || b.carry || b.draw)) moved.cheerReset = { pips: b.pips, boons: b.active.length };
       // The first time a player reaches a location (it unlocks then), the log gets its intro.
       return before.unlocked.includes(after.location) ? moved : [moved, { type: 'arrival', location: after.location }];
     }));

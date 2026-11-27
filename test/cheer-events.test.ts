@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { cheerAddPips, cheerAction, cheerAfterHunt, cheerOf, drawCards, eventAction, eventsAfterHunt, eventsOf, forceEvent, hunt, modsOf, newPlayer, seededRng, unitH, type PlayerState } from '../src/engine/index.js';
+import { travel } from '../src/engine/index.js';
 import { content } from './helpers.js';
 
 const pantry = content.locations.find((l) => l.id === 'cookie_pantry')!;
@@ -207,5 +208,22 @@ describe('events', () => {
   it('is switched off by constants', () => {
     const off = { ...content, constants: { ...content.constants, events: { ...content.constants.events, enabled: false } } };
     expect(eventsAfterHunt(off, fresh((p) => { p.stats.hunts = 99; }), ctx(false, boss), () => 0)).toEqual([]);
+  });
+});
+
+describe('travel resets the Cheer Meter', () => {
+  const other = content.locations.find((l) => l.id !== 'cookie_pantry')!.id;
+  it('drops pips, Overcharge, carry, an open draw and boons, keeping pity counters', () => {
+    const p = fresh((q) => { Object.assign(cheerOf(q), { pips: 15, held: true, carry: 3, sinceRare: 4, active: [{ id: 'x', hunts: 5 }], draw: { cards: ['a'], rerolls: 0, tier: 'common' } }); q.unlocked.push(other); });
+    const r = travel(content, p, other);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.player.cheer).toMatchObject({ pips: 0, held: false, carry: 0, active: [], sinceRare: 4 });
+    expect(r.player.cheer!.draw).toBeUndefined();
+  });
+  it('staying put keeps the meter', () => {
+    const p = fresh((q) => { cheerOf(q).pips = 6; });
+    const r = travel(content, p, p.location);
+    expect(r.ok && r.player.cheer!.pips).toBe(6);
   });
 });
