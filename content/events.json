@@ -1,0 +1,48 @@
+{
+  "boons": [
+    { "id": "cookie_tin", "name": "Mrs. Claus's Cookie Tin", "from": "mrs_claus",
+      "a": { "label": "Gold (8 H)", "effects": [{ "type": "gold", "h": 8 }] },
+      "b": { "label": "5 of the best bait you can use", "effects": [{ "type": "bait", "amount": 5 }] } },
+    { "id": "gift_sack", "name": "Santa's Gift Sack", "from": "santa",
+      "a": { "label": "A random charm", "effects": [{ "type": "charm", "amount": 1 }] },
+      "b": { "label": "Gold (4 H) and 2 bait", "effects": [{ "type": "gold", "h": 4 }, { "type": "bait", "amount": 2 }] } },
+    { "id": "warm_mittens", "name": "Mrs. Claus's Warm Mittens", "from": "mrs_claus",
+      "a": { "label": "+10% power for 10 hunts", "effects": [{ "type": "buff", "stat": "powerMult", "value": 1.1, "hunts": 10, "label": "Warm Mittens: +10% power" }] },
+      "b": { "label": "Luck x1.1 for 10 hunts", "effects": [{ "type": "buff", "stat": "luckMult", "value": 1.1, "hunts": 10, "label": "Warm Mittens: luck x1.1" }] } },
+    { "id": "naughty_check", "name": "Santa's Naughty Check", "from": "santa",
+      "a": { "label": "Allure x1.5 for 5 hunts", "effects": [{ "type": "buff", "stat": "allureMult", "value": 1.5, "hunts": 5, "label": "Naughty Check: Allure x1.5" }] },
+      "b": { "label": "Gold (3 H)", "effects": [{ "type": "gold", "h": 3 }] } },
+    { "id": "cocoa_break", "name": "Mrs. Claus's Cocoa Break", "from": "mrs_claus",
+      "a": { "label": "+4 luck for 30 hunts (three Cocoa Flasks)", "effects": [{ "type": "buff", "stat": "luckAdd", "value": 4, "hunts": 30, "label": "Cocoa Flasks: +4 luck" }] },
+      "b": { "label": "Your next escape pillages nothing", "effects": [{ "type": "buff", "stat": "noPillage", "value": 1, "uses": 1, "label": "Hunt shield: next escape is safe" }] } }
+  ],
+  "grandGifts": [
+    { "id": "sleigh_delivery", "name": "Santa's Sleigh Delivery", "from": "santa", "text": "A sleigh lands with a sack of gold and bait.",
+      "effects": [{ "type": "gold", "h": 40 }, { "type": "bait", "amount": 10 }] },
+    { "id": "heirloom_charm", "name": "Mrs. Claus's Heirloom Charm", "from": "mrs_claus", "text": "A family charm that strengthens every trap.",
+      "effects": [{ "type": "buff", "stat": "powerMult", "value": 1.25, "hunts": 25, "label": "Heirloom Charm: +25% power" }] },
+    { "id": "golden_ticket", "name": "Santa's Golden Ticket", "from": "santa", "text": "The next 5 catches pay triple gold and points.",
+      "effects": [{ "type": "buff", "stat": "goldPointsMult", "value": 3, "uses": 5, "label": "Golden Ticket: next 5 catches pay x3" }] },
+    { "id": "winter_wonder", "name": "Winter Wonder", "from": "mrs_claus", "text": "The lair glitters and rare elves come out to look.",
+      "effects": [{ "type": "buff", "stat": "allureMult", "value": 3, "hunts": 15, "label": "Winter Wonder: Allure x3" }] },
+    { "id": "snow_globe", "name": "Sparkling Snow Globe", "from": "santa", "text": "The next mini boss or boss you meet cannot pillage and is easier to catch.",
+      "effects": [{ "type": "buff", "stat": "bossShield", "value": 0.2, "uses": 1, "label": "Snow Globe: next boss cannot pillage, +20% catch" }] }
+  ],
+  "scrinch": [
+    { "id": "soot_snatch", "name": "Soot Snatch", "text": "Scrinch's hounds are after your gold!",
+      "threat": { "type": "goldPct", "pct": 0.1, "capH": 8 }, "goal": { "type": "catches", "need": 5, "window": 8 }, "goalText": "Catch 5 of the next 8 elves",
+      "prize": [{ "type": "gold", "h": 3 }], "prizeText": "Keep your gold, plus 3 H gold", "failText": "The hounds steal some gold.", "toll": { "pct": 0.03 } },
+    { "id": "bait_bandits", "name": "Bait Bandits", "text": "Scrinch's bandits are eyeing your bait.",
+      "threat": { "type": "baitLoss", "amount": 6 }, "goal": { "type": "streak", "need": 3, "window": 10 }, "goalText": "Catch 3 in a row within 10 hunts",
+      "prize": [{ "type": "bait", "amount": 3 }], "prizeText": "Keep your bait, plus 3 bait", "failText": "The bandits make off with your bait.", "toll": { "h": 2 } },
+    { "id": "hex_on_the_trap", "name": "Hex on the Trap", "text": "Scrinch hexes your trap!",
+      "threat": { "type": "buff", "stat": "powerMult", "value": 0.75, "hunts": 30, "label": "Hexed trap: -25% power" }, "goal": { "type": "rare", "window": 30 }, "goalText": "Catch one rare elf or better within 30 hunts",
+      "prize": [{ "type": "charm", "amount": 1 }], "prizeText": "The hex lifts, plus a charm", "failText": "Your trap is hexed: -25% power for 30 hunts.", "toll": { "h": 4 } },
+    { "id": "toll_booth", "name": "Toll Booth", "text": "Scrinch has set up a toll booth on your path.",
+      "threat": { "type": "goldPct", "pct": 0.1, "capH": 12 }, "goal": { "type": "catches", "need": 8, "window": 12 }, "goalText": "Catch 8 of the next 12 elves",
+      "prize": [{ "type": "gold", "h": 4 }], "prizeText": "4 H gold", "failText": "You pay the toll.", "toll": { "pct": 0.04 } },
+    { "id": "frosted_footing", "name": "Frosted Footing", "text": "Scrinch freezes the floor and your bait slips away.",
+      "threat": { "type": "buff", "stat": "baitCost", "value": 2, "hunts": 8, "label": "Frosted floor: 2 bait a hunt" }, "goal": { "type": "homeType", "window": 8 }, "goalText": "Catch an elf with a trap of this area's home type within 8 hunts",
+      "prize": [{ "type": "bait", "amount": 2 }], "prizeText": "Normal bait use, plus 2 bait", "failText": "Each hunt uses 2 bait for 8 hunts.", "toll": { "h": 3 } }
+  ]
+}

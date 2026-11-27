@@ -11,7 +11,7 @@ export interface SetupStats {
 }
 
 /** Total power, luck and attraction rate for a setup in a location. */
-export function setupStats(content: Content, setup: Setup, location: Location): SetupStats {
+export function setupStats(content: Content, setup: Setup, location: Location, extraAttractionBonus = 0): SetupStats {
   const data = gameData(content);
   const trap = itemOfKind(data, setup.trap, 'trap');
   const base = itemOfKind(data, setup.base, 'base');
@@ -25,7 +25,7 @@ export function setupStats(content: Content, setup: Setup, location: Location): 
 
   let attraction = 0;
   if (bait) {
-    const bonus = (trap?.attraction ?? 0) + (base?.attraction ?? 0) + (charm?.attraction ?? 0);
+    const bonus = (trap?.attraction ?? 0) + (base?.attraction ?? 0) + (charm?.attraction ?? 0) + extraAttractionBonus;
     attraction = bait.attraction * (1 + bonus);
     if (location.preferredBait && location.preferredBait !== bait.id) {
       attraction *= location.otherBaitPenalty ?? 1;
