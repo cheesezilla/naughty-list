@@ -13,7 +13,7 @@ import { AuthScreen } from './screens/auth.js';
 import { HuntScreen } from './screens/hunt.js';
 import { ImpScreen, NaughtyListScreen } from './screens/list.js';
 import { HistoryScreen } from './screens/log.js';
-import { AccountScreen, AdminScreen, HowToScreen, HuntersScreen, MoreMenu, ProfileScreen, SettingsScreen, TravelScreen } from './screens/more.js';
+import { AccountScreen, AdminScreen, FeedbackScreen, HowToScreen, HuntersScreen, MoreMenu, ProfileScreen, SettingsScreen, TravelScreen } from './screens/more.js';
 import { EmporiumScreen, WorkshopScreen } from './screens/shop.js';
 
 export function App() {
@@ -180,6 +180,7 @@ function Router() {
         case 'howto': return <HowToScreen />;
         case 'settings': return <SettingsScreen />;
         case 'admin': return <AdminScreen />;
+        case 'feedback': return <FeedbackScreen />;
         case 'account': return <AccountScreen />;
         default: return <MoreMenu />;
       }

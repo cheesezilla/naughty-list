@@ -297,6 +297,16 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
       req.log.info({ userId, username: req.user!.username }, 'player restarted');
       return { player: fresh, journal: store.recentLog(userId, 50) };
     });
+    // Feedback is append-only here: players can add notes and read their own; nothing deletes them.
+    game.post('/api/feedback', async (req, reply) => {
+      const msg = String(((req.body ?? {}) as Record<string, unknown>).message ?? '').trim();
+      if (msg.length < 3) return reply.code(400).send({ error: 'Please write a few words of feedback.' });
+      if (msg.length > 2000) return reply.code(400).send({ error: 'Feedback can be up to 2,000 characters.' });
+      const last = store.feedback(req.user!.id, 1)[0];
+      if (last && now() - last.at < 5000) return reply.code(429).send({ error: 'Easy there, wait a few seconds before sending another note.' });
+      return { feedback: store.addFeedback(req.user!.id, req.user!.username, msg, now()) };
+    });
+    game.get('/api/feedback', async (req) => ({ feedback: store.feedback(req.user!.id, 50) }));
     game.get('/api/restarts', async (req) => ({ restarts: store.restarts(req.user!.id) }));
 
     game.post('/api/setup', playerAction((p, b) => {
@@ -395,6 +405,7 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
       req.log.info({ by: req.user!.username, action: b.action }, 'speed-run tool used');
       return { player: p };
     });
+    admin.get('/api/admin/feedback', async () => ({ feedback: store.feedback() }));
     admin.get('/api/admin/restarts', async () => ({ restarts: store.restarts() }));
   });
 
