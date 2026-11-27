@@ -71,4 +71,4 @@ Commons: Hay Hoarder and Bell Thief (weak Frost), Harness Snipper (weak Clockwor
 - **Toy Workshop (6):** Wind-up Elf (keep Jaws on, never Frost), then Hammerhand and Grimbolt through the order board.
 - **Stables (6):** Carrot Crook, Antler Ripper and Cinderhoof through the sleigh run. Cinderhoof is the last elf. At 217,000 points you are a Yule Marshal.
 
-Pacing from the simulator: about 1,650 hunts to rank 5 (roughly 170 / 340 / 600 / 480 across ranks 1 to 4); the Carol Loft adds about 90 hunts to rank 2.
+Pacing: the latest simulator run (Report 5 in `docs/SIMULATION_REPORT.md`) has a median of about 1,200 hunts to rank 5. The Carol Loft is a detour inside rank 2, so it adds hunts there.
