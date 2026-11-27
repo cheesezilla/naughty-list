@@ -98,6 +98,11 @@ function LadderPanel({ o, location }: { o: Ladder; location: Location }) {
         {tier.recipe && <button class="small-btn" onClick={() => go(`workshop/${tier.recipe}`)}>Craft</button>}
       </div>
       <p class="panel-line">{boss?.name} only comes for {top.name}s.</p>
+      {boss && (
+        <p class="panel-line">
+          <b>Prepare before the faceoff:</b> {boss.name} is weak only to the Carol power type, and Clockwork traps do half damage. Bring a Carol trap. Carol Horns are made in Santa's Workshop from Hymn Reeds and a Carol Songsheet, both found in the optional Carol Loft, the side area above the Wrapping Room.
+        </p>
+      )}
     </>
   );
 }
