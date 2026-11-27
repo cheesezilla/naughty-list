@@ -494,7 +494,7 @@ The first location teaches the basic loop and nothing else: catch elves, earn go
 
 eddy's loop, starting in the second location: common bait catches common elves, who drop tier 2 ingredients; tier 2 bait draws new elves, who drop tier 3 ingredients; tier 3 bait draws the boss, who drops trap parts and a little general help. It reuses the Wrapping Room's existing drops where it can.
 
-**Panel (UI).** The Hunt screen's ladder panel lets the player tap any tier to browse it, independent of the armed bait. A "Prepare before the faceoff" line under it says Madame Shredwell is weak only to the Carol power type (Clockwork resisted) and points to the optional Carol Loft for the Hymn Reeds and Carol Songsheet that make a Carol Horn. The selected tier lists its baits with owned counts and an Equip button, plus a Craft button (tiers with a recipe) that opens the Workshop filtered to that one recipe.
+**Panel (UI).** The Hunt screen's ladder panel lets the player tap any tier to browse it, independent of the armed bait. A "Prepare before the faceoff" line under it says Madame Shredwell is weak only to the Carol power type (Clockwork resisted) and hints at the Carol Horn without naming the Carol Loft: the Workshop elves can make one from bent reeds and a torn songsheet, and singing drifts down from somewhere above (an in-world hint, not directions). The selected tier lists its baits with owned counts and an Equip button, plus a Craft button (tiers with a recipe) that opens the Workshop filtered to that one recipe.
 
 | Tier | Bait (how you get it) | Elves it draws (weight) | What they drop toward the next tier |
 | --- | --- | --- | --- |
@@ -1282,6 +1282,7 @@ The first idea (replace the attraction roll where no elf takes the bait) is trac
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-27 | this PR | Wrapping Room ladder panel: the Carol Horn line is now an in-world hint (bent reeds, torn songsheet, singing from above) instead of naming the Carol Loft. UI text only |
 | 2026-11-27 | this PR | Wrapping Room bait ladder panel: tap any tier to browse it (the view no longer follows the equipped bait); each tier shows its bait with Equip, and Craft where a recipe exists, which opens the Workshop on that exact recipe (`#/workshop/<recipeId>`, "All recipes" link back); a "Prepare before the faceoff" line names the Carol weakness and the Carol Loft. UI only, no game numbers changed |
 | 2026-11-27 | this PR | Naughty List opens on the current location's tab and gains an All tab: every elf from every location, rarest first (boss to common). No game numbers changed |
 | 2026-11-27 | this PR | Hunt no longer auto-scrolls to the hunt log, so the Cheer Meter and the rest of the screen stay in view. No game numbers changed |
