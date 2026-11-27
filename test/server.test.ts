@@ -42,7 +42,9 @@ async function signupAdmin() {
 
 describe('server', () => {
   it('answers health and content without logging in', async () => {
-    expect((await get('/api/health')).json()).toEqual({ ok: true, version: 'test' });
+    const h = await get('/api/health');
+    expect(h.json()).toEqual({ ok: true, version: 'test' });
+    expect(h.headers['x-app-version']).toBe('test');
     expect((await get('/api/content')).json().locations).toHaveLength(5);
     expect((await get('/api/setup-status')).json()).toEqual({ needsAdmin: true, signupsOpen: true });
   });

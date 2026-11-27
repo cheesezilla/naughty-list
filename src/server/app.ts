@@ -129,6 +129,9 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
   const str = (v: unknown) => (typeof v === 'string' ? v : '');
   const amount = (v: unknown) => (v === undefined ? 1 : typeof v === 'number' ? v : NaN);
 
+  // Every response says which version of the server sent it, so an open browser tab can tell it is out of date.
+  app.addHook('onSend', async (_req, reply) => { reply.header('x-app-version', opts.version ?? 'dev'); });
+
   // ---------- public ----------
   app.get('/api/health', async () => ({ ok: true, version: opts.version ?? 'dev' }));
   app.get('/api/content', async () => content);
