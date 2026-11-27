@@ -138,7 +138,7 @@ All constants live in `content/constants.json` and the other content files, so t
 - The Catch bar now shows the overall catch chance of the hunt, averaged over the elves the setup draws.
 - Quiet hunts are gone from the engine, but old log rows with outcome `quiet` still display. The secret badge Silent Night changed to "Lose 4 elves in a row" (`bestEscapeStreak`), because nothing can be quiet now.
 - The numbers were not retuned (eddy's call): with every hunt now paying out, hunts to rank 5 dropped from 1,652 to 1,289 (see Simulator).
-- Code: `allureFactor()` and `impWeights()` in `src/engine/odds.ts`, `hunt()` in `src/engine/hunt.ts`. Admin "always attract and catch" now only forces the catch and loot.
+- Code: `allureFactor()` and `impWeights()` in `src/engine/odds.ts`, `hunt()` in `src/engine/hunt.ts`. Admin "always attract and catch" forces the catch (chance 1, even against an elf immune to the armed trap type, such as Cinderhoof vs Starlight) and the loot.
 
 ## Pacing without a cooldown
 
@@ -1278,6 +1278,7 @@ The first idea (replace the attraction roll where no elf takes the bait) is trac
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-27 | this PR | **Fix: admin always-catch missed immune bosses (eddy).** With the option on, a trap type an elf is immune to (effectiveness 0, e.g. Starlight vs Cinderhoof) still gave a 0% catch. Always-catch now sets the catch chance to 1 for every elf. No game numbers changed |
 | 2026-11-27 | this PR | **Refresh popup after an update (eddy).** Every server response carries an `x-app-version` header (the `APP_VERSION` build value). The client remembers the version of its first response; the shared `api()` wrapper (every API call, errors included) and the content fetch compare each later response, and a different version shows a blocking "New version!" popup with a Refresh now button, so open tabs never keep playing on an old UI. An idle tab also calls `/api/health` when it becomes visible or regains focus (at most once a minute). No game numbers changed |
 | 2026-11-27 | this PR | **Release 1.0.0 and a release process (eddy).** `integration` is promoted to `main` as version 1.0.0. Added `CHANGELOG.md` (player-facing notes, Keep a Changelog and semver), `docs/RELEASING.md`, `package.json` version 1.0.0, and the Docker workflow, when `main` gets a `package.json` version with no tag yet, also publishes `:X.Y.Z` and `:X.Y` and creates the tag and GitHub Release from the changelog. **Release notes in the game:** `content/releases.json` (newest first, first entry must equal the `package.json` version, tested), `releaseSeen` on the player (new games start as seen, older saves see it once), `POST /api/release-seen`, a What's new popup after an update and More > What's new listing every version. `/api/health` reports the release version. No game numbers changed |
 | 2026-11-27 | this PR | **Simulator: second game-length benchmark.** Besides median hunts to rank 5, every report now gives hunts to catch all 28 elves (100% of portraits, Carol Loft and bosses included). The bot keeps hunting after rank 5 in rooms with uncaught elves, up to `--max-collect-hunts` (20,000). 1,000 players, seed 42, PR 66 included: rank 5 median 1,226; full collection by 100% of players, mean 1,252, median 1,240, p10 1,123, p90 1,400. See `docs/SIMULATION_REPORT.md` Report 7 |
