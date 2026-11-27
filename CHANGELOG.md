@@ -6,6 +6,8 @@ Each version's section is also the text of its GitHub Release, so write it for p
 
 ## [Unreleased]
 
+- If the game is updated while you have it open, a popup now asks you to refresh your browser so you get the new version.
+
 ## [1.0.0] - 2026-11-27
 
 The first full release. The big change since the earlier builds: **there are no quiet hunts any more. Every hunt now meets an elf.**
