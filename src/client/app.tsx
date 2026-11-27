@@ -170,7 +170,7 @@ function Router() {
     case 'arsenal': return <ArsenalScreen slot={(['trap', 'base', 'bait', 'charm'].includes(a ?? '') ? a : 'trap') as 'trap'} previewId={b} />;
     case 'item': return <ItemScreen id={a ?? ''} />;
     case 'emporium': return <EmporiumScreen tab={(['traps', 'bases', 'bait', 'charms', 'sell'].includes(a ?? '') ? a : 'traps') as 'traps'} />;
-    case 'workshop': return <WorkshopScreen />;
+    case 'workshop': return <WorkshopScreen focus={a} />;
     case 'more':
       switch (a) {
         case 'travel': return <TravelScreen />;
