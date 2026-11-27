@@ -3,6 +3,7 @@ on:
   pull_request:
   push:
     branches: [main, integration]
+    tags: ['v*']
   workflow_dispatch:
 permissions:
   contents: read
@@ -19,6 +20,23 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      # A version tag (v1.2.3) must match package.json, then publishes :1.2.3 and :1.2 instead of :latest.
+      - name: Work out image tags
+        id: tags
+        run: |
+          repo=ghcr.io/${{ github.repository }}
+          if [ "${{ github.ref_type }}" = tag ]; then
+            v="${GITHUB_REF_NAME#v}"
+            [ "$v" = "$(node -p "require('./package.json').version")" ] || { echo "Tag $GITHUB_REF_NAME does not match package.json version"; exit 1; }
+            echo "list=$repo:$v,$repo:${v%.*},$repo:${{ github.sha }}" >> "$GITHUB_OUTPUT"
+            echo "version=$v" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.ref_name }}" = integration ]; then
+            echo "list=$repo:integration,$repo:${{ github.sha }}" >> "$GITHUB_OUTPUT"
+            echo "version=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "list=$repo:latest,$repo:${{ github.sha }}" >> "$GITHUB_OUTPUT"
+            echo "version=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          fi
       # Pull requests build and smoke-test the image; pushes to main publish :latest, pushes to integration publish :integration.
       - uses: docker/build-push-action@v6
         with:
@@ -26,10 +44,8 @@ jobs:
           platforms: linux/amd64
           push: ${{ github.event_name != 'pull_request' }}
           load: ${{ github.event_name == 'pull_request' }}
-          build-args: APP_VERSION=${{ github.sha }}
-          tags: |
-            ghcr.io/${{ github.repository }}:${{ github.ref_name == 'integration' && 'integration' || 'latest' }}
-            ghcr.io/${{ github.repository }}:${{ github.sha }}
+          build-args: APP_VERSION=${{ steps.tags.outputs.version }}
+          tags: ${{ steps.tags.outputs.list }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Smoke test (root-owned save folder, like a fresh NAS share)
@@ -62,3 +78,21 @@ jobs:
       - name: Container log
         if: failure() && github.event_name == 'pull_request'
         run: docker logs nl || true
+  # A version tag also publishes a GitHub Release, using that version's section of CHANGELOG.md as the notes.
+  release:
+    if: github.ref_type == 'tag'
+    needs: image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create the GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          v="${GITHUB_REF_NAME#v}"
+          awk -v v="$v" '$0 ~ "^## \\[" v "\\]" {on=1; next} /^## \[|^\[[^]]*\]: / {on=0} on' CHANGELOG.md > notes.md
+          [ -s notes.md ] || { echo "No CHANGELOG.md section for $v"; exit 1; }
+          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 && exit 0
+          gh release create "$GITHUB_REF_NAME" --title "The Naughty List $v" --notes-file notes.md --verify-tag
