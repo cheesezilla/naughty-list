@@ -150,3 +150,21 @@ New standard metric: hunts until every one of the 28 elves has been caught. The 
 
 - **Reading it:** the collection is essentially complete by the time rank 5 is reached, so the two benchmarks differ by only about 14 hunts at the median. Boss keys, the Loft detour and the Pantry-to-Stables chain mean a player who ranks up has already met nearly every elf. The Naughty List does not add a long tail for this bot.
 - **Caveat:** the bot hunts to rank up and keep catching bosses, so it is a fairly thorough collector. A human who skips the Carol Loft or the mini bosses would take longer, because rank 5 does not need the Loft side area. If eddy wants collection to be a real second goal, the elves to watch are the rare ones and the Loft elves (see the first-catch tail table in the full run).
+
+## Report 8: Cinderhoof harder with maxed gear (1,000 players, seed 42, Cheer and events on, greedy boons, safe events)
+
+eddy: Cinderhoof's catch rate with maxed gear was too high for a boss. The best Stables build (Snow Globe Prison, Sleigh Runner base, Wind-up Key Charm, power 3,720, luck 6, Frost) caught him 44% of the time; the Sleigh-Bell Snapper build 42%. His power went from 7,000 to **16,800**, which puts the best build at about 25% and the Snapper build at about 23% (Madame Shredwell is about 30% at her rank). Luck barely counts against a boss (x0.1), so only power moves the number.
+
+| Metric | Before (7,000) | After (16,800) |
+| --- | --- | --- |
+| Best-gear catch rate vs Cinderhoof | 44% | about 25% |
+| Hunts to rank 5 | median 1,226 | median 1,266 |
+| Hunts to catch all 28 elves | mean 1,252, median 1,240, p10 1,123, p90 1,400 | mean 1,301, median 1,279, p10 1,162, p90 1,461 |
+| Ranks 1 to 4 (median hunts) | 117, 237, 333, 538 | 117, 237, 333, 577 |
+| Stables hunts, catch rate | 521, 77% | 558, 77% |
+| Stables boss catch rate (bot) | 35% | 19% |
+| Cinderhoof catches per player | 5.0 | 2.9 |
+| Players who ever catch Cinderhoof | 100% | 94% |
+
+- **Reading it:** rank 4 takes about 40 hunts longer (538 to 577), since the sleigh launch needs Cinderhoof to come and go, and the full collection about 40 more (3%). Both stay inside the rank targets (rank 4: 577 against 600). The 6% who never catch him reach rank 5 without it, because rank 5 needs points, not the boss.
+- **Not retuned:** gear that is not maxed now catches him well under 25% (for example a Frost trap with 3,000 power is about 13%), so most players need several sleigh launches and the crafted gear; that is the intent.

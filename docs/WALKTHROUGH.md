@@ -37,8 +37,8 @@ Commons: Hay Hoarder and Bell Thief (weak Frost), Harness Snipper (weak Clockwor
 
 - **Frost build:** Snow Globe Prison (25,000 g, Frost 1,800), Gingerbread Cottage base (3 Cookie Tin, 2 Golden Ribbon, 1 Candy Cane Platform + 8,000 g; Frost affinity +10%), Wind-up Key Charm. About 85% Hay Hoarder, 81% Bell Thief, 69% Harness Snipper, 71% Carrot Crook.
 - **Sleigh Run:** start a run (free) and reach 100 readiness within 40 hunts. Commons add 5, Carrot Crook 12, Antler Ripper 20 (it appears only above 50 readiness). A Bell Thief escape costs 8, a Harness Snipper escape 5. Launching pays 2,000 g and a Silver Sleighbell, then Cinderhoof ambushes the next hunt.
-- **Antler Ripper** (4,100 power, weak Frost) is about 53%. **Cinderhoof** (7,000 power, weak Frost, immune to Starlight) is about 39% with this build, so expect several tries. Escapes never cost rank.
-- Optional: Sleigh Runner base (2 Silver Sleighbell + 2 Toymaker's Gear + 12,000 g) and Sleigh-Bell Snapper trap (3 Silver Sleighbell + Clockwork Heart + Nutcracker Jaws + 15,000 g): about 42% on Cinderhoof, no better than Frost. The Wishing Star Pedestal (1 Clockwork Heart, 2 Enchanted Wrapping, 4 Sugar Glass, 12,000 g) adds luck 9.
+- **Antler Ripper** (4,100 power, weak Frost) is about 53%. **Cinderhoof** (16,800 power, weak Frost, immune to Starlight) is about 21% with this build (about 25% with the best Frost build), so expect several tries. Escapes never cost rank.
+- Optional: Sleigh Runner base (2 Silver Sleighbell + 2 Toymaker's Gear + 12,000 g) and Sleigh-Bell Snapper trap (3 Silver Sleighbell + Clockwork Heart + Nutcracker Jaws + 15,000 g): about 23% on Cinderhoof, no better than Frost. The Wishing Star Pedestal (1 Clockwork Heart, 2 Enchanted Wrapping, 4 Sugar Glass, 12,000 g) adds luck 9.
 
 ## Cheer Meter and Overcharge
 
