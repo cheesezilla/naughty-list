@@ -49,6 +49,15 @@ CREATE TABLE IF NOT EXISTS restarts (
   created_at INTEGER NOT NULL,
   summary TEXT NOT NULL
 );
+-- Player feedback. Deliberately has no foreign keys and is never touched by Start over, admin tools or restarts:
+-- the username is copied in so a note stays readable even if the account is ever removed.
+CREATE TABLE IF NOT EXISTS feedback (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  username TEXT NOT NULL,
+  created_at INTEGER NOT NULL,
+  message TEXT NOT NULL
+);
 `;
 
 export interface UserRow { id: number; username: string; password_hash: string; is_admin: number; created_at: number }
@@ -58,6 +67,7 @@ export interface Settings { allowSignups: boolean }
 const DEFAULT_SETTINGS: Settings = { allowSignups: true };
 /** What a player had when they restarted, kept in the restart log. */
 export interface RestartSummary { gold: number; points: number; rank: number; hunts: number; caught: number; impsOnList: number; location: string }
+export interface FeedbackRow { id: number; userId: number; username: string; at: number; message: string }
 export interface RestartRow { id: number; username: string; at: number; summary: RestartSummary }
 
 /** Old item, imp or achievement id -> new id. Saves and log entries using an old id are rewritten when the store opens. */
@@ -287,5 +297,18 @@ export class Store {
       : this.db.prepare('SELECT r.id, u.username, r.created_at, r.summary FROM restarts r JOIN users u ON u.id = r.user_id WHERE r.user_id = ? ORDER BY r.id DESC LIMIT ?').all(userId, limit)
     ) as { id: number; username: string; created_at: number; summary: string }[];
     return rows.map((r) => ({ id: r.id, username: r.username, at: r.created_at, summary: JSON.parse(r.summary) as RestartSummary }));
+  }
+
+  // ----- feedback (never deleted or reset by any game path) -----
+  addFeedback(userId: number, username: string, message: string, now: number): FeedbackRow {
+    const r = this.db.prepare('INSERT INTO feedback (user_id, username, created_at, message) VALUES (?, ?, ?, ?)').run(userId, username, now, message);
+    return { id: Number(r.lastInsertRowid), userId, username, at: now, message };
+  }
+  feedback(userId?: number, limit = 500): FeedbackRow[] {
+    const rows = (userId === undefined
+      ? this.db.prepare('SELECT id, user_id, username, created_at, message FROM feedback ORDER BY id DESC LIMIT ?').all(limit)
+      : this.db.prepare('SELECT id, user_id, username, created_at, message FROM feedback WHERE user_id = ? ORDER BY id DESC LIMIT ?').all(userId, limit)
+    ) as { id: number; user_id: number; username: string; created_at: number; message: string }[];
+    return rows.map((r) => ({ id: r.id, userId: r.user_id, username: r.username, at: r.created_at, message: r.message }));
   }
 }
