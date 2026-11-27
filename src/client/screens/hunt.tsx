@@ -254,7 +254,7 @@ function BaitSheet({ initial, onClose }: { initial: 'bait' | 'charm'; onClose: (
           <button class="primary-btn wide" onClick={use}>
             {confirming ? `Yes, use ${item?.name}` : chosen ? `Use ${item?.name}` : 'Take off charm'}
           </button>
-          {confirming && <p class="small muted">{item?.name} is crafted, not sold. Each attracted hunt uses one.</p>}
+          {confirming && <p class="small muted">{item?.name} is crafted, not sold. Each hunt uses one.</p>}
         </div>
       )}
       <button class="text-btn wide" onClick={() => { onClose(); go(`emporium/${tab === 'bait' ? 'bait' : 'charms'}`); }}>
