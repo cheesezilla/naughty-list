@@ -35,6 +35,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Boss keys: the local boss drops a key on its first catch, and the next location needs it to unlock (existing saves are granted the keys they have earned); see [Progression](#progression) | In review | this PR |
 | Branching progression (eddy): luck rework (luck helps most against commons, least against bosses), Madame Shredwell weak to a new Carol type, and the Carol Loft side area where the Carol Horn is made; see [Branching progression](#branching-progression) | In review | this PR |
 | New bases: two tiers of power, attraction and luck bases, with build affinity and a "good for" line; see [New bases](#new-bases-power-attraction-and-luck) | In review | #21 |
+| Playtest and simulation plan: what the simulator must report for Allure, Cheer Meter, events and goals, targets and how to read them (plan only); see [Playtest and simulation plan](#playtest-and-simulation-plan-eddy-27-nov-2026-plan-only) | Planned | this PR |
 | Random events after a hunt (Santa and Mrs. Claus boons with a safe or big choice, Scrinch challenges with mini objectives), plus a parked-ideas list; see [Random events](#random-events-planned-not-built) | Planned (design only) | this PR |
 | Cheer Meter and boons (eddy): a streak meter, pick 1 of 3 from 14 boons in three rarities, Overcharge and Cheer charms; see [Cheer Meter](#cheer-meter-and-boons-eddy-26-nov-2026-design-only) | Planned (design only) | this PR |
 | 5. Tune from play-test | Planned | |
@@ -149,6 +150,80 @@ Bait is the clock. With no timer, progress is limited by gold: every attracted h
 **Optional stamina meter (built, switched off).** `constants.json` > `stamina.enabled`. When on, a Cocoa meter costs 1 per hunt, holds 100 and refills 1 per minute.
 
 **Left out of v1:** diminishing returns per location (a hidden timer), auto-hunt and idle rewards.
+
+## Playtest and simulation plan (eddy, 27 Nov 2026, plan only)
+
+Nothing here is built and no game number changes. It says what the simulator and a human playtest should report once Allure (#44), the Cheer Meter and random events (#43) and the area goals (#47) are in, how to read the results, and the targets to aim for. Tuning is a separate task. Eddy's rule for this round: the numbers matter less than whether **each hunt makes visible short-term progress toward something**, with the Cheer Meter as the short loop inside the medium loop of finishing an area.
+
+### What exists today
+
+`scripts/simulate.ts` (`npm run simulate`, flags `--players`, `--seed`, `--max-hunts`, `--without`, `--strict`, `--verbose`) plays seeded virtual hunters through the real engine with a greedy strategy (best setup by points plus net gold, buys bait, crafts, takes the Loft detour, plays the objectives) and reports hunts per rank against the targets (150, 250, 400, 600), per-location hunts, Allure rate, catch rate and bait cost share, pillages, gear purchase timing, boss catches, objective counts and badge timing. It does not model the Cheer Meter, events or the Goals panel, and its "attracted" column is meaningless once Allure removes quiet hunts.
+
+### Simulator changes needed
+
+1. **Cheer Meter and events in the loop**, with on/off flags (`--no-cheer`, `--no-events`) so each system's effect can be measured against the baseline in one run.
+2. **Boon choice policies**, because the pick is a player decision: `random`, `greedy` (rank boons by a fixed value table), and `hold` (use Overcharge up to 15 pips). Report each separately; the design is healthy only if no policy is far ahead of the others.
+3. **Event choice policies**: `safe`, `big`, `skip` (pay the Scrinch toll), `fight`.
+4. **Fix the Allure columns**: replace "attract rate" with the rare, mini boss and boss share of encounters, and keep catch rate per tier.
+5. **Per-hunt event trace** (`--trace out.jsonl`) with one line per hunt: tier met, outcome, pips, active boons, event fired, gold. Aggregates answer "is it balanced"; the trace answers "does it feel good".
+6. Use 1,000 players and fixed seeds 1 to 5 for any number that goes into this document. 200 players is for quick checks.
+
+### Numbers to report
+
+| Group | Numbers | What they show |
+| --- | --- | --- |
+| Pace | Hunts per rank (p10, median, p90), hunts per area, total hunts to rank 5, completion rate | Whether the whole game lands on target and whether the spread between players is fair |
+| Hunt outcomes | Catch rate per elf tier and per area; encounter mix per tier; escapes in a row (longest streak) | Allure working as designed, bosses neither a wall nor a formality |
+| Cheer Meter | Hunts per fill (p10, median, p90), per area; pips earned per hunt; escape pip loss per fill; boons cashed in per 100 hunts; share of hunts under any boon; share of time spent full (waiting) | The meter's tempo: how often the player gets a reward moment |
+| Boon mix | Pick rate per boon and per rarity (offered vs picked); draws per rare and per legendary (pity firing rate); Overcharge use and the average pips at cash-in; boon uptime per area | Whether the 14 boons are all worth picking, and whether Overcharge is a real choice |
+| Boon impact | Hunts to rank with and without Cheer; extra gold, points and catches during boons vs outside them | Whether boons speed the game or only decorate it |
+| Events | Events per 100 hunts (all, Santa and Mrs. Claus, Scrinch, boss-escape grudge); hunts between events (min, median, max); safe vs big pick rate under each policy; Scrinch fight win rate; toll paid; gold and points swing per event | Frequency, the safe/big choice and whether Scrinch hurts enough to matter |
+| Economy | Gold in and out per area (catch gold, bait cost, pillage, event gifts and tolls, purchases); gold at each rank-up; share of income from events and boons; bait cost as a share of gold | Whether events and Double Haul inflate gold, and bait stays "the clock" |
+| Goals and completion | Hunts to the main goal ("rank up and move on") per area; share finishing the portrait goal (every elf caught) and the hunt it is complete; hunts to first catch of each elf (the rare and mini boss are the long tail); bosses caught per player | Whether the optional completion goal is a real target or a grind or trivial |
+| Progress feel | Hunts between "something good happens" (a catch, a pip, a rank, a new portrait, a boon, an event, a crafted item): median and the 90th percentile gap | The one number that tests eddy's rule that every hunt moves toward something |
+
+### What each number can and cannot tell us
+
+- **Hunts per rank and per area** can show a rank that is too fast or too slow against the targets, and which system moved it, by turning Cheer and events off one at a time. They cannot say a rank is fun. Aim: stay within 25% of the targets, and have Cheer plus events speed total hunts by 10 to 20% (they are a reward, not the engine of progress). If Cheer alone moves it more than 25%, the boons are too strong; if under 5%, the meter is decoration.
+- **Hunts per Cheer fill** is the key short-loop number. Aim: a median of 15 to 25 hunts per fill early (so a boon arrives every minute or two of play), with p90 under 45 so no one waits too long, and p10 over 8 so it is never spam. If the median is under 10 the boons stop feeling special; over 30 and the meter is forgotten. The share of time spent full should stay under 5% unless Overcharge is being used on purpose.
+- **Escape pip loss** says whether the -3 (and -5 while held) hurts: if a typical fill loses more than 40% of its pips to escapes, the meter punishes catching bosses, which are the hunts the player is working for. That would mean the penalty is too high for off-type bosses.
+- **Boon pick rate** tests the pool. A boon picked over 40% of the time when offered is too strong; one picked under 5% is dead weight and should be reworked. Compare pick rate with measured value (extra gold, points or catches during the boon). The three policies should finish within 10% of each other. A clear winner means a solved game.
+- **Pity firing rate** should be small (under 15% of draws). If pity fires often the base weights are too stingy.
+- **Overcharge** is a real choice only if the hold policy beats cash-in-at-10 by something, but not by a lot. Equal means nobody should hold; hold clearly ahead means the escape penalty is too small.
+- **Events per 100 hunts** at 2.5% per hunt with the guards should land near 1.5 to 1.8 (about one per 60 hunts), plus the boss-escape grudge (25% for a Scrinch event) on top. Check the grudge does not make bosses feel punishing: if more than a third of events are grudge-driven, the 25% is too high.
+- **Safe vs big pick rate**: "big gifts are rare and free" is meant to feel powerful and be worth working for. If the big gift is taken under 80% of the time it is not powerful enough; if the big gift moves gold or rank pace more than 5% over a game it is too strong, since there is no cost to hold it back. Confirm it stays rare enough that most players see only a handful per game.
+- **Scrinch fight win rate** and **toll paid**: a win rate of 60 to 80% with decent gear is about right; the toll gets used if the win rate is under 50% or the loss is large. If almost nobody pays, the toll is too pricey or the threat too weak.
+- **Gold flow** answers "is the economy still bait-limited". Event and boon income over 15% of gold means they are carrying the game.
+- **Portrait completion** tells us whether the optional goal works: aim for most players to finish it for the Cookie Pantry by the time they rank up, and later areas to need a bit of extra hunting for the rare and mini boss (median 20 to 40% extra hunts after the rank-up is reached). A long tail on one elf means its Allure, power or luck weighting is wrong.
+- **Progress feel** (gap between good things): median 3 hunts or less and p90 under 10. A gap longer than that is a stretch where the hunt does nothing visible, and is where a pip, a goal tick or a materials drop should fill in.
+
+What the simulator cannot show: whether the boon cards and event text are clear, whether a decision is interesting, or whether an area is boring in the middle. Those need the human playtest below.
+
+### Human playtest checklist
+
+Run on the `:integration` image (naughty-list-test) with the admin tools. Two or three players, one session each, about 30 minutes, played fresh with no hints.
+
+1. Fresh start through to the first Cheer fill and boon: did they notice the meter without being told, and could they say why it moved?
+2. First event: did they understand safe vs big, and did the Scrinch objective counter read clearly?
+3. Count the moments of dead time (hunts where nothing seemed to change).
+4. Overcharge: did anyone hold, and did they regret it?
+5. The boss-escape retaliation: did it feel fair or like piling on?
+6. Goals panel: did they pursue the portrait goal unprompted?
+7. Ask: "what are you hunting for right now?" at three random moments. Each answer should name a concrete near target.
+
+Record each result as pass, fail or unsure in the PR for the tuning task.
+
+### Order of work
+
+1. Build the Cheer and events hooks in the simulator (items 1 to 5 above), then check the baseline (everything off) still matches the numbers in this document.
+2. Run all three policies for Cheer and all four for events, 1,000 players, seeds 1 to 5, and write the results here.
+3. Human playtest on `:integration`.
+4. One tuning PR that changes numbers in `content/*.json` with the before and after tables; simulator `--strict` gets Cheer fill and event frequency targets from the table above.
+
+### Open questions for eddy
+
+- Is "more than 25% off target" still the right alarm for ranks now that boons add a deliberate speed-up, or should the targets move to include them?
+- Should the human playtest also cover a friend who has never seen the game (recommended), or only eddy?
 
 ## Progression
 
@@ -1200,6 +1275,7 @@ The first idea (replace the attraction roll where no elf takes the bait) is trac
 ## Changelog
 
 | Date | PR | Change |
+| 2026-11-27 | this PR | Plan only: playtest and simulation plan (numbers to report, conclusions each supports, targets, human checklist) for Allure, Cheer Meter, events and goals. No game numbers changed |
 | 2026-11-27 | this PR | Player feedback: More > Feedback screen (write a note, see your own), `feedback` table kept apart from every reset path, admin list on More > Admin; tests prove it survives Start over, admin tools and reopening the database. No game numbers changed |
 | 2026-11-26 | this PR | Emporium cards and Santa's Workshop recipe cards now share one `ItemStatBlock` component: power type medal (traps; bases show their affinity types), then small stat tiles (Power, Luck, Attraction (exact % for admins; charms show "Boost"), Rares) and a small note line for Good for and Affinity, in the same order. UI only, no numbers changed |
 | --- | --- | --- |
