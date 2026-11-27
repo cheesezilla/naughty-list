@@ -112,35 +112,40 @@ function OrderPanel({ o, s, location }: { o: Orders; s?: Extract<ObjectiveState,
   const trap = data.items.get(player.setup.trap);
   const trapType = trap?.kind === 'trap' ? trap.type : null;
   const name = (id: string) => location.imps.find((i) => i.id === id)?.name ?? id;
-  if (!s) {
+  if (!s || !s.progress) {
     return (
       <>
         <h3><Art slot="materials" id="toymakers_gear" class="panel-icon" alt="" />Order Board</h3>
-        <p class="panel-line">The elves pin your first toy order to the board when you hunt here.</p>
+        <p class="panel-line">The elves pin three toy orders to the board when you hunt here: one each for Clockwork, Starlight and Frost.</p>
       </>
     );
   }
-  const needed = s.slots[s.filled];
   const untilInspection = o.inspectionEvery - (s.ordersDone % o.inspectionEvery);
+  const rush = s.rushLeft > 0;
+  const types = ['clockwork', 'starlight', 'frost'] as const;
   return (
     <>
-      <h3><Art slot="materials" id="toymakers_gear" class="panel-icon" alt="" />{s.rush ? 'Rush order' : 'Order Board'} <small>{s.rush ? `${s.slots.length} parts` : `Order ${(s.ordersDone % o.inspectionEvery) + 1} of ${o.inspectionEvery}`}</small></h3>
-      <ol class="order-slots">
-        {s.slots.map((t, i) => (
-          <li class={i < s.filled ? 'done' : i === s.filled ? 'next' : ''}>
-            <TypeMedal type={t} size={30} />
-            <b>{TYPE_NAME[t]}</b>
-            <span>{i < s.filled ? 'filled' : i === s.filled ? 'next' : 'to do'}</span>
-          </li>
-        ))}
-      </ol>
+      <h3><Art slot="materials" id="toymakers_gear" class="panel-icon" alt="" />{rush ? 'Rush order' : 'Order Board'} <small>{rush ? `${s.rushLeft} of ${o.rushSlots} parts to go` : `${o.slots} catches each`}</small></h3>
+      {rush
+        ? <p class="panel-line">Any catch counts toward the Rush order. The three standing orders wait.</p>
+        : (
+          <ol class="order-slots">
+            {types.map((t) => (
+              <li class={`${s.progress[t] > 0 ? 'next' : ''} ${t === trapType ? 'armed' : ''}`}>
+                <TypeMedal type={t} size={30} />
+                <b>{TYPE_NAME[t]}</b>
+                <span>{s.progress[t]} of {o.slots}{t === trapType ? ' · armed' : ''}{s.finished.includes(t) ? ' · done' : ''}</span>
+              </li>
+            ))}
+          </ol>
+        )}
       {s.forced
         ? <p class="panel-line strong">{name(s.forced)} is coming! The next elf you attract here is them.</p>
-        : needed && <p class="panel-line">Next part needs <b>{TYPE_NAME[needed]}</b>. Your trap: {trap?.name} ({trapType ? TYPE_NAME[trapType] : 'none'}) <span class={trapType === needed ? 'ok' : 'no'}>{trapType === needed ? 'matches' : "doesn't match"}</span></p>}
-      {!s.rush && !s.forced && <p class="panel-line">{untilInspection === 1 ? `${name(o.miniboss)} inspects after this order.` : `${name(o.miniboss)} inspects in ${untilInspection} orders.`} Each order pays {num(o.crateGold)} gold and a bonus.</p>}
-      {s.rushReady && !s.rush && (
+        : !rush && <p class="panel-line">Every catch fills the order for your trap's type ({trap?.name}: {trapType ? TYPE_NAME[trapType] : 'none'}; Carol traps fill whichever order is furthest along). Finish all three types for a Triple Crate (+{num(o.tripleGold)} gold and every crate bonus).</p>}
+      {!rush && !s.forced && <p class="panel-line">{untilInspection === 1 ? `${name(o.miniboss)} inspects after the next finished order.` : `${name(o.miniboss)} inspects in ${untilInspection} orders.`} Each order pays {num(o.crateGold)} gold and a bonus.</p>}
+      {s.rushReady && !rush && (
         <button class="primary-btn wide" onClick={() => act('/api/objective', { action: 'rush_order' }, `Rush order pinned: ${o.rushSlots} parts. Finish it to bring ${name(o.boss)}.`)}>
-          Take a Rush order ({o.rushSlots} parts, brings {name(o.boss)})
+          Take a Rush order ({o.rushSlots} catches with any trap, brings {name(o.boss)})
         </button>
       )}
     </>

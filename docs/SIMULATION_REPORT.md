@@ -115,3 +115,13 @@ Findings:
 - **Bait pillage cut:** a thief going for bait now finds none 50% of the time for bought bait and 85% for crafted bait. Gold lost to pillage over a game is 51,000 per player (52,400 before) and pillage cost as a share of gold earned in the Pantry falls from 5% to 3%; bait theft was a small part of the loss, so the change is mostly about feel (crafted ladder bait, which is hard to rebuy, is now almost safe).
 - **Gold:** earned per player rises to about 205,600 (from 149,000) because the game is longer; pillage losses 52,400. Gold still piles up late.
 - **Progress feel:** any good thing gap p90 2, milestones p90 3, worst dry spell for the median player 25 hunts (11 counting catches).
+
+## Report 5: parallel Toy Workshop orders (1,000 players, seed 42, Cheer and events on, greedy boons, safe events)
+
+eddy found the Order Board too fiddly: the three slots had to be filled in order with a given trap type, so almost every hunt wanted a swap. The board now has three standing orders (Clockwork, Starlight, Frost); every catch fills the order for the armed trap's type. See the Toy Workshop section of `docs/PLAN.md`.
+
+- **The simulated player no longer swaps for the board.** It stays on its best trap, buys the cheapest trap of any type it lacks, and only brings the best trap for an inspecting Hammerhand or General Grimbolt. That is why its old Workshop catch rate (46%) was artificially low: it kept swapping to traps that matched the slot, not the elf.
+- **First try, no rebalance:** the Workshop commons were caught about 90% of the time and rank 3 took about 210 hunts (target 400, "too fast"), so rank 5 came at about 1,090 hunts. Cheer fills in the Workshop also jumped to 9.0 per 100 hunts, so each counted catch now adds 1 pip, not 2.
+- **Built:** Workshop commons power 1,200 / 1,500 / 1,850 (were 380 / 510 / 640).
+- **Result:** median 1,212 hunts to rank 5 (1,359 before). Hunts in ranks 1 to 4: 118, 237, 324, 532 (targets 150, 250, 400, 600, all ok). Toy Workshop: 256 hunts, catch rate 54% (commons 88% of encounters at 55%, rare 50%, mini boss 45%, boss 26%), bait 8% of gold, pillage 15% of gold earned there. About 30 orders finished per player, Hammerhand 4.3 and General Grimbolt 2.5 catches, Cheer fills 3.6 per 100 hunts in the Workshop (4.1 before), 3.4 per 100 overall, median 16 hunts per fill.
+- **Not simulated:** the Triple Crate, because the bot never swaps for it. It adds 800 gold and every crate reward per 9 catches if you cycle all three types, which is about one extra crate per three orders; watch it in play and retune `tripleGold` if it feels too strong or too weak.

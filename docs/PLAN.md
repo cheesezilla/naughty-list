@@ -19,7 +19,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | New phone-first UI (layout D2): bottom menu, hunt log with events and full history, Arsenal, Elf Emporium, Santa's Workshop, More pages, open sign-up with admin switch | Done | #11 |
 | Holly power type renamed Starlight; its three traps reworked (Starlit Stocking, Star Lantern, Constellation Wreath) with new text and SVG art, old saves migrated | In review | #17 |
 | Intro letter from Santa: the game's backstory as the first hunt-log entry of every new game, and on How to play | In review | #12 |
-| Location objectives: a simple Cookie Pantry start, then a unique loop per location (Wrapping Room bait ladder, Toy Workshop order board, Stables sleigh run), plus first-visit intros, a hint button and a mechanic panel on each Hunt screen; see [Location objectives](#location-objectives) | Done | #16 (plan), #18 (build); panel icons, sleigh marker and last-change line in #23 |
+| Location objectives: a simple Cookie Pantry start, then a unique loop per location (Wrapping Room bait ladder, Toy Workshop parallel order board, Stables sleigh run), plus first-visit intros, a hint button and a mechanic panel on each Hunt screen; see [Location objectives](#location-objectives) | Done | #16 (plan), #18 (build); panel icons, sleigh marker and last-change line in #23 |
 | Pantry goals panel on the Hunt screen: main goal (reach the next area's rank, ticked when done) and optional goal (portraits caught, e.g. 3/5) | Done | this PR |
 | Pillage on escape: escaped elves may take gold, points and bait (bosses most, mini bosses less, others rarely), with safety rails; see [Pillage on escape](#pillage-on-escape) | Done | #18 |
 | Hexed elves: new backstory (Scrinch hexed Santa's elves), 6 renamed elves, General Grimbolt and the new Stables boss Cinderhoof, home power types per location, simple SVG elf portraits, old saves migrated; see [Theme and setting](#theme-and-setting) and [Power types by location](#power-types-by-location) | In review | this PR |
@@ -278,9 +278,9 @@ The numbers below mirror `content/*.json`. Types: C = Clockwork, S = Starlight, 
 | Carol Loft (side area) | Mistletoe Mumbler | Common | 320 | 48 | 70 | S | | Hymn Reed 20% |
 | Carol Loft (side area) | Silver Piper | Rare | 500 | 85 | 130 | Carol | | Hymn Reed 100% |
 | Carol Loft (side area) | Choirmaster Hollowvoice | Mini boss | 1,000 | 180 | 250 | Carol | C | Carol Songsheet 100% |
-| Toy Workshop | Cog Pincher | Common | 450 | 140 | 150 | C | | |
-| Toy Workshop | Paint Smudger | Common | 600 | 180 | 190 | S | | |
-| Toy Workshop | Stuffing Ripper | Common | 750 | 220 | 230 | C | F | |
+| Toy Workshop | Cog Pincher | Common | 1,200 | 140 | 150 | C | | |
+| Toy Workshop | Paint Smudger | Common | 1,500 | 180 | 190 | S | | |
+| Toy Workshop | Stuffing Ripper | Common | 1,850 | 220 | 230 | C | F | |
 | Toy Workshop | Wind-up Elf | Rare | 900 | 300 | 320 | C | F immune | Sugar Glass 50% |
 | Toy Workshop | Hammerhand | Mini boss | 1,600 | 400 | 650 | F | | Toymaker's Gear 100% |
 | Toy Workshop | General Grimbolt | Boss | 2,800 | 700 | 1,300 | C | F | Clockwork Heart 100% |
@@ -434,7 +434,7 @@ The Wrapping Room's elves are weak to Starlight, but **Madame Shredwell is now w
 | Elves | 3 commons (each weak to a different core type, so any trap works), a rare (Silver Piper) and a mini boss (Choirmaster Hollowvoice, weight 5), weak to Carol. No boss. Rewards are about 70% of the Wrapping Room's, so it is a detour, not a farm |
 | Drops | Hymn Reed (commons 20%, Silver Piper 100%) and Carol Songsheet (Choirmaster, 100%) |
 | Trap | Carol Horn: 5 Hymn Reed + 1 Carol Songsheet + 600 gold at rank 2. New power type **Carol** (a gold music note on rose pink), 600 power and luck 10: a luck-leaning trap that also hits Shredwell, the Piper and the Choirmaster for x1.5 |
-| Later | The Carol type is built to be reused: a later location can make its elves weak to Carol and reward Carol traps. The order board and "Three of a Kind" still use the core three types |
+| Later | The Carol type is built to be reused: a later location can make its elves weak to Carol and reward Carol traps. The order board counts a Carol trap as a joker, and "Three of a Kind" still uses the core three types |
 
 **The choice for a rank 2 player:** spend about 600 gold and roughly 100 hunts on the Loft for a Carol Horn (a luck trap that is also the best answer to Shredwell), or buy an Icicle Jar and push through the Wrapping Room with a neutral trap, or build luck and skip the detour. Key chain code ignores side areas: `keyNeeded` and `grantKeys` walk only the main chain.
 
@@ -450,7 +450,7 @@ The Wrapping Room's elves are weak to Starlight, but **Madame Shredwell is now w
 | --- | --- | --- | --- |
 | Cookie Pantry | 1 | None: hunt for gold, buy better gear and bait, rank up | No boss here |
 | Wrapping Room | 2 | Bait ladder: three bait tiers, each crafted from the last tier's drops | Tier 3 bait is armed |
-| Toy Workshop | 3 | Order board: catch with the trap type each order asks for | A Rush order is finished |
+| Toy Workshop | 3 | Order board: three standing orders (Clockwork, Starlight, Frost); every catch fills the one for your trap's type | A Rush order is finished |
 | Reindeer Stables | 4 | Sleigh run: 40 hunts to make the sleigh ready | The sleigh launches |
 
 The Tangle Meter, first planned for the Wrapping Room, is kept as a spare loop for a later location.
@@ -508,17 +508,20 @@ eddy's loop, starting in the second location: common bait catches common elves, 
 - Simulator: a simulated player catches Spoolwick 1.8 times and Madame Shredwell 0.3 times on average before moving on; most players rank up before reaching the top of the ladder.
 - Panel: three bait tiers with what you own of each, and the next recipe's have / need.
 
-### Toy Workshop: the Order Board (trap-type puzzle)
+### Toy Workshop: the Order Board (parallel orders)
 
-The elves pin toy orders to a board. Each order lists parts that must be caught with a given trap type, in order. It makes the player own and swap traps of all three types, which is the known gap from the simulator (nobody bought Snow Globe Prison or Constellation Wreath).
+The elves pin three standing toy orders to the board, one for each core trap type (Clockwork, Starlight, Frost). Eddy found the first design (three slots filled in order, each needing a given type) too fiddly, because it wanted a trap swap almost every hunt, so on 27 Nov 2026 it became parallel orders. You can stay on your best trap and still make progress; swapping is now an optional bonus, not a chore.
 
-- **Order:** 3 slots, each a trap type (Clockwork, Starlight or Frost), rolled by the server when the last order finishes. A catch with the trap type of the next slot fills it. Catches with another type don't count; escapes don't undo filled slots.
-- The puzzle is matching type to elf: most Workshop elves are weak to Clockwork and resist Frost (the Wind-up Elf is immune), so Clockwork slots are easy, Starlight slots go best on Paint Smudgers, and Frost slots on Cog Pinchers or Paint Smudgers. Owning a trap of each type is part of the job here.
-- **Order done:** a Toy Crate: 400 gold and one of Peppermint Bark x5, Wind-up Key Charm x3 or Sugar Glass x1.
-- **Inspection:** every 3rd finished order, the next attracted hunt is Hammerhand (mini boss; weight 0 otherwise). He drops Toymaker's Gear as now.
-- **Rush order:** after an Inspection, the player can take a 5-slot Rush order instead of a normal one. Finishing it makes the next attracted hunt General Grimbolt (boss; weight 0 otherwise), who drops Clockwork Heart as now.
-- Panel: the order slots as type badges, filled or empty, and orders until the next Inspection.
-- Simulator: about 35 orders per player, 3.9 Hammerhand and 2.2 General Grimbolt catches. The simulated player buys the cheapest trap of any type it lacks before hunting here.
+- **Orders:** each type's order needs 3 catches (`slots` in `content/locations.json`). **Every catch fills the order for the type of the armed trap**, in any order. A Carol trap (the fourth type) is a joker and fills whichever order is furthest along. Escapes and quiet hunts change nothing, and nothing is ever undone.
+- **Order done:** a Toy Crate: 400 gold and one of Peppermint Bark x5, Wind-up Key Charm x3 or Sugar Glass x1. That type's order starts again from 0, so a one-trap player just finishes the same order over and over.
+- **Triple Crate:** the first time all three types have finished an order since the last Triple Crate, a bonus of 800 gold (`tripleGold`) and every crate reward (Peppermint Bark x5, Wind-up Key Charm x3 and Sugar Glass x1). This is the reason to own and swap to all three types: an optional decision, worth about one extra crate every 9 catches.
+- **Cheer:** every catch the board counts adds 1 Cheer pip (`constants.cheer.orderPips`, was 2 per slot when only matching catches counted).
+- **Inspection:** every 3rd finished order (of any type), the next attracted hunt is Hammerhand (mini boss; weight 0 otherwise). He drops Toymaker's Gear as now.
+- **Rush order:** after an Inspection, the player can take a Rush order instead: 5 catches with any trap (`rushSlots`). The three standing orders pause while it runs. Finishing it makes the next attracted hunt General Grimbolt (boss; weight 0 otherwise), who drops Clockwork Heart as now.
+- **Old saves:** a save with the old ordered-slots board keeps its finished order count, Rush offer and forced elf; the three new orders start at 0.
+- **Rebalance:** with swapping gone, catch rates here rose from the simulated 46% to about 90%, so the Workshop commons were made much stronger to keep rank 3 near its target: Cog Pincher power 450 to 1,200, Paint Smudger 600 to 1,500 and Stuffing Ripper 750 to 1,850 (it was 380, 510 and 640 after the 27 Nov tuning round, which was meant to offset the order board's slow fill).
+- Panel: three type medals with their catch counts (the armed trap's type is marked, finished types are marked done), orders until the next Inspection, and the Rush button.
+- Simulator: the bot never swaps for the board, only brings its best trap for an inspecting Hammerhand or General Grimbolt, and buys the cheapest trap of any type it lacks. About 30 orders per player, 4.3 Hammerhand and 2.5 General Grimbolt catches.
 
 ### Reindeer Stables: the Sleigh Run (countdown in hunts)
 
@@ -568,7 +571,7 @@ Text lives in a new `locations` block in `content/story.json`, keyed by location
 | --- | --- | --- |
 | Cookie Pantry | Santa's pantry: jars to the ceiling and crumbs on every shelf. The hexed baker elves raid it all night. Catch them, earn your pay, and kit yourself out before heading deeper into the lair. | 1. Hunt here to earn gold and points. 2. Each elf's description hints at the trap type it is weak to. Sootcap hides in shadow; Jarbelly can't resist a box. 3. Buy a better trap and base in the Elf Emporium as soon as you can afford them. 4. Sugar Cookies draw more uncommon and rare elves. 5. Reach Elf Deputy to unlock the Wrapping Room. |
 | Wrapping Room | Miles of ribbon and paper. The hexed wrappers still can't resist anything that shines, so Starlight traps work best here. The commons grab anything, but Glitterbug and Spoolwick only come for proper sweets, and Madame Shredwell only for the finest. Bake your way up. | 1. Most elves here are weak to Starlight and dodge Clockwork. Ribbon Tanglers freeze stiff in Frost. 2. Catch commons with shop bait to collect Sugar Twists and Candied Peel. 3. Make Ribbon Candy in Santa's Workshop. 4. Ribbon Candy draws Glitterbug and Spoolwick. Their drops make Golden Bow Bonbons. 5. Bonbons are the only bait Madame Shredwell will take. |
-| Toy Workshop | The hexed toymakers can't keep their hands off a wind-up, so Clockwork traps work best here. The loyal elves pin toy orders to the board, and each part must be caught with the right kind of trap. Finish enough orders and the bosses come to inspect. | 1. Most elves here are weak to Clockwork and shrug off Frost. Paint Smudgers fear Starlight; Hammerhand is forge-hot. 2. Check the order board: each slot needs a catch with that trap type, in order. 3. Swap traps to match, and pick elves that aren't immune to that type. 4. Every 3rd order brings Hammerhand. Then take a Rush order to bring General Grimbolt. |
+| Toy Workshop | The hexed toymakers can't keep their hands off a wind-up, so Clockwork traps work best here. The loyal elves pin toy orders to the board, and there is an order for each kind of trap, and every catch fills the one that matches yours. Finish enough orders and the bosses come to inspect. | 1. Most elves here are weak to Clockwork and shrug off Frost. Paint Smudgers fear Starlight; Hammerhand is forge-hot. 2. Check the order board: every catch fills the order for your trap's type, so stay on your best trap. 3. Finish all three types for a Triple Crate, or just stick with one. 4. Every 3rd order brings Hammerhand. Then take a Rush order to bring General Grimbolt. |
 | Reindeer Stables | The sleigh must be ready by Christmas Eve, and the hexed stable hands keep pinching the bells and snipping the harness. They crave warmth and bolt from the cold, so Frost traps work best here. Load the sleigh in time and Cinderhoof will try to stop the launch. | 1. Most elves here are weak to Frost and squint away Starlight. Harness Snippers snag in Clockwork. 2. Start a sleigh run: you have 40 hunts, quiet ones included. 3. Catches build Readiness. Escaped Bell Thieves and Harness Snippers take it away. 4. Hot Cocoa keeps elves coming, so fewer hunts are wasted. 5. Reach 100 to launch the sleigh and face Cinderhoof. |
 
 **Hunt screen with the new parts (all locations):**
@@ -606,12 +609,12 @@ Wrapping Room, ribbon red with a candy icon. Three tier steps; the armed tier is
 └────────────────────────────────────┘
 ```
 
-Toy Workshop, workshop green. Order slots as trap-type badges in a row; the next slot glows, filled slots are ticked. Shows the armed trap's type and whether it matches.
+Toy Workshop, workshop green. Three standing orders as trap-type badges with catch counts (parallel orders, 27 Nov 2026); the armed trap's type is marked.
 ```
-┌ Order Board ─────── Order 2 of 3 ──┐
-│ [⚙ ✓] [🌿 ▸] [❄  ]                 │
-│ Next: Starlight · your trap: Clockwork ✗│
-│ Inspection after this order        │
+┌ Order Board ───── 3 catches each ──┐
+│ [⚙ 2/3 armed] [★ 1/3] [❄ 0/3]      │
+│ Every catch fills your trap's type │
+│ Hammerhand inspects in 2 orders    │
 └────────────────────────────────────┘
 ```
 
@@ -1062,7 +1065,9 @@ Gold comes in only from catches and sales, and goes out on bait, charms, gear, l
 
 **How we check it:** `npm run simulate` plays virtual hunters through v1 with the real engine and content, reports hunts per rank, catch rates and bait cost per location, and with `--strict` fails if a rank target is missed by more than 25%.
 
-**Latest simulator run (Allure, 200 players, no retune):** all reached rank 5, median 1,289 hunts (1,652 before, because every hunt now meets an elf). Median hunts in ranks 1 to 4: 122, 266, 468, 404 (targets 150, 250, 400, 600); rank 4 is flagged "too fast". Bait cost per gold earned: 65%, 13%, 11%, 3%, 36% in the Pantry, Wrapping Room, Toy Workshop, Stables and Carol Loft. Mini boss and boss catches per player: Spoolwick 3.2, Madame Shredwell 1.3, Hammerhand 2.6, General Grimbolt 1.2, Antler Ripper 3.8, Cinderhoof 2.6, Choirmaster Hollowvoice 1.6. Median 48 of 55 badges. A retune (cheaper pace or higher bait cost) is left for eddy to decide.
+**Latest simulator run (parallel Toy Workshop orders, 1,000 players, seed 42, Cheer and events on):** all reached rank 5, median 1,212 hunts (1,359 in the 27 Nov tuning round; the Workshop is a little faster because the simulated player no longer swaps traps for the board). Median hunts in ranks 1 to 4: 118, 237, 324, 532 (targets 150, 250, 400, 600, all ok). Toy Workshop: catch rate 54% (46% before, when the bot swapped to off-best traps for slots), bait 8% of gold, pillage 15% of gold earned there, about 30 orders per player, Hammerhand 4.3 and General Grimbolt 2.5 catches per player, and 3.6 Cheer fills per 100 hunts there (4.2 before; each counted catch now adds 1 pip, not 2). Overall Cheer: 3.4 draws per 100 hunts. It needed a rebalance: with no swapping the Workshop commons were caught about 90% of the time and rank 3 took only about 210 hunts, so their power went to 1,200, 1,500 and 1,850. See `docs/SIMULATION_REPORT.md` Report 5.
+
+Previous run (Allure, 200 players, no retune): all reached rank 5, median 1,289 hunts (1,652 before, because every hunt now meets an elf). Median hunts in ranks 1 to 4: 122, 266, 468, 404 (targets 150, 250, 400, 600); rank 4 is flagged "too fast". Bait cost per gold earned: 65%, 13%, 11%, 3%, 36% in the Pantry, Wrapping Room, Toy Workshop, Stables and Carol Loft. Mini boss and boss catches per player: Spoolwick 3.2, Madame Shredwell 1.3, Hammerhand 2.6, General Grimbolt 1.2, Antler Ripper 3.8, Cinderhoof 2.6, Choirmaster Hollowvoice 1.6. Median 48 of 55 badges. A retune (cheaper pace or higher bait cost) is left for eddy to decide.
 
 Previous run (early-game onboarding, 200 players): all reached rank 5, median 1,652 hunts; details in [Early game and tips](#early-game-and-tips).
 
@@ -1284,6 +1289,7 @@ The first idea (replace the attraction roll where no elf takes the bait) is trac
 | --- | --- | --- |
 | 2026-11-27 | this PR | Fix: the hunt-log slide-in stopped replaying after a few hunts (rows were matched by position, so the top row kept its old class); rows are now keyed by id. UI only |
 | 2026-11-27 | this PR | UI motion only: Cheer Meter pips pop in when they fill and sink when they drain, Santa's favour bar pulses gold when it rises and shakes when it falls, and a new hunt-log row slides in after a hunt (rows already there on opening do not animate); reduced-motion turns it off |
+| 2026-11-27 | this PR | **Parallel Toy Workshop orders (eddy).** The Order Board no longer asks for trap types in order, which needed a swap almost every hunt. Three standing orders (Clockwork, Starlight, Frost) need 3 catches each, and every catch fills the order for the armed trap's type (Carol traps are jokers). Each finished order pays the Toy Crate; finishing all three types pays a Triple Crate (800 gold and every crate reward, `tripleGold`). The Rush order is 5 catches with any trap and pauses the standing orders. Inspection still comes every 3rd order. Cheer `orderPips` 2 to 1 per counted catch, Workshop commons power 1,200 / 1,500 / 1,850 (were 380 / 510 / 640) because catch rates rose with no swapping. Old saves keep their order count and start the new orders at 0. The simulator bot no longer swaps for the board. Result: median 1,212 hunts to rank 5, Toy Workshop catch rate 54% (Report 5) |
 | 2026-11-27 | this PR | **Tuning round from the first simulation report (eddy).** Rank 5 now needs 217,000 points (was 160,000). Scrinch skip tolls tripled (percent 9 to 12% of gold, flat 6 to 12 H). Toy Workshop: commons 15% weaker (power 380, 510, 640), Hammerhand and General Grimbolt pillage gold capped at 2 times their gold, and each finished order slot adds 2 Cheer pips (`constants.cheer.orderPips`). An Overcharged (Blazing) draw shows two cards, both rare or legendary, you pick one, and you can take one perk first: a second pick, boons 50% longer, or two Santa's Blessings in a row (`perks` on the draw table, `POST /api/cheer` action `perk`). Thieves now often find no bait to take (`pillage.baitSave`: 50% for bought bait, 85% for crafted bait). Antler Ripper power 3,500 to 4,100 and Cinderhoof 6,000 to 7,000, and Cinderhoof only attacks the sleigh after the second launch (`bossAfterLaunches`). Cheer escape penalty stays 3 (tried 2: too fast). Simulator (1,000 players, Cheer and events on): median 1,359 hunts to rank 5 (1,221 before); ranks 118, 242, 409, 568; Toy Workshop fills 4.1 per 100 hunts (was 0.2); Workshop catch rate 45% (was 40%) and pillage 29% of gold earned there (was 43%); fighting Scrinch wins 59% (was 52%), paying every toll costs 19% of gold earned and is 2% slower than fighting; holding for Overcharge is 2.3% slower than cashing in at 10 with no perk, 1% faster with the second pick, 0.4% slower with longer boons and 0.4% slower with two Santa's Blessings (see Report 4). See `docs/SIMULATION_REPORT.md` Report 4 |
 | 2026-11-27 | this PR | UI polish (CSS and layout only, no rules or numbers): boss, mini boss and rare shimmer now starts at once on portrait cards and also plays on the New Catch popup frame; bait ladder panel lists each bait as a row with a compact Equip button, and the shop Buy row wraps instead of overflowing; Cheer Meter pips and Santa's favour bar are animated with a moving sheen, light sweep and glow; rare (blue) and legendary (gold) boon cards in the pick screen get a pulsing aura and shine; after picking, each active boon in the Cheer card shows its effect text under its name and hunts left; the Santa and Mrs. Claus event box is shiny gold with a pulsing glow, light sweep and twinkle |
 | 2026-11-27 | this PR | Wrapping Room ladder panel: the Carol Horn line is now an in-world hint (bent reeds, torn songsheet, singing from above) instead of naming the Carol Loft. UI text only |

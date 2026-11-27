@@ -22,7 +22,7 @@ import { hunt } from '../src/engine/hunt.js';
 import { cheerAction, eventAction, tollGold } from '../src/engine/index.js';
 import { checkAchievements } from '../src/engine/achievements.js';
 import { objectiveAction } from '../src/engine/objectives.js';
-import { huntOdds } from '../src/engine/odds.js';
+import { catchChance, huntOdds, luckFactor, setupStats } from '../src/engine/odds.js';
 import { buy, count, craft, equip, newPlayer, travel, type PlayerState, type Setup } from '../src/engine/player.js';
 import { seededRng, type Rng } from '../src/engine/rng.js';
 
@@ -170,8 +170,8 @@ function plan(p: PlayerState, log: Log, huntNo: number): PlayerState {
     }
   }
 
-  // 4a. The order board asks for every trap type: before hunting there, own one trap of each type
-  // (the cheapest one on sale), as a player reading the board would.
+  // 4a. A Triple Crate and the bosses' weaknesses reward owning a trap of each type: before hunting at the
+  // order board, buy the cheapest one of each type on sale, as a careful player would.
   if (data.locations.get(p.location)?.objective?.type === 'order_board') {
     for (const type of new Set(content.items.traps.map((t) => t.type))) {
       if (content.items.traps.some((t) => t.type === type && count(p, t.id) > 0)) continue;
@@ -219,7 +219,7 @@ function plan(p: PlayerState, log: Log, huntNo: number): PlayerState {
   return p;
 }
 
-/** Location goals: start sleigh runs, take Rush orders, and swap to the trap type the order board asks for. */
+/** Location goals: start sleigh runs, take Rush orders, and bring the best trap for an inspecting mini boss or boss. Orders are parallel, so the bot never swaps for the board itself. */
 function playObjective(p: PlayerState, rng: Rng, log: Log): PlayerState {
   const loc = data.locations.get(p.location)!;
   const s = p.objectives?.[loc.id];
@@ -228,14 +228,23 @@ function playObjective(p: PlayerState, rng: Rng, log: Log): PlayerState {
     if (r.ok) { p = r.player; log.objectives.runs++; }
   }
   if (s?.type === 'order_board') {
-    if (s.rushReady && !s.rush) {
+    if (s.rushReady && s.rushLeft === 0) {
       const r = objectiveAction(content, p, 'rush_order', rng);
       if (r.ok) p = r.player;
     }
-    const s2 = p.objectives![loc.id];
-    const need = s2?.type === 'order_board' ? s2.slots[s2.filled] : undefined;
-    const trap = content.items.traps.filter((t) => t.type === need && count(p, t.id) > 0).sort((a, b) => b.power - a.power)[0];
-    if (trap && trap.id !== p.setup.trap) p = apply(p, equip(content, p, 'trap', trap.id));
+    // Orders are parallel, so the bot never swaps for the board. It only brings the best owned trap for a
+    // mini boss or boss that is about to come (the one swap a careful player makes).
+    const now = p.objectives![loc.id];
+    const target = now?.type === 'order_board' ? loc.imps.find((i) => i.id === now.forced) : undefined;
+    if (target) {
+      let best: { id: string; chance: number } | undefined;
+      for (const t of content.items.traps.filter((t) => count(p, t.id) > 0)) {
+        const stats = setupStats(content, { ...p.setup, trap: t.id }, loc);
+        const chance = catchChance(stats, target, content.constants.catchCap, luckFactor(content.constants, target));
+        if (!best || chance > best.chance) best = { id: t.id, chance };
+      }
+      if (best && best.id !== p.setup.trap) p = apply(p, equip(content, p, 'trap', best.id));
+    }
   }
   return p;
 }
@@ -339,7 +348,7 @@ function play(rng: Rng, playerNo: number): Log {
     if ((tier === 'boss' || tier === 'miniboss') && r.entry.outcome === 'catch') log.bosses[r.entry.imp!] = (log.bosses[r.entry.imp!] ?? 0) + 1;
     for (const note of r.entry.objective?.notes ?? []) {
       if (note.startsWith('The sleigh launches')) log.objectives.launches++;
-      if (note.startsWith('Order done')) log.objectives.orders++;
+      if (/order done: a Toy Crate/.test(note)) log.objectives.orders++;
     }
     L.baitCost += r.entry.baitUsed * baitPrice(baitBefore ?? '');
     if (r.entry.pillage) {
