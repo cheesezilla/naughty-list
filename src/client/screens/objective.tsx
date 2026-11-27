@@ -31,7 +31,7 @@ export function HintSheet({ location, onClose }: { location: Location; onClose: 
 export function ObjectivePanel({ location, onHint }: { location: Location; onHint: () => void }) {
   const { player } = useGame();
   const o = location.objective;
-  if (!o) return null;
+  if (!o) return location.id === 'cookie_pantry' ? <PantryGoals location={location} /> : null;
   const s = player.objectives?.[location.id];
   return (
     <section class={`objective-panel loc-${location.id}`} aria-label={`${location.name} goal`}>
@@ -170,5 +170,37 @@ function SleighPanel({ o, s, location }: { o: Sleigh; s?: Extract<ObjectiveState
       <p class="panel-line"><b>Readiness {s.readiness}</b> / 100 · {s.readiness >= o.minibossFrom ? `${name(o.miniboss)} is about (${o.minibossFrom}+)` : `${name(o.miniboss)} comes at ${o.minibossFrom}`}</p>
       {last && <p class="panel-line small">Last: {last}</p>}
     </>
+  );
+}
+
+/** The Cookie Pantry has no boss: its goals are reaching the next area's rank and (optionally) every portrait. */
+function PantryGoals({ location }: { location: Location }) {
+  const { content, player } = useGame();
+  const next = content.locations.find((l) => !l.side && l.rank > location.rank);
+  const rankDone = !!next && player.rank >= next.rank;
+  const rankName = next ? content.ranks[next.rank - 1]?.name : undefined;
+  const elves = location.imps;
+  const got = elves.filter((i) => (player.catches[i.id] ?? 0) > 0).length;
+  const allDone = got >= elves.length;
+  return (
+    <section class={`objective-panel loc-${location.id}`} aria-label={`${location.name} goals`}>
+      <h3>Goals <small>{location.name}</small></h3>
+      <ul class="goals">
+        <li class={rankDone ? 'done' : ''}>
+          <span class="tick" aria-hidden="true">{rankDone ? '✓' : ''}</span>
+          <span>
+            <b>Rank up and move on</b>
+            <small>{rankDone ? `Reached ${rankName}. The ${next!.name} is open to you.` : `Reach ${rankName} to move on to the ${next?.name}.`}</small>
+          </span>
+        </li>
+        <li class={allDone ? 'done' : ''}>
+          <span class="tick" aria-hidden="true">{allDone ? '✓' : ''}</span>
+          <span>
+            <b>Unlock every portrait <i>(optional)</i></b>
+            <small>{got}/{elves.length} elves caught</small>
+          </span>
+        </li>
+      </ul>
+    </section>
   );
 }
