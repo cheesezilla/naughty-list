@@ -2,6 +2,8 @@
 
 Written for eddy. Findings and recommendations first, numbers second. Report 1 used `npm run simulate -- --players 1000 --seeds 5` (5,000 virtual hunters). Report 2 uses 1,000 players, seed 1 per scenario (eddy asked to cut the run time); the baseline there is 1,286 against 1,291 above, so the two agree within 0.5%. Tuning is a separate task: nothing in `content/` changed.
 
+**Standard game-length metrics (eddy, 27 Nov): every report states both.** (1) Median hunts to rank 5. (2) Hunts to catch every elf, 100% of the Naughty List portraits, Carol Loft and bosses included. The simulator prints both at the top of every run, with the mean, p10, p90 and the share of players who finish (cap 20,000 hunts, `--max-collect-hunts`).
+
 ## Report 1: baseline (Allure built, no Cheer Meter or events yet)
 
 ### Conclusions
@@ -134,3 +136,17 @@ Scrinch challenges, tolls and the boss-escape grudge are gone; random events are
 - **Events:** 1.15 per 100 hunts (boon cards 0.92, Grand Gifts 0.23), median 63 hunts between events (p90 163), 14 events per player, 2.8 Grand Gifts per player. Boon-card gold is 3,837 per player, 2% of gold earned. Report 2's 2.0 per 100 hunts is now about 1.15, with no more grudge-driven events.
 - **Gone from the report:** Scrinch fight win rate, tolls paid and the `skip` and `fight` policies (Reports 2 to 4 keep their old numbers as history).
 
+## Report 7: the full-collection benchmark (1,000 players, seed 42, Cheer and events on, greedy boons, safe events)
+
+New standard metric: hunts until every one of the 28 elves has been caught. The simulated player used to stop at rank 5. It now carries on, hunting only rooms that still hold an uncaught elf, until the collection is complete or it hits 20,000 hunts. All other stats in the report are still frozen at the moment of rank 5. Run on `integration` with PR 66 (the Shredwell retune) included.
+
+| Metric | Result |
+| --- | --- |
+| Players reaching rank 5 | 1,000 of 1,000 |
+| Hunts to rank 5 | median 1,226 |
+| Players catching all 28 elves | 1,000 of 1,000 (100%) |
+| Hunts to catch all elves | **mean 1,252**, median 1,240, p10 1,123, p90 1,400 |
+| Extra hunts after rank 5 | p10 0, median 0, p90 41 |
+
+- **Reading it:** the collection is essentially complete by the time rank 5 is reached, so the two benchmarks differ by only about 14 hunts at the median. Boss keys, the Loft detour and the Pantry-to-Stables chain mean a player who ranks up has already met nearly every elf. The Naughty List does not add a long tail for this bot.
+- **Caveat:** the bot hunts to rank up and keep catching bosses, so it is a fairly thorough collector. A human who skips the Carol Loft or the mini bosses would take longer, because rank 5 does not need the Loft side area. If eddy wants collection to be a real second goal, the elves to watch are the rare ones and the Loft elves (see the first-catch tail table in the full run).

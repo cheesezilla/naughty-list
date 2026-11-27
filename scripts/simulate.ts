@@ -35,6 +35,7 @@ const PLAYERS = opt('players', 200);
 const SEED = opt('seed', 1);
 const SEEDS = opt('seeds', 0);
 const MAX_HUNTS = opt('max-hunts', 20000);
+const MAX_COLLECT = opt('max-collect-hunts', 20000);
 const STRICT = args.includes('--strict');
 const VERBOSE = args.includes('--verbose');
 const strOpt = (name: string, def = '') => { const i = args.indexOf(`--${name}`); return i >= 0 ? (args[i + 1] ?? def) : def; };
@@ -111,6 +112,10 @@ interface Log {
   /** Elf id → hunt number of the first catch, and per location the hunt every elf was caught. */
   firstCatch: Record<string, number>;
   portraitDone: Record<string, number>;
+  /** Hunt number when every elf in the game (bosses and the Carol Loft included) had been caught; undefined if not by the cap. */
+  collectedAt?: number;
+  /** Elves still uncaught when the run stopped. */
+  missing?: string[];
   /** Hunt numbers where something good happened (any catch, or a milestone that is not a plain catch). */
   goodAny: number[];
   goodMilestone: number[];
@@ -121,6 +126,10 @@ interface Log {
   cheer: { fills: number[]; pipsGained: number; pipsLost: number; draws: number; held: number; heldPips: number[]; boonHunts: number; fullWait: number; picks: Record<string, number>; offered: Record<string, number>; rareDraws: number; legDraws: number; pityForced: number; drawsAt: Record<string, number>; goldUnder: number; goldOutside: number; huntsOutside: number; caughtUnder: number; caughtOutside: number; pointsUnder: number; pointsOutside: number };
   events: { n: number; byType: Record<string, number>; hunts: number[]; boonGold: number; boonsA: number; boonsB: number; declined: number };
 }
+
+let collecting = false;
+const allElves = content.locations.flatMap((l) => l.imps.map((i) => i.id));
+const uncaught = (p: PlayerState) => allElves.filter((id) => (p.catches[id] ?? 0) === 0);
 
 function plan(p: PlayerState, log: Log, huntNo: number): PlayerState {
   // 1. Unlock the deepest location the rank allows, keeping a bait reserve.
@@ -142,12 +151,15 @@ function plan(p: PlayerState, log: Log, huntNo: number): PlayerState {
   let where = p.location;
   let bestValue = -Infinity;
   const detour = content.locations.find((l) => l.side && p.unlocked.includes(l.id) && content.recipes.some((r) => count(p, r.output.item) === 0 && data.items.get(r.output.item)?.kind === 'trap' && Object.keys(r.ingredients).some((i) => l.imps.some((m) => m.loot?.some((x) => x.item === i)))));
+  const missing = collecting ? uncaught(p) : [];
   for (const id of p.unlocked) {
+    // Collection phase (after rank 5): only hunt rooms that still hold an uncaught elf, if any is reachable.
+    if (collecting && missing.length && p.unlocked.some((u) => data.locations.get(u)!.imps.some((m) => missing.includes(m.id))) && !data.locations.get(id)!.imps.some((m) => missing.includes(m.id))) continue;
     const s = bestSetup(p, id, true);
     const v = s.net >= 0 ? s.value : s.net - 1e6;
     if (v > bestValue) { bestValue = v; where = id; }
   }
-  if (detour) where = detour.id;
+  if (detour && !collecting) where = detour.id;
   if (where !== p.location) p = apply(p, travel(content, p, where));
 
   // 3. Craft gear whenever possible (move off a trap the recipe uses up first).
@@ -399,6 +411,25 @@ function play(rng: Rng, playerNo: number): Log {
     if (p.rank >= finalRank) { log.finished = true; break; }
   }
   log.badges = { ...p.achievements };
+  // Second benchmark: keep hunting after the last rank until every elf is caught (or the cap). Stats above are frozen.
+  if (log.finished) {
+    const frozen = structuredClone(log);
+    collecting = true;
+    let n = log.hunts;
+    if (uncaught(p).length === 0) log.collectedAt = n;
+    while (log.collectedAt === undefined && n < MAX_COLLECT) {
+      n++;
+      if (n % 20 === 0 || !p.setup.bait || count(p, p.setup.bait) === 0) p = plan(p, frozen, n);
+      p = playObjective(p, rng, frozen);
+      p = answer(p, rng, frozen, n);
+      const r = hunt(content, p, rng);
+      if (!r.ok) { p = plan(p, frozen, n); continue; }
+      p = r.player;
+      if (r.entry.firstCatch && uncaught(p).length === 0) log.collectedAt = n;
+    }
+    log.missing = uncaught(p);
+    collecting = false;
+  }
   return log;
 }
 
@@ -426,7 +457,18 @@ console.log(`\nThe Naughty List balance run: ${TOTAL} players, ${SEEDS > 0 ? `se
 console.log(`Cheer Meter: ${HAS_CHEER ? (NO_CHEER ? 'off' : `on, boon policy ${BOON_POLICY}`) : 'not in this engine'}. Events: ${HAS_EVENTS ? (NO_EVENTS ? 'off' : `on, event policy ${EVENT_POLICY}`) : 'not in this engine'}.\n`);
 if (SEEDS > 0) console.log(`Median hunts to rank ${finalRank} per seed: ${perSeedMedian.map(fmt).join(', ')}`);
 console.log(`Reached rank ${finalRank}: ${logs.filter((l) => l.finished).length}/${TOTAL}`);
-console.log(`Total hunts to rank ${finalRank}: median ${fmt(quant(logs.filter((l) => l.finished).map((l) => l.hunts), 0.5))}\n`);
+console.log(`Total hunts to rank ${finalRank}: median ${fmt(quant(logs.filter((l) => l.finished).map((l) => l.hunts), 0.5))}`);
+{
+  const col = logs.filter((l) => l.collectedAt !== undefined).map((l) => l.collectedAt!);
+  console.log(`Hunts to catch all ${allElves.length} elves (100% of portraits, after rank ${finalRank}, cap ${fmt(MAX_COLLECT)} hunts): reached by ${col.length}/${TOTAL} (${pct(col.length / TOTAL)}); mean ${fmt(col.reduce((a, b) => a + b, 0) / Math.max(1, col.length))}, p10 ${fmt(quant(col, 0.1))} / median ${fmt(quant(col, 0.5))} / p90 ${fmt(quant(col, 0.9))}`);
+  const after = logs.filter((l) => l.collectedAt !== undefined).map((l) => l.collectedAt! - l.hunts);
+  console.log(`  Extra hunts after rank ${finalRank} to finish the collection: p10 ${fmt(quant(after, 0.1))} / median ${fmt(quant(after, 0.5))} / p90 ${fmt(quant(after, 0.9))}`);
+  const miss: Record<string, number> = {};
+  for (const l of logs) for (const m of l.missing ?? []) miss[m] = (miss[m] ?? 0) + 1;
+  const top = Object.entries(miss).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  if (top.length) console.log(`  Still missing at the cap: ${top.map(([id, c]) => `${id} ${c}`).join(', ')}`);
+  console.log('');
+}
 
 let misses = 0;
 console.log('Rank  Hunts in rank (p10 / median / p90)   Target   Status');
