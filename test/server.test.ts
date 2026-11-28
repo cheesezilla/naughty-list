@@ -492,3 +492,15 @@ describe('achievements and the welcome popup', () => {
 });
 
 void scripted;
+
+describe('session cookie name', () => {
+  it('defaults to nl_session and can be set per deployment', async () => {
+    const signup = async () => (await post('/api/auth/signup', { username: 'eddy', password: 'candycane123' })).headers['set-cookie'] as string;
+    expect(await signup()).toMatch(/^nl_session=/);
+    await app.close();
+    store.close();
+    store = new Store(':memory:');
+    app = await buildApp({ content, store, version: 'test', now: () => clock, rng: () => 0, cookieName: 'nl_session_test' });
+    expect(await signup()).toMatch(/^nl_session_test=/);
+  });
+});
