@@ -177,6 +177,7 @@ export function equip(content: Content, player: PlayerState, slot: keyof Setup, 
   const item = itemOfKind(data, itemId, slot);
   if (!item) return fail(`That isn't a ${slot}.`);
   if (count(player, itemId) < 1) return fail(`You don't have ${item.name}.`);
+  if ((item as { sealed?: boolean }).sealed) return fail(`${item.name} can't be used yet. It is waiting for a place made for it.`);
   const p = clone(player);
   p.setup[slot] = itemId;
   if (slot === 'trap' && itemId !== content.constants.startingSetup.trap) bump(p, 'newTrap');

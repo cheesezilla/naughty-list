@@ -25,7 +25,7 @@ const val = (n: string) => { const i = args.indexOf(`--${n}`); return i >= 0 ? a
 const content: Content = loadContent(val('content') ?? 'content');
 const T = JSON.parse(readFileSync(val('thresholds') ?? 'balance/thresholds.json', 'utf8'));
 const data = gameData(content);
-const I = content.items;
+const I = { ...content.items, traps: content.items.traps.filter((t) => !t.sealed) };
 const DOC = 'docs/BALANCE.md';
 const START = '<!-- balance:generated:start -->';
 const END = '<!-- balance:generated:end -->';

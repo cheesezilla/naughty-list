@@ -17,10 +17,15 @@ function cheerText(c: { all?: number; rare?: number; escape?: number }): string 
   return [c.all && '+1 Cheer pip a catch', !c.all && c.rare && '+1 Cheer pip on rare catches', c.escape && 'escapes cost 1 less'].filter(Boolean).join(', ');
 }
 
+/** Stats of a sealed item (earned now, usable later) stay hidden. */
+function sealedOr(item: AnyItem, value: string): string {
+  return (item as { sealed?: boolean }).sealed ? '???' : value;
+}
+
 export function itemStats(item: AnyItem, exact: boolean): string {
   const bits: string[] = [];
   if (item.kind === 'trap' || item.kind === 'base') {
-    bits.push(`Power ${num(item.power)}`, `Luck ${item.luck}`);
+    bits.push(`Power ${sealedOr(item, num(item.power))}`, `Luck ${sealedOr(item, String(item.luck))}`);
     if (exact && item.attraction) bits.push(`+${pct(item.attraction)} attraction`);
     if (item.kind === 'base' && item.goodFor) bits.push(item.goodFor);
     if (item.kind === 'base' && item.affinity) bits.push(`+${pct(item.affinity.powerBonus)} power with ${item.affinity.types.map((t) => TYPE_NAME[t]).join(' or ')} traps`);
@@ -43,7 +48,7 @@ export function itemStats(item: AnyItem, exact: boolean): string {
 export function itemStatRows(item: AnyItem, exact: boolean): [string, string][] {
   const rows: [string, string][] = [];
   if (item.kind === 'trap' || item.kind === 'base') {
-    rows.push(['Power', num(item.power)], ['Luck', String(item.luck)]);
+    rows.push(['Power', sealedOr(item, num(item.power))], ['Luck', sealedOr(item, String(item.luck))]);
     if (exact && item.attraction) rows.push(['Attraction', `+${pct(item.attraction)}`]);
     if (item.kind === 'base' && item.goodFor) rows.push(['Good for', item.goodFor]);
     if (item.kind === 'base' && item.affinity) rows.push(['Affinity', `+${pct(item.affinity.powerBonus)} power with ${item.affinity.types.map((t) => TYPE_NAME[t]).join(' or ')} traps`]);
@@ -190,6 +195,7 @@ export function ItemScreen({ id }: { id: string }) {
   const equipped = slot ? player.setup[slot] === id : false;
   const kindName = { trap: 'Trap', base: 'Base', bait: 'Bait', charm: 'Charm', material: 'Material' }[item.kind];
   const where = price !== null ? `from the Elf Emporium, ${num(price)} gold` : recipe ? "crafted in Santa's Workshop" : item.kind === 'material' ? 'dropped by hexed elves' : 'starter gear from Santa';
+  const sealed = !!(item as { sealed?: boolean }).sealed;
   const big = (label: string, value: string) => <div><b>{value}</b><span>{label}</span></div>;
 
   return (
@@ -203,12 +209,13 @@ export function ItemScreen({ id }: { id: string }) {
       <div class="pad stack">
         <p class="muted">You own {num(own)} · {where}</p>
         <div class="stat-row light">
-          {(item.kind === 'trap' || item.kind === 'base') && <>{big('Power', num(item.power))}{big('Luck', String(item.luck))}{exact && big('Attraction', `+${pct(item.attraction ?? 0)}`)}</>}
+          {(item.kind === 'trap' || item.kind === 'base') && <>{big('Power', sealedOr(item, num(item.power)))}{big('Luck', sealedOr(item, String(item.luck)))}{exact && big('Attraction', `+${pct(item.attraction ?? 0)}`)}</>}
           {item.kind === 'bait' && <>{exact && big('Attraction', pct(item.attraction))}{big('Rare elves', `×${item.rareMultiplier ?? 1}`)}{big('Rank', String(item.rank))}</>}
           {item.kind === 'charm' && <>{big('Luck', `+${item.luck ?? 0}`)}{big('Power', item.powerBonus ? `+${pct(item.powerBonus)}` : `+${item.power ?? 0}`)}{exact && big('Attraction', `+${pct(item.attraction ?? 0)}`)}</>}
           {item.kind === 'material' && <>{big('Sells for', `${num(sellValue(data, item))}`)}{big('Used in', String(usedIn.length))}</>}
         </div>
         {item.kind === 'base' && item.goodFor && <p class="small"><strong>Good for:</strong> {item.goodFor}{item.affinity && ` (+${pct(item.affinity.powerBonus)} power with ${item.affinity.types.map((t) => TYPE_NAME[t]).join(' or ')} traps)`}</p>}
+        {sealed && <p class="small"><strong>Keep it safe:</strong> its power and luck are a secret until a place made for it opens.</p>}
         {item.flavour && (
           <div class="flavour">
             <p class="tagline">{item.flavour.tagline}</p>
@@ -223,7 +230,7 @@ export function ItemScreen({ id }: { id: string }) {
           <div class="dock-buttons">
             <button class="outline-btn dark" onClick={() => go(`arsenal/${slot}/${id}`)}>Compare</button>
             {own > 0
-              ? <button class="primary-btn" disabled={equipped} onClick={() => act('/api/setup', { slot, item: id }, `Equipped ${item.name}.`)}>{equipped ? 'Equipped' : 'Equip'}</button>
+              ? <button class="primary-btn" disabled={equipped || sealed} onClick={() => act('/api/setup', { slot, item: id }, `Equipped ${item.name}.`)}>{equipped ? 'Equipped' : sealed ? 'Not usable yet' : 'Equip'}</button>
               : price !== null
                 ? <button class="primary-btn" onClick={() => go(`emporium/${slot === 'bait' ? 'bait' : `${slot}s`}`)}>Buy in the Emporium</button>
                 : <button class="primary-btn" onClick={() => go('workshop')}>Open the Workshop</button>}

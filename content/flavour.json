@@ -35,6 +35,11 @@
       "description": "A giant snow globe that swallows its catch whole and swirls it in a blizzard until it forgets which way is out.",
       "backstory": "Santa keeps a shelf of snow globes, each holding a tiny winter that is really happening somewhere. This one holds no village, only a storm that never ends. The elves say a hexed elf once spent three days inside it trying to build a snowman to climb out on."
     },
+    "tidepool_pail": {
+      "tagline": "Slosh it, and the fire goes out.",
+      "description": "A tin pail brimming with a tidepool that never empties. The only Tide trap, and its power is a secret until a place made for it opens.",
+      "backstory": "The Workshop elves sealed three Steam Pearls into a pail and filled it from the one tidepool under the lair that stays warm. The water sloshes by itself and chimes like a bell. Santa says to keep it safe: the next stretch of the North Pole has more water than anyone expects."
+    },
     "sleigh_bell_snapper": {
       "tagline": "Hear the jingle? Too late.",
       "description": "The finest trap in the lair: a sleigh-bell harness with a clockwork heart, built on the bones of a Nutcracker Jaws.",
@@ -234,6 +239,11 @@
       "tagline": "Hot to the touch, and it never goes out.",
       "description": "A lump of devil's coal broken from Cinderhoof's antlers, smouldering with Scrinch's own fire. Saved for greater gear.",
       "backstory": "Naughty children get coal. Scrinch's lieutenants carry it as a badge of rank, warmed by the fires under his throne. The elves keep every lump in an iron chest, because Santa's Workshop will one day need fire that hot to make the strongest gear of all."
+    },
+    "steam_pearl": {
+      "tagline": "A small cloud that learned to be round.",
+      "description": "A pearl of hissing steam that forms where Cinderhoof's embers meet cold air. It only forms sometimes after a catch, and three are needed for the Tidepool Pail.",
+      "backstory": "Cinderhoof snorts a gust of steam whenever it is truly beaten, but only some of the time, and the elves cup their hands to catch the pearl before it drifts away. Left alone it cools into water, which is exactly what the Tidepool Pail is built from."
     },
     "carol_horn": {
       "tagline": "One true note, held very loud.",

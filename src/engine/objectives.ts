@@ -39,7 +39,7 @@ export interface ObjectiveResult {
 export type CoreType = 'clockwork' | 'starlight' | 'frost';
 export const coreTypes: CoreType[] = ['clockwork', 'starlight', 'frost'];
 
-const TYPE_NAME: Record<PowerType, string> = { clockwork: 'Clockwork', starlight: 'Starlight', frost: 'Frost', carol: 'Carol' };
+const TYPE_NAME: Record<PowerType, string> = { clockwork: 'Clockwork', starlight: 'Starlight', frost: 'Frost', carol: 'Carol', tide: 'Tide' };
 
 /** The saved state for a location's loop, created on first use. Bait ladders have none. */
 export function objectiveState(p: PlayerState, location: Location, rng?: Rng): ObjectiveState | undefined {

@@ -189,6 +189,23 @@ export const traps: Record<string, () => string> = {
       glint(300, 190, 0.8),
     ),
 
+  tidepool_pail: () =>
+    g(
+      {},
+      // pail body and rim
+      path('M214 340 L236 190 L364 190 L386 340 Z', ol(P.silver)),
+      path('M226 250 L374 250 M222 290 L378 290', line(8, P.silverDark)),
+      path('M228 190 Q300 168 372 190', line(14, P.silverDark)),
+      // water with a wave
+      path('M236 190 Q262 150 300 168 Q336 186 364 190 Z', ol('#2fa3b8')),
+      path('M250 176 Q276 148 304 164', line(8, P.white)),
+      // handle
+      path('M236 200 Q300 90 364 200', line(10, P.cocoa)),
+      // pearls
+      circle(268, 120, 14, ol(P.white, 6)), circle(312, 98, 11, ol(P.white, 6)), circle(344, 134, 9, ol(P.white, 6)),
+      glint(262, 114, 0.6),
+    ),
+
   sleigh_bell_snapper: () =>
     g(
       {},
@@ -804,6 +821,17 @@ export const materials: Record<string, () => string> = {
       sparkle(430, 300, 18, P.white), sparkle(84, 330, 14, P.white),
     ),
 
+  steam_pearl: () =>
+    g(
+      {},
+      shadow(256, 440, 130),
+      circle(256, 290, 130, ol(P.white, 12)),
+      circle(256, 290, 130, { fill: '#cfeef6', opacity: 0.7 }),
+      path('M200 250 Q230 200 280 214', line(14, P.white)),
+      path('M226 160 Q200 110 240 70 Q262 40 244 10', line(12, P.silver)),
+      glint(210, 246, 0.8),
+    ),
+
   brimstone_coal: () =>
     g(
       {},
@@ -834,6 +862,15 @@ export const trapTypes: Record<string, () => string> = {
       sparkle(66, 70, 14, P.white), sparkle(192, 186, 10, P.white), sparkle(196, 64, 8, P.goldBright),
     ),
   frost: () => g({}, circle(128, 128, 116, ol(P.cream, 8)), circle(128, 128, 82, ol(P.frostLight, 8)), snowflake(128, 128, 64, P.frostDark, 12)),
+  tide: () =>
+    g(
+      {},
+      circle(128, 128, 116, ol('#0d4a5c', 8)),
+      circle(128, 130, 84, { fill: '#2fa3b8' }),
+      path('M128 52 C164 98 184 122 184 150 A56 56 0 0 1 72 150 C72 122 92 98 128 52 Z', ol(P.white, 8)),
+      path('M92 196 Q128 214 164 196', line(8, P.white)),
+      sparkle(196, 66, 10, P.white),
+    ),
   carol: () =>
     g(
       {},

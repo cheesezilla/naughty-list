@@ -9,6 +9,15 @@ const fresh = () => newPlayer(content);
 const fresh300 = () => ({ ...fresh(), gold: 300 });
 
 describe('hunt', () => {
+  it('a sealed trap (the Tidepool Pail) can be owned but not equipped yet', () => {
+    const p = newPlayer(content, 0);
+    p.inventory.tidepool_pail = 1;
+    const r = equip(content, p, 'trap', 'tidepool_pail');
+    expect(r.ok).toBe(false);
+    const pail = content.items.traps.find((t) => t.id === 'tidepool_pail')!;
+    expect(pail.sealed).toBe(true);
+    expect(pail.power).toBe(0);
+  });
   it('every hunt meets an elf and uses bait: there are no quiet hunts', () => {
     const r = hunt(content, fresh(), scripted(0.99));
     if (!r.ok) throw new Error(r.error);
