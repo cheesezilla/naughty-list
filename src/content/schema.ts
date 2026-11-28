@@ -190,6 +190,14 @@ export const Constants = z.object({
   /** Luck: its bonus is `scale` x luck squared x the weight of the elf's tier, so luck helps most against common elves and least against bosses. */
   luck: z.object({ scale: z.number().nonnegative(), tierWeight: z.object({ common: z.number(), uncommon: z.number(), rare: z.number(), miniboss: z.number(), boss: z.number() }) }),
   sellBackRate: chance,
+  /** One-time cap on saved gold and points, applied the first time a save opens after the update that adds it. Bump `id` for a new reset. */
+  economyReset: z.object({
+    id: z.string().min(1),
+    /** Gold cap by rank, index 0 = rank 1; ranks beyond the list use the last entry. */
+    goldByRank: z.array(z.number().int().nonnegative()).min(1),
+    /** Points cap = the player's rank threshold + this share of the gap to the next rank (0 at the top rank), so nobody drops a rank. */
+    pointsGapShare: z.number().min(0).max(1),
+  }).optional(),
   rescue: z.object({ maxGold: z.number().int().nonnegative(), item: id, amount: z.number().int().positive() }),
   maxHuntsPerSecond: z.number().positive(),
   pillage: z.object({

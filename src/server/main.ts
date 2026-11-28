@@ -24,6 +24,10 @@ try {
   console.error(explainOpenError(dataDir, e));
   process.exit(1);
 }
+if (content.constants.economyReset) {
+  const done = store.applyEconomyReset(content.constants.economyReset, content.ranks);
+  if (done) console.log(`Economy reset ${content.constants.economyReset.id}: capped gold and points for ${done.capped} players.`);
+}
 const app = await buildApp({ content, store, clientDir, version: process.env.APP_VERSION, cookieName: process.env.COOKIE_NAME, logger: true });
 
 const shutdown = async () => {
