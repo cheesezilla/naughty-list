@@ -6,6 +6,13 @@ Each version's section is also the text of its GitHub Release, so write it for p
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-11-28
+
+A small patch release.
+
+### Fixes
+- Checking the What's new popup: this version has fresh release notes, so the popup shows once when you open the game and is also under More > What's new.
+
 ## [1.0.1] - 2026-11-28
 
 A balance and fixes release.

@@ -1,5 +1,19 @@
 [
   {
+    "version": "1.0.2",
+    "date": "2026-11-28",
+    "title": "Patch",
+    "summary": "A small patch with fresh release notes.",
+    "sections": [
+      {
+        "heading": "Fixes",
+        "items": [
+          "The What's new popup shows once on the first load after an update, and stays under More > What's new."
+        ]
+      }
+    ]
+  },
+  {
     "version": "1.0.1",
     "date": "2026-11-28",
     "title": "Balance and fixes",
