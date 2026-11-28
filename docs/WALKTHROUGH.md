@@ -85,9 +85,9 @@ Commons: Hay Hoarder and Bell Thief (weak Frost), Harness Snipper (weak Clockwor
 | Cinderhoof | boss | 16,800 | frost | 18% | 25% |
 
 
-- **Frost build:** Snow Globe Prison (25,000 g, Frost 1,800), Gingerbread Cottage base (3 Cookie Tin, 2 Golden Ribbon, 1 Candy Cane Platform + 8,000 g; Frost affinity +10%), Wind-up Key Charm. See the table above: about 66% Hay Hoarder, 60% Bell Thief, 45% Harness Snipper, 64% Carrot Crook with trap 2.
+- **Frost build:** Snow Globe Prison (25,000 g, Frost 1,800), Gingerbread Cottage base (3 Cookie Tin, 2 Golden Ribbon, 1 Candy Cane Platform + 8,000 g; Frost affinity +10%), Wind-up Key Charm. See the table above: about 70% Hay Hoarder, 64% Bell Thief, 49% Harness Snipper, 68% Carrot Crook with trap 2.
 - **Sleigh Run:** start a run (free) and reach 100 readiness within 40 hunts. Commons add 5, Carrot Crook 12, Antler Ripper 20 (it appears only above 50 readiness). A Bell Thief escape costs 8, a Harness Snipper escape 5. Launching pays 2,000 g and a Silver Sleighbell, then Cinderhoof ambushes the next hunt.
-- **Antler Ripper** (5,700 power, weak Frost) is about 50%. **Cinderhoof** (16,800 power, weak Frost, immune to Starlight) is about 25% with trap 2 (18% with trap 1 alone), so expect several tries. Escapes never cost rank.
+- **Antler Ripper** (5,000 power, weak Frost) is about 53%. **Cinderhoof** (16,800 power, weak Frost, immune to Starlight) is about 25% with trap 2 (18% with trap 1 alone), so expect several tries. Escapes never cost rank.
 - Optional: Sleigh Runner base (2 Silver Sleighbell + 2 Toymaker's Gear + 12,000 g) and Sleigh-Bell Snapper trap (3 Silver Sleighbell + Clockwork Heart + Nutcracker Jaws + 15,000 g): about 25% on Cinderhoof with the Sleigh Runner, the same as the Frost build. The Wishing Star Pedestal (1 Clockwork Heart, 2 Enchanted Wrapping, 4 Sugar Glass, 12,000 g) adds luck 9.
 
 ## Carol Loft (optional side area)
