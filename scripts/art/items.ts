@@ -391,6 +391,31 @@ export const baits: Record<string, () => string> = {
       sparkle(360, 140, 18), sparkle(150, 330, 14),
     ),
 
+  glitter_gumdrop: () =>
+    g(
+      {},
+      shadow(256, 430, 150),
+      path('M130 380 Q130 190 256 170 Q382 190 382 380 Z', ol(P.goldBright)),
+      path('M170 340 Q170 230 256 214', line(10, P.cream)),
+      sparkle(190, 260, 14), sparkle(320, 300, 12), sparkle(280, 220, 10),
+      // tiny bow
+      path('M256 170 C216 130 186 160 214 184 C230 196 248 184 256 174 Z', ol(P.gold)),
+      path('M256 170 C296 130 326 160 298 184 C282 196 264 184 256 174 Z', ol(P.gold)),
+      circle(256, 174, 12, ol(P.gold)),
+      glint(300, 230, 0.8),
+    ),
+
+  honey_lozenge: () =>
+    g(
+      {},
+      shadow(256, 420, 150),
+      ellipse(256, 300, 140, 110, ol(P.gold)),
+      ellipse(256, 290, 100, 72, ol(P.goldBright)),
+      path('M180 290 Q256 220 332 290 Q256 340 180 290 Z', line(10, P.cream)),
+      path('M230 392 Q230 440 250 440 Q268 440 268 410', ol(P.gold)),
+      glint(200, 250, 0.8),
+    ),
+
   stale_cookie: () =>
     g(
       {},

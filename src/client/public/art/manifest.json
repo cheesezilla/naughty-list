@@ -319,6 +319,28 @@
       "prompt": "Peppermint Bark: a slab of chocolate peppermint bark with crushed red and white candy. Single item thumbnail on a transparent background, 512x512, centred, soft ground shadow. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
     },
     {
+      "id": "glitter_gumdrop",
+      "slot": "baits",
+      "file": "baits/glitter_gumdrop.svg",
+      "width": 512,
+      "height": 512,
+      "transparent": true,
+      "source": "generated",
+      "description": "Glitter Gumdrop: a round red gumdrop rolled in gold glitter with a tiny gold bow",
+      "prompt": "Glitter Gumdrop: a round red gumdrop rolled in gold glitter with a tiny gold bow. Single item thumbnail on a transparent background, 512x512, centred, soft ground shadow. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
+    },
+    {
+      "id": "honey_lozenge",
+      "slot": "baits",
+      "file": "baits/honey_lozenge.svg",
+      "width": 512,
+      "height": 512,
+      "transparent": true,
+      "source": "generated",
+      "description": "Honey Lozenge: a golden honey lozenge drop with a swirl and a dribble of honey",
+      "prompt": "Honey Lozenge: a golden honey lozenge drop with a swirl and a dribble of honey. Single item thumbnail on a transparent background, 512x512, centred, soft ground shadow. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
+    },
+    {
       "id": "fruitcake",
       "slot": "baits",
       "file": "baits/fruitcake.webp",

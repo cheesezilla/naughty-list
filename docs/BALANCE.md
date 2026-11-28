@@ -117,6 +117,28 @@ Recommended gear per area: Cookie Pantry: Jack-in-the-Box / Starlit Stocking on 
 
 Beginner gear per area: Cookie Pantry: Jack-in-the-Box + Gingerbread Slab; Wrapping Room: Star Lantern + Candy Cane Platform; Toy Workshop: Nutcracker Jaws + Ice Block; Reindeer Stables: Snow Globe Prison + Yule Log Base; Carol Loft: Star Lantern or Icicle Jar or Jack-in-the-Box + Candy Cane Platform. Madame Shredwell is weak to Carol, so a beginner with a Carol Horn catches her much more often than the Star Lantern figure (see section 2).
 
+### 1c. Gold profit per hunt in every area: beginner, recommended, endgame gear
+
+Net gold per hunt = expected gold from catches (encounter weight x catch rate x elf gold, using the exact hunt odds) minus the price of the one bait a hunt uses. Every hunt uses one bait and the best bait is picked per area and tier (shop baits only; beginner and recommended players can only use baits up to the area's rank). Charms are left out (one-use, 25 to 90 gold each) and so are boons, events and pillage. Gear tiers are the same as 1b; for each tier the trap and base with the most net gold per hunt in that area are used. **Farm index** = endgame net gold per hunt here divided by the recommended net gold per hunt in the area the player would be progressing in (the highest-rank main area): below 100% means farming here with endgame gear pays less than hunting in the top area with recommended gear.
+
+| Area | Rank | 1. Beginner: net gold / hunt | 2. Recommended: net gold / hunt | 3. Endgame: net gold / hunt | Farm index (endgame here vs recommended in Reindeer Stables) |
+| --- | --- | --- | --- | --- | --- |
+| Cookie Pantry | 1 | 9 (gold 17, Stale Cookie 8) | 9 (gold 17, Stale Cookie 8) | 20 (gold 28, Stale Cookie 8) | 7% |
+| Wrapping Room | 2 | 29 (gold 45, Glitter Gumdrop 16) | 47 (gold 63, Glitter Gumdrop 16) | 54 (gold 70, Glitter Gumdrop 16) | 18% |
+| Toy Workshop | 3 | 65 (gold 105, Peppermint Bark 40) | 89 (gold 129, Peppermint Bark 40) | 114 (gold 154, Peppermint Bark 40) | 38% |
+| Reindeer Stables | 4 | 261 (gold 306, Hot Cocoa 45) | 304 (gold 349, Hot Cocoa 45) | 304 (gold 349, Hot Cocoa 45) | 100% |
+| Carol Loft | 2 | 25 (gold 33, Honey Lozenge 8) | 26 (gold 34, Honey Lozenge 8) | 37 (gold 45, Honey Lozenge 8) | 12% |
+
+### 1d. Reindeer Stables: gold per hunt with the sleigh run off and on
+
+**Off** = hunting without starting a run (the 1c numbers). **On** = back-to-back sleigh runs: each run lasts up to 40 hunts, catches add Readiness (common +5, rare +12, miniboss +20), escapes from Bell Thief and Harness Snipper take some away, and from 50 Readiness Antler Ripper comes at weight 6. While a run is on, each hunt costs 100 gold of upkeep and catches pay 25% of their gold. A launch (100 Readiness) pays 2000 gold; a run that times out pays 10 gold per Readiness. Solved exactly over every Readiness and hunts-left state, with the cheapest-net bait (the same as 1c, so the bait cost is small). Left out: the launch item (silver_sleighbell), the forced Cinderhoof fight after 2 launches, pillage.
+
+| Gear | Setup used | Gold / hunt, ride off | Gold / hunt, ride on (after upkeep) | On vs off | Hunts per run | Runs that launch | Net per hunt after bait (off / on) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1. Beginner | Snow Globe Prison + Yule Log Base | 306 | -2 | -101% | 38.8 | 18% | 261 / -47 |
+| 2. Recommended | Sleigh-Bell Snapper + Gingerbread Cottage | 349 | 22 | -94% | 36.7 | 43% | 304 / -23 |
+| 3. Endgame | Sleigh-Bell Snapper + Gingerbread Cottage | 349 | 22 | -94% | 36.7 | 43% | 304 / -23 |
+
 ### 2. Rare, mini boss and boss catch rates: fresh player vs endgame gear
 
 Fresh = the best trap the player could own on entering the area, on the area's base, no charm. Endgame = best trap, base and charm of everything in the game. Best setup per elf.
@@ -419,3 +441,16 @@ eddy: the Carol Horn (a rank 2 Carol trap) caught Stables commons 98% with the b
 - **Reading it:** the Horn now sits 6 points above the rank 1 trap, 10 above the Star Lantern and 5 below an on-type rank 2 Frost trap. It no longer outshines the on-type traps. The best Carol build (Wishing Star Pedestal) is about 70%; before it was 98%.
 - **Shredwell:** Carol Horn on a Candy Cane Platform with a Mistletoe Charm is 30% (31% before), 35% with a Wind-up Key. Power was not raised: luck cannot be traded for power here without lifting Shredwell (+2 points per 50 power).
 - **Cost:** the game is 7% longer, because the Horn also made the Wrapping Room and Carol Loft quicker. Rank 3 is 405 against 400. The Toy Workshop commons (44%, target 55 to 65%) were already below target before this change and are not retuned.
+
+### Report 11: area baits and the sleigh run cost (200 players, seed 42, Cheer and events on)
+
+Built on `integration` (eddy, 28 Nov). Each area only works with its own bait (a wrong bait always fails the catch), new baits Glitter Gumdrop 16 and Honey Lozenge 8, Peppermint Bark 50 to 40, Hot Cocoa 90 to 45; the sleigh run costs 100 gold upkeep per hunt, catches pay 25% gold while it is on, and it can be abandoned. `npm run balance` gains section 1c (net gold per hunt per area, three gear tiers, farm index) and 1d (Reindeer Stables with the run off and on). Details in [Developer notes](DEVELOPER_NOTES.md#area-baits-and-the-sleigh-run-cost-eddy-28-nov-2026-built-on-integration).
+
+| Metric | Before | After |
+| --- | --- | --- |
+| Hunts to rank 5 | median 1,460 | median 1,697 |
+| Hunts to catch all 28 elves | median 2,433 (p10 1,562, p90 4,251) | median 2,781 (p10 1,798, p90 5,308) |
+| Ranks 1 to 4 (median hunts) | | 127, 291, 444, 810 (targets 150, 250, 400, 600; rank 4 flagged too slow) |
+| Net gold per hunt, Stables, recommended gear | 335 (run on 368) | 304 off, -23 on |
+
+The simulated player only starts a run with the whole cost in hand and a Snow Globe Prison or Sleigh-Bell Snapper, and abandons a run it cannot pay for; without that rule it never saved the 25,000 gold for the trap.

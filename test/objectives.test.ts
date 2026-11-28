@@ -7,11 +7,14 @@ import { content, scripted, withConstants } from './helpers.js';
 
 const at = (location: string, setup: Partial<PlayerState['setup']> = {}, inventory: Record<string, number> = {}): PlayerState => {
   const p = newPlayer(content);
+  const here = content.locations.find((l) => l.id === location)!;
+  // Each area only works with its own bait: arm it by default.
+  const own = Object.fromEntries((here.baits ?? []).map((b) => [b, 100]));
   return {
     ...p, rank: 4, points: 50_000, gold: 10_000, location,
     unlocked: content.locations.map((l) => l.id),
-    setup: { ...p.setup, ...setup },
-    inventory: { ...p.inventory, stale_cookie: 100, jack_in_the_box: 1, star_lantern: 1, icicle_jar: 1, ...inventory },
+    setup: { ...p.setup, bait: here.baits?.[0] ?? p.setup.bait, ...setup },
+    inventory: { ...p.inventory, stale_cookie: 100, jack_in_the_box: 1, star_lantern: 1, icicle_jar: 1, ...own, ...inventory },
   };
 };
 const ok = (r: ReturnType<typeof hunt>) => {
@@ -27,7 +30,7 @@ const encounter = (p: PlayerState, bait: string) => {
 
 describe('Wrapping Room bait ladder', () => {
   it('shop bait only draws the commons', () => {
-    const e = encounter(at('wrapping_room'), 'stale_cookie');
+    const e = encounter(at('wrapping_room'), 'glitter_gumdrop');
     expect(e.glitterbug).toBe(0);
     expect(e.spoolwick).toBe(0);
     expect(e.madame_shredwell).toBe(0);
@@ -75,7 +78,7 @@ describe('Toy Workshop order board', () => {
     const s = p.objectives?.toy_workshop;
     expect(s).toMatchObject({ ordersDone: 3, rushReady: true, forced: 'hammerhand' });
     expect(p.gold).toBeGreaterThan(gold0 + 3 * 400);
-    expect(p.inventory.peppermint_bark).toBe(15);
+    expect(p.inventory.peppermint_bark).toBe(100 - 9 + 15); // 100 owned, 9 hunts used, 3 crates of 5
 
     // The next attracted imp is Hammerhand, whatever the pick roll says.
     const inspect = ok(hunt(content, p, scripted(0, 0.5, 0.99, 0.99)));
@@ -114,7 +117,23 @@ describe('Reindeer Stables sleigh run', () => {
     const gold = p.gold;
     const last = ok(hunt(content, p, scripted(0, 0, 0, 0.99)));
     expect(last.player.objectives?.reindeer_stables).toMatchObject({ active: false, readiness: 5 });
-    expect(last.player.gold - gold).toBe(435 + 50);
+    // the catch pays 25% of 435 gold while the run is on, minus 100 upkeep, plus 50 for the work done
+    expect(last.player.gold - gold).toBe(109 - 100 + 50);
+  });
+
+  it('a run costs upkeep every hunt, and can be abandoned at any point', () => {
+    let p = start(at('reindeer_stables'));
+    const gold = p.gold;
+    const r = ok(hunt(content, p, scripted(0.999)));
+    expect(r.entry.upkeep).toBe(100);
+    expect(r.player.gold).toBe(gold - 100 + r.entry.gold);
+    p = r.player;
+    p.objectives!.reindeer_stables = { type: 'sleigh_run', active: true, left: 20, readiness: 60, launches: 1 };
+    const after = objectiveAction(content, p, 'abandon_run', scripted(0));
+    if (!after.ok) throw new Error(after.error);
+    expect(after.player.objectives?.reindeer_stables).toMatchObject({ active: false, readiness: 0, launches: 1 });
+    expect(objectiveAction(content, after.player, 'abandon_run', scripted(0)).ok).toBe(false);
+    expect(objectiveAction(content, after.player, 'start_run', scripted(0)).ok).toBe(true);
   });
 
   it('escaped thieves take Readiness', () => {

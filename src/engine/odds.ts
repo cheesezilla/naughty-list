@@ -27,9 +27,6 @@ export function setupStats(content: Content, setup: Setup, location: Location, e
   if (bait) {
     const bonus = (trap?.attraction ?? 0) + (base?.attraction ?? 0) + (charm?.attraction ?? 0) + extraAttractionBonus;
     attraction = bait.attraction * (1 + bonus);
-    if (location.preferredBait && location.preferredBait !== bait.id) {
-      attraction *= location.otherBaitPenalty ?? 1;
-    }
     attraction = Math.min(content.constants.attractionCap, attraction);
   }
   return { power, luck, attraction, type: trap?.type ?? null };
@@ -58,6 +55,11 @@ export function catchChance(stats: SetupStats, imp: Imp, cap: number, luckMult =
   const pe = stats.power * e;
   const c = (pe + luckMult * stats.luck * stats.luck) / (pe + imp.power);
   return Math.max(0, Math.min(cap, c));
+}
+
+/** True when the armed bait works in this location (every bait works where the location lists none). */
+export function baitWorksHere(location: Location, baitId: string | null): boolean {
+  return !location.baits || (baitId !== null && location.baits.includes(baitId));
 }
 
 /** Allure: the multiplier on rare, mini boss and boss weights, from the setup's attraction. */
@@ -103,7 +105,7 @@ export function huntOdds(content: Content, setup: Setup, locationId: string): Hu
   const imps = location.imps.map((imp, i) => ({
     imp,
     encounter: weights[i]! / total,
-    catchChance: catchChance(stats, imp, content.constants.catchCap, luckFactor(content.constants, imp)),
+    catchChance: baitWorksHere(location, setup.bait) ? catchChance(stats, imp, content.constants.catchCap, luckFactor(content.constants, imp)) : 0,
   }));
   let catchPerHunt = 0;
   let expectedGold = 0;

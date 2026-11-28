@@ -64,6 +64,8 @@ const ITEM_LOOKS: Record<string, string> = {
   sugar_cookie: 'a star-shaped iced sugar cookie with colourful sprinkles',
   peppermint_bark: 'a slab of chocolate peppermint bark with crushed red and white candy',
   fruitcake: 'a fruitcake loaf with candied fruit, white icing drizzle and a cherry on top',
+  glitter_gumdrop: 'a round red gumdrop rolled in gold glitter with a tiny gold bow',
+  honey_lozenge: 'a golden honey lozenge drop with a swirl and a dribble of honey',
   hot_cocoa: 'a red mug of hot cocoa with marshmallows and steam, snowflake on the mug',
   ribbon_candy: 'a wrapped boiled candy with twisted ends, striped red and green like ribbon',
   golden_bow_bonbon: 'a round chocolate bonbon tied with a shiny golden bow, sparkles',

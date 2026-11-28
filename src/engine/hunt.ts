@@ -1,6 +1,6 @@
 import type { Content, Imp, PillageKind } from '../content/schema.js';
 import { gameData, itemOfKind } from './data.js';
-import { allureFactor, catchChance, effectiveness, impWeights, luckFactor, setupStats } from './odds.js';
+import { allureFactor, baitWorksHere, catchChance, effectiveness, impWeights, luckFactor, setupStats } from './odds.js';
 import { addItem, bump, count, rankFor, type PlayerState } from './player.js';
 import { pickWeighted, type Rng } from './rng.js';
 import { afterHunt, objectiveState, objectiveWeights, type ObjectiveResult } from './objectives.js';
@@ -13,6 +13,10 @@ export interface JournalEntry {
   location: string;
   imp?: string;
   catchChance?: number;
+  /** The armed bait does not work in this location, so the catch could not happen. */
+  wrongBait?: boolean;
+  /** Gold the sleigh run cost this hunt on top of bait. */
+  upkeep?: number;
   gold: number;
   points: number;
   loot: { item: string; amount: number }[];
@@ -85,8 +89,11 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0, b
   let rescued = false;
   if (!p.setup.bait || count(p, p.setup.bait) < 1) {
     if (!hasAnyBait(content, p) && p.gold < c.rescue.maxGold) {
-      addItem(p, c.rescue.item, c.rescue.amount);
-      p.setup.bait = c.rescue.item;
+      // The rescue gives the cheapest bait that works here, so a stranded player is never stuck with bait that always fails.
+      const fit = content.items.baits.filter((b) => b.price !== null && baitWorksHere(location, b.id)).sort((a, b) => (a.price ?? 0) - (b.price ?? 0))[0];
+      const rescueItem = fit && !baitWorksHere(location, c.rescue.item) ? fit.id : c.rescue.item;
+      addItem(p, rescueItem, c.rescue.amount);
+      p.setup.bait = rescueItem;
       rescued = true;
     } else {
       return { ok: false, error: 'You are out of bait. Buy some or arm a different bait.' };
@@ -134,6 +141,16 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0, b
   if (location.objective?.type === 'bait_ladder' && imp.id === location.objective.boss) bump(p, 'ladderBoss');
   p.seen = { ...(p.seen ?? {}), [imp.id]: (p.seen?.[imp.id] ?? 0) + 1 };
 
+  // A sleigh run in progress costs gold every hunt, and its catches pay only a share of their gold.
+  const sleighOb = location.objective?.type === 'sleigh_run' ? location.objective : undefined;
+  const sleighState = sleighOb ? p.objectives?.[location.id] : undefined;
+  const runOn = !!sleighOb && sleighState?.type === 'sleigh_run' && sleighState.active;
+  const runGoldMult = runOn ? sleighOb!.catchGoldMult : 1;
+  if (runOn && sleighOb!.upkeep > 0) {
+    const cost = Math.min(sleighOb!.upkeep, p.gold);
+    p.gold -= cost;
+    entry.upkeep = cost;
+  }
   const bait = p.setup.bait!;
   const baitTaken = mods.freeBait ? 0 : Math.min(mods.baitCost, count(p, bait));
   addItem(p, bait, -baitTaken);
@@ -144,7 +161,9 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0, b
     if (count(p, p.setup.charm) < 1) p.setup.charm = null;
   }
 
-  let chance = boost?.odds ? 1 : catchChance(stats, imp, c.catchCap, luckFactor(c, imp));
+  const wrongBait = !baitWorksHere(location, bait);
+  let chance = boost?.odds ? 1 : wrongBait ? 0 : catchChance(stats, imp, c.catchCap, luckFactor(c, imp));
+  if (wrongBait) entry.wrongBait = true;
   const shielded = isBoss && mods.bossShield > 0;
   if (shielded && chance > 0) chance = Math.min(c.catchCap, chance + mods.bossShield);
   const mult = boost?.reward ?? 1;
@@ -155,7 +174,7 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0, b
   if (won) {
     entry.outcome = 'catch';
     const ticket = mods.ticket > 1;
-    entry.gold = Math.round(imp.gold * mult * mods.goldMult * mods.ticket);
+    entry.gold = Math.round(imp.gold * mult * mods.goldMult * mods.ticket * runGoldMult);
     entry.points = Math.round(imp.points * mult * mods.pointsMult * mods.ticket);
     if (ticket) useBuff(p, 'goldPointsMult');
     p.gold += entry.gold;

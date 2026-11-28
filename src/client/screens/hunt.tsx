@@ -132,6 +132,13 @@ export function HuntScreen() {
             </div>
           </div>
 
+          {location.baits && !(player.setup.bait && location.baits.includes(player.setup.bait)) && (
+            <div class="card wrong-bait" role="alert">
+              <b>Wrong bait for the {location.name}.</b> {bait ? `${bait.name} won't tempt the elves here: every catch fails.` : 'You have no bait armed.'} Use {location.baits.map((id) => data.items.get(id)?.name ?? id).join(' or ')}.
+              <button class="small-btn" onClick={() => setSheet('bait')}>Change bait</button>
+            </div>
+          )}
+
           <ObjectivePanel location={location} onHint={() => setHint(true)} />
           <BoonCard />
           <CheerCard />
@@ -211,6 +218,9 @@ function BaitSheet({ initial, onClose }: { initial: 'bait' | 'charm'; onClose: (
   const before = huntOdds(content, player.setup, player.location);
   const after = huntOdds(content, { ...player.setup, [tab]: chosen }, player.location);
   const rare = item?.kind === 'bait' && item.price === null;
+  const here = data.locations.get(player.location);
+  const wrongHere = (id: string | null) => tab === 'bait' && !!here?.baits && !(id && here.baits.includes(id));
+  const goodNames = here?.baits?.map((id) => data.items.get(id)?.name ?? id).join(' or ');
 
   const use = async () => {
     if (rare && prefs.confirmRareBait && !confirming) { setConfirming(true); return; }
@@ -243,16 +253,18 @@ function BaitSheet({ initial, onClose }: { initial: 'bait' | 'charm'; onClose: (
             {current === i.id && <span class="pill green corner">Equipped</span>}
             <b>{i.name}</b>
             <small>×{num(count(player, i.id))} · {describe(i)}</small>
+            {wrongHere(i.id) && <small class="warn-text">Won't work in the {here!.name}</small>}
           </button>
         ))}
       </div>
       {list.length === 0 && <p class="muted">You have no {tab === 'bait' ? 'bait' : 'charms'}. Buy some in the Elf Emporium.</p>}
       {chosen !== current && (
         <div class="preview-box">
+          {wrongHere(chosen ?? null) && <p class="warn-text"><b>Wrong bait for the {here!.name}.</b> Every hunt here would use it up and the catch always fails. Use {goodNames}.</p>}
           {item?.flavour && <p><b>{item.name}:</b> {item.flavour.description}</p>}
           <p class="small">Catch chance {change(catchIfAttracted(before), catchIfAttracted(after), rateText)}; allure {change(before.stats.attraction, after.stats.attraction, rateText)}; power {change(before.stats.power, after.stats.power, num)}; luck {change(before.stats.luck, after.stats.luck, num)}</p>
           <button class="primary-btn wide" onClick={use}>
-            {confirming ? `Yes, use ${item?.name}` : chosen ? `Use ${item?.name}` : 'Take off charm'}
+            {confirming ? `Yes, use ${item?.name}` : wrongHere(chosen ?? null) ? `Use ${item?.name} anyway` : chosen ? `Use ${item?.name}` : 'Take off charm'}
           </button>
           {confirming && <p class="small muted">{item?.name} is crafted, not sold. Each hunt uses one.</p>}
         </div>

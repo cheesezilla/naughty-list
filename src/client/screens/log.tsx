@@ -84,7 +84,10 @@ function HuntRow({ row }: { row: JournalRow & { kind: 'hunt' } }) {
             ? <>{e.firstCatch && 'First catch! '}+{num(e.gold)} gold, +{num(e.points)} points{loot.length > 0 && `, ${loot.join(', ')}`}{e.key && <>. The boss dropped a key: <b>{keyName(e.key)}</b></>}</>
             : e.pillage
               ? <>Escaped and pillaged you: {pillageText(e.pillage, itemName)}. {rateText(e.catchChance ?? 0)} chance</>
-              : <>Escaped. {rateText(e.catchChance ?? 0)} chance</>}
+              : e.wrongBait
+                ? <>Escaped. The {e.baitLeft ? itemName(e.baitLeft.item) : 'bait'} doesn't tempt elves here, so the catch could not happen.</>
+                : <>Escaped. {rateText(e.catchChance ?? 0)} chance</>}
+          {e.upkeep ? <div class="muted small">Sleigh run upkeep: −{num(e.upkeep)} gold</div> : null}
           {e.objective && <ObjectiveNote o={e.objective} itemName={itemName} />}
           <HuntExtras e={e} />
           <BaitLeft e={e} itemName={itemName} />
@@ -118,7 +121,7 @@ export function eventText(ev: GameEvent, itemName: (id: string) => string, locNa
     case 'event_answer': return <><b>{ev.name}</b>: {ev.text}</>;
     case 'achievement': return <>Achievement{ev.ids.length > 1 ? 's' : ''}</>;
     case 'arrival': return <>Arrived in the <b>{locName(ev.location)}</b></>;
-    case 'objective': return ev.action === 'start_run' ? <>Started a <b>sleigh run</b></> : <>Took a <b>Rush order</b></>;
+    case 'objective': return ev.action === 'start_run' ? <>Started a <b>sleigh run</b></> : ev.action === 'abandon_run' ? <>Abandoned the <b>sleigh run</b></> : <>Took a <b>Rush order</b></>;
     case 'travel': return <>Travelled to the <b>{locName(ev.location)}</b>{ev.unlockCost > 0 && ` and unlocked it for ${num(ev.unlockCost)} gold`}{ev.cheerReset && <> · the Cheer Meter starts fresh{ev.cheerReset.boons > 0 && ` and ${ev.cheerReset.boons === 1 ? 'a boon' : `${ev.cheerReset.boons} boons`} ended`}</>}</>;
     case 'equip':
       if (!ev.item) return <>Took off {ev.previous ? itemName(ev.previous) : 'your'} {ev.slot}</>;

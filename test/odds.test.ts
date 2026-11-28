@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { catchChance, huntOdds, setupStats } from '../src/engine/odds.js';
+import { baitWorksHere, catchChance, huntOdds, setupStats } from '../src/engine/odds.js';
 import { content, withConstants } from './helpers.js';
 import type { Imp, Location } from '../src/content/schema.js';
 
@@ -39,10 +39,18 @@ describe('setup stats', () => {
     expect(s.type).toBe('clockwork');
   });
 
-  it('caps attraction and halves it in the stables without Hot Cocoa', () => {
+  it('caps attraction', () => {
     const base = { trap: 'icicle_jar', base: 'yule_log_base', charm: 'jingle_bell_charm' } as const;
     expect(setupStats(content, { ...base, bait: 'hot_cocoa' }, stables).attraction).toBe(0.95);
-    expect(setupStats(content, { ...base, bait: 'sugar_cookie' }, stables).attraction).toBeCloseTo(0.78 * 1.3 * 0.5);
+  });
+
+  it('a bait from another area never catches anything', () => {
+    const setup = { trap: 'icicle_jar', base: 'yule_log_base', charm: null };
+    expect(baitWorksHere(stables, 'hot_cocoa')).toBe(true);
+    expect(baitWorksHere(stables, 'sugar_cookie')).toBe(false);
+    expect(baitWorksHere(stables, null)).toBe(false);
+    expect(huntOdds(content, { ...setup, bait: 'hot_cocoa' }, 'reindeer_stables').catchPerHunt).toBeGreaterThan(0.3);
+    expect(huntOdds(content, { ...setup, bait: 'sugar_cookie' }, 'reindeer_stables').catchPerHunt).toBe(0);
   });
 
   it('is zero attraction with no bait', () => {

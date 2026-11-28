@@ -16,7 +16,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { loadContent } from '../src/content/load.js';
 import type { Content, Imp, Location } from '../src/content/schema.js';
 import { gameData } from '../src/engine/data.js';
-import { catchChance, luckFactor, setupStats } from '../src/engine/odds.js';
+import { allureFactor, baitWorksHere, catchChance, huntOdds, impWeights, luckFactor, setupStats } from '../src/engine/odds.js';
 
 const args = process.argv.slice(2);
 const flag = (n: string) => args.includes(`--${n}`);
@@ -140,6 +140,108 @@ out.push('**Beginner** = a player who has just entered the area with the gear th
   table(['Area', 'Elf', 'Tier', '1. Beginner gear', '2. Recommended gear (trap used)', '3. Endgame gear', 'Endgame setup'], rows);
   out.push('', 'Recommended gear per area: ' + content.locations.filter((l) => T.recommended?.[l.id]).map((l) => { const R = T.recommended[l.id]; return `${l.name}: ${(R.traps as string[]).map(name).join(' / ')} on ${(R.bases as string[]).map(name).join(' / ')}${R.charm ? ' + ' + name(R.charm) : ''}`; }).join('; ') + '.');
   out.push('', 'Beginner gear per area: ' + content.locations.filter((l) => T.fresh[l.id]).map((l) => `${l.name}: ${(T.fresh[l.id].meant as string[]).map(name).join(' or ')} + ${name(T.fresh[l.id].base)}`).join('; ') + '. Madame Shredwell is weak to Carol, so a beginner with a Carol Horn catches her much more often than the Star Lantern figure (see section 2).');
+}
+
+// ---- 1c. Gold profit per hunt per area ----------------------------------------------------------------------------
+h('### 1c. Gold profit per hunt in every area: beginner, recommended, endgame gear');
+out.push('Net gold per hunt = expected gold from catches (encounter weight x catch rate x elf gold, using the exact hunt odds) minus the price of the one bait a hunt uses. Every hunt uses one bait and the best bait is picked per area and tier (shop baits only; beginner and recommended players can only use baits up to the area\'s rank). Charms are left out (one-use, 25 to 90 gold each) and so are boons, events and pillage. Gear tiers are the same as 1b; for each tier the trap and base with the most net gold per hunt in that area are used. **Farm index** = endgame net gold per hunt here divided by the recommended net gold per hunt in the area the player would be progressing in (the highest-rank main area): below 100% means farming here with endgame gear pays less than hunting in the top area with recommended gear.', '');
+const goldRows: { id: string; beg: number; rec: number; end: number }[] = [];
+{
+  const shopBaits = I.baits.filter((b) => b.price !== null && b.price !== undefined);
+  const netBest = (loc: Location, sets: Setup[], maxRank: number) => {
+    let top = { net: -Infinity, gold: 0, bait: '', price: 0, s: sets[0]! };
+    for (const s of sets) for (const b of shopBaits) {
+      if (b.rank > maxRank || !baitWorksHere(loc, b.id)) continue;
+      const o = huntOdds(content, { ...s, bait: b.id }, loc.id);
+      const net = o.expectedGold - (b.price as number);
+      if (net > top.net) top = { net, gold: o.expectedGold, bait: b.id, price: b.price as number, s };
+    }
+    return top;
+  };
+  const allSets: Setup[] = allTraps.flatMap((trap) => allBases.map((base) => ({ trap, base, charm: null })));
+  const rows: string[][] = [];
+  for (const loc of content.locations) {
+    const f = T.fresh[loc.id];
+    if (!f) continue;
+    const R = T.recommended?.[loc.id];
+    const begSets = (f.meant as string[]).map((trap) => ({ trap, base: f.base as string, charm: null as string | null }));
+    const recSets = R ? (R.traps as string[]).flatMap((trap) => (R.bases as string[]).map((base) => ({ trap, base, charm: null as string | null }))) : [];
+    const beg = netBest(loc, begSets, loc.rank);
+    const rec = recSets.length ? netBest(loc, recSets, loc.rank) : null;
+    const end = netBest(loc, allSets, 99);
+    goldRows.push({ id: loc.id, beg: beg.net, rec: rec ? rec.net : NaN, end: end.net });
+    const cell = (x: typeof beg | null) => (x ? `${x.net.toFixed(0)} (gold ${x.gold.toFixed(0)}, ${name(x.bait)} ${x.price})` : '-');
+    rows.push([loc.name, String(loc.rank), cell(beg), cell(rec), cell(end)]);
+  }
+  const main = content.locations.filter((l) => !l.side);
+  const top = main.reduce((a, l) => (l.rank > a.rank ? l : a), main[0]!);
+  const topRec = goldRows.find((g) => g.id === top.id)!.rec;
+  for (const [i] of content.locations.entries()) rows[i]!.push(`${((goldRows[i]!.end / topRec) * 100).toFixed(0)}%`);
+  table(['Area', 'Rank', '1. Beginner: net gold / hunt', '2. Recommended: net gold / hunt', '3. Endgame: net gold / hunt', `Farm index (endgame here vs recommended in ${top.name})`], rows);
+}
+
+// ---- 1d. Sleigh ride on and off (Reindeer Stables) ------------------------------------------------------------------
+{
+  const loc = content.locations.find((l) => l.objective?.type === 'sleigh_run');
+  const ob: any = loc?.objective;
+  const f = loc ? T.fresh[loc.id] : undefined;
+  if (loc && ob && f) {
+    h(`### 1d. ${loc.name}: gold per hunt with the sleigh run off and on`);
+    out.push(`**Off** = hunting without starting a run (the 1c numbers). **On** = back-to-back sleigh runs: each run lasts up to ${ob.hunts} hunts, catches add Readiness (${Object.entries(ob.gain).map(([k, v]) => `${k} +${v}`).join(', ')}), escapes from ${Object.keys(ob.loss).map((id) => impName(id)).join(' and ')} take some away, and from ${ob.minibossFrom} Readiness ${impName(ob.miniboss)} comes at weight ${ob.minibossWeight}. While a run is on, each hunt costs ${ob.upkeep ?? 0} gold of upkeep and catches pay ${Math.round((ob.catchGoldMult ?? 1) * 100)}% of their gold. A launch (100 Readiness) pays ${ob.launchGold} gold; a run that times out pays ${ob.failGoldPerReadiness} gold per Readiness. Solved exactly over every Readiness and hunts-left state, with the cheapest-net bait (the same as 1c, so the bait cost is small). Left out: the launch item (${Object.keys(ob.launchItems).join(', ')}), the forced ${impName(ob.boss)} fight after ${ob.bossAfterLaunches} launches, pillage.`, '');
+    const shop = I.baits.filter((b) => b.price !== null && b.price !== undefined);
+    const allSets: Setup[] = allTraps.flatMap((trap) => allBases.map((base) => ({ trap, base, charm: null })));
+    const run = (s: Setup, baitId: string, price: number) => {
+      const stats = setupStats(content, { ...s, bait: baitId }, loc);
+      const ws = impWeights(data, loc, baitId, allureFactor(content.constants, stats.attraction));
+      const wsHot = ws.map((w, j) => (loc.imps[j]!.id === ob.miniboss ? ob.minibossWeight : w));
+      const dist = (w: number[]) => { const t = w.reduce((a, b) => a + b, 0) || 1; return loc.imps.map((imp, j) => ({ imp, p: w[j]! / t, c: catchChance(stats, imp, content.constants.catchCap, luckFactor(content.constants, imp)) })); };
+      const cold = dist(ws), hot = dist(wsHot);
+      // G[left][r]: expected gold (catch gold + payouts) and T: expected hunts, from this state until the run ends.
+      const G: number[][] = [], Tm: number[][] = [], L: number[][] = [];
+      for (let left = 0; left <= ob.hunts; left++) { G.push(new Array(101).fill(0)); Tm.push(new Array(101).fill(0)); L.push(new Array(101).fill(0)); }
+      for (let left = 1; left <= ob.hunts; left++) for (let r = 0; r < 100; r++) {
+        let g = -(ob.upkeep ?? 0), t = 1, l = 0;
+        for (const o of (r >= ob.minibossFrom ? hot : cold)) {
+          const gain = (ob.gain as Record<string, number>)[o.imp.tier] ?? 0;
+          const outcomes: [number, number, number][] = [[o.c, Math.min(100, r + gain), o.imp.gold * (ob.catchGoldMult ?? 1)], [1 - o.c, Math.max(0, r - ((ob.loss as Record<string, number>)[o.imp.id] ?? 0)), 0]];
+          for (const [pr, r2, gold] of outcomes) {
+            const w = o.p * pr;
+            if (w === 0) continue;
+            let eg = gold, et = 0, el = 0;
+            if (r2 >= 100) { eg += ob.launchGold; el = 1; }
+            else if (left - 1 <= 0) eg += Math.round(r2 * ob.failGoldPerReadiness);
+            else { eg += G[left - 1]![r2]!; et = Tm[left - 1]![r2]!; el = L[left - 1]![r2]!; }
+            g += w * eg; t += w * et; l += w * el;
+          }
+        }
+        G[left]![r] = g; Tm[left]![r] = t; L[left]![r] = l;
+      }
+      const off = huntOdds(content, { ...s, bait: baitId }, loc.id).expectedGold;
+      return { off, on: G[ob.hunts]![0]! / Tm[ob.hunts]![0]!, hunts: Tm[ob.hunts]![0]!, launches: L[ob.hunts]![0]!, price };
+    };
+    const pick = (sets: Setup[], maxRank: number) => {
+      let top: ReturnType<typeof run> & { s: Setup; bait: string } | null = null;
+      for (const s of sets) for (const b of shop) {
+        if (b.rank > maxRank || !baitWorksHere(loc, b.id)) continue;
+        const r = run(s, b.id, b.price as number);
+        if (!top || r.on - r.price > top.on - top.price) top = { ...r, s, bait: b.id };
+      }
+      return top!;
+    };
+    const R = T.recommended?.[loc.id];
+    const tiers: [string, Setup[], number][] = [
+      ['1. Beginner', (f.meant as string[]).map((trap) => ({ trap, base: f.base as string, charm: null })), loc.rank],
+      ['2. Recommended', R ? (R.traps as string[]).flatMap((trap) => (R.bases as string[]).map((base) => ({ trap, base, charm: null }))) : [], loc.rank],
+      ['3. Endgame', allSets, 99],
+    ];
+    const rows: string[][] = [];
+    for (const [label, sets, mr] of tiers) {
+      if (!sets.length) continue;
+      const r = pick(sets, mr);
+      rows.push([label, fmt(r.s), r.off.toFixed(0), r.on.toFixed(0), `${(r.on - r.off >= 0 ? '+' : '')}${(((r.on / r.off) - 1) * 100).toFixed(0)}%`, r.hunts.toFixed(1), `${(r.launches * 100).toFixed(0)}%`, `${(r.off - r.price).toFixed(0)} / ${(r.on - r.price).toFixed(0)}`]);
+    }
+    table(['Gear', 'Setup used', 'Gold / hunt, ride off', 'Gold / hunt, ride on (after upkeep)', 'On vs off', 'Hunts per run', 'Runs that launch', 'Net per hunt after bait (off / on)'], rows);
+  }
 }
 
 // ---- 2. Elves: fresh vs endgame -----------------------------------------------------------------------------------

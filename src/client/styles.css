@@ -739,3 +739,8 @@ body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
 .release-popup { padding: 18px; display: flex; flex-direction: column; gap: 8px; max-height: 85vh; }
 .release-popup h2 { color: var(--pine); font-size: 22px; margin: 0; }
 .release-scroll { overflow-y: auto; max-height: 50vh; }
+
+/* Wrong bait warnings: Hunt screen card, bait sheet, travel list */
+.wrong-bait { border: 2px solid #b3261e; background: #fdecea; color: #5c1410; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.wrong-bait .small-btn { margin-left: auto; }
+.warn-text { color: #b3261e; font-weight: 600; }

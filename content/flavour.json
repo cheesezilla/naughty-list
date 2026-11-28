@@ -105,6 +105,16 @@
       "description": "A soft, frosted sugar cookie. It works anywhere, and the sweet smoke draws Sootcap down from the Pantry flues.",
       "backstory": "Mrs Claus's recipe calls for one pinch of snow from the roof, which may explain why the smell climbs straight up the chimneys. Sootcap comes tumbling down after it, coughing and delighted. Keep a few in your pocket whenever the Pantry fire is lit."
     },
+    "glitter_gumdrop": {
+      "tagline": "Shiny enough to stop a ribbon mid-tangle.",
+      "description": "A gumdrop rolled in edible glitter. Wrapping Room elves can't look away from it.",
+      "backstory": "Wrapping Room elves hoard anything that sparkles, and a gumdrop in gold glitter is the best thing they have ever seen. The hunters who tested it report that the elves stared, forgot their ribbons, and walked straight into the trap."
+    },
+    "honey_lozenge": {
+      "tagline": "Soothes a sore throat. Lures a sorer one.",
+      "description": "A golden lozenge the Carol Loft singers suck on between hexed hymns.",
+      "backstory": "The hoarse carollers of the Loft are always one note from losing their voices, and a honey lozenge is the only thing that keeps them singing flat. They will follow the smell of honey across a whole attic."
+    },
     "peppermint_bark": {
       "tagline": "Snaps loud, smells louder.",
       "description": "Slabs of chocolate and crushed peppermint. Its sharp smell cuts through the noise of busy rooms.",

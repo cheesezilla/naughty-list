@@ -154,6 +154,7 @@ function OrderPanel({ o, s, location }: { o: Orders; s?: Extract<ObjectiveState,
 
 function SleighPanel({ o, s, location }: { o: Sleigh; s?: Extract<ObjectiveState, { type: 'sleigh_run' }>; location: Location }) {
   const { act, log, data } = useGame();
+  const [sure, setSure] = useState(false);
   // The newest hunt here that changed Readiness, as "Bell Thief escaped −8".
   const last = (() => {
     for (const r of log) {
@@ -180,7 +181,7 @@ function SleighPanel({ o, s, location }: { o: Sleigh; s?: Extract<ObjectiveState
     return (
       <>
         <h3><Art slot="materials" id="silver_sleighbell" class="panel-icon" alt="" />Sleigh Run {s?.launches ? <small>{s.launches} launched</small> : null}</h3>
-        <p class="panel-line">Get the sleigh 100% ready within {o.hunts} hunts. Catches build Readiness; escaped thieves take it away. Launch it and {name(o.boss)} attacks.</p>
+        <p class="panel-line">Get the sleigh 100% ready within {o.hunts} hunts. Catches build Readiness; escaped thieves take it away. Launch it and {name(o.boss)} attacks.{(o.upkeep > 0 || o.catchGoldMult < 1) && <> A run costs gold: {o.upkeep} per hunt, and catches pay {Math.round(o.catchGoldMult * 100)}% gold.</>}</p>
         <button class="primary-btn wide" onClick={() => act('/api/objective', { action: 'start_run' }, `Sleigh run started: ${o.hunts} hunts.`)}>Start sleigh run</button>
       </>
     );
@@ -197,6 +198,10 @@ function SleighPanel({ o, s, location }: { o: Sleigh; s?: Extract<ObjectiveState
       </div>
       <p class="panel-line"><b>Readiness {s.readiness}</b> / 100 · {s.readiness >= o.minibossFrom ? `${name(o.miniboss)} is about (${o.minibossFrom}+)` : `${name(o.miniboss)} comes at ${o.minibossFrom}`}</p>
       {last && <p class="panel-line small">Last: {last}</p>}
+      {(o.upkeep > 0 || o.catchGoldMult < 1) && <p class="panel-line small muted">While the run is on, each hunt costs {o.upkeep} gold and catches pay {Math.round(o.catchGoldMult * 100)}% gold.</p>}
+      <button class="text-btn wide" onClick={() => { if (!sure) { setSure(true); return; } setSure(false); act('/api/objective', { action: 'abandon_run' }, 'Sleigh run abandoned.'); }}>
+        {sure ? 'Tap again to abandon (Readiness resets to 0)' : 'Abandon run and restart'}
+      </button>
     </>
   );
 }

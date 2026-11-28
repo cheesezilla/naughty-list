@@ -83,6 +83,25 @@ describe('hunt', () => {
     expect(r.player.inventory.stale_cookie).toBe(9);
   });
 
+  it("the wrong area's bait is used up and the catch always fails", () => {
+    const p = { ...fresh(), location: 'wrapping_room', unlocked: ['cookie_pantry', 'wrapping_room'], rank: 2 };
+    const r = hunt(content, p, scripted(0, 0, 0, 0));
+    if (!r.ok) throw new Error(r.error);
+    expect(r.entry.outcome).toBe('escape');
+    expect(r.entry.wrongBait).toBe(true);
+    expect(r.entry.catchChance).toBe(0);
+    expect(r.player.inventory.stale_cookie).toBe(99);
+  });
+
+  it("a stranded player's free bait is the cheapest that works in the area they are in", () => {
+    const p = { ...fresh(), gold: 10, location: 'toy_workshop', unlocked: ['cookie_pantry', 'toy_workshop'], rank: 3 };
+    delete p.inventory.stale_cookie;
+    const r = hunt(content, p, scripted(0.99));
+    if (!r.ok) throw new Error(r.error);
+    expect(r.entry.rescued).toBe(true);
+    expect(r.player.setup.bait).toBe('peppermint_bark');
+  });
+
   it('uses and then unequips a charm when the last one is spent', () => {
     const p = fresh();
     p.inventory.mistletoe_charm = 1;
