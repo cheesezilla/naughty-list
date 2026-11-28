@@ -172,3 +172,29 @@ eddy: Cinderhoof's catch rate with maxed gear was too high for a boss. The best 
 
 - **Reading it:** rank 4 takes about 40 hunts longer (538 to 577), since the sleigh launch needs Cinderhoof to come and go, and the full collection about 40 more (3%). Both stay inside the rank targets (rank 4: 577 against 600). The 6% who never catch him reach rank 5 without it, because rank 5 needs points, not the boss.
 - **Not retuned:** gear that is not maxed now catches him well under 25% (for example a Frost trap with 3,000 power is about 13%), so most players need several sleigh launches and the crafted gear; that is the intent.
+
+## Report 10: Carol Horn luck 10 to 1 (1,000 players, seed 42, Cheer and events on, greedy boons, safe events)
+
+eddy: the Carol Horn (a rank 2 Carol trap) caught Stables commons 98% with the best build, beating on-type Frost and Clockwork gear. Luck 10 to 1, power left at 600, and Shredwell with Carol must stay around 30%.
+
+| Metric | Before (luck 10) | After (luck 1) |
+| --- | --- | --- |
+| Hunts to rank 5 | median 1,264 | median 1,355 |
+| Hunts to catch all 28 elves | mean 1,300, median 1,277, p10 1,161, p90 1,439 | mean 1,384, median 1,366, p10 1,236, p90 1,556 |
+| Ranks 1 to 4 (median hunts) | 117, 237, 333, 575 | 117, 248, 405, 581 |
+| Commons catch rate: Wrapping Room / Toy Workshop / Stables / Carol Loft | 88% / 56% / 80% / 61% | 77% / 44% / 78% / 58% |
+| Madame Shredwell catches per player | 1.3 | 1.2 |
+
+**Stables commons, same Yule Log Base and Mistletoe Charm (Hay Hoarder / Bell Thief / Harness Snipper, average):**
+
+| Trap | Type there | Catch | Average |
+| --- | --- | --- | --- |
+| Jack-in-the-Box (rank 1) | Clockwork | 60 / 51 / 52% | 55% |
+| Star Lantern (rank 2) | Starlight | 66 / 46 / 40% | 51% |
+| Carol Horn (rank 2) | Carol, weak to none | 69 / 61 / 54% | 61% |
+| Icicle Jar (rank 2) | Frost, on-type | 76 / 68 / 54% | 66% |
+| Nutcracker Jaws (rank 3) | Clockwork | 77 / 69 / 70% | 72% |
+
+- **Reading it:** the Horn now sits 6 points above the rank 1 trap, 10 above the Star Lantern and 5 below an on-type rank 2 Frost trap. It no longer outshines the on-type traps. The best Carol build (Wishing Star Pedestal) is about 70%; before it was 98%.
+- **Shredwell:** Carol Horn on a Candy Cane Platform with a Mistletoe Charm is 30% (31% before), 35% with a Wind-up Key. Power was not raised: luck cannot be traded for power here without lifting Shredwell (+2 points per 50 power).
+- **Cost:** the game is 7% longer, because the Horn also made the Wrapping Room and Carol Loft quicker. Rank 3 is 405 against 400. The Toy Workshop commons (44%, target 55 to 65%) were already below target before this change and are not retuned.
