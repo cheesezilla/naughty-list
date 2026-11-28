@@ -48,6 +48,7 @@ const ITEM_LOOKS: Record<string, string> = {
   nutcracker_jaws: 'a wooden nutcracker head trap with a tall red hat and gold band, wide toothed jaws and a lever arm',
   constellation_wreath: 'a night-blue wreath of enchanted wrapping studded with glowing gold stars joined by faint constellation lines, standing on edge with a gold bow',
   snow_globe_prison: 'a snow globe on a wooden plinth with a tiny barred door inside the snow',
+  tidepool_pail: 'a round tin pail brimming with teal water, a wave curling over the rim, three pearly bubbles floating above and a rope handle',
   sleigh_bell_snapper: 'a giant golden sleigh bell split into two toothed halves like jaws, red ribbon on top',
   cardboard_box: 'a flattened brown cardboard box slab with packing tape',
   gingerbread_slab: 'a thick gingerbread slab with white icing squiggles and candy buttons',
@@ -90,6 +91,7 @@ const ITEM_LOOKS: Record<string, string> = {
   toymakers_gear: 'a large brass toymaker gear with rivets',
   clockwork_heart: 'a red heart with a window showing turning brass gears inside',
   silver_sleighbell: 'a large silver sleigh bell on a stitched leather strap',
+  steam_pearl: 'a round pearly white-blue bead of condensed steam with a little curl of mist rising from it',
   brimstone_coal: 'a lump of coal with glowing orange cracks and a curl of smoke',
   carol_horn: 'a flaring brass horn with a rose-pink ribbon and a gold music note rising from the bell',
   hymn_reed: 'three thin pale reeds tied with a red thread, slightly bent',
@@ -101,6 +103,7 @@ const TRAP_TYPE_LOOKS: Record<string, string> = {
   starlight: 'a glowing gold five-point star with small sparkles on a night-blue disc',
   frost: 'a blue snowflake on an icy disc',
   carol: 'a gold music note on a rose-pink disc',
+  tide: 'a white water drop with two small ripples on a teal disc',
 };
 
 const LOCATION_LOOKS: Record<string, string> = {

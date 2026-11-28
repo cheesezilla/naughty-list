@@ -274,6 +274,25 @@ Written for eddy. Findings and recommendations first, numbers second. Report 1 u
 
 **Standard game-length metrics (eddy, 27 Nov): every report states both.** (1) Median hunts to rank 5. (2) Hunts to catch every elf, 100% of the Naughty List portraits, Carol Loft and bosses included. The simulator prints both at the top of every run, with the mean, p10, p90 and the share of players who finish (cap 20,000 hunts, `--max-collect-hunts`).
 
+### Report 17: Steam Pearl drop and Tidepool Pail (200 players, seed 1, Cheer and events on)
+
+eddy (28 Nov): a rare Cinderhoof trap part (Steam Pearl, 40% per catch) and, from 3 of them, the Tidepool Pail, a sealed trap of a new water type, Tide, for a rank 5 Tide area that is not built. It has no effect on any hunt, so `npm run balance` ignores it (flags unchanged) and pace is a regression check only.
+
+| Metric | Report 16 | Report 17 |
+| --- | --- | --- |
+| Median hunts to rank 5 | 1,649 | 1,663 |
+| Hunts to catch every elf (median / mean / p90) | 1,961 | 1,873 / 2,015 / 2,839 |
+| Cinderhoof, best build | 26.3% | 26.3% (unchanged, target 25% +/- 5) |
+| General Grimbolt, best build | 59.1% | 59.1% (limit 60%) |
+
+Collecting 3 Steam Pearls (Monte Carlo, 300 players, endgame Stables gear, repeated sleigh runs, Hay Biscuit bait, gold held at 300,000):
+
+| Gear while collecting | Hunts (mean / median / p90) | Boss fights | Gold from the game | Bait gold |
+| --- | --- | --- | --- | --- |
+| Sleigh-Bell Snapper + Gingerbread Cottage | 1,814 / 1,622 / 3,201 | about 35 | +57,000 | about 875,000 |
+
+The Pail cannot be equipped, so nothing changes for fights. The collection cost is the whole price of owning it. Lever: the drop chance in `content/locations.json` (0.5 gives about 1,450 hunts). When the Tide area ships, its real power and luck go through `npm run balance` then.
+
 ### Report 15: Cheer boons weaker on farms, stronger on pushes (200 players, seed 1, Cheer and events on)
 
 Content change (eddy, 28 Nov): Cheer boon bonuses count at 50% while the armed bait is not push bait and at 150% with push bait, and a boon picked with push bait has a 25% chance to Surge (twice the hunts). `npm run balance` is unchanged (it does not model boons), so the flags are the same. Same seed, before and after:

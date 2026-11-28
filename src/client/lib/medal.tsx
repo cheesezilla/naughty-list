@@ -13,6 +13,7 @@ const METALS: Record<string, Metal> = {
   starlight: { l: '#e6ecff', m: '#6f82d6', d: '#1d2a6b', f: ['#7d8fe8', '#3a4ca6', '#22306f', '#141c4a'] },
   frost: { l: '#ffffff', m: '#9fd3ef', d: '#2a6a90', f: ['#ffffff', '#d6eefa', '#9fd0ec', '#5fa6cf'] },
   carol: { l: '#ffe1ea', m: '#d6557a', d: '#6e1230', f: ['#ffe9ef', '#f2a3bb', '#d6557a', '#9c2e53'] },
+  tide: { l: '#e3fbff', m: '#3fb7c9', d: '#0d4a5c', f: ['#e9fcff', '#9be3ee', '#3fb7c9', '#1b7f95'] },
   coin: { l: '#fff4b8', m: '#e2b33c', d: '#7d5a08', f: ['#fff6c4', '#f2cf5b', '#d9a92e', '#a87a10'] },
 };
 const CREAM: [string, string, string, string] = ['#fffdf6', '#f7e7c8', '#e3c597', '#c9a36e'];
@@ -44,11 +45,13 @@ const GEAR = <><circle cx="12" cy="12" r="3" /><circle cx="12" cy="12" r="7" /><
 const STAR = <path d="M12 3l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.3l-5.2 2.8 1-5.8L3.5 9.2l5.9-.8z" />;
 const FLAKE = <path d="M12 2v20M3.3 7l17.4 10M3.3 17L20.7 7M12 2l-2 2M12 2l2 2M12 22l-2-2M12 22l2-2M3.3 7l.7 2.7M3.3 7l2.7-.7M20.7 17l-.7-2.7M20.7 17l-2.7.7M3.3 17l2.7.7M3.3 17l.7-2.7M20.7 7l-2.7-.7M20.7 7l-.7 2.7" />;
 const NOTE = <><path d="M9 18V5l10-2v13" /><circle cx="6.5" cy="18" r="2.5" /><circle cx="16.5" cy="16" r="2.5" /></>;
+const DROP = <path d="M12 2.5c3.6 4.6 6 7.6 6 11a6 6 0 0 1-12 0c0-3.4 2.4-6.4 6-11z" />;
 const TYPE_ICON: Record<PowerType, { paths: ComponentChildren; stroke: string }> = {
   clockwork: { paths: GEAR, stroke: '#5a3a08' },
   starlight: { paths: STAR, stroke: '#ffd76a' },
   frost: { paths: FLAKE, stroke: '#1d5a80' },
   carol: { paths: NOTE, stroke: '#ffe1ea' },
+  tide: { paths: DROP, stroke: '#e3fbff' },
 };
 
 /** A power type as a medal: brass gear, blue star or icy snowflake. */
