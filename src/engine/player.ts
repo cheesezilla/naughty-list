@@ -1,7 +1,7 @@
 import type { Content } from '../content/schema.js';
 import { gameData, itemOfKind, priceOf, sellValue } from './data.js';
 import type { ObjectiveState } from './objectives.js';
-import type { CheerState } from './cheer.js';
+import { resetCheerOnTravel, type CheerState } from './cheer.js';
 import type { EventsState } from './events.js';
 
 export interface Setup {
@@ -220,6 +220,7 @@ export function travel(content: Content, player: PlayerState, locationId: string
     p.gold -= loc.unlockCost;
     p.unlocked.push(locationId);
   }
+  if (p.location !== locationId) resetCheerOnTravel(p);
   p.location = locationId;
   return { ok: true, player: p };
 }

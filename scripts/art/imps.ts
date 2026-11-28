@@ -1,6 +1,6 @@
 /**
  * Hexed-elf portraits (512x512, square). Simple placeholder art until the custom portraits are
- * regenerated (see docs/ART_PROGRESS.md). Every elf is built from one shared head template
+ * regenerated (see docs/DEVELOPER_NOTES.md, Custom art progress). Every elf is built from one shared head template
  * (so the set reads as one family): pointed ears, a pointed cap in the room's colour, a soot
  * smudge from Scrinch's hex, plus its own face and a signature prop. The Gingerbread Rascal,
  * General Grimbolt (a nutcracker soldier) and Cinderhoof (a reindeer) have their own shapes.

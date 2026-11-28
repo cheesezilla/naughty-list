@@ -5,7 +5,7 @@
  *   npm run simulate                    # 200 players
  *   npm run simulate -- --players 1000 --seed 42
  *   npm run simulate -- --strict        # exit 1 when a target in the plan is missed by more than 25%
- *   npm run simulate -- --players 1000 --seeds 5   # pool seeds 1..5 (the numbers that go into PLAN.md)
+ *   npm run simulate -- --players 1000 --seeds 5   # pool seeds 1..5 (the numbers that go into docs/BALANCE.md (Simulation history))
  *   npm run simulate -- --trace out.jsonl          # one JSON line per hunt for the first player (--trace-players N for more)
  *
  * Cheer Meter and events run inside hunt(); the simulated player answers them:

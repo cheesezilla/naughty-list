@@ -68,6 +68,19 @@ export function cheerAfterHunt(content: Content, p: PlayerState, imp: Imp, caugh
   return { gained, lost, pips: s.pips, ...(s.pips >= c.full ? { full: true } : {}) };
 }
 
+/**
+ * Travelling starts a fresh meter: pips, a held Overcharge, the carry-over, an open draw and every boon in play are dropped,
+ * so a meter built in an easy area cannot be cashed in at a harder one. Pity counters are kept. Returns what was dropped.
+ */
+export function resetCheerOnTravel(p: PlayerState): { pips: number; boons: number } | null {
+  const s = p.cheer;
+  if (!s) return null;
+  const lost = { pips: s.pips, boons: s.active.length };
+  if (!lost.pips && !lost.boons && !s.held && !s.carry && !s.draw) return null;
+  s.pips = 0; s.held = false; s.carry = 0; s.active = []; delete s.draw;
+  return lost;
+}
+
 /** Counts down every boon after a hunt and drops the ones that ran out. */
 export function tickBoons(p: PlayerState): void {
   if (!p.cheer) return;

@@ -3,7 +3,7 @@
     { "id": "starlit_stocking", "name": "Starlit Stocking", "type": "starlight", "power": 60, "luck": 0, "rank": 1, "price": null },
     { "id": "jack_in_the_box", "name": "Jack-in-the-Box", "type": "clockwork", "power": 150, "luck": 1, "rank": 1, "price": 300 },
     { "id": "star_lantern", "name": "Star Lantern", "type": "starlight", "power": 300, "luck": 2, "rank": 2, "price": 1200 },
-    { "id": "carol_horn", "name": "Carol Horn", "type": "carol", "power": 600, "luck": 10, "rank": 2, "price": null },
+    { "id": "carol_horn", "name": "Carol Horn", "type": "carol", "power": 600, "luck": 1, "rank": 2, "price": null },
     { "id": "icicle_jar", "name": "Icicle Jar", "type": "frost", "power": 500, "luck": 2, "attraction": 0.05, "rank": 2, "price": 3000 },
     { "id": "nutcracker_jaws", "name": "Nutcracker Jaws", "type": "clockwork", "power": 900, "luck": 3, "rank": 3, "price": 9000 },
     { "id": "constellation_wreath", "name": "Constellation Wreath", "type": "starlight", "power": 1400, "luck": 5, "attraction": 0.05, "rank": 3, "price": null },
@@ -15,12 +15,12 @@
     { "id": "gingerbread_slab", "name": "Gingerbread Slab", "power": 80, "luck": 1, "rank": 1, "price": 500 },
     { "id": "candy_cane_platform", "name": "Candy Cane Platform", "power": 200, "luck": 1, "attraction": 0.05, "rank": 2, "price": 2500 },
     { "id": "ice_block", "name": "Ice Block", "power": 400, "luck": 3, "rank": 3, "price": 8000 },
-    { "id": "yule_log_base", "name": "Yule Log Base", "power": 600, "luck": 5, "attraction": 0.1, "rank": 3, "price": null },
+    { "id": "yule_log_base", "name": "Yule Log Base", "power": 800, "luck": 5, "attraction": 0.1, "rank": 3, "price": null },
     { "id": "toffee_anvil", "name": "Toffee Anvil", "power": 300, "luck": 0, "rank": 2, "price": 3500, "goodFor": "Bosses and mini bosses" },
     { "id": "chestnut_brazier", "name": "Chestnut Brazier", "power": 100, "luck": 1, "attraction": 0.15, "rank": 2, "price": 3500, "goodFor": "Cheap bait" },
     { "id": "wishbone_plinth", "name": "Wishbone Plinth", "power": 50, "luck": 4, "rank": 2, "price": 4500, "goodFor": "Farming common elves" },
     { "id": "sleigh_runner", "name": "Sleigh Runner", "power": 1300, "luck": 2, "rank": 4, "price": null, "affinity": { "types": ["clockwork"], "powerBonus": 0.1 }, "goodFor": "Bosses, best with Clockwork traps" },
-    { "id": "gingerbread_cottage", "name": "Gingerbread Cottage", "power": 550, "luck": 4, "attraction": 0.3, "rank": 4, "price": null, "affinity": { "types": ["frost"], "powerBonus": 0.1 }, "goodFor": "Cheap bait, best with Frost traps" },
+    { "id": "gingerbread_cottage", "name": "Gingerbread Cottage", "power": 1550, "luck": 4, "attraction": 0.3, "rank": 4, "price": null, "affinity": { "types": ["frost"], "powerBonus": 0.1 }, "goodFor": "Cheap bait, best with Frost traps" },
     { "id": "wishing_star_pedestal", "name": "Wishing Star Pedestal", "power": 300, "luck": 9, "rank": 4, "price": null, "affinity": { "types": ["starlight", "carol"], "powerBonus": 0.1 }, "goodFor": "Elves that resist your trap, best with Starlight and Carol traps" }
   ],
   "baits": [
@@ -35,7 +35,7 @@
   "charms": [
     { "id": "mistletoe_charm", "name": "Mistletoe Charm", "luck": 4, "rank": 1, "price": 30 },
     { "id": "jingle_bell_charm", "name": "Jingle Bell Charm", "attraction": 0.15, "rank": 2, "price": 25 },
-    { "id": "windup_key_charm", "name": "Wind-up Key Charm", "powerBonus": 0.2, "rank": 3, "price": 60 },
+    { "id": "windup_key_charm", "name": "Wind-up Key Charm", "powerBonus": 0.35, "rank": 3, "price": 60 },
     { "id": "cheer_bauble", "name": "Cheer Bauble", "cheer": { "rare": 1 }, "rank": 2, "price": 40 },
     { "id": "tinsel_cheer_charm", "name": "Tinsel Cheer Charm", "cheer": { "all": 1 }, "rank": 3, "price": 90 },
     { "id": "gold_star_cheer_charm", "name": "Gold Star Cheer Charm", "cheer": { "all": 1, "escape": 1 }, "rank": 4, "price": 180 }

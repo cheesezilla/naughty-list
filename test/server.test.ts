@@ -42,7 +42,9 @@ async function signupAdmin() {
 
 describe('server', () => {
   it('answers health and content without logging in', async () => {
-    expect((await get('/api/health')).json()).toEqual({ ok: true, version: 'test' });
+    const h = await get('/api/health');
+    expect(h.json()).toEqual({ ok: true, version: 'test' });
+    expect(h.headers['x-app-version']).toBe('test');
     expect((await get('/api/content')).json().locations).toHaveLength(5);
     expect((await get('/api/setup-status')).json()).toEqual({ needsAdmin: true, signupsOpen: true });
   });
@@ -105,13 +107,13 @@ describe('server', () => {
     expect(r.statusCode).toBe(200);
     expect(r.json().entry.entry).toMatchObject({ outcome: 'catch', imp: 'crumb_elf' });
     const me = (await get('/api/me', c)).json();
-    expect(me.player.gold).toBe(212);
+    expect(me.player.gold).toBe(216);
     expect(me.journal).toHaveLength(3);
     expect(me.journal[0]).toMatchObject({ n: 1, kind: 'hunt', entry: { firstCatch: true } });
     expect(me.journal[1]).toMatchObject({ n: 0, kind: 'event', entry: { type: 'arrival', location: 'cookie_pantry' } });
     expect(me.journal[2]).toMatchObject({ n: 0, kind: 'event', entry: { type: 'intro' } });
     expect(me.player.seen).toEqual({ crumb_elf: 1 });
-    expect(me.player.stats.goldEarned).toBe(12);
+    expect(me.player.stats.goldEarned).toBe(16);
   });
 
   it('logs buy, equip, sell, craft and travel events in the hunt log', async () => {
@@ -161,7 +163,7 @@ describe('server', () => {
     const sam = cookieOf(await post('/api/auth/signup', { username: 'sam', password: 'snowball99' }));
     const r = (await get('/api/hunters', sam)).json();
     expect(r.players).toEqual([
-      { username: 'eddy', rank: 1, points: 20, impsOnList: 1, you: false },
+      { username: 'eddy', rank: 1, points: 27, impsOnList: 1, you: false },
       { username: 'sam', rank: 1, points: 0, impsOnList: 0, you: true },
     ]);
     // a common catch is not news
@@ -278,13 +280,13 @@ describe('start over', () => {
 
     // the other player is untouched
     const eddyMe = (await get('/api/me', admin)).json();
-    expect(eddyMe.player.gold).toBe(212);
+    expect(eddyMe.player.gold).toBe(216);
     expect(eddyMe.journal).toHaveLength(3);
 
     // the restart is logged with what sam had, visible to sam and to the admin
     const own = (await get('/api/restarts', sam)).json().restarts;
     expect(own).toHaveLength(1);
-    expect(own[0]).toMatchObject({ username: 'sam', summary: { gold: 152, points: 20, hunts: 1, caught: 1, impsOnList: 1 } });
+    expect(own[0]).toMatchObject({ username: 'sam', summary: { gold: 156, points: 27, hunts: 1, caught: 1, impsOnList: 1 } });
     const all = (await get('/api/admin/restarts', admin)).json().restarts;
     expect(all.map((x: { username: string }) => x.username)).toEqual(['sam']);
     expect((await get('/api/admin/restarts', sam)).statusCode).toBe(403);

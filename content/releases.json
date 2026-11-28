@@ -1,5 +1,31 @@
 [
   {
+    "version": "1.0.1",
+    "date": "2026-11-28",
+    "title": "Balance and fixes",
+    "summary": "A balance and fixes release: tougher Cinderhoof, tuned commons and gear, and a refresh popup when the game updates.",
+    "sections": [
+      {
+        "heading": "Fixes",
+        "items": [
+          "A popup now asks you to refresh when the game has been updated, and it checks when you return to an idle tab.",
+          "Admin always-catch now works on bosses immune to your armed trap type.",
+          "The Cheer Meter resets when you travel to another area.",
+          "Fixed leftover quiet-hunt wording and the Carol Loft hint (Carol Horn needs 5 Hymn Reeds)."
+        ]
+      },
+      {
+        "heading": "Balance",
+        "items": [
+          "Cinderhoof is much harder: about 25% to catch with the best gear.",
+          "Carol Horn needs luck 1, and luck only counts when your trap type matches the elf's weakness.",
+          "Commons and General Grimbolt tuned, with gold and points raised to keep pace. Recommended gear is now needed for each local boss.",
+          "Small buffs to the Wind-up Key Charm, Yule Log Base and Gingerbread Cottage."
+        ]
+      }
+    ]
+  },
+  {
     "version": "1.0.0",
     "date": "2026-11-27",
     "title": "Every hunt finds an elf",

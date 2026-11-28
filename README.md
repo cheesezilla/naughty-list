@@ -1,18 +1,42 @@
 # The Naughty List
 
-A Christmas imp-trapping browser game. Scrinch's imps are raiding Santa's secret lair; you arm a trap, pick a bait and hunt them, back to back, with no wait timer. Bait cost paces progress instead.
+A Christmas elf-trapping browser game for eddy and friends. Scrinch, a horned devil, has hexed Santa's own elves and taken over his secret lair at the North Pole. Santa hires you as an elf hunter: arm a trap, a base, a bait and a charm, then hunt, back to back, with **no wait timer**. Bait cost paces progress instead.
 
-Design plan: [docs/PLAN.md](docs/PLAN.md) (updated with every PR)
+- Four main areas plus an optional side area (Cookie Pantry, Wrapping Room, Toy Workshop, Reindeer Stables, Carol Loft), 29 elves with rares, mini bosses and local bosses, and ranks 1 to 5.
+- Gold buys gear in the Elf Emporium; boss loot crafts stronger gear in Santa's Workshop; every elf you catch joins your Naughty List collection.
+- Every hunt meets an elf (Allure), a Cheer Meter gives pick-1-of-3 boons, and Santa and Mrs. Claus drop in with gifts. Achievements, badges and a hunters' leaderboard keep friends competing.
+- Phone-first web page with original art, accounts with open sign-up, server-side hunts and SQLite saves.
 
-Strategy walkthrough: [docs/WALKTHROUGH.md](docs/WALKTHROUGH.md)
+## Current version: 1.0.1
 
-## Status
+Release notes for every version are in [CHANGELOG.md](CHANGELOG.md). The version lives in `package.json`.
 
-- Milestones 1 to 3 are in: hunt engine, v1 content (4 locations, 24 imps), balance simulator, accounts with open sign-up, server-side hunts and SQLite saves, and a phone-first UI with original art.
-- Deploys to a UGREEN NAS with Docker; see [docs/DEPLOY.md](docs/DEPLOY.md).
-- Next: leaderboard and catch feed.
+### What's new
 
-## Run it
+1.0.1 (2026-11-28), balance and fixes:
+
+- A popup asks you to refresh when the game has been updated, and checks when you return to an idle tab.
+- Cinderhoof is much harder (about 25% with the best gear); commons, General Grimbolt and some gear were tuned; Carol Horn needs luck 1.
+- Fixes: admin always-catch on bosses, the Cheer Meter resets on travel, and quiet-hunt and Carol Loft hint wording.
+
+1.0.0 (2026-11-27), the first full release:
+
+- Every hunt now meets an elf; bait attraction became **Allure**, which pulls rarer elves.
+- **Cheer Meter** with boons and Overcharge, plus Santa and Mrs. Claus boons and free Grand Gifts.
+- Parallel Toy Workshop orders, tougher Madame Shredwell, a Cookie Pantry goals panel, and an all-elves Naughty List tab.
+- Rank 5 now needs 217,000 points.
+
+## How it's deployed
+
+The game ships as one Docker image, built by GitHub Actions:
+
+- Push to `main` publishes `ghcr.io/cheesezilla/naughty-list:latest`. A new version number in `package.json` also publishes a pinned image (for example `:1.0.0`), a `v1.0.0` tag and a GitHub Release.
+- Push to `integration` publishes `:integration`, which runs as a test project on the NAS (port 8082). Feature PRs target `integration`; `main` only gets releases.
+- The live game runs on a UGREEN NAS. In the UGOS Docker app, create a project from `compose.yaml`; the game is at `http://<nas-address>:8081`, with saves in `/volume1/docker/naughty-list`. An optional Cloudflare Tunnel in the same file lets friends play from anywhere.
+
+Full steps: [Developer notes, Deployment guide](docs/DEVELOPER_NOTES.md#deployment-guide-nas) and [Releasing](docs/DEVELOPER_NOTES.md#releasing).
+
+## Run it locally
 
 Needs Node.js 22 or newer.
 
@@ -23,51 +47,23 @@ npm install
 npm run play           # build and serve on http://localhost:8080
 ```
 
-The first account you create is the admin; friends create their own accounts from the login screen, and the admin can close sign-up under **More > Admin**. Saves live in `./data/naughty-list.db`. Any player can wipe their own progress under **More > Account > Start over**.
+The first account you create is the admin. Other commands: `npm run dev` (hot reload), `npm test`, `npm run simulate`, `npm run balance`, `npm run check-content`. All game numbers live in `content/*.json`.
 
-Other commands:
+## Docs
 
-```sh
-npm run dev            # server on :8080 and the hot-reloading page on :5173
-npm test               # engine and server tests
-npm run simulate       # balance report (add -- --players 1000 --strict)
-npm run check-content  # validate content/*.json
-```
-
-## Tuning the game
-
-All numbers live in `content/`:
-
-| File | What's in it |
-| --- | --- |
-| `constants.json` | Starting gold and gear, caps, sell-back rate, free-cookie rescue, the stamina switch |
-| `ranks.json` | Rank names and points needed |
-| `locations.json` | Locations, unlock costs and their imps (power, gold, points, weights, type matchups, loot) |
-| `items.json` | Traps, bases, baits, charms and materials |
-| `recipes.json` | Santa's Workshop crafting recipes |
-| `story.json` | Santa's intro letter, shown when a game starts |
-
-Edit, then run `npm run check-content` and `npm run simulate` to see the effect. The stamina meter (`constants.json` > `stamina.enabled`) is built but switched off.
-
-## Formulas
-
-- Power = (trap + base + charm power) x (1 + charm power bonus); luck adds up.
-- Attraction = min(95%, bait attraction x (1 + attraction bonuses)), halved in the Reindeer Stables without Hot Cocoa.
-- Imp pick: weighted by each imp's weight; Fruitcake doubles rare, mini boss and boss weights.
-- Catch = clamp((P x E + L^2) / (P x E + M), 0, 98%), where E is 0 / 0.5 / 1 / 1.5 by trap type and M is the imp's power. Luck only counts when E > 0.
-
-## Deploy on the UGREEN NAS
-
-Follow [docs/DEPLOY.md](docs/DEPLOY.md). Pushing to `main` builds `ghcr.io/cheesezilla/naughty-list:latest`, and a new version number in `package.json` also publishes a pinned `:1.0.0` image, a `v1.0.0` tag and a GitHub Release. Release notes are in [CHANGELOG.md](CHANGELOG.md) and the process is in [docs/RELEASING.md](docs/RELEASING.md). In the NAS Docker app, create a project from `compose.yaml`, and the game is at `http://<nas-address>:8081`. An optional Cloudflare Tunnel in the same file lets friends play from anywhere.
+- [Wiki](docs/WIKI.md): player reference and full-game walkthrough.
+- [Developer notes](docs/DEVELOPER_NOTES.md): design, formulas, art, deployment, releasing.
+- [Balance notes](docs/BALANCE.md): gear balance check and simulation reports.
+- The UI design canvas is an artifact, linked in `CLAUDE.md`.
 
 ## Layout
 
 ```
 content/          game data (JSON)
-src/engine/       pure game rules: odds, hunts, shop, crafting, travel (shared by server, client, simulator)
+src/engine/       pure game rules (shared by server, client, simulator)
 src/content/      content schema and loader
 src/server/       Fastify server: API + built client
 src/client/       Preact web client
-scripts/          simulator, content check, server build
+scripts/          simulator, balance check, content check, server build
 test/             Vitest tests
 ```

@@ -17,4 +17,7 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run simulate -- --players 200
+      # Advisory: warns about balance issues and a stale docs/BALANCE.md, never fails the build.
+      - run: npm run balance -- --ci
+        continue-on-error: true
       - run: npm run build

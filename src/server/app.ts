@@ -129,6 +129,9 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
   const str = (v: unknown) => (typeof v === 'string' ? v : '');
   const amount = (v: unknown) => (v === undefined ? 1 : typeof v === 'number' ? v : NaN);
 
+  // Every response says which version of the server sent it, so an open browser tab can tell it is out of date.
+  app.addHook('onSend', async (_req, reply) => { reply.header('x-app-version', opts.version ?? 'dev'); });
+
   // ---------- public ----------
   app.get('/api/health', async () => ({ ok: true, version: opts.version ?? 'dev' }));
   app.get('/api/content', async () => content);
@@ -340,6 +343,8 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
     game.post('/api/travel', playerAction((p, b) => travel(content, p, str(b.location)), (before, after) => {
       if (before.location === after.location) return null;
       const moved: GameEvent = { type: 'travel', location: after.location, unlockCost: before.gold - after.gold };
+      const b = before.cheer;
+      if (b && (b.pips || b.active.length || b.held || b.carry || b.draw)) moved.cheerReset = { pips: b.pips, boons: b.active.length };
       // The first time a player reaches a location (it unlocks then), the log gets its intro.
       return before.unlocked.includes(after.location) ? moved : [moved, { type: 'arrival', location: after.location }];
     }));

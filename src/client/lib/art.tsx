@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'preact/hooks';
 
 /**
- * Game art comes from /art/manifest.json (see docs/ART.md), so a PNG that replaces an SVG
+ * Game art comes from /art/manifest.json (see docs/DEVELOPER_NOTES.md, Art reference), so a PNG that replaces an SVG
  * is picked up after `npm run art` without any code change.
  */
 export interface ArtEntry { id: string; slot: string; file: string; width: number; height: number; pins?: Record<string, { x: number; y: number }> }

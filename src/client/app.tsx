@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { Content } from '../content/schema.js';
 import { gameData, type JournalRow, type PlayerState } from '../engine/index.js';
-import { api, type User } from './api.js';
+import { api, checkVersion, onStale, stale, type User } from './api.js';
 import { GameContext, trimLog, type Game } from './game.js';
 import { loadArt } from './lib/art.js';
 import { buzz, getPrefs, playSound } from './lib/prefs.js';
@@ -20,12 +20,40 @@ export function App() {
   const [content, setContent] = useState<Content | null>(null);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
-    const c = fetch('/api/content').then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))));
+    const c = fetch('/api/content').then((r) => { checkVersion(r); return r; }).then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))));
     Promise.all([c, loadArt()]).then(([content]) => setContent(content as Content)).catch((e) => setError(String(e)));
   }, []);
   if (error) return <main class="center">Couldn't load the game: {error}</main>;
   if (!content) return <main class="center">Loading Santa's lair…</main>;
-  return <Session content={content} />;
+  return <><Session content={content} /><UpdatePopup /></>;
+}
+
+/** Blocks the game when the server has been updated since this page loaded. */
+function UpdatePopup() {
+  const [old, setOld] = useState(stale);
+  useEffect(() => onStale(() => setOld(true)), []);
+  // An idle tab makes no API calls, so check the version when it comes back into view (at most once a minute).
+  useEffect(() => {
+    let last = 0;
+    const check = () => {
+      if (document.visibilityState !== 'visible' || Date.now() - last < 60_000) return;
+      last = Date.now();
+      fetch('/api/health').then(checkVersion).catch(() => {});
+    };
+    document.addEventListener('visibilitychange', check);
+    window.addEventListener('focus', check);
+    return () => { document.removeEventListener('visibilitychange', check); window.removeEventListener('focus', check); };
+  }, []);
+  if (!old) return null;
+  return (
+    <div class="popup-backdrop update-backdrop" style="z-index:100">
+      <div class="popup" role="alertdialog" aria-modal="true" aria-label="New version available" style="padding:24px 20px;text-align:center">
+        <h2>New version!</h2>
+        <p>The North Pole lair was updated while you were playing. Refresh your browser to get the changes.</p>
+        <button class="hunt-btn wide" onClick={() => location.reload()}>Refresh now</button>
+      </div>
+    </div>
+  );
 }
 
 interface MeResponse { user: User; player: PlayerState; journal: JournalRow[]; backfill?: string[] }

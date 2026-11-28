@@ -1,6 +1,6 @@
-# The Naughty List: design and v1 plan
+# The Naughty List: developer notes
 
-Living design document. It is updated in every pull request that changes the game, so it always matches `main`.
+Living design and discussion document: where game mechanics are planned and debated before they are built, plus how the game is made, deployed and released. Update it in every pull request that changes the game, so it always matches the code. The other two docs are [Balance notes](BALANCE.md) (gear balance check and simulation history) and the [Wiki](WIKI.md) (player-facing reference and walkthrough).
 Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this file is now the source of truth).
 
 ## Implementation status
@@ -15,7 +15,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Flavour text for every item and elf | Done | #9 (shown in the UI since #11) |
 | Art for every UI slot: 97 original SVGs + manifest, named by game id | Done | #10 (shown in the UI since #11) |
 | Custom PNG portraits for all 10 cookie-pantry/wrapping-room/toy-workshop/reindeer-stables elves | Done | #13 |
-| Custom AI-generated art for every slot except the 24px icons (97 pictures: 29 elves, traps, bases, baits, charms, materials, trap types, ranks, locations, map, brand, how-to), resized and saved as WebP; see [ART_PROGRESS.md](ART_PROGRESS.md) | Done | #14, #40 |
+| Custom AI-generated art for every slot except the 24px icons (97 pictures: 29 elves, traps, bases, baits, charms, materials, trap types, ranks, locations, map, brand, how-to), resized and saved as WebP; see [ART_PROGRESS.md](#custom-art-progress) | Done | #14, #40 |
 | New phone-first UI (layout D2): bottom menu, hunt log with events and full history, Arsenal, Elf Emporium, Santa's Workshop, More pages, open sign-up with admin switch | Done | #11 |
 | Holly power type renamed Starlight; its three traps reworked (Starlit Stocking, Star Lantern, Constellation Wreath) with new text and SVG art, old saves migrated | In review | #17 |
 | Intro letter from Santa: the game's backstory as the first hunt-log entry of every new game, and on How to play | In review | #12 |
@@ -36,12 +36,16 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Boss keys: the local boss drops a key on its first catch, and the next location needs it to unlock (existing saves are granted the keys they have earned); see [Progression](#progression) | In review | this PR |
 | Branching progression (eddy): luck rework (luck helps most against commons, least against bosses), Madame Shredwell weak to a new Carol type, and the Carol Loft side area where the Carol Horn is made; see [Branching progression](#branching-progression) | In review | this PR |
 | New bases: two tiers of power, attraction and luck bases, with build affinity and a "good for" line; see [New bases](#new-bases-power-attraction-and-luck) | In review | #21 |
-| Playtest and simulation plan: what the simulator must report for Allure, Cheer Meter, events and goals, targets and how to read them (plan only); see [Playtest and simulation plan](#playtest-and-simulation-plan-eddy-27-nov-2026-plan-only). Baseline simulator built (Allure tiers, goals, gold flow, progress feel, `--seeds`, `--trace`); Cheer and events policies and metrics included; findings in [SIMULATION_REPORT.md](SIMULATION_REPORT.md) | In progress | this PR |
+| Playtest and simulation plan: what the simulator must report for Allure, Cheer Meter, events and goals, targets and how to read them (plan only); see [Playtest and simulation plan](#playtest-and-simulation-plan-eddy-27-nov-2026-plan-only). Baseline simulator built (Allure tiers, goals, gold flow, progress feel, `--seeds`, `--trace`); Cheer and events policies and metrics included; findings in [SIMULATION_REPORT.md](BALANCE.md#simulation-history) | In progress | this PR |
+| Commons and Grimbolt tuned to the balance bands; balance report gets a Recommended gear tier and a boss-gap flag; walkthrough rewritten as trap 1 / trap 2 per area | Done | this PR |
+| Balance check: `npm run balance` flags catch-rate problems for every trap x base x charm against every elf (fresh and endgame profiles), thresholds in `balance/thresholds.json`, report in [Balance notes](BALANCE.md), advisory in CI | Done | this PR |
 | Random events after a hunt (Santa and Mrs. Claus boons with a safe or big choice and rare free Grand Gifts; Scrinch's random events were removed again, he stays the story villain), plus a parked-ideas list; see [Random events](#random-events-built-on-integration) | Built on `integration` (test playground), draft numbers | this PR |
 | Cheer Meter and boons (eddy): a streak meter, pick 1 of 3 from 14 boons in three rarities, Overcharge and Cheer charms; see [Cheer Meter](#cheer-meter-and-boons-eddy-26-nov-2026-built-on-integration) | Built on `integration` (test playground), draft numbers | this PR |
-| Full-game strategy walkthrough: [docs/WALKTHROUGH.md](WALKTHROUGH.md), gear, bosses and Cheer Meter use for every location | Done | this PR |
+| Full-game strategy walkthrough: [Wiki walkthrough](WIKI.md#walkthrough), gear, bosses and Cheer Meter use for every location | Done | this PR |
+| Docs consolidated into three: Developer notes, Balance notes, Wiki with walkthrough | Done | this PR |
 | 5. Tune from play-test | Planned | |
-| Versioned releases: semver in `package.json`, `CHANGELOG.md`, merging a new version into `main` publishes version-tagged Docker images, a `vX.Y.Z` tag and a GitHub Release, plus in-game release notes (`content/releases.json`, What's new popup and More screen); first release 1.0.0 (integration promoted to main); see [Deployment](#deployment) and [RELEASING.md](RELEASING.md) | Done | this PR |
+| Daily branch cleanup: keeps the 10 most recently merged PR branches, deletes older merged ones (`cleanup-branches.yml`) | Done | this PR |
+| Versioned releases: semver in `package.json`, `CHANGELOG.md`, merging a new version into `main` publishes version-tagged Docker images, a `vX.Y.Z` tag and a GitHub Release, plus in-game release notes (`content/releases.json`, What's new popup and More screen); first release 1.0.0 (integration promoted to main); see [Deployment](#deployment) and [RELEASING.md](#releasing) | Done | this PR |
 
 The server runs every hunt and saves each player in SQLite. To play locally, follow "Run it locally" below.
 
@@ -138,7 +142,7 @@ All constants live in `content/constants.json` and the other content files, so t
 - The Catch bar now shows the overall catch chance of the hunt, averaged over the elves the setup draws.
 - Quiet hunts are gone from the engine, but old log rows with outcome `quiet` still display. The secret badge Silent Night changed to "Lose 4 elves in a row" (`bestEscapeStreak`), because nothing can be quiet now.
 - The numbers were not retuned (eddy's call): with every hunt now paying out, hunts to rank 5 dropped from 1,652 to 1,289 (see Simulator).
-- Code: `allureFactor()` and `impWeights()` in `src/engine/odds.ts`, `hunt()` in `src/engine/hunt.ts`. Admin "always attract and catch" now only forces the catch and loot.
+- Code: `allureFactor()` and `impWeights()` in `src/engine/odds.ts`, `hunt()` in `src/engine/hunt.ts`. Admin "always attract and catch" forces the catch (chance 1, even against an elf immune to the armed trap type, such as Cinderhoof vs Starlight) and the loot.
 
 ## Pacing without a cooldown
 
@@ -161,6 +165,12 @@ Nothing here is built and no game number changes. It says what the simulator and
 ### What exists today
 
 `scripts/simulate.ts` (`npm run simulate`, flags `--players`, `--seed`, `--max-hunts`, `--max-collect-hunts`, `--without`, `--strict`, `--verbose`) plays seeded virtual hunters through the real engine with a greedy strategy (best setup by points plus net gold, buys bait, crafts, takes the Loft detour, plays the objectives) and reports hunts per rank against the targets (150, 250, 400, 600), per-location hunts, Allure rate, catch rate and bait cost share, pillages, gear purchase timing, boss catches, objective counts and badge timing. It does not model the Cheer Meter, events or the Goals panel, and its "attracted" column is meaningless once Allure removes quiet hunts.
+
+### Balance check (standard step for every balance PR)
+
+`npm run balance` ([Balance notes](BALANCE.md)) computes catch rates with the real engine formula for every trap x base x charm against every elf, for a **fresh player** (the traps they could own on entering the area, the area's base, no charm) for **recommended gear** (what docs/WALKTHROUGH.md has the player farm for, including optional crafts) and for **endgame gear** (an over-ranked player with traps and bases from later areas; best setup per elf). It flags commons outside the bands in "Balance targets per location", elves off their stated target (Madame Shredwell about 10% off-type and 30% with Carol, Cinderhoof about 25% with the best gear), bosses and mini bosses too easy or near impossible, cheese (a trap that outclasses the intended gear of an area), obsolete traps gear that adds little for its cost, and a boss that is less than 10 points easier with recommended gear than with beginner gear (eddy: recommended gear should almost always be needed for the local boss). Thresholds live in `balance/thresholds.json`; CI runs it as an advisory step (`continue-on-error`, warnings only).
+
+**Workflow for a PR that changes gear, elf power, luck, effectiveness, prices, recipes or the catch formula:** (1) `npm run balance` before the change, (2) change `content/*.json`, (3) `npm run balance` again and read the new flags, (4) `npm run balance -- --write` to refresh `docs/BALANCE.md`, (5) `npm run check-content`, `npm test`, `npm run simulate`, (6) in the PR description, say which flags the change fixes, adds or leaves. A flag that is a deliberate design choice goes under `accepted` in the thresholds file with the reason. A new elf, area, trap or base needs an entry in `fresh` (and `elfTargets` if it has a stated target). First run (27 Nov, `integration` at PR 75): 19 flags; 13 once PR 76 (Carol Horn luck 1) is merged. `docs/BALANCE.md` section 1b lists every elf's catch rate with the area's recommended beginner gear and with endgame gear; see the findings there.
 
 ### Simulator changes needed
 
@@ -264,16 +274,16 @@ The numbers below mirror `content/*.json`. Types: C = Clockwork, S = Starlight, 
 
 | Location | Elf | Tier | Power | Gold | Points | Weak (x1.5) | Resists (x0.5) / immune (x0) | Drops |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Cookie Pantry | Crumb Elf | Common | 40 | 12 | 20 | | | |
-| Cookie Pantry | Sprinkle Snatcher | Common | 70 | 18 | 30 | C | | Candied Peel 10% |
-| Cookie Pantry | Sootcap | Uncommon | 100 | 25 | 45 | S | | |
-| Cookie Pantry | Jarbelly the Glutton | Uncommon | 180 | 40 | 70 | C | | Cookie Tin 30% |
-| Cookie Pantry | Gingerbread Rascal | Rare | 160 | 60 | 100 | F | | Sugar Glass 50%, Brass Spring 15% |
-| Wrapping Room | Ribbon Tangler | Common | 150 | 40 | 60 | F | | Sugar Twist 25%, Ribbon Candy 2% |
-| Wrapping Room | Tape Biter | Common | 220 | 55 | 85 | S | | Sugar Twist 20%, Ribbon Candy 2% |
-| Wrapping Room | Bow Burglar | Common | 280 | 70 | 100 | S | C | Candied Peel 30%, Ribbon Candy 2% |
-| Wrapping Room | Glitterbug | Rare | 350 | 110 | 160 | S | C | Sugar Glass 50% |
-| Wrapping Room | Spoolwick | Mini boss | 600 | 160 | 300 | S | C | Golden Ribbon 100% |
+| Cookie Pantry | Crumb Elf | Common | 130 | 12 | 20 | | | |
+| Cookie Pantry | Sprinkle Snatcher | Common | 230 | 18 | 30 | C | | Candied Peel 10% |
+| Cookie Pantry | Sootcap | Uncommon | 330 | 25 | 45 | S | | |
+| Cookie Pantry | Jarbelly the Glutton | Uncommon | 590 | 40 | 70 | C | | Cookie Tin 30% |
+| Cookie Pantry | Gingerbread Rascal | Rare | 520 | 60 | 100 | F | | Sugar Glass 50%, Brass Spring 15% |
+| Wrapping Room | Ribbon Tangler | Common | 350 | 40 | 60 | F | | Sugar Twist 25%, Ribbon Candy 2% |
+| Wrapping Room | Tape Biter | Common | 510 | 55 | 85 | S | | Sugar Twist 20%, Ribbon Candy 2% |
+| Wrapping Room | Bow Burglar | Common | 660 | 70 | 100 | S | C | Candied Peel 30%, Ribbon Candy 2% |
+| Wrapping Room | Glitterbug | Rare | 820 | 110 | 160 | S | C | Sugar Glass 50% |
+| Wrapping Room | Spoolwick | Mini boss | 960 | 160 | 300 | S | C | Golden Ribbon 100% |
 | Wrapping Room | Madame Shredwell | Boss | 1,100 | 300 | 550 | Carol | C | Enchanted Wrapping 100%, Jingle Bell Charm x5 25% |
 | Carol Loft (side area) | Tin Whistler | Common | 200 | 30 | 42 | C | | Hymn Reed 20% |
 | Carol Loft (side area) | Hoarse Caroller | Common | 260 | 38 | 55 | F | | Hymn Reed 20% |
@@ -285,13 +295,13 @@ The numbers below mirror `content/*.json`. Types: C = Clockwork, S = Starlight, 
 | Toy Workshop | Stuffing Ripper | Common | 1,850 | 220 | 230 | C | F | |
 | Toy Workshop | Wind-up Elf | Rare | 900 | 300 | 320 | C | F immune | Sugar Glass 50% |
 | Toy Workshop | Hammerhand | Mini boss | 1,600 | 400 | 650 | F | | Toymaker's Gear 100% |
-| Toy Workshop | General Grimbolt | Boss | 2,800 | 700 | 1,300 | C | F | Clockwork Heart 100% |
-| Reindeer Stables | Hay Hoarder | Common | 1,000 | 300 | 350 | F | | |
-| Reindeer Stables | Bell Thief | Common | 1,300 | 380 | 420 | F | S | |
-| Reindeer Stables | Harness Snipper | Common | 1,600 | 450 | 480 | C | S | |
-| Reindeer Stables | Carrot Crook | Rare | 2,000 | 600 | 650 | F | S | Sugar Glass 50% |
-| Reindeer Stables | Antler Ripper | Mini boss | 3,500 | 800 | 1,200 | F | S | Silver Sleighbell 100% |
-| Reindeer Stables | Cinderhoof | Boss | 6,000 | 1,500 | 3,000 | F | S immune | Brimstone Coal 100% |
+| Toy Workshop | General Grimbolt | Boss | 5,900 | 700 | 1,300 | C | F | Clockwork Heart 100% |
+| Reindeer Stables | Hay Hoarder | Common | 3,000 | 300 | 350 | F | | |
+| Reindeer Stables | Bell Thief | Common | 3,900 | 380 | 420 | F | S | |
+| Reindeer Stables | Harness Snipper | Common | 4,800 | 450 | 480 | C | S | |
+| Reindeer Stables | Carrot Crook | Rare | 3,200 | 600 | 650 | F | S | Sugar Glass 50% |
+| Reindeer Stables | Antler Ripper | Mini boss | 5,700 | 800 | 1,200 | F | S | Silver Sleighbell 100% |
+| Reindeer Stables | Cinderhoof | Boss | 20,500 | 1,500 | 3,000 | F | S immune | Brimstone Coal 100% |
 
 Baron Crumblewick, the old Pantry boss, is parked in `content/parked/baron_crumblewick.json` and Grizzlewick the Horned, the old Stables boss, in `content/parked/grizzlewick.json` (not loaded) for a later location or event. Elf weights and which elves a bait draws are in `content/locations.json`; the Wrapping Room's rare, mini boss and boss come only for ladder baits, and the Toy Workshop and Stables mini bosses and bosses only through their objective (weight 0 otherwise). Jarbelly, Bow Burglar and Bell Thief always pillage one bait when they escape; other elves pillage by tier (see [Pillage on escape](#pillage-on-escape)). Brimstone Coal has no use in v1; it is saved for later recipes, including The Naughty List.
 
@@ -317,7 +327,7 @@ The home types are data (`homeTypes` per location in `locations.json`; the Cooki
 | Starlit Stocking | S | 60 | 0 | | 1 | Starter |
 | Jack-in-the-Box | C | 150 | 1 | | 1 | 300 gold |
 | Star Lantern | S | 300 | 2 | | 2 | 1,200 gold |
-| Carol Horn | Carol | 600 | 10 | | 2 | Crafted (Carol Loft) |
+| Carol Horn | Carol | 600 | 1 | | 2 | Crafted (Carol Loft) |
 | Icicle Jar | F | 500 | 2 | +5% | 2 | 3,000 gold |
 | Nutcracker Jaws | C | 900 | 3 | | 3 | 9,000 gold |
 | Constellation Wreath | S | 1,400 | 5 | +5% | 3 | Crafted |
@@ -332,7 +342,7 @@ The home types are data (`homeTypes` per location in `locations.json`; the Cooki
 | Gingerbread Slab | 80 | 1 | | 1 | 500 gold |
 | Candy Cane Platform | 200 | 1 | +5% | 2 | 2,500 gold |
 | Ice Block | 400 | 3 | | 3 | 8,000 gold |
-| Yule Log Base | 600 | 5 | +10% | 3 | Crafted |
+| Yule Log Base | 800 | 5 | +10% | 3 | Crafted |
 
 **Baits**
 
@@ -352,7 +362,7 @@ The home types are data (`homeTypes` per location in `locations.json`; the Cooki
 | --- | --- | --- | --- |
 | Mistletoe Charm | +4 luck | 1 | 30 gold |
 | Jingle Bell Charm | +15% attraction | 2 | 25 gold |
-| Wind-up Key Charm | +20% power | 3 | 60 gold |
+| Wind-up Key Charm | +35% power | 3 | 60 gold |
 
 ## New bases: power, attraction and luck
 
@@ -374,7 +384,7 @@ Built in #21. Six optional bases in two tiers. In each tier there is one base fo
 | Chestnut Brazier | Attraction | 100 | 1 | +15% | | 2 | 3,500 gold |
 | Wishbone Plinth | Luck | 50 | 4 | | | 2 | 4,500 gold |
 | Sleigh Runner | Power | 1,300 | 2 | | Clockwork +10% power | 4 | Crafted: 2 Silver Sleighbell, 2 Toymaker's Gear, 12,000 gold |
-| Gingerbread Cottage | Attraction | 550 | 4 | +30% | Frost +10% power | 4 | Crafted: 3 Cookie Tin, 2 Golden Ribbon, 1 Candy Cane Platform, 8,000 gold |
+| Gingerbread Cottage | Attraction | 1,550 | 4 | +30% | Frost +10% power | 4 | Crafted: 3 Cookie Tin, 2 Golden Ribbon, 1 Candy Cane Platform, 8,000 gold |
 | Wishing Star Pedestal | Luck | 300 | 9 | | Starlight or Carol +10% power | 4 | Crafted: 1 Clockwork Heart, 2 Enchanted Wrapping, 4 Sugar Glass, 12,000 gold |
 
 The rank 2 shop bases sit beside the Candy Cane Platform as sidegrades; none of them replaces the Ice Block (400 power, 3 luck, 8,000 gold), which stays the all-round rank 3 shop base. The rank 4 bases are crafted from loot of the mini bosses and bosses, so they come once a player has farmed the Toy Workshop and the Stables. The Gingerbread Cottage uses up a Candy Cane Platform, so a player who wants it keeps the platform until then. Names are working titles. They follow the theme and copy nothing from other games.
@@ -420,7 +430,7 @@ Art for the six bases is generated SVG (600×450, standing on the y = 340 line) 
 Luck adds a bonus of **scale x luck squared x tier weight** to the catch chance's numerator (see [Formulas](#formulas)), and it ignores weakness and resistance. Constants in `content/constants.json`: scale 3, tier weights common 1, uncommon 1, rare 0.5, mini boss 0.25, boss 0.1.
 
 - **Luck for minions, power for bosses.** Against a common elf luck counts in full. Against a boss it counts a tenth, so only power (and the right type) beats one.
-- **The choice:** the Mistletoe Charm (+4 luck) and the Wind-up Key Charm (+20% power) compete for one slot, and so do luck-leaning traps (Carol Horn, luck 10) and power traps. Example in the Toy Workshop with a Nutcracker Jaws and a Yule Log Base: the power build (Wind-up Key, 1,800 power, luck 8) catches Paint Smudger 83% of the time, the luck build (Mistletoe, 1,500 power, luck 12) 92%; against General Grimbolt the power build wins by roughly 4 points (checked in `test/hunt.test.ts`).
+- **The choice:** the Mistletoe Charm (+4 luck) and the Wind-up Key Charm (+35% power) compete for one slot, and so do luck-leaning bases and power traps. Example in the Toy Workshop with a Nutcracker Jaws and a Yule Log Base: the power build (Wind-up Key, 1,800 power, luck 8) catches Paint Smudger 83% of the time, the luck build (Mistletoe, 1,500 power, luck 12) 92%; against General Grimbolt the power build wins by roughly 4 points (checked in `test/hunt.test.ts`).
 - Luck still only counts when the elf is not immune.
 
 ### One off-type boss: Madame Shredwell
@@ -435,10 +445,10 @@ The Wrapping Room's elves are weak to Starlight, but **Madame Shredwell is now w
 | Opens at | Rank 2, 600 gold, and the Wrapping Room must already be unlocked. **No boss key**, and nothing later needs it, so skipping it is always allowed |
 | Elves | 3 commons (each weak to a different core type, so any trap works), a rare (Silver Piper) and a mini boss (Choirmaster Hollowvoice, weight 5), weak to Carol. No boss. Rewards are about 70% of the Wrapping Room's, so it is a detour, not a farm |
 | Drops | Hymn Reed (commons 20%, Silver Piper 100%) and Carol Songsheet (Choirmaster, 100%) |
-| Trap | Carol Horn: 5 Hymn Reed + 1 Carol Songsheet + 600 gold at rank 2. New power type **Carol** (a gold music note on rose pink), 600 power and luck 10: a luck-leaning trap that also hits Shredwell, the Piper and the Choirmaster for x1.5 |
+| Trap | Carol Horn: 5 Hymn Reed + 1 Carol Songsheet + 600 gold at rank 2. New power type **Carol** (a gold music note on rose pink), 600 power and luck 1 (was 600 and 10 until 27 Nov 2026): a power trap that also hits Shredwell, the Piper and the Choirmaster for x1.5 |
 | Later | The Carol type is built to be reused: a later location can make its elves weak to Carol and reward Carol traps. The order board counts a Carol trap as a joker, and "Three of a Kind" still uses the core three types |
 
-**The choice for a rank 2 player:** spend about 600 gold and roughly 100 hunts on the Loft for a Carol Horn (a luck trap that is also the best answer to Shredwell), or buy an Icicle Jar and push through the Wrapping Room with a neutral trap, or build luck and skip the detour. Key chain code ignores side areas: `keyNeeded` and `grantKeys` walk only the main chain.
+**The choice for a rank 2 player:** spend about 600 gold and roughly 100 hunts on the Loft for a Carol Horn (a cheap trap that is also the best answer to Shredwell), or buy an Icicle Jar and push through the Wrapping Room with a neutral trap, or build luck and skip the detour. Key chain code ignores side areas: `keyNeeded` and `grantKeys` walk only the main chain.
 
 **Not built yet:** a badge for the Carol type or the Loft, a Carol charm, and extra Loft rooms. Art is generated SVG like the other rooms.
 
@@ -480,11 +490,11 @@ The first location teaches the basic loop and nothing else: catch elves, earn go
 
 | Elf | Tier | Power | Weight (Stale Cookie) | Weight (Sugar Cookie) | Drops |
 | --- | --- | --- | --- | --- | --- |
-| `crumb_elf` | Common | 40 | 40 | 40 | |
-| `sprinkle_snatcher` | Common | 70 | 30 | 30 | Candied Peel 10% (as now) |
-| `sootcap` | Uncommon (was common) | 100 | 15 | 22 | |
-| `jarbelly` | Uncommon (was mini boss) | 180 (was 300) | 10 | 10 | Cookie Tin 30% (was 100%); gold 40 and points 70; always pillages a bait on escape |
-| `gingerbread_rascal` | Rare | 160 | 5 | 8 | Sugar Glass 50% (as now), Brass Spring 15% (new) |
+| `crumb_elf` | Common | 130 | 40 | 40 | |
+| `sprinkle_snatcher` | Common | 230 | 30 | 30 | Candied Peel 10% (as now) |
+| `sootcap` | Uncommon (was common) | 330 | 15 | 22 | |
+| `jarbelly` | Uncommon (was mini boss) | 590 (was 300 before the Pantry rework) | 10 | 10 | Cookie Tin 30% (was 100%); gold 40 and points 70; always pillages a bait on escape |
+| `gingerbread_rascal` | Rare | 520 | 5 | 8 | Sugar Glass 50% (as now), Brass Spring 15% (new) |
 
 - **New tier, uncommon.** The engine, the content schema, the hunt log and the Naughty List gain an `uncommon` tier between common and rare, with its own portrait frame. Fruitcake doubles every tier above common.
 - **Baron Crumblewick leaves the Pantry** and is parked for a later location or event; his art and text stay. His Brass Spring now comes from the Gingerbread Rascal, so Constellation Wreath can still be crafted.
@@ -529,7 +539,7 @@ The elves pin three standing toy orders to the board, one for each core trap typ
 
 Get the sleigh ready before the countdown runs out, while thieves undo your work. The countdown is a number of hunts, not a clock.
 
-- **Start a run** from the panel (free). The run lasts 40 hunts; every hunt counts, including quiet ones, so Hot Cocoa's better attraction matters more here.
+- **Start a run** from the panel (free). The run lasts 40 hunts; every hunt counts, and Hot Cocoa's stronger pull on rarer elves helps here.
 - **Readiness** 0 to 100: a common catch adds 5, the rare adds 12, Antler Ripper adds 20 (first pass was 4 and 10; tuned in the simulator). A Bell Thief escape takes 8 (it runs off with the bells); a Harness Snipper escape takes 5.
 - Antler Ripper's weight is 0 below 50 Readiness and 6 from 50 up.
 - **Launch:** reaching 100 before the countdown ends launches the sleigh: 2,000 gold and 1 Silver Sleighbell, and Cinderhoof ambushes it, so the next attracted hunt is Cinderhoof (weight 0 otherwise). It drops Brimstone Coal as now.
@@ -574,7 +584,7 @@ Text lives in a new `locations` block in `content/story.json`, keyed by location
 | Cookie Pantry | Santa's pantry: jars to the ceiling and crumbs on every shelf. The hexed baker elves raid it all night. Catch them, earn your pay, and kit yourself out before heading deeper into the lair. | 1. Hunt here to earn gold and points. 2. Each elf's description hints at the trap type it is weak to. Sootcap hides in shadow; Jarbelly can't resist a box. 3. Buy a better trap and base in the Elf Emporium as soon as you can afford them. 4. Sugar Cookies draw more uncommon and rare elves. 5. Reach Elf Deputy to unlock the Wrapping Room. |
 | Wrapping Room | Miles of ribbon and paper. The hexed wrappers still can't resist anything that shines, so Starlight traps work best here. The commons grab anything, but Glitterbug and Spoolwick only come for proper sweets, and Madame Shredwell only for the finest. Bake your way up. | 1. Most elves here are weak to Starlight and dodge Clockwork. Ribbon Tanglers freeze stiff in Frost. 2. Catch commons with shop bait to collect Sugar Twists and Candied Peel. 3. Make Ribbon Candy in Santa's Workshop. 4. Ribbon Candy draws Glitterbug and Spoolwick. Their drops make Golden Bow Bonbons. 5. Bonbons are the only bait Madame Shredwell will take. |
 | Toy Workshop | The hexed toymakers can't keep their hands off a wind-up, so Clockwork traps work best here. The loyal elves pin toy orders to the board, and there is an order for each kind of trap, and every catch fills the one that matches yours. Finish enough orders and the bosses come to inspect. | 1. Most elves here are weak to Clockwork and shrug off Frost. Paint Smudgers fear Starlight; Hammerhand is forge-hot. 2. Check the order board: every catch fills the order for your trap's type, so stay on your best trap. 3. Finish all three types for a Triple Crate, or just stick with one. 4. Every 3rd order brings Hammerhand. Then take a Rush order to bring General Grimbolt. |
-| Reindeer Stables | The sleigh must be ready by Christmas Eve, and the hexed stable hands keep pinching the bells and snipping the harness. They crave warmth and bolt from the cold, so Frost traps work best here. Load the sleigh in time and Cinderhoof will try to stop the launch. | 1. Most elves here are weak to Frost and squint away Starlight. Harness Snippers snag in Clockwork. 2. Start a sleigh run: you have 40 hunts, quiet ones included. 3. Catches build Readiness. Escaped Bell Thieves and Harness Snippers take it away. 4. Hot Cocoa keeps elves coming, so fewer hunts are wasted. 5. Reach 100 to launch the sleigh and face Cinderhoof. |
+| Reindeer Stables | The sleigh must be ready by Christmas Eve, and the hexed stable hands keep pinching the bells and snipping the harness. They crave warmth and bolt from the cold, so Frost traps work best here. Load the sleigh in time and Cinderhoof will try to stop the launch. | 1. Most elves here are weak to Frost and squint away Starlight. Harness Snippers snag in Clockwork. 2. Start a sleigh run: you have 40 hunts, and every hunt counts. 3. Catches build Readiness. Escaped Bell Thieves and Harness Snippers take it away. 4. Hot Cocoa pulls the rarer elves in, so more of your hunts count. 5. Reach 100 to launch the sleigh and face Cinderhoof. |
 
 **Hunt screen with the new parts (all locations):**
 
@@ -737,7 +747,7 @@ Ids are proposed. Badge concepts are briefs for the badge art (emblem only; the 
 | `catches_50` | Pocketful of Elves | Catch 50 elves | Bronze | A coat pocket bulging, three pointed elf hats sticking out |
 | `catches_250` | Sackful of Elves | Catch 250 elves | Silver | A drawstring sack wriggling with hexed elves |
 | `catches_1000` | Sleighload of Elves | Catch 1,000 elves | Gold | A small sleigh piled high with a tied-down, wriggling sack |
-| `streak_10` | On a Roll | Catch 10 elves in a row (quiet hunts don't break the run, escapes do) | Silver | A snowball rolling downhill, growing, with "10" on it |
+| `streak_10` | On a Roll | Catch 10 elves in a row (an escape breaks the run) | Silver | A snowball rolling downhill, growing, with "10" on it |
 | `streak_25` | Unstoppable | Catch 25 elves in a row | Gold | A huge snowball flattening a fence, "25" on it |
 | `gold_1000` | Pocket Money | Earn 1,000 gold from catches | Bronze | Three gold coins with holly on them |
 | `gold_25000` | Stocking Stuffed | Earn 25,000 gold from catches | Silver | A stocking overflowing with gold coins |
@@ -944,7 +954,7 @@ Elf descriptions and rumours hint at each elf's weaknesses and resistances, so p
 
 ## Cheer Meter and boons (eddy, 26 Nov 2026, built on integration)
 
-**Built (27 Nov 2026, on the `integration` playground, draft numbers, untuned).** Code: `src/engine/cheer.ts` (meter, draw, pity, Overcharge, pick, reroll), `src/engine/mods.ts` (what active boons and buffs change in a hunt), `content/boons.json` (14 boons) and `constants.cheer` (all meter numbers and the draw table); UI in `src/client/screens/cheer.tsx`; server route `POST /api/cheer` (`draw`, `hold`, `reroll`, `pick`). `constants.cheer.enabled: false` switches the whole system off for baselines. Where the build reads the design below slightly differently: a full meter that is not held, or an open draw, neither fills nor drains (so waiting to pick costs nothing); the held state is a flag, and only a held meter takes the -5 escape (a held 10 still pays 5); the carry-over is stored as `carry` and becomes the next meter's starting pips (capped at 9). Cheer charms are three new charms (Cheer Bauble rank 2, Tinsel Cheer Charm rank 3, Gold Star Cheer Charm rank 4) with simple generated art. Admin tool: More > Admin > Speed run > Fill the Cheer Meter. UI: the Cheer card lists everything with a countdown as compact chips ("in play"): boons ("Name · 8 hunts left"), Santa and Mrs. Claus gifts and event buffs (green, hunts and/or uses left, e.g. "Golden Ticket · 5 uses left") and Scrinch penalties (red, e.g. Hexed trap, Frosted floor). Not built: the Cheer book screen, badges for boons, and simulator policies (a separate thread).
+**Built (27 Nov 2026, on the `integration` playground, draft numbers, untuned).** Code: `src/engine/cheer.ts` (meter, draw, pity, Overcharge, pick, reroll), `src/engine/mods.ts` (what active boons and buffs change in a hunt), `content/boons.json` (14 boons) and `constants.cheer` (all meter numbers and the draw table); UI in `src/client/screens/cheer.tsx`; server route `POST /api/cheer` (`draw`, `hold`, `reroll`, `pick`). `constants.cheer.enabled: false` switches the whole system off for baselines. Where the build reads the design below slightly differently: a full meter that is not held, or an open draw, neither fills nor drains (so waiting to pick costs nothing); the held state is a flag, and only a held meter takes the -5 escape (a held 10 still pays 5); the carry-over is stored as `carry` and becomes the next meter's starting pips (capped at 9). Cheer charms are three new charms (Cheer Bauble rank 2, Tinsel Cheer Charm rank 3, Gold Star Cheer Charm rank 4) with simple generated art. Admin tool: More > Admin > Speed run > Fill the Cheer Meter. UI: the Cheer card lists everything with a countdown as compact chips ("in play"): boons ("Name · 8 hunts left"), Santa and Mrs. Claus gifts and event buffs (green, hunts and/or uses left, e.g. "Golden Ticket · 5 uses left") and Scrinch penalties (red, e.g. Hexed trap, Frosted floor). **Travel resets the meter (eddy, 27 Nov 2026):** changing location drops pips, a held Overcharge, the carry-over, an open (unpicked) draw and every boon in play, so a meter built in an easy area cannot be cashed in at a harder one. Pity counters are kept. Boons end too, because they are the cashed-in perk. The travel screen says so, and the travel log line reads "the Cheer Meter starts fresh" (with the number of boons that ended) when something was lost. Code: `resetCheerOnTravel` in `src/engine/cheer.ts`, called from `travel`. Simulator, 200 players: median 1,234 hunts to rank 5 and all 28 elves by a median of 1,243 hunts (mean 1,253, p90 1,374), 3.3 Cheer draws per 100 hunts, unchanged from before the reset. Not built: the Cheer book screen, badges for boons, and simulator policies (a separate thread).
 
 A streak meter that rewards catching in a row. When it fills, the player picks 1 of 3 random boons, roguelike style, from a pool of 14 with three rarity tiers. Not built yet. It is separate from the random events plan (#43) (those are rare surprise encounters; this is a meter the player fills) and works with Allure (#44) because every boon is applied after Allure's odds are worked out.
 
@@ -1068,7 +1078,9 @@ Gold comes in only from catches and sales, and goes out on bait, charms, gear, l
 
 **How we check it:** `npm run simulate` plays virtual hunters through v1 with the real engine and content, reports hunts per rank, catch rates and bait cost per location, and with `--strict` fails if a rank target is missed by more than 25%.
 
-**Latest simulator run (full-collection benchmark added, 1,000 players, seed 42, PR 66 included: median 1,226 hunts to rank 5; all 28 elves caught by 100% of players, mean 1,252 hunts, median 1,240, p10 1,123, p90 1,400; Report 7). Previous run (Shredwell power 2,900 and x0.6 off-type: median 1,220 hunts to rank 5, ranks 117, 241, 329, 540, Wrapping Room 168 hunts at 86% catch rate, 5% pillage cost there, Shredwell 1.1 catches per player). Previous run (Scrinch events removed: median 1,208 hunts to rank 5, ranks 117, 236, 325, 533, 0.92 boon cards and 0.23 Grand Gifts per 100 hunts; see Report 6). Previous run (parallel Toy Workshop orders, 1,000 players, seed 42, Cheer and events on):** all reached rank 5, median 1,212 hunts (1,359 in the 27 Nov tuning round; the Workshop is a little faster because the simulated player no longer swaps traps for the board). Median hunts in ranks 1 to 4: 118, 237, 324, 532 (targets 150, 250, 400, 600, all ok). Toy Workshop: catch rate 54% (46% before, when the bot swapped to off-best traps for slots), bait 8% of gold, pillage 15% of gold earned there, about 30 orders per player, Hammerhand 4.3 and General Grimbolt 2.5 catches per player, and 3.6 Cheer fills per 100 hunts there (4.2 before; each counted catch now adds 1 pip, not 2). Overall Cheer: 3.4 draws per 100 hunts. It needed a rebalance: with no swapping the Workshop commons were caught about 90% of the time and rank 3 took only about 210 hunts, so their power went to 1,200, 1,500 and 1,850. See `docs/SIMULATION_REPORT.md` Report 5.
+**Latest simulator run (commons and Grimbolt tuned, then small gear buffs, 300 players, seed 42): median 1,448 hunts to rank 5 (1,234 before); all 28 elves caught by 100% of players, mean 2,794 hunts, median 2,386, p10 1,544, p90 4,237 (1,243 median before, so the collection now has a real tail: about 950 extra hunts after rank 5); ranks 128, 270, 428, 616 (targets 150, 250, 400, 600, all ok). Commons caught with the intended gear: Pantry 74%, Wrapping Room 64%, Toy Workshop 57%, Stables 54% (bands above; before 88, 79, 57, 77). Elf power (Pantry x2.2, Wrapping Room x2.0, Stables x2.55) and General Grimbolt (2,800 to 5,900: 59.1% with endgame gear, ceiling 60%) changed; gear buffs so recommended gear is at least 10 points better than beginner gear on every boss (Wind-up Key Charm +20% to +35% power, Yule Log Base 600 to 800, Gingerbread Cottage 550 to 1,550, Cinderhoof 16,800 to 20,500: 26% with best gear); gold and points per elf in those rooms x1.35 (Pantry, Wrapping Room) and x1.45 (Stables) keep rank pace. A first attempt at the band middles without the reward bump gave a median 2,258 hunts to rank 5 and only 18 of 60 test players finishing, which is why the commons sit at the easy end of their bands.**
+
+Previous run (Carol Horn luck 10 to 1, 1,000 players, seed 42: median 1,355 hunts to rank 5 (1,264 before); all 28 elves caught by 100% of players, mean 1,384 hunts, median 1,366, p10 1,236, p90 1,556 (1,300, 1,277, 1,161, 1,439 before); ranks 117, 248, 405, 581 (117, 237, 333, 575 before; rank 3 now 1% over its 400 target); commons catch rate Wrapping Room 77% (88%), Toy Workshop 44% (56%), Stables 78% (80%), Carol Loft 58% (61%); Report 10). Previous run (Cinderhoof power 7,000 to 16,800, 1,000 players, seed 42: median 1,266 hunts to rank 5 (1,226 before); all 28 elves caught by 100% of players, mean 1,301 hunts, median 1,279, p10 1,162, p90 1,461 (1,252, 1,240, 1,123, 1,400 before); ranks 117, 237, 333, 577 (538 before for rank 4); Stables boss catch rate 19% (35%), Cinderhoof 2.9 catches per player (5.0), 94% of players ever catch him (100%); Report 9). Previous run (full-collection benchmark added, 1,000 players, seed 42, PR 66 included: median 1,226 hunts to rank 5; all 28 elves caught by 100% of players, mean 1,252 hunts, median 1,240, p10 1,123, p90 1,400; Report 7). Previous run (Shredwell power 2,900 and x0.6 off-type: median 1,220 hunts to rank 5, ranks 117, 241, 329, 540, Wrapping Room 168 hunts at 86% catch rate, 5% pillage cost there, Shredwell 1.1 catches per player). Previous run (Scrinch events removed: median 1,208 hunts to rank 5, ranks 117, 236, 325, 533, 0.92 boon cards and 0.23 Grand Gifts per 100 hunts; see Report 6). Previous run (parallel Toy Workshop orders, 1,000 players, seed 42, Cheer and events on):** all reached rank 5, median 1,212 hunts (1,359 in the 27 Nov tuning round; the Workshop is a little faster because the simulated player no longer swaps traps for the board). Median hunts in ranks 1 to 4: 118, 237, 324, 532 (targets 150, 250, 400, 600, all ok). Toy Workshop: catch rate 54% (46% before, when the bot swapped to off-best traps for slots), bait 8% of gold, pillage 15% of gold earned there, about 30 orders per player, Hammerhand 4.3 and General Grimbolt 2.5 catches per player, and 3.6 Cheer fills per 100 hunts there (4.2 before; each counted catch now adds 1 pip, not 2). Overall Cheer: 3.4 draws per 100 hunts. It needed a rebalance: with no swapping the Workshop commons were caught about 90% of the time and rank 3 took only about 210 hunts, so their power went to 1,200, 1,500 and 1,850. See `docs/SIMULATION_REPORT.md` Report 5.
 
 Previous run (Allure, 200 players, no retune): all reached rank 5, median 1,289 hunts (1,652 before, because every hunt now meets an elf). Median hunts in ranks 1 to 4: 122, 266, 468, 404 (targets 150, 250, 400, 600); rank 4 is flagged "too fast". Bait cost per gold earned: 65%, 13%, 11%, 3%, 36% in the Pantry, Wrapping Room, Toy Workshop, Stables and Carol Loft. Mini boss and boss catches per player: Spoolwick 3.2, Madame Shredwell 1.3, Hammerhand 2.6, General Grimbolt 1.2, Antler Ripper 3.8, Cinderhoof 2.6, Choirmaster Hollowvoice 1.6. Median 48 of 55 badges. A retune (cheaper pace or higher bait cost) is left for eddy to decide.
 
@@ -1084,7 +1096,7 @@ Before the home types, with the old buying rule, the simulator never bought a Fr
 
 ## Art
 
-Every picture has a fixed name, `src/client/public/art/<slot>/<id>.<ext>`, where the id is the game-data id (`traps/jack_in_the_box.webp`, `imps/crumb_elf.webp`, `locations/cookie_pantry.webp`). `art/manifest.json` lists each one with its size, a description and a prompt for regenerating it with an image tool. Full rules, sizes and how to swap in a PNG: [docs/ART.md](ART.md).
+Every picture has a fixed name, `src/client/public/art/<slot>/<id>.<ext>`, where the id is the game-data id (`traps/jack_in_the_box.webp`, `imps/crumb_elf.webp`, `locations/cookie_pantry.webp`). `art/manifest.json` lists each one with its size, a description and a prompt for regenerating it with an image tool. Full rules, sizes and how to swap in a PNG: [docs/ART.md](#art-reference).
 
 | Slot | Count | Size (px) | Notes |
 | --- | --- | --- | --- |
@@ -1188,9 +1200,9 @@ The first account you create is the admin. Friends create their own accounts fro
 
 ## Deployment
 
-The game ships as one Docker image (`ghcr.io/cheesezilla/naughty-list`), built and published by GitHub Actions: each push to `main` publishes `:latest`, each push to `integration` publishes `:integration`, and a `main` push with a new `package.json` version also publishes `:1.0.0` and `:1.0`, tags `v1.0.0` and creates a GitHub Release. Release process: [docs/RELEASING.md](RELEASING.md); player-facing history: [CHANGELOG.md](../CHANGELOG.md). The UGREEN DXP4800 has an Intel x86 processor, so the amd64 image works.
+The game ships as one Docker image (`ghcr.io/cheesezilla/naughty-list`), built and published by GitHub Actions: each push to `main` publishes `:latest`, each push to `integration` publishes `:integration`, and a `main` push with a new `package.json` version also publishes `:1.0.0` and `:1.0`, tags `v1.0.0` and creates a GitHub Release. Release process: [docs/RELEASING.md](#releasing); player-facing history: [CHANGELOG.md](../CHANGELOG.md). The UGREEN DXP4800 has an Intel x86 processor, so the amd64 image works.
 
-Step-by-step guide: [docs/DEPLOY.md](DEPLOY.md). In short:
+Step-by-step guide: [Deployment guide](#deployment-guide-nas). In short:
 
 1. Make the GitHub package public once, or log the NAS in to ghcr.io with a `read:packages` token.
 2. In the UGOS Docker app, create a project from `compose.yaml`. Saves go to `/volume1/docker/naughty-list`.
@@ -1200,6 +1212,8 @@ Step-by-step guide: [docs/DEPLOY.md](DEPLOY.md). In short:
 The container starts as root only to fix the save folder's ownership, then drops to the unprivileged `node` user (`docker/entrypoint.sh`). If the `node` user still can't write the folder or the save files, it keeps running as root and logs a warning. The server checks the save folder and files before opening them and prints a plain explanation (who owns what, which user the game runs as, how to fix it) instead of a raw SQLite error. Pull requests build the image and smoke-test it with a root-owned save folder: sign up, hunt, restart, and check the save survived.
 
 **Integration branch (test track):** `integration` is a long-lived branch that threads may push to directly, with no approval, so eddy can test at once. `main` stays pull-request only. CI runs on both branches; each push to `integration` publishes `ghcr.io/cheesezilla/naughty-list:integration` (and the commit sha), while only `main` publishes `:latest`. eddy runs a second NAS project, `naughty-list-test`, on host port 8082 with its own save folder `/volume1/docker/naughty-list-test`, so it never shares a database with the main project on 8081 (sample compose in DEPLOY.md). Work on `integration` reaches `main` through a normal pull request, and `integration` is kept up to date with `main` by merging `main` into it.
+
+**Branch cleanup (eddy, 28 Nov 2026):** `.github/workflows/cleanup-branches.yml` runs daily (03:17 UTC) and on demand (Actions > Clean up merged branches > Run workflow, with an optional dry run). It keeps the branches of the 10 most recently merged pull requests and deletes older merged ones. It never deletes `main`, `integration`, branches with an open PR, or branches that were never merged. GitHub only runs scheduled workflows from the default branch, so the daily run starts once this reaches `main`; the manual run works from `main` too.
 
 **Letting friends in (chosen):** eddy uses a WireGuard VPN to the home network and plain HTTP at `http://<nas-address>:8081`. HTTPS was considered and dropped: the VPN already encrypts traffic, and a trusted certificate would need a paid domain. **Alternative:** a Cloudflare Tunnel gives the game a public HTTPS address without opening router ports, as a second small container in the same Compose project. It needs a free Cloudflare account and a domain on Cloudflare. Tailscale is the alternative if every friend installs it.
 
@@ -1272,12 +1286,242 @@ The first idea (replace the attraction roll where no elf takes the bait) is trac
 ## Still to sort out
 
 - [ ] A domain on Cloudflare for the friends' address (or choose Tailscale), needed at milestone 4.
-- [ ] Make the GitHub package public, or give the NAS a read token (DEPLOY.md part 1).
+- [ ] Make the GitHub package public, or give the NAS a read token (Deployment guide part 1).
+
+## Art reference
+
+Every picture in the game lives in `src/client/public/art/` and is served at `/art/...`. The first set is original vector art (SVG) drawn in code by `scripts/art/`, in one house style. Any file can be swapped for a hand-made or AI-generated image without touching game code.
+
+The generated SVGs have been replaced by custom AI-generated WebP pictures for every slot except `icons` (see the Custom art progress section below). The tables below still describe the sizes each picture is resized to.
+
+#### Naming rule
+
+```
+src/client/public/art/<slot>/<id>.<ext>
+```
+
+- **slot** is the kind of picture (table below) and is also the folder name.
+- **id** is the game-data id from `content/*.json` (for example `jack_in_the_box`, `crumb_elf`, `cookie_pantry`), so the game finds a picture by the same key it already uses for the thing itself. Pictures that are not game data use the fixed ids in the table.
+- **ext** is `svg` for the generated art. A replacement may be `png`, `webp`, `jpg`, `avif` or `gif`.
+- Ids are lower case `snake_case`. An id that starts with `_` is a special state, not game data (`imps/_locked`).
+
+`src/client/public/art/manifest.json` lists every picture: `id`, `slot`, `file`, `width`, `height`, `transparent`, `source` (`generated` or `custom`), a one-line `description` and a `prompt` you can paste into an image tool to make a new version. Some entries carry extra fields, listed below. The UI should read paths from the manifest rather than build them, so a `png` replacement just works.
+
+#### Slots
+
+| Slot (folder) | Ids | Size (px) | Background | Used on |
+| --- | --- | --- | --- | --- |
+| `brand` | `icon`, `key_art` | icon 1024×1024; key art 1170×1290 | Filled | Top strip and login (icon); login screen, full bleed (key art) |
+| `traps` | trap ids | 600×450 | Transparent | Hunt screen, Arsenal, Emporium, Workshop. Drawn **on top of** the base |
+| `bases` | base ids | 600×450 | Transparent | Same places, drawn **under** the trap |
+| `baits` | bait ids | 512×512 | Transparent | Thumbnails everywhere |
+| `charms` | charm ids | 512×512 | Transparent | Thumbnails everywhere |
+| `materials` | material ids | 512×512 | Transparent | Workshop ingredients, loot lines |
+| `trap_types` | `clockwork`, `starlight`, `frost` | 256×256 | Transparent corners | Trap type badges, elf weakness hints |
+| `locations` | location ids | 1170×470 (5:2) | Filled | Hunt screen banner; crop with `object-fit: cover` for Travel list thumbnails |
+| `map` | `lair_map` | 1600×900 (16:9) | Filled | Travel map. Entry has `pins`: `{ "<location id>": { "x", "y" } }` in map pixels |
+| `imps` | elf ids (the slot keeps its old name), plus `_locked` | 512×512 | Filled card | Naughty List grid, elf file, hunt log. `_locked` is the "?" card for elves not caught yet. Entries have `tier` and `location` |
+| `ranks` | `rank_<number>` (`rank_1` … `rank_5`) | 256×256 | Transparent | Top bar rank thumbnail, rank-up, How to play |
+| `icons` | `nav_*`, `menu_*`, `stat_*` (below) | 24×24 | Transparent | Bottom nav, More menu, stat labels |
+| `howto` | `hunt`, `attraction`, `power`, `luck`, `trap_types`, `loot`, `pillage`, `ranks` | 640×360 | Filled | How to play page, one per section |
+
+Icons: `nav_hunt`, `nav_naughty_list`, `nav_emporium`, `nav_workshop`, `nav_more`, `menu_travel`, `menu_hunters`, `menu_stats`, `menu_howto`, `menu_settings`, `menu_admin`, `menu_account`, `menu_logout`, `stat_gold`, `stat_points`, `stat_power`, `stat_luck`, `stat_attraction`, `stat_catch`. They are line icons drawn in `currentColor`, so to colour them with the text, inline them or use them as a CSS `mask-image`; as a plain `<img>` they draw in black.
+
+**Layering traps and bases:** both share one 600×450 canvas. The base's top surface and the trap's bottom are both at y = 340, so stacking the two images at the same size and position puts the trap on the base. Keep that line when you replace either one. Trap and base entries carry `layer` (`trap` or `base`).
+
+#### Replacing a picture
+
+1. Make the new image at the size in the table (bigger is fine if the aspect ratio matches). The manifest `prompt` gives the subject, framing and house style.
+2. Save it next to the old one with the same name and your extension, for example `art/imps/crumb_elf.png`. You can delete the old `.svg` or leave it.
+3. Run `npm run art`. It sees the custom file, points the manifest at it and marks it `"source": "custom"`. It never overwrites a custom file.
+
+You can also edit or replace an `.svg` directly: the generator only overwrites SVGs that still contain the `generated-by: scripts/art` comment, so remove that line from a hand-edited SVG to keep it.
+
+#### Regenerating the vector art
+
+- `npm run art` writes any missing or changed generated SVGs and rebuilds the manifest.
+- `npm run art -- --force` rewrites every generated SVG (custom files are still kept).
+- Drawings live in `scripts/art/`: `items.ts` (traps, bases, baits, charms, materials, trap types), `imps.ts` (portraits), `world.ts` (icon, key art, locations, map), `ui.ts` (ranks, icons, How to play). Shared palette and helpers are in `lib.ts`.
+- Adding a new trap, elf, location or rank to `content/` needs a drawing (or a custom file) and a manifest entry: `npm run art` stops with a message naming the missing id, and `npm test` fails until the manifest covers it.
+
+#### House style
+
+Flat storybook shapes with a thick dark-brown outline (`#2b1d14`), the UI palette (pine `#0f3d2e`, berry red `#b3261e`, gold `#e9c46a`, cream `#fdf8ef`), small white highlights, no text in pictures except the How-to-play diagrams. Hexed-elf portraits share one head shape with pointed ears, a pointed cap in the room's colour and a soot smudge from the hex (the Gingerbread Rascal, General Grimbolt and Cinderhoof have their own shapes); each lair room has its own cap colour and background, and the frame shows tier: plain (common), gold (rare), silver (mini boss), red and gold with stars (boss). All art is original to this game.
+
+### Custom art progress
+
+Tracks the pass replacing the generated SVG art (from PR #10) with custom
+AI-generated pictures, asset by asset. See [Art reference](#art-reference) for the naming
+rule and how a replacement picture is picked up, and
+[Art](#art) for the overall art section.
+
+Icons (`icons` slot: `nav_*`, `menu_*`, `stat_*`, 19 total) are **not** being
+regenerated — they're plain single-colour shapes the SVG generator already
+does well.
+
+How these are generated (tools, prompts, transparency via `rembg`, Gemini's
+daily quota): see the `gemini-art-generation` project memory.
+
+##### Done (26 Nov 2026)
+
+All 97 pictures outside the icons are custom art, imported from eddy's downloaded set (one file per id): 29 elf portraits (`imps` slot, incl. `_locked`), 9 traps, 11 bases, 7 baits, 3 charms, 13 materials, 4 trap types, 5 ranks, 5 locations, `lair_map`, `icon`, `key_art` and 8 how-to-play pictures. They are resized to the slot sizes in [Art reference](#art-reference) and saved as WebP; traps, bases, baits, charms and materials are transparent, and the trap type and rank badges had their flat background removed. The old generated SVGs for those ids were deleted.
+
+Icons (`icons` slot, 19) stay generated SVG.
+
+Each asset's `prompt` for regenerating it is in `art/manifest.json`. Older custom PNGs of the retired imps are in `art-archive/imps/`.
+
+## Deployment guide (NAS)
+
+These steps run the game on a UGREEN DXP4800 (UGOS Pro) with its Docker app. Part 1 and part 2 get it running on your home network. Part 3 is optional: it gives the game a public HTTPS address through Cloudflare. To play away from home over a VPN instead, see "Playing away from home over a VPN".
+
+Button names can differ a little between UGOS versions. If a label doesn't match, look for the closest one.
+
+#### Part 1: let the NAS download the game (once)
+
+Every merge to `main` publishes the image `ghcr.io/cheesezilla/naughty-list:latest`. GitHub makes new packages private, so the NAS can't download it yet. Pick one of these:
+
+- **Make the package public (simplest).** On GitHub, go to your profile, open **Packages**, then **naughty-list**. Choose **Package settings**, then **Change visibility**, and set it to **Public**. Only the built game becomes public. The source code stays private.
+- **Or keep it private.** Create a GitHub personal access token (classic) with only the `read:packages` scope. In the UGOS Docker app, open **Registry** (or **Image > Add registry**), add `ghcr.io`, and log in with your GitHub username and the token as the password.
+
+#### Part 2: run it on the NAS
+
+1. In **File Manager**, make sure there is a shared folder called `docker` on volume 1. Create it if it's missing. The game creates its own `naughty-list` folder inside it.
+2. Open the **Docker** app, go to **Project** and choose **Create**.
+3. Name the project `naughty-list`, and paste in the contents of [`compose.yaml`](../compose.yaml) from this repo.
+4. Optional: `TZ=Asia/Singapore` sets the time zone for the server's log. Change it to yours if needed. The game uses port 8081 on the NAS. If that port is taken, change the left number, for example `"8090:8080"`.
+5. Choose **Deploy** (or **Create and start**). The first start downloads about 60 MB.
+6. Open `http://<your-NAS-address>:8081`, for example `http://192.168.1.50:8081`. You can find the address in UGOS under **Control Panel > Network**.
+7. Create your account. The first account on a new server becomes the admin.
+
+Saves live in `/volume1/docker/naughty-list/naughty-list.db`. Include that folder in your UGOS backups.
+
+#### Playing away from home over a VPN
+
+The game runs over plain `http://`. That's fine on your home network and over a VPN such as WireGuard, because the VPN already encrypts the traffic. Connect to the VPN, then open `http://<NAS-address>:8081`, for example `http://192.168.50.156:8081`. Friends who want to play need their own WireGuard profile on your VPN.
+
+Some browsers, especially Chrome on phones, try `https://` first and then show a warning or an error. If that happens, type the address with `http://` in full. If it still switches to `https://`, turn off **Always use secure connections** in Chrome's **Settings > Privacy and security**.
+
+Send friends the address privately. They tap **Create account** on the login screen. Once everyone has joined, turn off **Allow new accounts** under **More > Admin**.
+
+#### Part 3 (optional): public HTTPS address with Cloudflare
+
+A Cloudflare Tunnel gives the game a public `https://` address without opening any ports on your router. You need a free Cloudflare account and a domain whose DNS is managed by Cloudflare.
+
+1. In the Cloudflare dashboard, open **Zero Trust**, then **Networks > Tunnels**, and choose **Create a tunnel**.
+2. Choose **Cloudflared**, name the tunnel `naughty-list`, and choose **Docker** as the environment. Copy the long token from the command shown. It's the part after `--token`.
+3. Under **Public hostname**, add one:
+   - Subdomain: for example `naughtylist`
+   - Domain: your domain
+   - Service: type **HTTP**, URL `naughty-list:8080`
+4. In the UGOS Docker app, edit the `naughty-list` project. Remove the `#` from the `cloudflared` lines at the bottom of the compose file, paste your token in place of `paste-your-token-here`, and redeploy.
+5. Open `https://naughtylist.<your-domain>`. Share that address with friends so they can create accounts, then turn off **Allow new accounts** under **More > Admin** once everyone has joined.
+
+Tailscale is an alternative if you'd rather keep the game off the public internet. Every friend then has to install Tailscale and join your network.
+
+#### Updating to a new version
+
+After a pull request is merged, wait for the **Docker image** check on GitHub to finish, which takes about 3 minutes. Then, in the UGOS Docker app:
+
+1. Open **Image**, find `ghcr.io/cheesezilla/naughty-list`, and pull or update `latest`.
+2. Open **Project > naughty-list** and redeploy, or stop and start it.
+
+Saves are kept, because they live in the shared folder rather than in the container.
+
+Merging `integration` into `main` is a release. When the version in `package.json` is new, the same build also publishes a numbered image (for example `1.0.0`), `ghcr.io/cheesezilla/naughty-list:1.0.0`. Use that tag in the compose file to stay on one version or to roll back. See [RELEASING.md](#releasing) for how releases are made.
+
+##### Trying a pull request before it is merged
+
+Every pull request also publishes a test image tagged `pr-<number>`, for example `ghcr.io/cheesezilla/naughty-list:pr-11`. To try it on the NAS:
+
+1. Back up the save first: copy `/volume1/docker/naughty-list` (with the game stopped) to somewhere safe. A newer version may upgrade the save, and an older version might not read it afterwards.
+2. In **Project > naughty-list**, edit the compose file and change the image line to `ghcr.io/cheesezilla/naughty-list:pr-11`. Save and redeploy.
+3. When the pull request is merged, change the line back to `:latest`, pull `latest` and redeploy.
+
+##### A second NAS project for the integration branch
+
+The `integration` branch is a test branch that threads can push to directly, without a pull request, so you can try changes straight away. Every push to it publishes the image `ghcr.io/cheesezilla/naughty-list:integration`. `main` stays pull-request only, and the main project keeps pulling `:latest`.
+
+Create a second project in the UGOS Docker app named `naughty-list-test` and paste this. It uses a different container name, host port and save folder, so it never shares a database with the main project:
+
+```yaml
+services:
+  naughty-list-test:
+    image: ghcr.io/cheesezilla/naughty-list:integration
+    container_name: naughty-list-test
+    ports:
+      - "8082:8080"   # main project uses 8081
+    volumes:
+      - /volume1/docker/naughty-list-test:/data   # separate save folder
+    environment:
+      - TZ=Asia/Singapore
+    restart: unless-stopped
+```
+
+Open `http://<your-NAS-address>:8082`. To get the newest integration build, pull the image and redeploy the project. The test save starts empty, and you can delete `/volume1/docker/naughty-list-test` any time to start fresh. When integration work is ready, a pull request merges it into `main`.
+
+#### Troubleshooting
+
+| Problem | Fix |
+| --- | --- |
+| Pulling the image fails with "denied" or "not found" | The package is still private. See part 1. |
+| The page doesn't load | Check the container is running in **Container**. Open its log, which should end with `Server listening at http://0.0.0.0:8080`. Check that the port in the address matches the left number in `ports`. |
+| The log says `unable to open database file`, or the container keeps restarting | Update to the latest image, which fixes most cases by itself and otherwise prints what is wrong. Check that `volumes` maps the folder `/volume1/docker/naughty-list` to `/data`, not a single file. If `naughty-list.db` on the NAS is a folder, delete it and redeploy. |
+| The log says it can't write to the save folder | Make sure `/volume1/docker` exists. The container fixes folder ownership itself on start, so redeploying usually clears this. |
+| Friends get a Cloudflare error page | Check the `naughty-list-tunnel` container is running and its log shows a connection. Check the public hostname's service is `http://naughty-list:8080`. |
+| You forgot the admin password | Stop the project, move `naughty-list.db` somewhere safe, and start again. This creates a fresh game. Password reset comes in a later version. |
+
+## Releasing
+
+A release is **merging `integration` into `main` and deploying `main` on the NAS**. Everything else happens by itself.
+
+Versions follow [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`, with the current one in `package.json`.
+
+| Bump | When | Example |
+| --- | --- | --- |
+| **MAJOR** | A change that restarts or breaks saves, or rebuilds the core loop | 2.0.0 |
+| **MINOR** | New content, features or balance changes players will notice | 1.1.0 |
+| **PATCH** | Bug fixes, wording, art and UI polish with no rule changes | 1.0.1 |
+
+#### Before the integration → main PR
+
+Do these on `integration` (a normal pull request into it, or the release PR itself):
+
+1. Bump `version` in `package.json` and the root entries of `package-lock.json`.
+2. In `CHANGELOG.md`, rename `## [Unreleased]` to `## [X.Y.Z] - date` (plus a new empty `[Unreleased]` above it and the compare links at the bottom). Write for players.
+3. Add the same notes to the top of `content/releases.json` (newest first). This is the **What's new** popup, shown once to every player after an update, and the **More > What's new** screen. A test fails if its first version differs from `package.json` or is missing from `CHANGELOG.md`.
+4. Add a `docs/DEVELOPER_NOTES.md` changelog row.
+
+Between releases, add a line under `[Unreleased]` in every pull request that players would notice.
+
+#### What happens when `integration` is merged into `main`
+
+The **Docker image** workflow runs on the `main` push:
+
+- publishes `ghcr.io/cheesezilla/naughty-list:latest` (the image the NAS pulls),
+- if `package.json` has a version with no git tag yet, it also publishes `:X.Y.Z` and `:X.Y`, then creates the tag `vX.Y.Z` and a GitHub Release using that version's `CHANGELOG.md` section as the notes. If the section is missing, the release step fails: fix the changelog on `main` and re-run the workflow.
+- a push to `main` with the same version as before only refreshes `:latest`, so the version tag is never overwritten.
+
+`/api/health` shows the running version: `X.Y.Z` for a release image, the commit for other images.
+
+#### Deploying on the NAS
+
+After the workflow finishes (about 3 minutes), pull `latest` and redeploy the project, as in [the deployment guide](#updating-to-a-new-version). The first time each player opens the game after the update, they see the What's new popup.
+
+To stay on a version or roll back, set the image line to `ghcr.io/cheesezilla/naughty-list:1.0.0`. Newer versions upgrade saves in place and older ones may not read them, so copy `/volume1/docker/naughty-list` first.
 
 ## Changelog
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-28 | this PR | **Release 1.0.1.** `package.json` and lockfile bumped, `CHANGELOG.md` and `content/releases.json` carry the 1.0.1 notes (PRs 71 to 81: refresh popup, admin always-catch fix, Cheer Meter reset on travel, Cinderhoof harder, wording fixes, Carol Horn luck 1, balance check, commons, Grimbolt and gear tuning, docs consolidated, branch cleanup workflow). No game numbers changed in this PR |
+| 2026-11-28 | this PR | **Docs consolidated into three (eddy).** `docs/PLAN.md` became `docs/DEVELOPER_NOTES.md` (design and planning, plus the former ART, ART_PROGRESS, DEPLOY and RELEASING docs as sections); `docs/SIMULATION_REPORT.md` moved into `docs/BALANCE.md` as the Simulation history; `docs/WALKTHROUGH.md` became the Walkthrough section of the new player-facing `docs/WIKI.md`. README, CHANGELOG, CLAUDE.md and script comments point at the new files. No game change. |
+| 2026-11-28 | this PR | **Commons and Grimbolt tuned to the balance bands (eddy).** Elf power raised: Pantry x2.2 (Crumb Elf 40 to 90 and so on), Wrapping Room x2.0, Stables commons x2.55, rares and mini bosses of those rooms raised alongside (table above); General Grimbolt 2,800 to 5,900 so endgame gear catches him 59.1%. **Small gear buffs (eddy):** Wind-up Key Charm +35% power (was +20%), Yule Log Base power 800 (was 600), Gingerbread Cottage power 1,550 (was 550), Cinderhoof power 20,500 (was 16,800), so recommended gear beats beginner gear by 10+ points on every boss (Grimbolt 25% to 37%, Cinderhoof 16% to 26%). Gold and points per elf x1.35 (Pantry, Wrapping Room) and x1.45 (Stables) so rank pace holds (ranks 128, 270, 428, 616 hunts; median 1,448 to rank 5, 2,386 to catch every elf). Shredwell and Cinderhoof untouched. `npm run balance`: commons in band everywhere, Grimbolt flag fixed; new Recommended gear tier in BALANCE.md section 1b and a recommended-gap flag (closed by the gear buffs). docs/WALKTHROUGH.md rewritten: per area, equip trap 1, hunt until trap 2, come back for the boss, with an elf table of catch rates for both |
+| 2026-11-27 | this PR | **Balance check workflow (eddy).** New `npm run balance` (`scripts/balance.ts`, thresholds in `balance/thresholds.json`, report `docs/BALANCE.md`): catch rate of every trap x base x charm against every elf with the real engine formula, fresh-player and endgame profiles for rares, mini bosses and bosses, flags for commons bands, stated elf targets, bosses too easy or near impossible, cheese, obsolete traps, low-value gear and charms. Advisory CI step. CLAUDE.md and this plan make it part of every balance PR. No game numbers changed. First run: 19 flags on `integration`, 13 with PR 76 merged. Section 1b: beginner and endgame catch rate for every elf |
+| 2026-11-27 | this PR | **Quiet-hunt wording removed; Carol Loft hint fixed.** The Carol Loft hint said 6 Hymn Reeds but the Carol Horn recipe needs 5. Quiet hunts left the engine in #49, but the Reindeer Stables hints, the On a Roll badge text and the sleigh run notes still mentioned them. All reworded; old `quiet` log rows still display, and release notes and past changelog rows are unchanged. No game numbers changed |
+| 2026-11-27 | this PR | **Carol Horn: much less luck (eddy).** Carol Horn goes from luck 10 to luck 1 (power stays 600; a first try at 650 power added nothing but Shredwell points). With luck 10 it caught Stables commons 98% (best build with the Wishing Star Pedestal and a Mistletoe Charm), more than the best Frost or Clockwork build, from a rank 2 trap. Now about 70% with the Pedestal and about 61% with Yule Log Base and Mistletoe (target 60%), Carrot Crook 53%, Antler Ripper 36%, Cinderhoof 12% (best Frost 25%). Madame Shredwell with Carol Horn, Candy Cane Platform and Mistletoe stays about 31% (35% with a Wind-up Key). The luck formula is unchanged (an earlier version of this PR made luck count only on weakness matches; eddy dropped it). Shredwell stays 30% (31% with luck 10), so power was not raised: every extra 50 power adds about 2 points to Shredwell. Against other Stables traps on the same Yule Log Base and Mistletoe, commons average: Jack-in-the-Box 55%, Star Lantern 51%, Carol Horn 61%, Icicle Jar (on-type) 66%, Nutcracker Jaws 72%. Sim in Report 10 |
+| 2026-11-27 | this PR | **Cinderhoof harder with maxed gear (eddy).** His catch rate with the best build (Snow Globe Prison, Sleigh Runner base, Wind-up Key Charm, Frost) was 44%, too high for a boss; Cinderhoof's power goes from 7,000 to 16,800, so the same build catches him about 25% of the time (Sleigh-Bell Snapper build about 23%; was 42%). Madame Shredwell sits at about 30% with the right gear at her rank. Simulator (1,000 players, seed 42): median 1,266 hunts to rank 5 (1,226 before), all 28 elves caught after a median 1,279 hunts (mean 1,301; was 1,240 and 1,252). See `docs/SIMULATION_REPORT.md` Report 9 |
+| 2026-11-27 | this PR | **Fix: admin always-catch missed immune bosses (eddy).** With the option on, a trap type an elf is immune to (effectiveness 0, e.g. Starlight vs Cinderhoof) still gave a 0% catch. Always-catch now sets the catch chance to 1 for every elf. No game numbers changed |
+| 2026-11-27 | this PR | **Refresh popup after an update (eddy).** Every server response carries an `x-app-version` header (the `APP_VERSION` build value). The client remembers the version of its first response; the shared `api()` wrapper (every API call, errors included) and the content fetch compare each later response, and a different version shows a blocking "New version!" popup with a Refresh now button, so open tabs never keep playing on an old UI. An idle tab also calls `/api/health` when it becomes visible or regains focus (at most once a minute). No game numbers changed |
 | 2026-11-27 | this PR | **Release 1.0.0 and a release process (eddy).** `integration` is promoted to `main` as version 1.0.0. Added `CHANGELOG.md` (player-facing notes, Keep a Changelog and semver), `docs/RELEASING.md`, `package.json` version 1.0.0, and the Docker workflow, when `main` gets a `package.json` version with no tag yet, also publishes `:X.Y.Z` and `:X.Y` and creates the tag and GitHub Release from the changelog. **Release notes in the game:** `content/releases.json` (newest first, first entry must equal the `package.json` version, tested), `releaseSeen` on the player (new games start as seen, older saves see it once), `POST /api/release-seen`, a What's new popup after an update and More > What's new listing every version. `/api/health` reports the release version. No game numbers changed |
 | 2026-11-27 | this PR | **Simulator: second game-length benchmark.** Besides median hunts to rank 5, every report now gives hunts to catch all 28 elves (100% of portraits, Carol Loft and bosses included). The bot keeps hunting after rank 5 in rooms with uncaught elves, up to `--max-collect-hunts` (20,000). 1,000 players, seed 42, PR 66 included: rank 5 median 1,226; full collection by 100% of players, mean 1,252, median 1,240, p10 1,123, p90 1,400. See `docs/SIMULATION_REPORT.md` Report 7 |
 | 2026-11-27 | #66 | **Madame Shredwell much harder without Carol (eddy).** Power 1,100 to 2,900; effectiveness Carol x1.5 and x0.6 against Clockwork, Starlight and Frost (was x0.5 Clockwork, x1 the others). With rank 2 gear (trap + Candy Cane Platform): about 10% without Carol (was 31%), about 30% with the Carol Horn (was 56%). Simulator (200 players, seed 1): median 1,220 hunts to rank 5 (1,211 before); ranks 117, 241, 329, 540; Wrapping Room 168 hunts (was 123); Shredwell 1.1 catches per player |
@@ -1305,6 +1549,7 @@ The first idea (replace the attraction roll where no elf takes the bait) is trac
 | 2026-11-27 | this PR | Cookie Pantry goals panel on the Hunt screen: "Rank up and move on" ticks at the next area's rank, optional "Unlock every portrait" shows caught/total. Client only, no rule changes |
 | 2026-11-27 | this PR | Cheer card shows all active buffs (boons, gifts, event effects) with hunts or uses left. Client only, no rule changes |
 | 2026-11-27 | this PR | Bait pillage fumble wording fixed (was "no bait left to take" even with bait in the sack); every hunt log entry shows the armed bait remaining |
+| 2026-11-27 | this PR | **Travel resets the Cheer Meter (eddy).** Changing location clears pips, Overcharge, carry-over, an open draw and active boons (pity counters kept); the travel screen warns and the log notes it. Sim unchanged: median 1,234 hunts to rank 5, 1,243 to catch every elf. No content numbers changed |
 | 2026-11-26 | #40 | Bases are drawn 30% lower under the trap in the trap stack. Imported all 97 custom art pictures (elves, traps, bases, baits, charms, materials, trap types, ranks, locations, map, brand, how-to) as resized WebP, replacing the generated SVGs and older PNGs; icons stay SVG; favicon now WebP. No rule or balance change |
 | 2026-11-26 | this PR | Hunt log escapes now show the effectiveness tier ("Escaped. Weak chance") instead of the exact percentage; admins with the exact-odds toggle still see the percentage. Checked the New Catch popup and Hunters feed: they show no odds. Imp-file drop and pillage-risk percentages are unchanged |
 | 2026-11-26 | #36 | Santa's Workshop recipe cards show the output's stats (power, luck, Good for, base type bonus, charm bonuses), traps show their power type medal; attraction stays behind the admin exact-odds toggle. Base type bonus now also shows on item lines in the Emporium and Arsenal |
