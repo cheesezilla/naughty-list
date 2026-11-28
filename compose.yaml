@@ -1,5 +1,5 @@
 # The Naughty List on a UGREEN NAS.
-# Docker app > Project > Create, give it a name, and paste this file. See docs/DEPLOY.md.
+# Docker app > Project > Create, give it a name, and paste this file. See docs/DEVELOPER_NOTES.md (Deployment guide).
 services:
   naughty-list:
     image: ghcr.io/cheesezilla/naughty-list:latest
@@ -14,7 +14,7 @@ services:
     restart: unless-stopped
 
   # Optional: let friends play from anywhere through a Cloudflare Tunnel.
-  # Remove the # from the lines below and paste your tunnel token (docs/DEPLOY.md, part 3).
+  # Remove the # from the lines below and paste your tunnel token (docs/DEVELOPER_NOTES.md (Deployment guide), part 3).
   # cloudflared:
   #   image: cloudflare/cloudflared:latest
   #   container_name: naughty-list-tunnel

@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to The Naughty List. The format follows [Keep a Changelog](https://keepachangelog.com/), and versions follow [Semantic Versioning](https://semver.org/): see [docs/RELEASING.md](docs/RELEASING.md) for what each kind of bump means and how to cut a release.
+All notable changes to The Naughty List. The format follows [Keep a Changelog](https://keepachangelog.com/), and versions follow [Semantic Versioning](https://semver.org/): see [Developer notes](docs/DEVELOPER_NOTES.md#releasing) for what each kind of bump means and how to cut a release.
 
 Each version's section is also the text of its GitHub Release, so write it for players: what changed in the game, not how.
 
@@ -46,7 +46,7 @@ The first full release. The big change since the earlier builds: **there are no 
 
 ### For admins and the curious
 - **Release notes in the game:** the first time you open the game after an update you see **What's new**, and you can read every version's notes any time under **More > What's new**.
-- A strategy **walkthrough** (docs/WALKTHROUGH.md) takes you from the Cookie Pantry to the last boss.
+- A strategy **walkthrough** (docs/WIKI.md) takes you from the Cookie Pantry to the last boss.
 - The simulator now reports how many hunts it takes to reach rank 5 **and** to catch every elf (about 1,250 hunts for a full collection).
 
 [Unreleased]: https://github.com/cheesezilla/naughty-list/compare/v1.0.0...HEAD
