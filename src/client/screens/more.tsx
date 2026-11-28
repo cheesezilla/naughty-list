@@ -88,6 +88,7 @@ export function TravelScreen() {
                 {l.role && <small><span class={`pill ${l.role === 'farm' ? 'green' : 'gold'}`}>{l.role === 'farm' ? 'Farm stage' : 'Sink stage'}</span> {l.role === 'farm' ? 'Earn gold with cheap bait.' : 'Spend gold on pricey bait to push a boss or progress.'}</small>}
                 {l.side && <small>Side area: no boss key, and nothing later needs it.</small>}
                 {needAfter && <small>Opens once you have unlocked the {needAfter.name}.</small>}
+                {!open && l.rank > player.rank && <small><b>Needs rank {rankName}</b> ({num((content.ranks[l.rank - 1]?.points ?? 0) - player.points)} more points).{needKey && !missingKey ? ` You already have the ${needKey.name}.` : ''}</small>}
                 {needKey && <small>{missingKey ? `Needs the ${needKey.name}: catch ${bossName} to get it.` : `${needKey.name} found.`}</small>}
                 {l.baits && <small>Bait that works here: <b>{l.baits.map((id) => data.items.get(id)?.name ?? id).join(', ')}</b>. Any other bait always fails.</small>}
                 <span class="weak-row"><small>Best traps</small>{l.homeTypes.map((t) => <TypeMedal type={t} size={22} />)}</span>

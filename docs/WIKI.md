@@ -339,7 +339,7 @@ An optional side area off the Wrapping Room with no boss key. Choirmaster Hollow
 
 ## Keys and unlocks
 
-To enter a new area you need **rank, gold fee and the boss key** of the area before it. The first catch of a local boss drops its key (shown as a "Key found" log entry). Keys are never spent and unlocked areas stay open.
+To enter a new area you need **rank, gold fee and the boss key** of the area before it. The first catch of a local boss drops its key (shown as a "Key found" log entry). Keys are never spent and unlocked areas stay open. The key does not skip the rank: if you beat a boss early, keep hunting until you reach the next area's rank (Travel shows how many points you still need).
 
 | Area             | Boss             | Key                   | Opens                                 |
 |------------------|------------------|-----------------------|---------------------------------------|

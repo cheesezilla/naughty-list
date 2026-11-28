@@ -211,7 +211,10 @@ export function travel(content: Content, player: PlayerState, locationId: string
   if (!loc) return fail('No such location.');
   const p = clone(player);
   if (!p.unlocked.includes(locationId)) {
-    if (loc.rank > p.rank) return fail(`${loc.name} opens at rank ${loc.rank}.`);
+    if (loc.rank > p.rank) {
+      const rk = content.ranks.find((r) => r.rank === loc.rank);
+      return fail(`${loc.name} needs rank ${rk?.name ?? loc.rank}${rk ? ` (${Math.max(0, rk.points - p.points)} more points)` : ''}, even with the boss key. Keep hunting.`);
+    }
     const before = loc.after ? data.locations.get(loc.after) : undefined;
     if (before && !p.unlocked.includes(before.id)) return fail(`${loc.name} opens once you have unlocked the ${before.name}.`);
     const key = keyNeeded(content, locationId);

@@ -557,6 +557,17 @@ for (const loc of content.locations.filter((l) => !l.side)) {
   const extra = logs.map((l) => (next && l.portraitDone[loc.id] !== undefined && l.rankAt[next.rank] !== undefined ? l.portraitDone[loc.id]! - l.rankAt[next.rank]! : undefined)).filter((x): x is number => x !== undefined);
   console.log(`${loc.name.padEnd(19)}${pct(done.length / TOTAL).padEnd(13)}${fmt(quant(done, 0.5)).padEnd(18)}${fmt(quant(rankUp, 0.5)).padEnd(23)}${fmt(quant(extra, 0.5))}`);
 }
+console.log('Boss key vs rank gate (key from the local boss, then the next area also needs its minimum rank)');
+{
+  const chain = content.locations.filter((l) => !l.side);
+  chain.forEach((loc, i) => {
+    const boss = loc.imps.find((m) => m.tier === 'boss'); const nxt = chain[i + 1];
+    if (!boss || !nxt) return;
+    const rows = logs.map((l) => ({ key: l.firstCatch[boss.id], rank: l.rankAt[nxt.rank] })).filter((x): x is { key: number; rank: number } => x.key !== undefined && x.rank !== undefined);
+    const early = rows.filter((x) => x.key < x.rank);
+    console.log(`  ${boss.name.padEnd(18)} key -> ${nxt.name} (rank ${nxt.rank}): key before rank in ${pct(early.length / Math.max(1, rows.length))} of runs, median wait ${fmt(quant(early.map((x) => x.rank - x.key), 0.5))} hunts`);
+  });
+}
 console.log('Hunts to first catch (median, share of players who ever caught it): the long tail');
 for (const loc of content.locations) {
   console.log('  ' + loc.name.padEnd(17) + loc.imps.filter((i) => ['rare', 'miniboss', 'boss'].includes(i.tier)).map((i) => {

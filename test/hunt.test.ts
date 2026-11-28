@@ -264,6 +264,14 @@ describe('boss keys', () => {
     expect(travel(content, { ...rich, unlocked: ['cookie_pantry', 'toy_workshop'] }, 'toy_workshop').ok).toBe(true);
   });
 
+  it('still needs the minimum rank of the next area even with the key', () => {
+    const early = { ...fresh(), rank: 3, gold: 1e6, keys: ['gift_tag_key', 'cog_key'] };
+    const r = travel(content, early, 'reindeer_stables');
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.error).toMatch(/needs rank Frost Warden.*even with the boss key/);
+    expect(travel(content, { ...early, rank: 4, unlocked: [...early.unlocked, 'toy_workshop'] }, 'reindeer_stables').ok).toBe(true);
+  });
+
   it('drops the key on the first catch of the local boss only', () => {
     const p: PlayerState = { ...fresh(), location: 'wrapping_room', rank: 2, gold: 1e6 };
     p.inventory.golden_bow_bonbon = 5000; // the boss only shows for the top bait
