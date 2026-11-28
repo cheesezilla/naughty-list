@@ -31,6 +31,7 @@ Other commands:
 npm run dev            # server on :8080 and the hot-reloading page on :5173
 npm test               # engine and server tests
 npm run simulate       # balance report (add -- --players 1000 --strict)
+npm run balance        # gear balance check: every trap x base x charm vs every elf (docs/BALANCE.md)
 npm run check-content  # validate content/*.json
 ```
 

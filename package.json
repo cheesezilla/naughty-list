@@ -15,6 +15,7 @@
     "typecheck": "tsc --noEmit",
     "check-content": "tsx scripts/check-content.ts",
     "simulate": "tsx scripts/simulate.ts",
+    "balance": "tsx scripts/balance.ts",
     "play": "npm run build && npm start",
     "art": "tsx scripts/art/index.ts"
   },
