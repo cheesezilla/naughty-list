@@ -6,6 +6,13 @@ Each version's section is also the text of its GitHub Release, so write it for p
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-11-28
+
+A small patch release.
+
+### Fixes
+- More > What's new has a button to show the latest notes popup again, and the popup now follows your save instead of only checking when the page loads.
+
 ## [1.0.2] - 2026-11-28
 
 A small patch release.
