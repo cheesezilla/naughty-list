@@ -7,15 +7,17 @@ A Christmas elf-trapping browser game for eddy and friends. Scrinch, a horned de
 - Every hunt meets an elf (Allure), a Cheer Meter gives pick-1-of-3 boons, and Santa and Mrs. Claus drop in with gifts. Achievements, badges and a hunters' leaderboard keep friends competing.
 - Phone-first web page with original art, accounts with open sign-up, server-side hunts and SQLite saves.
 
-## Current version: 1.0.0
+## Current version: 1.0.1
 
 Release notes for every version are in [CHANGELOG.md](CHANGELOG.md). The version lives in `package.json`.
 
 ### What's new
 
-Unreleased (on `integration`, not shipped yet):
+1.0.1 (2026-11-28), balance and fixes:
 
-- If the game is updated while you have it open, a popup asks you to refresh your browser so you get the new version.
+- A popup asks you to refresh when the game has been updated, and checks when you return to an idle tab.
+- Cinderhoof is much harder (about 25% with the best gear); commons, General Grimbolt and some gear were tuned; Carol Horn needs luck 1.
+- Fixes: admin always-catch on bosses, the Cheer Meter resets on travel, and quiet-hunt and Carol Loft hint wording.
 
 1.0.0 (2026-11-27), the first full release:
 
