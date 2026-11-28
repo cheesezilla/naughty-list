@@ -76,7 +76,7 @@ function ActiveBuffs() {
     <div class="boon-chips" aria-label="Active effects">
       {boons.map((a) => {
         const b = content.boons.find((x) => x.id === a.id);
-        return <span class={`boon-chip boon-effect ${b?.rarity}`}><b>{b?.name} · {left(a.hunts, 'hunt')}</b><small>{b?.text}</small></span>;
+        return <span class={`boon-chip boon-effect ${b?.rarity}`}><b>{b?.name}{a.surge ? ' · Surge!' : ''} · {left(a.hunts, 'hunt')}</b><small>{b?.text}</small></span>;
       })}
       {buffs.map((b) => (
         <span class={`boon-chip gift`}>
@@ -90,10 +90,11 @@ function ActiveBuffs() {
 function CheerSheet({ onClose }: { onClose: () => void }) {
   const { content, player, act } = useGame();
   const draw = player.cheer!.draw!;
+  const cc = content.constants.cheer;
   const cards = draw.cards.map((id) => content.boons.find((b) => b.id === id)!).filter(Boolean);
   return (
     <Sheet title={`Pick a boon · ${draw.tier}`} onClose={onClose}>
-      <p class="muted">{(draw.picks ?? 1) > 1 ? `Overcharged: choose ${draw.picks} of these.` : 'Choose one.'} It lasts a number of hunts. Closing this keeps your draw.</p>
+      <p class="muted">{(draw.picks ?? 1) > 1 ? `Overcharged: choose ${draw.picks} of these.` : 'Choose one.'} It lasts a number of hunts. Boons count {Math.round(cc.farmScale * 100)}% while farming and {Math.round(cc.pushScale * 100)}% with push bait, where a pick has a {Math.round(cc.surgeChance * 100)}% chance to Surge and last {cc.surgeMult}x as long. Closing this keeps your draw.</p>
       <div class="boon-cards">
         {cards.map((b) => (
           <button class={`boon-card ${b.rarity}`} onClick={async () => { if (await act('/api/cheer', { action: 'pick', boon: b.id }) && (draw.picks ?? 1) <= 1) onClose(); }}>

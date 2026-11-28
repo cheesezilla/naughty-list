@@ -274,6 +274,20 @@ Written for eddy. Findings and recommendations first, numbers second. Report 1 u
 
 **Standard game-length metrics (eddy, 27 Nov): every report states both.** (1) Median hunts to rank 5. (2) Hunts to catch every elf, 100% of the Naughty List portraits, Carol Loft and bosses included. The simulator prints both at the top of every run, with the mean, p10, p90 and the share of players who finish (cap 20,000 hunts, `--max-collect-hunts`).
 
+### Report 14: Cheer boons weaker on farms, stronger on pushes (200 players, seed 1, Cheer and events on)
+
+Content change (eddy, 28 Nov): Cheer boon bonuses count at 50% while the armed bait is not push bait and at 150% with push bait, and a boon picked with push bait has a 25% chance to Surge (twice the hunts). `npm run balance` is unchanged (it does not model boons), so the flags are the same. Same seed, before and after:
+
+| Metric | Before | After |
+| --- | --- | --- |
+| Median hunts to rank 5 | 1,679 | 1,730 |
+| Hunts to catch every elf (median / mean / p90) | 2,311 / 2,746 / 4,160 | 2,481 / 2,993 / 4,677 |
+| Reached rank 5 / every elf | 200 / 186 | 199 / 184 |
+| Farm stage catch rate / push stage catch rate | 68% / 63% | 69% / 63% |
+| Random boosts per 100 stale hunts: jackpots, events, Cheer draws | 2.3, 0.7, 0.7 | 2.3, 0.7, 0.7 |
+
+The game gets about 3% slower to rank 5 and 7% slower to finish the collection. Cheer draws are about 1 per 100 hunts and most land while farming, so the bot rarely holds a boon during a push; in real play, banking a draw for the push is the intended skill. Jackpot rares are still the main windfall in stale farming. Levers: raise `pushScale` or `surgeChance` to win back the pace, or raise `farmScale` to soften the farming nerf.
+
 ### Report 13: simulator plays the farm and push loop (200 players, seed 1, Cheer and events on)
 
 Simulator change only, no content changed (`npm run balance` still shows the same 9 flags). Review of the bot against the farm and push loop (eddy, 28 Nov): the old bot picked bait by best net gold, so it farmed with cheap bait, never bought push bait (crafted bait was costed at 0 gold, so the ladder looked free), never planned a push, started sleigh runs it could not win (8.0 started, 0.5 launched per player), and stalled whenever it ran out of a run bait it could not buy. The new default bot (`--bot loop`; the old one stays as `--bot legacy` for comparison) plays farm, then push, then repeats:

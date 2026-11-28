@@ -1,6 +1,6 @@
 import type { Boon, Content, Imp } from '../content/schema.js';
 import { gameData, itemOfKind } from './data.js';
-import type { Mods } from './mods.js';
+import { isPushing, type Mods } from './mods.js';
 import type { ActionResult, PlayerState } from './player.js';
 import { pickWeighted, type Rng } from './rng.js';
 
@@ -12,7 +12,7 @@ export interface CheerState {
   /** Pips from the catch that filled the meter, kept for the next meter. */
   carry: number;
   /** Boons in play, with hunts left. */
-  active: { id: string; hunts: number }[];
+  active: { id: string; hunts: number; surge?: boolean }[];
   /** Draws since one showed a rare or better / a legendary, for the pity rules. */
   sinceRare: number;
   sinceLegendary: number;
@@ -172,9 +172,12 @@ export function cheerAction(content: Content, player: PlayerState, action: Cheer
       if (!s.draw) return { ok: false, error: 'There is no draw open.' };
       const boon = content.boons.find((b) => b.id === boonId);
       if (!boon || !s.draw.cards.includes(boon.id)) return { ok: false, error: 'Pick one of the cards on offer.' };
-      const hunts = (s.draw.longer ? Math.ceil(boon.hunts * (1 + c.longBoons)) : boon.hunts) * (s.draw.copies ?? 1);
+      // A boon picked while pushing may Surge and last much longer. One roll per pick, so the rng stream is untouched elsewhere.
+      const surge = c.surgeChance > 0 && isPushing(content, p) && !boon.effect.bossBell && rng() < c.surgeChance;
+      const base = (s.draw.longer ? Math.ceil(boon.hunts * (1 + c.longBoons)) : boon.hunts) * (s.draw.copies ?? 1);
+      const hunts = surge ? Math.ceil(base * c.surgeMult) : base;
       const have = s.active.find((a) => a.id === boon.id);
-      if (have) have.hunts = hunts; else s.active.push({ id: boon.id, hunts });
+      if (have) { have.hunts = hunts; if (surge) have.surge = true; else delete have.surge; } else s.active.push({ id: boon.id, hunts, ...(surge ? { surge: true } : {}) });
       s.lastPicked = boon.id;
       if ((s.draw.picks ?? 1) > 1) {
         // Overcharge: keep picking from what is left.
