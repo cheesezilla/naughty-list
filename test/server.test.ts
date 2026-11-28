@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { FastifyInstance, LightMyRequestResponse } from 'fastify';
 import { buildApp } from '../src/server/app.js';
 import { Store } from '../src/server/db.js';
-import { newPlayer, type PlayerState } from '../src/engine/player.js';
+import { newPlayer, rankFor, type PlayerState } from '../src/engine/player.js';
 import { content, scripted } from './helpers.js';
 import type { JournalEntry } from '../src/engine/hunt.js';
 
@@ -341,6 +341,48 @@ describe('feedback', () => {
       expect(b.feedback()).toMatchObject([{ username: 'sam', message: 'Please keep me' }]);
       b.close();
     } finally { rmSync(dir, { recursive: true, force: true }); }
+  });
+});
+
+describe('economy reset', () => {
+  const reset = content.constants.economyReset!;
+  const make = (s: Store, name: string, rank: number, gold: number, points: number) => {
+    const id = s.createUser(name, 'x', false, 0);
+    s.savePlayer(id, { ...newPlayer(content, 1), rank, gold, points }, 1);
+    return id;
+  };
+
+  it('caps gold and points once, never lowers rank, and leaves everything else alone', () => {
+    const s = new Store(':memory:');
+    const rich = make(s, 'rich', 5, 900_000, 5_000_000);
+    const mid = make(s, 'mid', 3, 100, 13_000);
+    const four = make(s, 'four', 4, 99_999, 200_000);
+    s.addFeedback(rich, 'rich', 'keep me', 2);
+    const before = s.player(rich)!;
+    expect(s.applyEconomyReset(reset, content.ranks)).toEqual({ capped: 2 });
+    const after = s.player(rich)!;
+    expect(after.gold).toBe(reset.goldByRank[3]);
+    expect(after.points).toBe(217000);
+    expect({ ...after, gold: 0, points: 0 }).toEqual({ ...before, gold: 0, points: 0 });
+    expect(rankFor(content, after.points)).toBe(5);
+    expect(s.player(mid)).toMatchObject({ gold: 100, points: 13_000 });
+    const f = s.player(four)!;
+    expect(f.gold).toBe(reset.goldByRank[3]);
+    expect(f.points).toBe(46000 + Math.floor((217000 - 46000) * reset.pointsGapShare));
+    expect(rankFor(content, f.points)).toBe(4);
+    expect(s.feedback()).toHaveLength(1);
+    // Second run, and a later richer save, are untouched.
+    s.savePlayer(rich, { ...after, gold: 777_777 }, 3);
+    expect(s.applyEconomyReset(reset, content.ranks)).toBeNull();
+    expect(s.player(rich)!.gold).toBe(777_777);
+    s.close();
+  });
+
+  it('marks a fresh save as done without changing anyone', () => {
+    const s = new Store(':memory:');
+    expect(s.applyEconomyReset(reset, content.ranks)).toEqual({ capped: 0 });
+    expect(s.applyEconomyReset(reset, content.ranks)).toBeNull();
+    s.close();
   });
 });
 

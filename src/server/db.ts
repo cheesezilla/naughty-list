@@ -2,6 +2,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import type { GameEvent, JournalEntry, JournalRow, LogKind, PlayerState } from '../engine/index.js';
+import type { Content } from '../content/schema.js';
 
 export type { GameEvent, JournalRow } from '../engine/index.js';
 
@@ -62,6 +63,7 @@ CREATE TABLE IF NOT EXISTS feedback (
 
 export interface UserRow { id: number; username: string; password_hash: string; is_admin: number; created_at: number }
 export type HistoryFilter = 'all' | 'catches' | 'escapes' | 'pillaged' | 'events' | 'bosses';
+export type EconomyReset = NonNullable<Content['constants']['economyReset']>;
 export interface PlayerSummary { id: number; username: string; isAdmin: boolean; createdAt: number; updatedAt: number; rank: number; points: number; hunts: number; caught: number; impsOnList: number }
 export interface Settings { allowSignups: boolean }
 const DEFAULT_SETTINGS: Settings = { allowSignups: true };
@@ -117,6 +119,34 @@ export class Store {
       rename.run(f, t, f);
       renameLog.run(f, t, f);
     }
+  }
+
+  /**
+   * One-time cap on every saved player's gold and points. Runs once per `reset.id` (remembered in the settings table),
+   * so reopening the save or redeploying does nothing more. Only gold and points are lowered, never raised; rank, gear,
+   * items, catches, the log, feedback and accounts are untouched. The old numbers are kept in the setting for restoring by hand.
+   */
+  applyEconomyReset(reset: EconomyReset, ranks: { rank: number; points: number }[]): { capped: number } | null {
+    const key = `economy_reset:${reset.id}`;
+    if (this.db.prepare('SELECT 1 FROM settings WHERE key = ?').get(key)) return null;
+    const sorted = [...ranks].sort((a, b) => a.rank - b.rank);
+    return this.tx(() => {
+      const before: { userId: number; gold: number; points: number }[] = [];
+      const rows = this.db.prepare('SELECT user_id, state FROM players').all() as { user_id: number; state: string }[];
+      for (const r of rows) {
+        const st = JSON.parse(r.state) as PlayerState;
+        const goldCap = reset.goldByRank[Math.min(st.rank, reset.goldByRank.length) - 1] ?? reset.goldByRank[0]!;
+        const here = sorted.find((k) => k.rank === st.rank);
+        const next = sorted.find((k) => k.rank === st.rank + 1);
+        const pointsCap = here ? Math.floor(here.points + (next ? (next.points - here.points) * reset.pointsGapShare : 0)) : st.points;
+        const gold = Math.min(st.gold, goldCap), points = Math.min(st.points, pointsCap);
+        if (gold === st.gold && points === st.points) continue;
+        before.push({ userId: r.user_id, gold: st.gold, points: st.points });
+        this.db.prepare('UPDATE players SET state = ? WHERE user_id = ?').run(JSON.stringify({ ...st, gold, points }), r.user_id);
+      }
+      this.db.prepare('INSERT INTO settings (key, value) VALUES (?, ?)').run(key, JSON.stringify({ before }));
+      return { capped: before.length };
+    });
   }
 
   close() { this.db.close(); }
