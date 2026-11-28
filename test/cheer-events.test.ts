@@ -189,7 +189,7 @@ describe('events', () => {
     const notes = eventsAfterHunt(content, late, ctx(true), () => seq[Math.min(i++, seq.length - 1)]!);
     expect(notes[0]!.type).toBe('boon');
     expect(late.events!.pending).toBeTruthy();
-    expect(late.events!.grand).toBeCloseTo(0.15);
+    expect(late.events!.grand).toBeCloseTo(0.18);
   });
 
   it('answering a boon gives the gift, and a Grand Gift resets the favour', () => {
@@ -198,7 +198,7 @@ describe('events', () => {
     expect(r.ok && r.player.gold).toBe(p.gold + Math.round(8 * unitH(content, 'cookie_pantry')));
     const g = forceEvent(content, fresh((q) => { eventsOf(content, q).grand = 0.6; }), 'grand', seededRng(3));
     expect(g.note!.type).toBe('grand');
-    expect(g.player.events!.grand).toBeCloseTo(0.1);
+    expect(g.player.events!.grand).toBeCloseTo(0.12);
   });
 
   it('a boss escape starts no event of its own', () => {

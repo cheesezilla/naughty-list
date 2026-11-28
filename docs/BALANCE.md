@@ -367,6 +367,10 @@ Cheer Meter and events are unchanged (greedy boons, safe events), and still land
 
 Bot limits that remain: no charms, one fixed push length rule, no choice of when to skip a run, and boons are picked by a fixed table, not by stage. The `--push-hunts`, `--farm-reserve` and `--run-min` flags change the bot's thresholds.
 
+### Report 13: Santa's favour more forgiving (200 players, seed 42, Cheer and events on)
+
+Grand Gift chance went from 10% base +5% per boon to **12% base +6% per boon** (`constants.events`). Exact pity chain: 4.52 gifts offered per Grand Gift before, 4.05 after, so 3.5 boons became 3.0 boons before a Grand Gift. Simulated: events 1.15 per 100 hunts (boon cards 0.88, Grand Gifts 0.27, about one per 370 hunts), 4.4 Grand Gifts per player over a full run. Boon cards stay at the same rate, so pace is unaffected; only the share that are Grand Gifts rose slightly. `npm run balance` does not model events.
+
 ### Report 12: farm and push loop, costs scaled by rank, jackpots (200 players, seed 1, Cheer and events on)
 
 Built on `integration` (eddy, 28 Nov). Each area is a farm or sink stage with a cheap farm bait and a pricey push bait. A first version cut catch gold once a player outranked an area; eddy rejected it, so the final version scales costs with rank instead: area gold per catch x1.7 (Wrapping Room), x2.9 (Toy Workshop), x3.8 (Stables), farm baits cost 1.3 to 1.4x the previous area's gross gold per hunt, the sleigh run costs 300 upkeep per hunt and pays 8,000 on launch, and a player arriving with the previous area's gear nets 1.6 to 2.3x what the previous area paid. Five rares became gold jackpots (Rascal 150, Glitterbug 500, Wind-up Elf 1,500, Carrot Crook 5,200, Silver Piper 380). Section 1e of the balance check covers it all (`economy` thresholds). No older flag changed (9 flags, as before).

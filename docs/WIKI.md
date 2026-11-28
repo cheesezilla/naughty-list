@@ -381,7 +381,7 @@ A streak meter on the Hunt screen. When it fills, you pick **1 of 3 random boons
 
 ## Random events
 
-After a hunt there is a 2.5% chance of an event (none in the first 30 hunts, at least 20 hunts apart). 60% are a gift from **Santa or Mrs. Claus**, 40% are a [Scrinch](#scrinch) challenge. Rewards scale with **H**, the average gold of the area's commons, so they matter everywhere. Events never touch Cheer pips.
+After a hunt there is a 1.5% chance of a gift from **Santa or Mrs. Claus** (none in the first 30 hunts, at least 20 hunts apart). Rewards scale with **H**, the average gold of the area's commons, so they matter everywhere. Events never touch Cheer pips.
 
 #### Gifts (pick one of two)
 
@@ -395,7 +395,7 @@ After a hunt there is a 2.5% chance of an event (none in the first 30 hunts, at 
 
 #### Grand Gifts (rare, free, no choice)
 
-Each gift has a 10% chance to be a Grand Gift instead. That chance goes up 15% for each Scrinch challenge you beat and 5% for each gift without one. The **Santa's favour** bar shows it.
+Each gift has a 12% chance to be a Grand Gift instead. Every gift that is not one adds 6% to that chance (so about 3 gifts on average before a Grand Gift), and it drops back to 12% after you get one. The **Santa's favour** bar shows it.
 
 | Grand Gift                      | From      | Effect                                                                     |
 |---------------------------------|-----------|----------------------------------------------------------------------------|
@@ -407,15 +407,7 @@ Each gift has a 10% chance to be a Grand Gift instead. That chance goes up 15% f
 
 ## Scrinch
 
-**Scrinch** is the horned devil who rules the hexed elves. Beside random events, his grudge also strikes: when a mini boss or boss escapes there is a 25% chance of a challenge (not after the same boss escapes twice in a row). Each shows a live counter above the Hunt button. Beat it and the threat is cancelled, you get a prize and Santa's favour. Fail and the penalty lands once. You can also pay a gold **skip toll** at any time.
-
-| Event               | What Scrinch does                                                                      | Beat it by                                                       | Prize                         | Skip toll |
-|---------------------|----------------------------------------------------------------------------------------|------------------------------------------------------------------|-------------------------------|-----------|
-| **Soot Snatch**     | Scrinch's hounds are after your gold! The hounds steal some gold.                      | Catch 5 of the next 8 elves                                      | Keep your gold, plus 3 H gold | 3% gold   |
-| **Bait Bandits**    | Scrinch's bandits are eyeing your bait. The bandits make off with your bait.           | Catch 3 in a row within 10 hunts                                 | Keep your bait, plus 3 bait   | 2 H gold  |
-| **Hex on the Trap** | Scrinch hexes your trap! Your trap is hexed: -25% power for 30 hunts.                  | Catch one rare elf or better within 30 hunts                     | The hex lifts, plus a charm   | 4 H gold  |
-| **Toll Booth**      | Scrinch has set up a toll booth on your path. You pay the toll.                        | Catch 8 of the next 12 elves                                     | 4 H gold                      | 4% gold   |
-| **Frosted Footing** | Scrinch freezes the floor and your bait slips away. Each hunt uses 2 bait for 8 hunts. | Catch an elf with a trap of this area's home type within 8 hunts | Normal bait use, plus 2 bait  | 3 H gold  |
+**Scrinch** is the horned devil who rules the hexed elves. He is the story villain only: there are no Scrinch challenges, tolls or penalties in random events.
 
 ## Achievements
 
@@ -561,9 +553,6 @@ Where gear and bait are crafted.
 
 Scrinch  
 The devil who rules the hexed elves.
-
-Skip toll  
-Gold you pay to dismiss a Scrinch challenge.
 
 Yule Marshal  
 Rank 5, the top rank for now.
