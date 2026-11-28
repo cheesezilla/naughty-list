@@ -145,11 +145,11 @@
     {
       "id": "tidepool_pail",
       "slot": "traps",
-      "file": "traps/tidepool_pail.svg",
+      "file": "traps/tidepool_pail.webp",
       "width": 600,
       "height": 450,
       "transparent": true,
-      "source": "generated",
+      "source": "custom",
       "description": "Tidepool Pail: a round tin pail brimming with teal water, a wave curling over the rim, three pearly bubbles floating above and a rope handle",
       "prompt": "Tidepool Pail (tide trap): a round tin pail brimming with teal water, a wave curling over the rim, three pearly bubbles floating above and a rope handle. Single trap sprite on a transparent background, 600x450, three-quarter front view, its bottom resting on y=340 so it sits on top of a base sprite. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos.",
       "layer": "trap",
@@ -642,11 +642,11 @@
     {
       "id": "steam_pearl",
       "slot": "materials",
-      "file": "materials/steam_pearl.svg",
+      "file": "materials/steam_pearl.webp",
       "width": 512,
       "height": 512,
       "transparent": true,
-      "source": "generated",
+      "source": "custom",
       "description": "Steam Pearl: a round pearly white-blue bead of condensed steam with a little curl of mist rising from it",
       "prompt": "Steam Pearl: a round pearly white-blue bead of condensed steam with a little curl of mist rising from it. Single crafting material thumbnail on a transparent background, 512x512, centred, soft ground shadow. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
     },
@@ -719,11 +719,11 @@
     {
       "id": "tide",
       "slot": "trap_types",
-      "file": "trap_types/tide.svg",
+      "file": "trap_types/tide.webp",
       "width": 256,
       "height": 256,
       "transparent": true,
-      "source": "generated",
+      "source": "custom",
       "description": "Tide trap type badge: a white water drop with two small ripples on a teal disc",
       "prompt": "Tide trap type badge: a white water drop with two small ripples on a teal disc. Round badge icon, 256x256, transparent corners, readable at 24px. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
     },
