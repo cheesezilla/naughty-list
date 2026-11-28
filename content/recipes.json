@@ -10,5 +10,6 @@
   { "id": "gingerbread_cottage", "output": { "item": "gingerbread_cottage", "amount": 1 }, "ingredients": { "cookie_tin": 3, "golden_ribbon": 2, "candy_cane_platform": 1 }, "gold": 8000, "rank": 4 },
   { "id": "wishing_star_pedestal", "output": { "item": "wishing_star_pedestal", "amount": 1 }, "ingredients": { "clockwork_heart": 1, "enchanted_wrapping": 2, "sugar_glass": 4 }, "gold": 12000, "rank": 4 },
   { "id": "sleigh_bell_snapper", "output": { "item": "sleigh_bell_snapper", "amount": 1 }, "ingredients": { "silver_sleighbell": 3, "clockwork_heart": 1, "nutcracker_jaws": 1 }, "gold": 15000, "rank": 4 },
+  { "id": "quenchhorn_snare", "output": { "item": "quenchhorn_snare", "amount": 1 }, "ingredients": { "ember_antler": 3, "snow_globe_prison": 1, "silver_sleighbell": 2 }, "gold": 20000, "rank": 4 },
   { "id": "gilded_cocoa_x10", "output": { "item": "gilded_cocoa", "amount": 10 }, "ingredients": { "brimstone_coal": 1, "hot_cocoa": 4 }, "gold": 2000, "rank": 4 }
 ]

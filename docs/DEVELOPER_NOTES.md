@@ -50,6 +50,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Daily branch cleanup: keeps the 10 most recently merged PR branches, deletes older merged ones (`cleanup-branches.yml`) | Done | this PR |
 | Versioned releases: semver in `package.json`, `CHANGELOG.md`, merging a new version into `main` publishes version-tagged Docker images, a `vX.Y.Z` tag and a GitHub Release, plus in-game release notes (`content/releases.json`, What's new popup and More screen); first release 1.0.0 (integration promoted to main); see [Deployment](#deployment) and [RELEASING.md](#releasing) | Done | this PR |
 | Quick bait restock card on the Hunt screen when shop bait runs out | Done | this PR |
+| Cinderhoof's rare drop, the Ember Antler (40% on a catch), and the Quenchhorn Snare Frost trap crafted from 3 of them, a small edge before the next rank | Done | this PR |
 
 The server runs every hunt and saves each player in SQLite. To play locally, follow "Run it locally" below.
 
@@ -307,7 +308,7 @@ The numbers below mirror `content/*.json`. Types: C = Clockwork, S = Starlight, 
 | Reindeer Stables | Harness Snipper | Common | 4,800 | 450 | 480 | C | S | |
 | Reindeer Stables | Carrot Crook | Rare | 3,200 | 600 | 650 | F | S | Sugar Glass 50% |
 | Reindeer Stables | Antler Ripper | Mini boss | 5,700 | 800 | 1,200 | F | S | Silver Sleighbell 100% |
-| Reindeer Stables | Cinderhoof | Boss | 20,500 | 1,500 | 3,000 | F | S immune | Brimstone Coal 100% |
+| Reindeer Stables | Cinderhoof | Boss | 20,500 | 1,500 | 3,000 | F | S immune | Brimstone Coal 100%, Ember Antler 40% |
 
 Baron Crumblewick, the old Pantry boss, is parked in `content/parked/baron_crumblewick.json` and Grizzlewick the Horned, the old Stables boss, in `content/parked/grizzlewick.json` (not loaded) for a later location or event. Elf weights and which elves a bait draws are in `content/locations.json`; the Wrapping Room's rare, mini boss and boss come only for ladder baits, and the Toy Workshop and Stables mini bosses and bosses only through their objective (weight 0 otherwise). Jarbelly, Bow Burglar and Bell Thief always pillage one bait when they escape; other elves pillage by tier (see [Pillage on escape](#pillage-on-escape)). Brimstone Coal has no use in v1; it is saved for later recipes, including The Naughty List.
 
@@ -339,6 +340,7 @@ The home types are data (`homeTypes` per location in `locations.json`; the Cooki
 | Constellation Wreath | S | 1,400 | 5 | +5% | 3 | Crafted |
 | Snow Globe Prison | F | 1,800 | 4 | | 4 | 25,000 gold |
 | Sleigh-Bell Snapper | C | 2,600 | 6 | +5% | 4 | Crafted (v1 capstone) |
+| Quenchhorn Snare | F | 2,400 | 5 | | 4 | Crafted (endgame, from Cinderhoof's Ember Antlers) |
 
 **Bases**
 
@@ -1073,6 +1075,7 @@ Gold comes in only from catches and sales, and goes out on bait, charms, gear, l
 | Constellation Wreath (trap) | 3 Enchanted Wrapping, 2 Brass Spring | 6,000 | 3 |
 | Yule Log Base | 3 Toymaker's Gear, 1 Golden Ribbon, 2 Sugar Glass | 4,000 | 3 |
 | Sleigh-Bell Snapper (trap) | 3 Silver Sleighbell, 1 Clockwork Heart, 1 Nutcracker Jaws (used up) | 15,000 | 4 |
+| Quenchhorn Snare (trap) | 3 Ember Antler, 2 Silver Sleighbell, 1 Snow Globe Prison (used up) | 20,000 | 4 |
 
 **Balance targets per location**
 
@@ -1631,6 +1634,7 @@ To stay on a version or roll back, set the image line to `ghcr.io/cheesezilla/na
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-28 | this PR | **Ember Antler and Quenchhorn Snare (eddy).** A rare endgame drop for Cinderhoof: Ember Antler, 40% on every catch (second `loot` entry, rolled on its own beside Brimstone Coal), sells for 600. Three of them, 2 Silver Sleighbell, a Snow Globe Prison and 20,000 gold craft the Quenchhorn Snare (Frost, 2,400 power, 5 luck, rank 4, `price` null): a small edge before the next rank, which is not built yet. Cinderhoof with the best build goes 26.3% to 29.6% (target 25% +/- 5, still ok); Grimbolt stays 59.1% (limit 60%). Balance check: 1 new flag (Snow Globe Prison obsolete, accepted in `balance/thresholds.json` because the recipe uses it up); `quenchhorn_snare` added to the Stables recommended traps and `laterOnly`. A 3-part collection with Sleigh-Bell Snapper gear takes about 1,800 hunts on average (median 1,600, 9 in 10 under 3,200), about 35 boss fights, and about 0.8M gold of bait with Hay Biscuits at 300k gold held (game gold itself is about break-even). Placeholder SVG art for both items. `npm run simulate`: see Balance notes |
 | 2026-11-28 | this PR | **Sleigh run tip (eddy).** While a run is active the Stables Sleigh Run box shows a short tip naming Hot Cocoa bait and the helpful charms (Wind-up Key, Mistletoe, Cheer). UI text only, no game numbers changed |
 | 2026-11-28 | this PR | **Quick bait restock on the Hunt screen (eddy).** `QuickBait` card (`src/client/screens/hunt.tsx`) shows when the equipped shop bait hits 0, or when the free fallback bait took over: buy ×1/×10/×25/×100/max (affordable) for the gold price, then it arms the bait via `/api/buy` + `/api/setup`. Only offers bait that works in the current area (`baitWorksHere`); crafted baits and a new player on Pantry Crumbs see nothing. Engine: optional `PlayerState.lastBait`, set in `hunt` when the fallback is armed over a shop bait, so the card knows what to restock. No game numbers changed; Pantry Crumbs fallback unchanged |
 | 2026-11-28 | this PR | **Cheer fills faster on pushes (eddy, PR 94 follow-up).** New `constants.cheer.pushPipMult` 2: catch pips count double while push bait is armed, so a push can fill the meter. A full meter already waits without draining, so players can bank it and cash in at the start of a push; the simulator bot now does that (`--no-bank` cashes in at once). Sim, 200 players, seed 1: hunts to rank 5 median 1,649, to catch every elf 1,961 (median); Cheer draws 1.1 to 2.1 per 100 hunts; push hunts under a boon 4% to 25% (22% without banking), farm hunts 2%. Farm nerf unchanged | 

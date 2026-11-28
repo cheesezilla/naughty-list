@@ -93,7 +93,7 @@
       { "id": "harness_snipper", "name": "Harness Snipper", "tier": "common", "power": 4100, "gold": 2465, "points": 696, "weight": 25, "effectiveness": { "clockwork": 1.5, "starlight": 0.5 } },
       { "id": "carrot_crook", "jackpot": true, "name": "Carrot Crook", "tier": "rare", "power": 2700, "gold": 5200, "points": 942, "weight": 4, "effectiveness": { "frost": 1.5, "starlight": 0.5 }, "loot": [{ "item": "sugar_glass", "chance": 0.5 }] },
       { "id": "antler_ripper", "name": "Antler Ripper", "tier": "miniboss", "power": 5000, "gold": 4385, "points": 1740, "weight": 0, "effectiveness": { "frost": 1.5, "starlight": 0.5 }, "loot": [{ "item": "silver_sleighbell", "chance": 1 }] },
-      { "id": "cinderhoof", "name": "Cinderhoof", "tier": "boss", "power": 20500, "gold": 8220, "points": 4350, "weight": 0, "effectiveness": { "frost": 1.5, "starlight": 0 }, "loot": [{ "item": "brimstone_coal", "chance": 1 }] }
+      { "id": "cinderhoof", "name": "Cinderhoof", "tier": "boss", "power": 20500, "gold": 8220, "points": 4350, "weight": 0, "effectiveness": { "frost": 1.5, "starlight": 0 }, "loot": [{ "item": "brimstone_coal", "chance": 1 }, { "item": "ember_antler", "chance": 0.4 }] }
     ]
   },
   {

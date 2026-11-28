@@ -35,6 +35,11 @@
       "description": "A giant snow globe that swallows its catch whole and swirls it in a blizzard until it forgets which way is out.",
       "backstory": "Santa keeps a shelf of snow globes, each holding a tiny winter that is really happening somewhere. This one holds no village, only a storm that never ends. The elves say a hexed elf once spent three days inside it trying to build a snowman to climb out on."
     },
+    "quenchhorn_snare": {
+      "tagline": "Cold enough to put out a Cinderhoof.",
+      "description": "A Frost trap grown around three Ember Antlers and a Snow Globe Prison. It hits harder than any other Frost trap, and the antlers still remember Cinderhoof.",
+      "backstory": "The Workshop elves dunked three ember antlers into a snow globe and the whole thing froze solid into a spiralled horn. Santa says it is only the start, and that the next stretch of the North Pole will need every cold trick the elves can find."
+    },
     "sleigh_bell_snapper": {
       "tagline": "Hear the jingle? Too late.",
       "description": "The finest trap in the lair: a sleigh-bell harness with a clockwork heart, built on the bones of a Nutcracker Jaws.",
@@ -234,6 +239,11 @@
       "tagline": "Hot to the touch, and it never goes out.",
       "description": "A lump of devil's coal broken from Cinderhoof's antlers, smouldering with Scrinch's own fire. Saved for greater gear.",
       "backstory": "Naughty children get coal. Scrinch's lieutenants carry it as a badge of rank, warmed by the fires under his throne. The elves keep every lump in an iron chest, because Santa's Workshop will one day need fire that hot to make the strongest gear of all."
+    },
+    "ember_antler": {
+      "tagline": "Still glowing, long after the fight.",
+      "description": "A tine snapped from Cinderhoof's antlers, glowing like a banked fire. It only comes loose sometimes, and three are needed for the Quenchhorn Snare.",
+      "backstory": "Cinderhoof's antlers shed a tine whenever the reindeer is truly beaten, but only some of the time, and the elves guard every one. Plunge it into a Snow Globe Prison and the ember hisses to a stop, leaving a horn that is cold to the touch and hungry for hexed reindeer."
     },
     "carol_horn": {
       "tagline": "One true note, held very loud.",

@@ -143,7 +143,7 @@ Tiers: **common** and **uncommon** fill most hunts, **rare** elves are about 5%,
 | **Harness Snipper** | Common    | 1,600 | 450   | 480    | Clockwork weak, Starlight resists | —                        |
 | **Carrot Crook**       | Rare      | 2,000 | 600   | 650    | Frost weak, Starlight resists     | Sugar Glass (50%)        |
 | **Antler Ripper**     | Mini boss | 3,500 | 800   | 1,200  | Frost weak, Starlight resists     | Silver Sleighbell (100%) |
-| **Cinderhoof**           | Boss      | 6,000 | 1,500 | 3,000  | Frost weak, Starlight immune      | Brimstone Coal (100%)    |
+| **Cinderhoof**           | Boss      | 6,000 | 1,500 | 3,000  | Frost weak, Starlight immune      | Brimstone Coal (100%), Ember Antler (40%) |
 
 ### Carol Loft
 
@@ -182,6 +182,7 @@ The main source of power and the only slot with a power type. Never consumed.
 | **Constellation Wreath** | Starlight | 1400  | 5    | +5%          | 3    | Crafted / reward (3× Enchanted Wrapping, 2× Brass Spring + 6,000 gold)                        |
 | **Snow Globe Prison**    | Frost         | 1800  | 4    | —            | 4    | 25,000 gold                                                                                   |
 | **Sleigh-Bell Snapper**  | Clockwork | 2600  | 6    | +5%          | 4    | Crafted / reward (3× Silver Sleighbell, 1× Clockwork Heart, 1× Nutcracker Jaws + 15,000 gold) |
+| **Quenchhorn Snare**     | Frost         | 2400  | 5    | —            | 4    | Crafted (3× Ember Antler, 2× Silver Sleighbell, 1× Snow Globe Prison + 20,000 gold)          |
 
 ## Bases
 
@@ -272,6 +273,7 @@ Done in **Santa's Workshop** with gold plus materials. Materials can also be sol
 | **Gingerbread Cottage**   | 1× Gingerbread Cottage   | 3× Cookie Tin, 2× Golden Ribbon, 1× Candy Cane Platform      | 8,000  | 4    |
 | **Wishing Star Pedestal** | 1× Wishing Star Pedestal | 1× Clockwork Heart, 2× Enchanted Wrapping, 4× Sugar Glass    | 12,000 | 4    |
 | **Sleigh-Bell Snapper**   | 1× Sleigh-Bell Snapper   | 3× Silver Sleighbell, 1× Clockwork Heart, 1× Nutcracker Jaws | 15,000 | 4    |
+| **Quenchhorn Snare**      | 1× Quenchhorn Snare      | 3× Ember Antler, 2× Silver Sleighbell, 1× Snow Globe Prison  | 20,000 | 4    |
 
 #### Materials
 
@@ -287,6 +289,7 @@ Done in **Santa's Workshop** with gold plus materials. Materials can also be sol
 | **Toymaker's Gear**    | 120 gold  | Hammerhand                                                                                                                           |
 | **Clockwork Heart**    | 200 gold  | General Grimbolt                                                                                                               |
 | **Silver Sleighbell**  | 200 gold  | Antler Ripper                                                                                                                     |
+| **Ember Antler**       | 600 gold  | Cinderhoof (sometimes)                                                                                                               |
 | **Brimstone Coal**     | 200 gold  | Cinderhoof                                                                                                                           |
 | **Hymn Reed**          | 25 gold   | Tin Whistler, Hoarse Caroller, Mistletoe Mumbler, Silver Piper |
 | **Carol Songsheet**    | 150 gold  | Choirmaster Hollowvoice                                                                                                 |

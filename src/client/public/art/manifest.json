@@ -143,6 +143,19 @@
       "drawOver": "bases"
     },
     {
+      "id": "quenchhorn_snare",
+      "slot": "traps",
+      "file": "traps/quenchhorn_snare.svg",
+      "width": 600,
+      "height": 450,
+      "transparent": true,
+      "source": "generated",
+      "description": "Quenchhorn Snare: a spiralled pale-blue frozen horn growing from a snow globe base, three glowing ember tines frosted at the tips",
+      "prompt": "Quenchhorn Snare (frost trap): a spiralled pale-blue frozen horn growing from a snow globe base, three glowing ember tines frosted at the tips. Single trap sprite on a transparent background, 600x450, three-quarter front view, its bottom resting on y=340 so it sits on top of a base sprite. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos.",
+      "layer": "trap",
+      "drawOver": "bases"
+    },
+    {
       "id": "cardboard_box",
       "slot": "bases",
       "file": "bases/cardboard_box.webp",
@@ -625,6 +638,17 @@
       "source": "custom",
       "description": "Brimstone Coal: a lump of coal with glowing orange cracks and a curl of smoke",
       "prompt": "Brimstone Coal: a lump of coal with glowing orange cracks and a curl of smoke. Single crafting material thumbnail on a transparent background, 512x512, centred, soft ground shadow. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
+    },
+    {
+      "id": "ember_antler",
+      "slot": "materials",
+      "file": "materials/ember_antler.svg",
+      "width": 512,
+      "height": 512,
+      "transparent": true,
+      "source": "generated",
+      "description": "Ember Antler: a single curved dark antler tine with a glowing orange tip and wisps of smoke",
+      "prompt": "Ember Antler: a single curved dark antler tine with a glowing orange tip and wisps of smoke. Single crafting material thumbnail on a transparent background, 512x512, centred, soft ground shadow. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
     },
     {
       "id": "hymn_reed",
