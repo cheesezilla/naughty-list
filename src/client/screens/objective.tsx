@@ -74,28 +74,28 @@ function LadderPanel({ o, location }: { o: Ladder; location: Location }) {
       </ol>
       <div class="ladder-next">
         <div>
-          {recipe && (
-            <p>
-              <b>{data.items.get(recipe.output.item)?.name}</b>
-              <br />
-              {Object.entries(recipe.ingredients).map(([id, need], i) => (
-                <>{i > 0 && ' · '}{data.items.get(id)?.name} <span class={count(player, id) >= need ? 'ok' : 'no'}>{num(count(player, id))}/{need}</span></>
-              ))}
-            </p>
-          )}
           {tier.baits.map((id) => {
             const have = count(player, id);
             const on = player.setup.bait === id;
             const name = data.items.get(id)?.name ?? id;
+            const crafts = recipe && recipe.output.item === id;
             return (
-              <p class="ladder-bait">
-                {tier.baits.length > 1 || !recipe ? <b>{name}</b> : null} <span class="muted">owned {num(have)}</span>{' '}
-                <button class="small-btn" disabled={on || have < 1} onClick={() => act('/api/setup', { slot: 'bait', item: id }, `Equipped ${name}.`)}>{on ? 'Equipped' : 'Equip'}</button>
-              </p>
+              <div class="ladder-bait">
+                <div class="ladder-bait-info">
+                  <b>{name}</b>
+                  {crafts && Object.entries(recipe.ingredients).map(([ing, need]) => (
+                    <span class="ladder-ing">{data.items.get(ing)?.name} <span class={count(player, ing) >= need ? 'ok' : 'no'}>{num(count(player, ing))}/{need}</span></span>
+                  ))}
+                </div>
+                <div class="ladder-bait-side">
+                  <span class="muted">owned {num(have)}</span>
+                  {crafts && <button class="small-btn" onClick={() => go(`workshop/${tier.recipe}`)}>Craft</button>}
+                  <button class="small-btn" disabled={on || have < 1} onClick={() => act('/api/setup', { slot: 'bait', item: id }, `Equipped ${name}.`)}>{on ? 'Equipped' : 'Equip'}</button>
+                </div>
+              </div>
             );
           })}
         </div>
-        {tier.recipe && <button class="small-btn" onClick={() => go(`workshop/${tier.recipe}`)}>Craft</button>}
       </div>
       <p class="panel-line">{boss?.name} only comes for {top.name}s.</p>
       {boss && (

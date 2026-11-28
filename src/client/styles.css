@@ -655,12 +655,11 @@ body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
 
 .ladder-next { flex-direction: column; align-items: stretch; }
 .ladder-next > div { display: flex; flex-direction: column; gap: 6px; }
-.ladder-bait { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2px 8px; margin: 0; padding: 6px 8px; background: #fff; border-radius: 10px; border: 1px solid var(--edge); }
-.ladder-bait .muted { grid-column: 1; }
-.ladder-bait b { grid-column: 1; }
-.ladder-bait .small-btn { grid-column: 2; grid-row: 1 / span 2; min-height: 34px; padding: 0 12px; font-size: 12px; white-space: nowrap; }
+.ladder-bait { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 0; padding: 8px; background: #fff; border-radius: 10px; border: 1px solid var(--edge); }
+.ladder-bait-info { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; font-size: 13px; min-width: 0; }
+.ladder-bait-side { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex: none; }
+.ladder-bait .small-btn { min-height: 34px; padding: 0 12px; font-size: 12px; white-space: nowrap; }
 .ladder-bait .small-btn:disabled { background: var(--green-soft); color: var(--green); }
-.ladder-next > .small-btn { align-self: flex-start; }
 
 .buy-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; width: 100%; }
 .buy-row .primary-btn { flex: 1 1 110px; min-width: 0; min-height: 40px; padding: 8px 10px; font-size: 14px; white-space: nowrap; }
