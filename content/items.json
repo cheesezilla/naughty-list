@@ -9,7 +9,7 @@
     { "id": "constellation_wreath", "name": "Constellation Wreath", "type": "starlight", "power": 1400, "luck": 5, "attraction": 0.05, "rank": 3, "price": null },
     { "id": "snow_globe_prison", "name": "Snow Globe Prison", "type": "frost", "power": 1800, "luck": 4, "rank": 4, "price": 25000 },
     { "id": "sleigh_bell_snapper", "name": "Sleigh-Bell Snapper", "type": "clockwork", "power": 2600, "luck": 6, "attraction": 0.05, "rank": 4, "price": null },
-    { "id": "tidepool_pail", "name": "Tidepool Pail", "type": "tide", "power": 2600, "luck": 5, "rank": 4, "price": null }
+    { "id": "tidepool_pail", "name": "Tidepool Pail", "type": "tide", "power": 0, "luck": 0, "rank": 4, "price": null, "sealed": true }
   ],
   "bases": [
     { "id": "cardboard_box", "name": "Cardboard Box", "power": 20, "luck": 0, "rank": 1, "price": null },

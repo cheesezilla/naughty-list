@@ -143,7 +143,7 @@ Tiers: **common** and **uncommon** fill most hunts, **rare** elves are about 5%,
 | **Harness Snipper** | Common    | 1,600 | 450   | 480    | Clockwork weak, Starlight resists | —                        |
 | **Carrot Crook**       | Rare      | 2,000 | 600   | 650    | Frost weak, Starlight resists     | Sugar Glass (50%)        |
 | **Antler Ripper**     | Mini boss | 3,500 | 800   | 1,200  | Frost weak, Starlight resists     | Silver Sleighbell (100%) |
-| **Cinderhoof**           | Boss      | 6,000 | 1,500 | 3,000  | Frost and Tide weak, Starlight immune | Brimstone Coal (100%), Steam Pearl (40%) |
+| **Cinderhoof**           | Boss      | 6,000 | 1,500 | 3,000  | Frost weak, Starlight immune | Brimstone Coal (100%), Steam Pearl (40%) |
 
 ### Carol Loft
 
@@ -182,7 +182,7 @@ The main source of power and the only slot with a power type. Never consumed.
 | **Constellation Wreath** | Starlight | 1400  | 5    | +5%          | 3    | Crafted / reward (3× Enchanted Wrapping, 2× Brass Spring + 6,000 gold)                        |
 | **Snow Globe Prison**    | Frost         | 1800  | 4    | —            | 4    | 25,000 gold                                                                                   |
 | **Sleigh-Bell Snapper**  | Clockwork | 2600  | 6    | +5%          | 4    | Crafted / reward (3× Silver Sleighbell, 1× Clockwork Heart, 1× Nutcracker Jaws + 15,000 gold) |
-| **Tidepool Pail**     | Tide          | 2600  | 5    | —            | 4    | Crafted (3× Steam Pearl, 2× Silver Sleighbell, 1× Snow Globe Prison + 20,000 gold)          |
+| **Tidepool Pail**     | Tide          | ???   | ???  | —            | 4    | Crafted (3× Steam Pearl, 2× Silver Sleighbell, 1× Snow Globe Prison + 20,000 gold). Saved for a future area: it can't be equipped yet |
 
 ## Bases
 
@@ -253,7 +253,7 @@ Carol
 A fourth type made only from Carol Loft drops. It is weak-point for Madame Shredwell, the one off-type boss.
 
 Tide  
-A water type. The Tidepool Pail, crafted from Steam Pearls that Cinderhoof sometimes drops, is the only Tide trap. Cinderhoof's embers are weak to it.
+A water type, for an area that is not open yet. The Tidepool Pail, crafted from Steam Pearls that Cinderhoof sometimes drops, is the only Tide trap. Keep it safe: its power and luck are a secret and it can't be equipped until that area opens.
 
 From the Wrapping Room on, each area has a **home type** most of its elves are weak to and a **rival type** they resist (Wrapping Room: Starlight beats, Clockwork resists. Toy Workshop: Clockwork beats, Frost resists. Reindeer Stables: Frost beats, Starlight resists). Each area has one or two exceptions, and every elf's description hints at its weakness. The Cookie Pantry is a teaching room with no home type. Power-type medals on the Hunt screen show the best traps for the current area.
 

@@ -16,7 +16,7 @@
     "wrapping_room":    { "traps": ["carol_horn", "star_lantern", "icicle_jar", "constellation_wreath"], "bases": ["candy_cane_platform", "toffee_anvil"], "charm": "mistletoe_charm" },
     "carol_loft":       { "traps": ["star_lantern", "icicle_jar", "carol_horn"], "bases": ["candy_cane_platform"], "charm": "mistletoe_charm" },
     "toy_workshop":     { "traps": ["nutcracker_jaws", "constellation_wreath", "carol_horn"], "bases": ["ice_block", "yule_log_base"], "charm": "windup_key_charm" },
-    "reindeer_stables": { "traps": ["snow_globe_prison", "sleigh_bell_snapper", "tidepool_pail"], "bases": ["gingerbread_cottage", "sleigh_runner", "yule_log_base"], "charm": "windup_key_charm" }
+    "reindeer_stables": { "traps": ["snow_globe_prison", "sleigh_bell_snapper"], "bases": ["gingerbread_cottage", "sleigh_runner", "yule_log_base"], "charm": "windup_key_charm" }
   },
 
   "recommendedGap": { "_note": "eddy 28 Nov: recommended gear is almost always needed to catch the local boss at a reasonable rate, so a boss must be at least this many points easier with recommended gear than with beginner gear.", "boss": 0.10 },
@@ -57,7 +57,7 @@
   },
 
   "craftValue": {
-    "laterOnly": ["sleigh_bell_snapper", "tidepool_pail", "sleigh_runner", "gingerbread_cottage", "wishing_star_pedestal"],
+    "laterOnly": ["sleigh_bell_snapper", "sleigh_runner", "gingerbread_cottage", "wishing_star_pedestal"],
     "_note": "laterOnly = same-rank gear a player only gets after clearing that area's loop, so it is not in the 'on arrival' baseline of other items. Marginal value of owning an item: mean catch-rate gain (best setup per elf, with vs without the item) over mini bosses and bosses (and over all elves) in areas of the item's rank or higher. An item is flagged when, on arrival, both gains stay under these minimums while it costs `minCost` gold or more, or any material. The lasting columns are informational (later gear naturally replaces it).",
     "minBossGain": 0.03,
     "minAllGain": 0.02,
@@ -76,6 +76,6 @@
     "minGearHunts": { "wrapping_room": 40, "toy_workshop": 40, "reindeer_stables": 40 }
   },
 
-  "accepted": [{ "rule": "low-value-gear", "subject": "Tidepool Pail", "why": "eddy 28 Nov: a small edge on Cinderhoof only (about +3 points) before the next rank is built, so it stays under the boss-gain minimum by design." }],
+  "accepted": [],
   "_acceptedNote": "Flags eddy has reviewed and accepted: { \"rule\": \"cheese\", \"subject\": \"Carol Horn in Toy Workshop\", \"why\": \"...\" }. They are listed in the report but no longer warn in CI."
 }

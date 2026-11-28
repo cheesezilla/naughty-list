@@ -133,6 +133,8 @@ export const Trap = z.object({
   id, name: z.string(), type: PowerType,
   power: z.number().nonnegative(), luck: z.number().nonnegative(),
   attraction: z.number().optional(), rank: z.number().int().positive(), price,
+  /** Earned now, usable in a later release: its stats show as ??? and it cannot be equipped yet. Power and luck stay 0 so nothing leaks. */
+  sealed: z.boolean().optional(),
   flavour: Flavour.optional(),
 });
 export const Base = z.object({
