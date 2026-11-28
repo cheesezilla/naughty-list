@@ -59,7 +59,7 @@
       { "id": "stuffing_ripper", "name": "Stuffing Ripper", "tier": "common", "power": 1850, "gold": 220, "points": 230, "weight": 25, "effectiveness": { "clockwork": 1.5, "frost": 0.5 } },
       { "id": "windup_elf", "name": "Wind-up Elf", "tier": "rare", "power": 900, "gold": 300, "points": 320, "weight": 5, "effectiveness": { "clockwork": 1.5, "frost": 0 }, "loot": [{ "item": "sugar_glass", "chance": 0.5 }] },
       { "id": "hammerhand", "name": "Hammerhand", "tier": "miniboss", "power": 1600, "gold": 400, "points": 650, "weight": 0, "pillage": { "chance": 0.35, "takes": ["gold", "bait", "points"], "kinds": 2, "goldPct": 0.05, "goldCap": 2, "bait": [2, 3], "pointsPct": 0.01, "pointsCap": 2 }, "effectiveness": { "frost": 1.5 }, "loot": [{ "item": "toymakers_gear", "chance": 1 }] },
-      { "id": "general_grimbolt", "name": "General Grimbolt", "tier": "boss", "power": 5200, "gold": 700, "points": 1300, "weight": 0, "pillage": { "chance": 0.6, "takes": ["gold", "bait", "points"], "kinds": 3, "goldPct": 0.08, "goldCap": 2, "bait": [3, 5], "pointsPct": 0.02, "pointsCap": 3 }, "effectiveness": { "clockwork": 1.5, "frost": 0.5 }, "loot": [{ "item": "clockwork_heart", "chance": 1 }] }
+      { "id": "general_grimbolt", "name": "General Grimbolt", "tier": "boss", "power": 5900, "gold": 700, "points": 1300, "weight": 0, "pillage": { "chance": 0.6, "takes": ["gold", "bait", "points"], "kinds": 3, "goldPct": 0.08, "goldCap": 2, "bait": [3, 5], "pointsPct": 0.02, "pointsCap": 3 }, "effectiveness": { "clockwork": 1.5, "frost": 0.5 }, "loot": [{ "item": "clockwork_heart", "chance": 1 }] }
     ]
   },
   {
@@ -86,7 +86,7 @@
       { "id": "harness_snipper", "name": "Harness Snipper", "tier": "common", "power": 4100, "gold": 652, "points": 696, "weight": 25, "effectiveness": { "clockwork": 1.5, "starlight": 0.5 } },
       { "id": "carrot_crook", "name": "Carrot Crook", "tier": "rare", "power": 2700, "gold": 870, "points": 942, "weight": 5, "effectiveness": { "frost": 1.5, "starlight": 0.5 }, "loot": [{ "item": "sugar_glass", "chance": 0.5 }] },
       { "id": "antler_ripper", "name": "Antler Ripper", "tier": "miniboss", "power": 5000, "gold": 1160, "points": 1740, "weight": 0, "effectiveness": { "frost": 1.5, "starlight": 0.5 }, "loot": [{ "item": "silver_sleighbell", "chance": 1 }] },
-      { "id": "cinderhoof", "name": "Cinderhoof", "tier": "boss", "power": 16800, "gold": 2175, "points": 4350, "weight": 0, "effectiveness": { "frost": 1.5, "starlight": 0 }, "loot": [{ "item": "brimstone_coal", "chance": 1 }] }
+      { "id": "cinderhoof", "name": "Cinderhoof", "tier": "boss", "power": 20500, "gold": 2175, "points": 4350, "weight": 0, "effectiveness": { "frost": 1.5, "starlight": 0 }, "loot": [{ "item": "brimstone_coal", "chance": 1 }] }
     ]
   },
   {

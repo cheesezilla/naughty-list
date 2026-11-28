@@ -34,7 +34,7 @@ describe('setup stats', () => {
 
   it('adds power, luck and charm bonuses', () => {
     const s = setupStats(content, { trap: 'jack_in_the_box', base: 'gingerbread_slab', bait: 'stale_cookie', charm: 'windup_key_charm' }, pantry);
-    expect(s.power).toBeCloseTo((150 + 80) * 1.2);
+    expect(s.power).toBeCloseTo((150 + 80) * 1.35);
     expect(s.luck).toBe(2);
     expect(s.type).toBe('clockwork');
   });

@@ -60,12 +60,12 @@ Commons: Cog Pincher and Stuffing Ripper (weak Clockwork), Paint Smudger (weak S
 
 | Elf | Tier | Power | Weak | Trap 1 | Trap 2 |
 | --- | --- | --- | --- | --- | --- |
-| Cog Pincher | common | 1,200 | clockwork | 65% | 74% |
-| Paint Smudger | common | 1,500 | starlight | 50% | 60% |
-| Stuffing Ripper | common | 1,850 | clockwork | 54% | 64% |
-| Wind-up Elf | rare | 900 | clockwork | 70% | 78% |
-| Hammerhand | miniboss | 1,600 | frost | 46% | 54% |
-| General Grimbolt | boss | 5,200 | clockwork | 27% | 34% |
+| Cog Pincher | common | 1,200 | clockwork | 65% | 78% |
+| Paint Smudger | common | 1,500 | starlight | 50% | 66% |
+| Stuffing Ripper | common | 1,850 | clockwork | 54% | 69% |
+| Wind-up Elf | rare | 900 | clockwork | 70% | 81% |
+| Hammerhand | miniboss | 1,600 | frost | 46% | 60% |
+| General Grimbolt | boss | 5,900 | clockwork | 25% | 37% |
 
 - Also craft the **Constellation Wreath** (3 Enchanted Wrapping + 2 Brass Spring + 6,000 g; Brass Spring drops from the Rascal at 15%). A Starlight trap that takes Paint Smudger to about 76%.
 
@@ -73,22 +73,22 @@ Commons: Cog Pincher and Stuffing Ripper (weak Clockwork), Paint Smudger (weak S
 
 Commons: Hay Hoarder and Bell Thief (weak Frost), Harness Snipper (weak Clockwork). Rare Carrot Crook (weak Frost). They all resist Starlight, so leave those traps at home. Use **Hot Cocoa** (90 g): other bait halves Allure.
 
-**Steps.** 1) Travel here with the Workshop's key and equip trap 1: **Snow Globe Prison + Yule Log Base** (Snow Globe Prison 25,000 g). 2) Hunt and run sleigh runs until you can craft the Sleigh Runner from Silver Sleighbells. Trap 2 is **Snow Globe Prison + Sleigh Runner + Wind-up Key Charm**. 3) Return with trap 2 for Cinderhoof. Catch rates:
+**Steps.** 1) Travel here with the Workshop's key and equip trap 1: **Snow Globe Prison + Yule Log Base** (Snow Globe Prison 25,000 g). 2) Hunt and run sleigh runs; craft the Gingerbread Cottage (3 Cookie Tin + 2 Golden Ribbon + 1 Candy Cane Platform + 8,000 g) and wear the Wind-up Key Charm. Trap 2 is **Snow Globe Prison + Gingerbread Cottage + Wind-up Key Charm**. 3) Return with trap 2 for Cinderhoof. Catch rates:
 
 | Elf | Tier | Power | Weak | Trap 1 | Trap 2 |
 | --- | --- | --- | --- | --- | --- |
-| Hay Hoarder | common | 2,550 | frost | 62% | 70% |
-| Bell Thief | common | 3,300 | frost | 56% | 64% |
-| Harness Snipper | common | 4,100 | clockwork | 41% | 49% |
-| Carrot Crook | rare | 2,700 | frost | 59% | 68% |
-| Antler Ripper | miniboss | 5,000 | frost | 43% | 53% |
-| Cinderhoof | boss | 16,800 | frost | 18% | 25% |
+| Hay Hoarder | common | 2,550 | frost | 64% | 76% |
+| Bell Thief | common | 3,300 | frost | 58% | 71% |
+| Harness Snipper | common | 4,100 | clockwork | 42% | 56% |
+| Carrot Crook | rare | 2,700 | frost | 61% | 74% |
+| Antler Ripper | miniboss | 5,000 | frost | 45% | 60% |
+| Cinderhoof | boss | 20,500 | frost | 16% | 26% |
 
 
-- **Frost build:** Snow Globe Prison (25,000 g, Frost 1,800), Gingerbread Cottage base (3 Cookie Tin, 2 Golden Ribbon, 1 Candy Cane Platform + 8,000 g; Frost affinity +10%), Wind-up Key Charm. See the table above: about 70% Hay Hoarder, 64% Bell Thief, 49% Harness Snipper, 68% Carrot Crook with trap 2.
+- **Frost build (trap 2):** Snow Globe Prison (25,000 g, Frost 1,800), Gingerbread Cottage base (power 1,550, Frost affinity +10%, more Allure), Wind-up Key Charm (+35% power). See the table above: Cinderhoof about 26% (16% with trap 1).
 - **Sleigh Run:** start a run (free) and reach 100 readiness within 40 hunts. Commons add 5, Carrot Crook 12, Antler Ripper 20 (it appears only above 50 readiness). A Bell Thief escape costs 8, a Harness Snipper escape 5. Launching pays 2,000 g and a Silver Sleighbell, then Cinderhoof ambushes the next hunt.
-- **Antler Ripper** (5,000 power, weak Frost) is about 53%. **Cinderhoof** (16,800 power, weak Frost, immune to Starlight) is about 25% with trap 2 (18% with trap 1 alone), so expect several tries. Escapes never cost rank.
-- Optional: Sleigh Runner base (2 Silver Sleighbell + 2 Toymaker's Gear + 12,000 g) and Sleigh-Bell Snapper trap (3 Silver Sleighbell + Clockwork Heart + Nutcracker Jaws + 15,000 g): about 25% on Cinderhoof with the Sleigh Runner, the same as the Frost build. The Wishing Star Pedestal (1 Clockwork Heart, 2 Enchanted Wrapping, 4 Sugar Glass, 12,000 g) adds luck 9.
+- **Antler Ripper** (5,000 power, weak Frost) is about 60% with trap 2. **Cinderhoof** (20,500 power, weak Frost, immune to Starlight) is about 26% with trap 2 (16% with trap 1), so expect several tries. Escapes never cost rank.
+- Optional: Sleigh Runner base (2 Silver Sleighbell + 2 Toymaker's Gear + 12,000 g) and Sleigh-Bell Snapper trap (3 Silver Sleighbell + Clockwork Heart + Nutcracker Jaws + 15,000 g) are for the Workshop and Wrapping Room bosses and for completionists; against Cinderhoof the Frost build above is just as good. The Wishing Star Pedestal (1 Clockwork Heart, 2 Enchanted Wrapping, 4 Sugar Glass, 12,000 g) adds luck 9.
 
 ## Carol Loft (optional side area)
 
