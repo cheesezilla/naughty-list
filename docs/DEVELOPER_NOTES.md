@@ -1115,6 +1115,16 @@ Section 1c of [Balance notes](BALANCE.md) gives **net gold per hunt** (expected 
 | Toy Workshop | 96 | 120 | 145 | 43% |
 | Reindeer Stables | 289 | 335 | 335 | 100% |
 
+**Reindeer Stables, sleigh run off and on (section 1d).** The sleigh run adds a 2,000 gold launch (and a Silver Sleighbell) when Readiness hits 100, and pays 10 gold per Readiness if the 40 hunts run out, so the Stables earns more with the ride on. Solved exactly over every Readiness and hunts-left state, back-to-back runs, bait and charms as above:
+
+| Gear | Gold per hunt, ride off | Ride on | On vs off | Hunts per run | Runs that launch |
+| --- | --- | --- | --- | --- | --- |
+| Beginner (Snow Globe Prison + Yule Log Base) | 297 | 316 | +6% | 39.3 | 11% |
+| Recommended (Sleigh-Bell Snapper + Gingerbread Cottage) | 343 | 376 | +10% | 37.5 | 35% |
+| Endgame (same) | 343 | 376 | +10% | 37.5 | 35% |
+
+With the proposed Hot Cocoa at 90, net per hunt becomes 207 / 253 / 253 ride off and 226 / 286 / 286 ride on (beginner / recommended / endgame). The top-area figure the farm index compares against is the ride-off one, so a lower area's farm index is a little lower again when the player rides. The 2,000 launch gold is only about 5 to 10% of income, so the bait price rule (25 to 35%) holds either way: at 90 Hot Cocoa is 24% of ride-on gold at recommended gear (28% for beginners). Not counted: the Sleighbell, the forced Cinderhoof fight after two launches, pillage.
+
 Reading it: farming low areas is already weaker than the top area per hunt. The real gap is that net gold per hunt equals gold per hunt (bait is a rounding error), and with no cooldown a player can spam hunts at 2 a second, so the top area's 335 a hunt is about 40,000 gold a minute. Charms (25 to 90 gold, used up per hunt) are not in the benchmark.
 
 ### Proposal
