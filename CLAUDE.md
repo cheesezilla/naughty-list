@@ -4,3 +4,4 @@
 - Game numbers live in `content/*.json`. After changing them run `npm run check-content`, `npm test` and `npm run simulate`, and copy the new numbers into `docs/DEVELOPER_NOTES.md`, add the run to the Simulation history in `docs/BALANCE.md`, and update `docs/WIKI.md` if players can see the change.
 - Balance PRs (gear, elf power, luck, effectiveness, prices, recipes, catch formula) also run `npm run balance` before and after, refresh `docs/BALANCE.md` with `npm run balance -- --write`, and say in the PR which flags changed. Thresholds are in `balance/thresholds.json`; CI only warns.
 - Keep the game original: no names, art, text or data tables from existing games.
+- `README.md` is the one repo readme: intro, current version, what's new and how it's deployed. Every release PR updates its Current version and What's new sections (and `CHANGELOG.md`); a PR that changes deployment updates its How it's deployed section. It is a repo file only, with no artifact.
