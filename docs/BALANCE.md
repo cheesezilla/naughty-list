@@ -274,6 +274,41 @@ Written for eddy. Findings and recommendations first, numbers second. Report 1 u
 
 **Standard game-length metrics (eddy, 27 Nov): every report states both.** (1) Median hunts to rank 5. (2) Hunts to catch every elf, 100% of the Naughty List portraits, Carol Loft and bosses included. The simulator prints both at the top of every run, with the mean, p10, p90 and the share of players who finish (cap 20,000 hunts, `--max-collect-hunts`).
 
+### Report 13: simulator plays the farm and push loop (200 players, seed 1, Cheer and events on)
+
+Simulator change only, no content changed (`npm run balance` still shows the same 9 flags). Review of the bot against the farm and push loop (eddy, 28 Nov): the old bot picked bait by best net gold, so it farmed with cheap bait, never bought push bait (crafted bait was costed at 0 gold, so the ladder looked free), never planned a push, started sleigh runs it could not win (8.0 started, 0.5 launched per player), and stalled whenever it ran out of a run bait it could not buy. The new default bot (`--bot loop`; the old one stays as `--bot legacy` for comparison) plays farm, then push, then repeats:
+
+- **Farm:** hunt where the free Crumbs or a cheap farm bait nets the most gold; a broke player falls back to the Pantry. Gear is judged where the player farms and at the deepest open area.
+- **Push:** once gold covers 30 hunts of push bait, 25 hunts of farm bait and part of the next gear item, spend on the best push bait (bought or crafted) in an area that holds an elf the player still wants: an uncaught rare, mini boss or boss, loot for gear that is a clear upgrade, and the materials of the bait a wanted elf needs (Ribbon Candy, Bonbon). Continue until gold drops to 5 hunts of bait, then farm again.
+- **Sleigh run:** only with an uncaught Stables mini boss or boss, the best run setup (including crafted Gilded Cocoa), the whole cost in hand and an expected Readiness of 50 or more over 40 hunts. It restocks or swaps bait mid-run.
+- **Collection:** works the shallowest area that still holds an uncaught elf first.
+
+Cheer Meter and events are unchanged (greedy boons, safe events), and still land in both stages. New report sections: farm vs push stage table, hunts on the free fallback, stale stretches (50+ hunts with no first catch, rank-up, key or gear) with the random boosts that land in them.
+
+| Metric | Old bot (legacy) | New bot (loop) |
+| --- | --- | --- |
+| Reach rank 5 | 200 of 200, median 1,540 hunts | 200 of 200, median 1,679 hunts |
+| Hunts to catch all 28 elves | median 3,612 (p10 2,105, p90 7,560; 198 of 200 finish) | median 2,311 (p10 1,636, p90 4,160; 186 of 200 finish) |
+| Ranks 1 to 4 (median hunts) | 122, 302, 429, 679 | 143, 268, 496, 742 (targets 150, 250, 400, 600) |
+| Push hunts (push bait armed) | 7% of hunts, nets +155 gold per hunt | 29% of hunts, nets -208 gold per hunt |
+| Points per hunt, farm / push | 140 / 120 | 102 / 191 |
+| First catches per player, farm / push | 22.6 / 3.0 | 15.9 / 10.8 |
+| Bait spend, share of gold earned | 60% | 73% |
+| Sleigh runs started / launched per player | 8.0 / 0.5 | 6.5 / 1.4 |
+| Jackpot elves per player | 33 (11% of gold) | 59 (15% of gold) |
+| Hunts in Pantry / Wrapping / Workshop / Stables / Loft | 181 / 635 / 98 / 532 / 177 | 589 / 638 / 78 / 362 / 99 |
+
+**Findings.**
+
+1. **The loop works as designed for a competent player.** Push hunts are a sink (net -208 gold per hunt) that nearly doubles progress per hunt (191 points against 102) and finds most first catches per hunt (10.8 in 516 push hunts against 15.9 in 1,251 farm hunts). Bait is 73% of gold earned, sleigh upkeep a median 39,600 gold per player.
+2. **Full collection is faster, rank 5 slower.** Pushing makes the portraits quicker (median 2,311 against 3,612), but the farm discipline costs about 140 hunts to rank 5 (1,679 against 1,540). Rank 3 (496 against 400) and rank 4 (742 against 600) are over target; both are the bot saving up and farming, not a content change, so no number was touched.
+3. **Rank 2 and 3 players spend a lot of time in the Pantry (589 hunts a player, 82 hunts at p90 on the free Crumbs).** Arriving in the Wrapping Room with starter gear nets below zero, so the bot farms the Pantry until it owns a Wrapping Room trap. The arrival rule in the balance check (1.5x the previous farm) only holds with Recommended gear from the previous area. If eddy wants arrival to beat the old farm with any gear, lower Glitter Gumdrop 24 or raise Wrapping Room gold a little.
+4. **Antler Ripper and Cinderhoof are the long tail: 12 and 7 of 200 players never catch them in 20,000 hunts.** A launch needs 100 Readiness in 40 hunts and the Ripper only comes at 50. With Snow Globe Prison and Wishing Star Pedestal and the best bait the expected Readiness is about 30 to 60, so a run launches rarely. Lever if it feels too hard: Readiness gain per common 5 to 6, or `minibossFrom` 50 to 40.
+5. **Random boosts help only a little during stale farming.** In stretches of 50 or more hunts with no first catch, rank-up, key or gear, per 100 hunts: 2.3 jackpot catches (about 28 gold per stale hunt), 0.7 event cards or Grand Gifts, 0.7 Cheer draws. Gear purchases end 54% of stretches, first catches 30%, rank-ups 16%. Jackpots are the main windfall; the Cheer Meter and events add little because they fire about once per 100 hunts.
+6. **Gold hoards after rank 5** (millions by hunt 20,000) because nothing but bait, upkeep and the Gilded Cocoa craft costs gold. Not a problem for the first run through the game.
+
+Bot limits that remain: no charms, one fixed push length rule, no choice of when to skip a run, and boons are picked by a fixed table, not by stage. The `--push-hunts`, `--farm-reserve` and `--run-min` flags change the bot's thresholds.
+
 ### Report 12: farm and push loop, costs scaled by rank, jackpots (200 players, seed 1, Cheer and events on)
 
 Built on `integration` (eddy, 28 Nov). Each area is a farm or sink stage with a cheap farm bait and a pricey push bait. A first version cut catch gold once a player outranked an area; eddy rejected it, so the final version scales costs with rank instead: area gold per catch x1.7 (Wrapping Room), x2.9 (Toy Workshop), x3.8 (Stables), farm baits cost 1.3 to 1.4x the previous area's gross gold per hunt, the sleigh run costs 300 upkeep per hunt and pays 8,000 on launch, and a player arriving with the previous area's gear nets 1.6 to 2.3x what the previous area paid. Five rares became gold jackpots (Rascal 150, Glitterbug 500, Wind-up Elf 1,500, Carrot Crook 5,200, Silver Piper 380). Section 1e of the balance check covers it all (`economy` thresholds). No older flag changed (9 flags, as before).
@@ -286,7 +321,7 @@ Built on `integration` (eddy, 28 Nov). Each area is a farm or sink stage with a 
 | Jackpot elves | | 33 caught per player, 11% of gold from catches |
 | Net gold per hunt, recommended gear, farm bait | Pantry 9, Wrapping 47, Workshop 89, Stables 304 | Pantry 10, Wrapping 83, Workshop 201, Stables 919 |
 
-Limits: 4 players never reach rank 5 and 10 never catch every elf in 20,000 hunts. The greedy bot is gold-starved by the dearer baits and the 300-gold run upkeep, and it picks bait by best net gold, so it does not buy push baits; the push-bait numbers are exact odds, not simulated spend.
+Limits: 4 players never reach rank 5 and 10 never catch every elf in 20,000 hunts. The greedy bot is gold-starved by the dearer baits and the 300-gold run upkeep, and it picks bait by best net gold, so it does not buy push baits; the push-bait numbers are exact odds, not simulated spend. Report 13 fixes this: the simulator now plays the loop.
 
 ### Report 1: baseline (Allure built, no Cheer Meter or events yet)
 
