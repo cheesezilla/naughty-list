@@ -96,6 +96,8 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0, b
     const floor = content.items.baits.find((b) => b.role === 'floor' && baitWorksHere(location, b.id));
     if (floor) {
       // Safety floor: a weak free bait that only works in the home area, so a broke player can always rebuild.
+      const prev = p.setup.bait ? data.items.get(p.setup.bait) : undefined;
+      if (prev?.kind === 'bait' && prev.price !== null) p.lastBait = prev.id;
       addItem(p, floor.id, 1);
       p.setup.bait = floor.id;
       floored = true;

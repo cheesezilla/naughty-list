@@ -751,3 +751,8 @@ body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
 .session-card .text-btn { align-self: flex-end; }
 
 .pick small.warn-text, .pick small.warn-text b { color: #d00000; font-weight: 800; }
+
+.quick-bait { border: 2px solid var(--gold-2); background: var(--cream); color: var(--ink); display: flex; flex-direction: column; gap: 6px; }
+.quick-buys { display: flex; flex-wrap: wrap; gap: 6px; }
+.quick-buys .primary-btn { flex: 1 1 70px; min-width: 0; min-height: 44px; padding: 6px 8px; display: flex; flex-direction: column; align-items: center; line-height: 1.15; }
+.quick-buys .primary-btn small { font-size: 11px; opacity: .85; }
