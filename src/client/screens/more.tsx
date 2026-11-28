@@ -286,11 +286,12 @@ const HOWTO: { id: string; title: string; text: string }[] = [
   { id: 'ranks', title: 'Ranks', text: 'Catches earn points. New ranks open new rooms of the lair and new gear in the Elf Emporium.' },
 ];
 export function WhatsNewScreen() {
-  const { content } = useGame();
+  const { content, player, setPlayer } = useGame();
   return (
     <MainScreen tab="more">
       <BackRow to="more" title="What's new" sub="Release notes, newest first" />
       <div class="pad stack">
+        <button class="hunt-btn wide" onClick={() => setPlayer({ ...player, releaseSeen: undefined })}>Show the latest notes popup</button>
         {content.releases.map((r) => (
           <div class="card" key={r.version}>
             <div class="popup-kicker">Version {r.version} · {r.date}</div>

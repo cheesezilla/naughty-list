@@ -82,7 +82,8 @@ function Playing({ content, me, onLogout }: { content: Content; me: MeResponse; 
   // Start over gives a new game, and a new game opens with the welcome popup.
   useEffect(() => { if (player.welcomeSeen === false) setWelcome(true); }, [player.welcomeSeen]);
   const latest = content.releases[0]?.version;
-  const [notes, setNotes] = useState(!!latest && me.player.releaseSeen !== latest && me.player.welcomeSeen !== false);
+  // Derived from the save, so it shows on load and when the player asks to see the notes again.
+  const notes = !!latest && player.releaseSeen !== latest && player.welcomeSeen !== false;
   const lastHuntAt = useRef(0);
 
   const celebrate = useCallback((ids: string[], backfill = false) => {
@@ -176,7 +177,7 @@ function Playing({ content, me, onLogout }: { content: Content; me: MeResponse; 
       )}
       {!welcome && notes && (
         <ReleasePopup onClose={(all) => {
-          setNotes(false);
+          setPlayer((cur) => ({ ...cur, releaseSeen: latest }));
           api<{ player: PlayerState }>('POST', '/api/release-seen', {}).then((r) => setPlayer(r.player)).catch(() => {});
           if (all) go('more/whatsnew');
         }} />

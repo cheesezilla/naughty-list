@@ -1,5 +1,19 @@
 [
   {
+    "version": "1.0.3",
+    "date": "2026-11-28",
+    "title": "Patch",
+    "summary": "What's new can be shown again from More.",
+    "sections": [
+      {
+        "heading": "Fixes",
+        "items": [
+          "More > What's new has a button to show the latest notes popup again."
+        ]
+      }
+    ]
+  },
+  {
     "version": "1.0.2",
     "date": "2026-11-28",
     "title": "Patch",
