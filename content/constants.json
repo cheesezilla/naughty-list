@@ -13,7 +13,7 @@
   "catchCap": 0.98,
   "luck": { "scale": 3, "tierWeight": { "common": 1, "uncommon": 1, "rare": 0.5, "miniboss": 0.25, "boss": 0.1 } },
   "sellBackRate": 0.4,
-  "economyReset": { "id": "farm-sink-1", "goldByRank": [200, 1000, 3500, 13500], "pointsGapShare": 0.25 },
+  "economyReset": { "id": "farm-sink-1", "goldByRank": [750, 4250, 14000, 55000], "pointsGapShare": 0.25 },
   "rescue": { "maxGold": 50, "item": "stale_cookie", "amount": 10 },
   "maxHuntsPerSecond": 2,
   "pillage": {
