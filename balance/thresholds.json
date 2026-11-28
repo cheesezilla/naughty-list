@@ -67,10 +67,13 @@
   "charmValue": { "minAllGain": 0.01, "maxBossGain": 0.20 },
 
   "economy": {
-    "_note": "eddy 28 Nov: the loop is farm (cheap bait, earn gold), then push (pricey bait, a sink for a boss or progress), then repeat. farmMinNet = least net gold per hunt a farm stage must earn with recommended gear; sinkMinPushCost = push bait must cost at least this much gold per hunt; campMargin = an outranked area with endgame gear at the top rank must pay under this share of the best farm.",
-    "farmMinNet": { "cookie_pantry": 5, "carol_loft": 15, "toy_workshop": 80 },
+    "_note": "eddy 28 Nov: the loop is farm (cheap bait, earn gold), then push (pricey bait, a sink for a boss or progress), then repeat. farmMinNet = least net gold per hunt a farm stage must earn with recommended gear; sinkMinPushCost = push bait must cost at least this much gold per hunt; baitCostMargin = the cheapest farm bait must cost at least this many times the previous area's gross gold per hunt; arrivalMargin = a player who walks in with the previous area's recommended gear must net at least this many times the previous area's farm net per hunt; minGearHunts = the area's intended trap must cost at least this many hunts of the previous area's income.",
+    "farmMinNet": { "cookie_pantry": 5, "carol_loft": 10, "toy_workshop": 80 },
     "sinkMinPushCost": { "wrapping_room": 30, "reindeer_stables": 60 },
-    "campMargin": 0.8
+    "baitCostMargin": 1.2,
+    "arrivalMargin": 1.5,
+    "jackpotMaxShare": 0.25,
+    "minGearHunts": { "wrapping_room": 40, "toy_workshop": 40, "reindeer_stables": 40 }
   },
 
   "accepted": [],

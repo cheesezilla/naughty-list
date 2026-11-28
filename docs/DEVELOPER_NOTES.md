@@ -44,7 +44,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Full-game strategy walkthrough: [Wiki walkthrough](WIKI.md#walkthrough), gear, bosses and Cheer Meter use for every location | Done | this PR |
 | Docs consolidated into three: Developer notes, Balance notes, Wiki with walkthrough | Done | this PR |
 | Area baits (each area has its own bait, a wrong bait always fails), sleigh run costs gold and can be abandoned, net gold per hunt benchmark in `npm run balance`; see [Area baits](#area-baits-and-the-sleigh-run-cost-eddy-28-nov-2026-built-on-integration) | Built on `integration` | this PR |
-| Farm and push loop (eddy, 28 Nov): every area is tagged a farm or sink stage with a cheap farm bait and a pricey push bait, a free fallback bait (Pantry Crumbs), catch gold falls once you outrank an area, a Gilded Cocoa craft as the endgame gold sink, gold this session and net per hunt in the UI, and farm and sink bands in `npm run balance`; see [Farm and push loop](#farm-and-push-the-gold-loop-eddy-28-nov-2026-built-on-integration) | Built on `integration` | this PR |
+| Farm and push loop (eddy, 28 Nov): every area is a farm or sink stage with a cheap farm bait and a pricey push bait; bait, gear and area gold all scale up with rank so a new area pays far more per catch even with the old trap; a free fallback bait (Pantry Crumbs); five existing rares reworked into gold jackpots; a Gilded Cocoa craft as the endgame gold sink; gold this session and net per hunt in the UI; farm, sink, arrival and jackpot bands in `npm run balance`; see [Farm and push loop](#farm-and-push-the-gold-loop-eddy-28-nov-2026-built-on-integration) | Built on `integration` | this PR |
 | 5. Tune from play-test | Planned | |
 | Daily branch cleanup: keeps the 10 most recently merged PR branches, deletes older merged ones (`cleanup-branches.yml`) | Done | this PR |
 | Versioned releases: semver in `package.json`, `CHANGELOG.md`, merging a new version into `main` publishes version-tagged Docker images, a `vX.Y.Z` tag and a GitHub Release, plus in-game release notes (`content/releases.json`, What's new popup and More screen); first release 1.0.0 (integration promoted to main); see [Deployment](#deployment) and [RELEASING.md](#releasing) | Done | this PR |
@@ -1115,10 +1115,10 @@ Every hunt uses one bait, but the bait was almost free: a Stale Cookie (8 gold) 
 | Area | Baits that work (farm / push) | Shop price | New or changed |
 | --- | --- | --- | --- |
 | Cookie Pantry | Pantry Crumbs (free fallback), Stale Cookie (farm), Sugar Cookie (push), Fruitcake (push, crafted) | 8, 20 | Pantry Crumbs new, see [Farm and push](#farm-and-push-the-gold-loop-eddy-28-nov-2026-built-on-integration) |
-| Wrapping Room | **Glitter Gumdrop** (farm, ladder tier 1), Ribbon Candy and Golden Bow Bonbon (push, crafted) | 16 | Glitter Gumdrop new: attraction 0.80, rank 2 |
-| Carol Loft (side) | **Honey Lozenge** (farm), **Spiced Honey Drop** (push) | 8, 30 | Lozenge new: attraction 0.78, rank 2; Drop new |
-| Toy Workshop | **Gingersnap** (farm), Peppermint Bark (push) | 15, 60 | Gingersnap new; Bark 50 to 40 to 60 and now 0.86 attraction with rares x1.5 |
-| Reindeer Stables | **Hay Biscuit** (farm), Hot Cocoa (push), **Gilded Cocoa** (push, crafted) | 25, 90 | Hay Biscuit and Gilded Cocoa new; Cocoa 90 to 45 to 90, 0.92 attraction with rares x1.5; the old half-attraction penalty for other baits is gone (replaced by the always-fail rule) |
+| Wrapping Room | **Glitter Gumdrop** (farm, ladder tier 1), Ribbon Candy and Golden Bow Bonbon (push, crafted) | 24 | Glitter Gumdrop new: attraction 0.80, rank 2 |
+| Carol Loft (side) | **Honey Lozenge** (farm), **Spiced Honey Drop** (push) | 24, 75 | Lozenge new: attraction 0.78, rank 2; Drop new |
+| Toy Workshop | **Gingersnap** (farm), Peppermint Bark (push) | 150, 450 | Gingersnap new; Bark 50 to 450, 0.86 attraction with rares x1.5 |
+| Reindeer Stables | **Hay Biscuit** (farm), Hot Cocoa (push), **Gilded Cocoa** (push, crafted) | 450, 1,200 | Hay Biscuit and Gilded Cocoa new; Cocoa 90 to 1,200, 0.92 attraction with rares x1.5; the old half-attraction penalty for other baits is gone (replaced by the always-fail rule) |
 
 **Warnings before the hunt:** a red "Wrong bait" card on the Hunt screen (with a Change bait button), baits that will not work in the current area are marked "Won't work" in the bait sheet and equipping one needs "Use ... anyway", the Travel map lists each area's baits, and arriving in an area with the wrong bait armed shows a toast naming the bait to buy. The Bait Ladder's tier 1 is now Glitter Gumdrop only. New bait art is placeholder SVG drawn by `npm run art` (a gold-glittered gumdrop with a bow, a honey lozenge); the real art can come from ChatGPT later and replaces the SVG through the manifest. Flavour text for both baits is in `content/flavour.json`.
 
@@ -1162,30 +1162,48 @@ With no hunt cooldown, **bait and gold are the limited resources**. eddy's loop:
 
 | Tip | Built as |
 | --- | --- |
-| Alternate farm and sink | Every area has `role` in `content/locations.json`: Cookie Pantry **farm**, Wrapping Room **sink**, Toy Workshop **farm**, Reindeer Stables **sink**, Carol Loft **farm** (side). Main chain alternates farm, sink, farm, sink. Each area also has both halves of the loop: a farm segment (cheap bait) and a push segment (pricey bait) |
-| Bait choice | Baits have `role`: `farm`, `push` or `floor`. Cheap farm bait earns gold; push bait has higher attraction and a `rareMultiplier`, so rare, mini boss and boss elves show up more. New: Gingersnap (Workshop, 15), Hay Biscuit (Stables, 25), Spiced Honey Drop (Loft, 30). Peppermint Bark 60 and Hot Cocoa 90 are the push baits (0.86 and 0.92 attraction, rares x1.5). Wrapping Room push baits are the crafted ladder baits, now pricier: Ribbon Candy recipe 30 to 90 gold, Golden Bow Bonbon 100 to 200 gold |
-| Gold tied to rank | `constants.goldFalloff`: catches pay full gold up to 1 rank above an area's rank, then 25% less per extra rank, never below 25% (`goldFalloff()` in `src/engine/odds.ts`). A rank 5 player gets Pantry 25%, Wrapping Room 50%, Loft 50%, Workshop 75%, Stables 100%. The log notes "Outranked area" and the Hunt screen warns |
-| Sinks give what gold cannot buy | Sink segments return boss keys (Gift-Tag Key from Shredwell), crafting loot (Enchanted Wrapping, Silver Sleighbell, Brimstone Coal) and portraits. Nothing in the shop sells those |
-| Show the numbers | A "Gold this session" card on the Hunt screen (earned, spent on bait, upkeep and pillage, net, net per hunt, Reset button) and a net line on every hunt log row. The engine adds `baitCost`, `falloff` and `floorBait` to each journal entry |
-| Safety floor | **Pantry Crumbs**: free, 0.55 attraction, works only in the Cookie Pantry. If the armed bait runs out there, the next hunt arms and uses one automatically (nothing is stored). Elsewhere the old stranded-player rescue still gives the cheapest bait that works there |
-| Endgame craft sink | **Gilded Cocoa** (Stables push bait, 0.95 attraction, rares x2.5): 1 Brimstone Coal + 10 Hot Cocoa + 2,000 gold makes 10, about 290 gold a bait. Brimstone Coal comes from Cinderhoof, so it is the late gold sink |
-| Benchmark | `npm run balance` section 1e: farm net per hunt with the cheap bait, push net with the priciest push bait, falloff at rank 5 and an endgame camping check. Thresholds in `balance/thresholds.json` > `economy` |
+| Alternate farm and sink | Every area has `role` in `content/locations.json`: Cookie Pantry **farm**, Wrapping Room **sink**, Toy Workshop **farm**, Reindeer Stables **sink**, Carol Loft **farm** (side). Each area also has both halves of the loop: a farm segment (cheap bait) and a push segment (pricey bait) |
+| Bait choice | Baits have `role`: `farm`, `push` or `floor`. Cheap farm bait earns gold; push bait has higher attraction and a `rareMultiplier`, so rare, mini boss and boss elves show up more. New: Gingersnap (Workshop), Hay Biscuit (Stables), Spiced Honey Drop (Loft). Peppermint Bark and Hot Cocoa are the push baits (0.86 and 0.92 attraction, rares x1.5). Wrapping Room push baits are the crafted ladder baits (Ribbon Candy recipe 90 gold, Bonbon 200) |
+| Costs scale with rank | **Replaced the rank gold falloff** (eddy did not like it). Each area pays far more per catch than the one before (Wrapping Room x1.7, Toy Workshop x2.9 and Stables x3.8 of their old gold) and its bait, gear and sleigh run cost far more than the previous area earns, so an old farm cannot fund the new one. See [Costs scale with rank](#costs-scale-with-rank) |
+| Sinks give what gold cannot buy | Sink segments return boss keys, crafting loot (Enchanted Wrapping, Silver Sleighbell, Brimstone Coal) and portraits. Nothing in the shop sells those |
+| Show the numbers | A "Gold this session" card on the Hunt screen (earned, spent on bait, upkeep and pillage, net, net per hunt, Reset button) and a net line on every hunt log row. The engine adds `baitCost` and `floorBait` to each journal entry |
+| Safety floor | **Pantry Crumbs**: free, 0.55 attraction, works only in the Cookie Pantry. If the armed bait runs out there, the next hunt arms and uses one automatically. Elsewhere the stranded-player rescue still gives the cheapest bait that works there |
+| Endgame craft sink | **Gilded Cocoa** (Stables push bait, 0.95 attraction, rares x2.5): 1 Brimstone Coal + 4 Hot Cocoa + 2,000 gold makes 10, about 680 gold a bait |
+| Benchmark | `npm run balance` section 1e: gross and net gold per hunt with the farm and push bait, bait cost against the previous area's earnings, intended trap cost in hunts of the previous area, the arrival check and the jackpot table. Thresholds in `balance/thresholds.json` > `economy` |
+
+### Costs scale with rank
+
+eddy's loop (28 Nov): arriving in a new area with the previous area's weak trap, the player has a low catch rate but earns **significantly more gold per catch**, which still beats farming the old area. They save for that area's trap, then hunt and push there properly.
+
+| Area | Gross gold / hunt (recommended gear, farm bait) | Farm bait (price) | Bait cost vs previous area's earnings | Arrival net / hunt with the previous area's gear | Arrival vs previous farm net |
+| --- | --- | --- | --- | --- | --- |
+| Cookie Pantry | 18 | Stale Cookie (8) | - | - | - |
+| Wrapping Room | 107 | Glitter Gumdrop (24) | 1.3x | 16 | 1.6x |
+| Toy Workshop | 351 | Gingersnap (150) | 1.4x | 143 | 1.7x |
+| Reindeer Stables | 1,369 | Hay Biscuit (450) | 1.3x | 437 | 2.2x |
+| Carol Loft (side) | 82 | Honey Lozenge (24) | 1.3x | 23 | 2.3x |
+
+Push baits: Sugar Cookie 20, Spiced Honey Drop 75, Bonbon 100 (crafted), Peppermint Bark 450, Hot Cocoa 1,200, Gilded Cocoa about 680. The sleigh run now costs **300 gold upkeep per hunt** (was 100), launches pay 8,000 gold, a failed run pays 30 gold per Readiness, and Toy Crates pay 1,000 gold (Triple Crate 2,000). Rules the balance check enforces (all in `balance/thresholds.json` > `economy`): the cheapest farm bait costs at least 1.2x the previous area's gross gold per hunt, the arrival net is at least 1.5x the previous area's farm net, the intended trap costs at least 40 hunts of the previous area's income, pushing nets less than farming, and push bait costs a real amount.
+
+### Jackpot elves
+
+Five existing rares are reworked into **jackpots** (`jackpot: true` on the elf, a "Jackpot!" pill in the hunt log). They are met seldom (low weight, more with push bait) and pay far more gold than the area's usual catch, enough to feel like a leap forward or to buy part of the next area's gear. No new elves were added.
+
+| Area | Jackpot elf | Gold per catch (before) | Weight |
+| --- | --- | --- | --- |
+| Cookie Pantry | Gingerbread Rascal | 150 (81) | 5 |
+| Wrapping Room | Glitterbug | 500 (about 250), only with Ribbon Candy or Bonbon | 0 (bait only) |
+| Toy Workshop | Wind-up Elf | 1,500 (about 510) | 4 (was 5) |
+| Reindeer Stables | Carrot Crook | 5,200 (about 2,740) | 4 (was 5) |
+| Carol Loft (side) | Silver Piper | 380 (about 190) | 5 |
+
+The balance check caps a jackpot elf at 25% of the area's income, so it stays a windfall.
 
 ### Numbers
 
-| Area | Stage | Farm net gold / hunt (bait) | Push net gold / hunt (bait) | Falloff at rank 5 |
-| --- | --- | --- | --- | --- |
-| Cookie Pantry | farm | 9 (Stale Cookie) | -3 (Sugar Cookie) | 25% |
-| Wrapping Room | sink | 47 (Glitter Gumdrop) | -6 (Golden Bow Bonbon) | 50% |
-| Toy Workshop | farm | 114 (Gingersnap) | 48 (Peppermint Bark) | 75% |
-| Reindeer Stables | sink | 324 (Hay Biscuit) | 76 (Gilded Cocoa) | 100% |
-| Carol Loft | farm | 26 (Honey Lozenge) | 1 (Spiced Honey Drop) | 50% |
+Simulator (200 players, seed 1, Cheer and events on), before to after: hunts to rank 5 **1,697 to 1,496**; hunts to catch every elf **2,781 to 3,209** (p10 1,831, p90 7,560); ranks 1 to 4 (median hunts) 126, 287, 413, **664** (rank 4 was 810, target 600). Jackpot elves: 33 caught per player worth 48,059 gold, 11% of gold from catches. `npm run balance` shows no open economy flag (9 older gear flags unchanged). Details: [Report 12](BALANCE.md#simulation-history).
 
-Simulator (200 players, seed 1, Cheer and events on), before to after: hunts to rank 5 **1,697 to 1,544**, hunts to catch every elf **2,781 to 2,868** (p10 1,703, p90 5,167). Ranks 1 to 4 (median hunts): 127, 291, 449, **630** (rank 4 was 810, target 600; the cheap Gingersnap and Hay Biscuit fixed the saving slowdown). `npm run balance` has no open economy flags. Details: [Report 12](BALANCE.md#simulation-history).
-
-### Left out
-
-Gear upgrades (levelling a trap) as a sink were not built; Gilded Cocoa covers the endgame sink for now. The Wrapping Room and Stables sink baits are not yet used by the simulated player (it picks the best net gold bait), so the numbers above are exact odds, not simulated spend.
+**Known gaps:** 4 of 200 simulated players never reach rank 5 and 10 never catch every elf (6 of them never reach the Toy Workshop elves in 20,000 hunts); the greedy bot is gold-starved by the dearer baits and the 300-gold run upkeep, and picks bait by best net gold, so it does not buy push baits. Real players can farm the Loft or the Pantry for a safe floor. Gear upgrades as a sink were not built.
 
 ## Art
 
@@ -1606,7 +1624,7 @@ To stay on a version or roll back, set the image line to `ghcr.io/cheesezilla/na
 
 | Date | PR | Change |
 | --- | --- | --- |
-| 2026-11-28 | this PR | **Farm and push loop built on `integration`.** Areas tagged farm or sink; every area gets a cheap farm bait and a pricey push bait (new Gingersnap 15, Hay Biscuit 25, Spiced Honey Drop 30; Peppermint Bark 60, Hot Cocoa 90); free Pantry Crumbs fallback bait in the Pantry; catch gold falls 25% per rank above an area (floor 25%); Ribbon Candy and Bonbon recipes cost more gold; Gilded Cocoa craft (endgame gold sink); Gold this session card and net per hunt in the log; `npm run balance` 1e farm and push bands. Sim: median 1,544 hunts to rank 5 (1,697 before), 2,868 to catch every elf (2,781 before); rank 4 630 (810 before) |
+| 2026-11-28 | this PR | **Farm and push loop built on `integration`.** Areas tagged farm or sink; every area gets a cheap farm bait and a pricey push bait (new Gingersnap 150, Hay Biscuit 450, Spiced Honey Drop 75; Peppermint Bark 450, Hot Cocoa 1,200, Glitter Gumdrop 24, Honey Lozenge 24); free Pantry Crumbs fallback bait; costs scale with rank (area gold x1.7 Wrapping, x2.9 Workshop, x3.8 Stables, sleigh upkeep 300, launch 8,000, crates 1,000), replacing a rank gold falloff eddy rejected; five rares reworked into gold jackpots (Rascal 150, Glitterbug 500, Wind-up Elf 1,500, Carrot Crook 5,200, Silver Piper 380); Ribbon Candy and Bonbon recipes cost more gold; Gilded Cocoa craft; Gold this session card and net per hunt in the log; `npm run balance` 1e farm, push, arrival and jackpot bands. Sim: median 1,496 hunts to rank 5 (1,697 before), 3,209 to catch every elf (2,781 before); rank 4 664 (810 before) |
 | 2026-11-28 | this PR | **Area baits built on `integration`.** Each area only works with its own bait (new Glitter Gumdrop 16 and Honey Lozenge 8, Peppermint Bark 50 to 40, Hot Cocoa 90 to 45); a wrong bait is used up and the catch always fails; the old Stables half-attraction rule is removed. A sleigh run costs 100 gold upkeep per hunt and catches pay 25% gold (net negative while on); a run can be abandoned at any time; the stranded-player rescue gives the area's cheapest bait. `npm run balance` gains 1c (net gold per hunt, farm index) and 1d (Stables run off/on). Sim: median 1,697 hunts to rank 5 (1,460 before), 2,781 to catch every elf (2,433 before); rank 4 now flagged slow (810 vs 600) |
 | 2026-11-28 | this PR | **Release 1.0.3 (integration only).** What's new popup is derived from the save (not a mount-time flag) and More > What's new has a "Show the latest notes popup" button for re-testing. New games and Start over still skip the popup by design (`releaseSeen` starts at the latest version). Every API call, hunts included, runs the `x-app-version` check. |
 | 2026-11-28 | this PR | **Release 1.0.2 (integration only).** Version bump with fresh release notes so the What's new popup can be re-tested on the :integration image. No code or game numbers changed. |

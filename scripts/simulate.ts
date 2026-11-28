@@ -67,8 +67,8 @@ function baitPrice(id: string): number {
 }
 
 /** Score of a setup: points plus net gold per hunt, so both progress and profit count. */
-function score(setup: Setup, location: string, rank?: number) {
-  const o = huntOdds(content, setup, location, rank);
+function score(setup: Setup, location: string) {
+  const o = huntOdds(content, setup, location);
   const net = o.expectedGold - baitPrice(setup.bait ?? '');
   return { odds: o, net, value: o.expectedPoints + net };
 }
@@ -82,7 +82,7 @@ function bestSetup(p: PlayerState, location: string, allowBuyBait: boolean): { s
   let best = { setup: p.setup, value: -Infinity, net: -Infinity };
   for (const t of traps) for (const b of bases) for (const bait of baits.length ? baits : [null]) {
     const setup: Setup = { trap: t.id, base: b.id, bait: bait?.id ?? null, charm: null };
-    const s = score(setup, location, p.rank);
+    const s = score(setup, location);
     if (s.value > best.value) best = { setup, value: s.value, net: s.net };
   }
   return best;
@@ -120,6 +120,8 @@ interface Log {
   goodAny: number[];
   goodMilestone: number[];
   goldIn: number;
+  jackpotCatches: number;
+  jackpotGold: number;
   baitSpent: number;
   pillageLost: number;
   lootHunts: number;
@@ -340,7 +342,7 @@ const lastFillOf = (log: Log) => log.cheer.fills.reduce((a, b) => a + b, 0);
 
 function play(rng: Rng, playerNo: number): Log {
   let p = newPlayer(content);
-  const log: Log = { rankAt: { 1: 0 }, goldAtRank: {}, purchases: [], byLocation: {}, bossCatches: 0, finished: false, hunts: 0, objectives: { runs: 0, launches: 0, orders: 0 }, bosses: {}, badges: {}, tiers: {}, tiersAt: {}, worstEscapes: 0, firstCatch: {}, portraitDone: {}, goodAny: [], goodMilestone: [], goldIn: 0, baitSpent: 0, pillageLost: 0, lootHunts: 0, cheer: { fills: [], pipsGained: 0, pipsLost: 0, draws: 0, held: 0, heldPips: [], boonHunts: 0, fullWait: 0, picks: {}, offered: {}, rareDraws: 0, legDraws: 0, pityForced: 0, drawsAt: {}, goldUnder: 0, goldOutside: 0, huntsOutside: 0, caughtUnder: 0, caughtOutside: 0, pointsUnder: 0, pointsOutside: 0 }, events: { n: 0, byType: {}, hunts: [], boonGold: 0, boonsA: 0, boonsB: 0, declined: 0 } };
+  const log: Log = { rankAt: { 1: 0 }, goldAtRank: {}, purchases: [], byLocation: {}, bossCatches: 0, finished: false, hunts: 0, objectives: { runs: 0, launches: 0, orders: 0 }, bosses: {}, badges: {}, tiers: {}, tiersAt: {}, worstEscapes: 0, firstCatch: {}, portraitDone: {}, goodAny: [], goodMilestone: [], goldIn: 0, jackpotCatches: 0, jackpotGold: 0, baitSpent: 0, pillageLost: 0, lootHunts: 0, cheer: { fills: [], pipsGained: 0, pipsLost: 0, draws: 0, held: 0, heldPips: [], boonHunts: 0, fullWait: 0, picks: {}, offered: {}, rareDraws: 0, legDraws: 0, pityForced: 0, drawsAt: {}, goldUnder: 0, goldOutside: 0, huntsOutside: 0, caughtUnder: 0, caughtOutside: 0, pointsUnder: 0, pointsOutside: 0 }, events: { n: 0, byType: {}, hunts: [], boonGold: 0, boonsA: 0, boonsB: 0, declined: 0 } };
   let lastFill = 0;
   const traceMe = !!TRACE && playerNo < TRACE_PLAYERS;
   let escRun = 0;
@@ -385,6 +387,7 @@ function play(rng: Rng, playerNo: number): Log {
     escRun = e.outcome === 'escape' ? escRun + 1 : 0;
     log.worstEscapes = Math.max(log.worstEscapes, escRun);
     if (e.outcome === 'catch') log.goldIn += e.gold;
+    if (e.outcome === 'catch' && e.imp && data.imps.get(e.imp)?.jackpot) { log.jackpotCatches += 1; log.jackpotGold += e.gold; }
     log.baitSpent += e.baitUsed * baitPrice(baitBefore ?? '');
     if (e.pillage) log.pillageLost += e.pillage.gold;
     if (e.loot.length) log.lootHunts++;
@@ -565,6 +568,7 @@ for (const loc of content.locations) {
 const done = logs.filter((l) => l.finished);
 const sumOf = (f: (l: Log) => number) => done.reduce((s, l) => s + f(l), 0);
 console.log('\nGold flow, players who reached the end (per player, median)');
+console.log(`  Jackpot elves: ${fmt(sumOf((l) => l.jackpotCatches) / TOTAL)} caught per player, worth ${fmt(sumOf((l) => l.jackpotGold) / TOTAL)} gold per player (${pct(sumOf((l) => l.jackpotGold) / sumOf((l) => l.goldIn))} of gold from catches)`);
 console.log(`  Earned from catches ${fmt(quant(done.map((l) => l.goldIn), 0.5))}, bait used ${fmt(quant(done.map((l) => l.baitSpent), 0.5))} (${pct(sumOf((l) => l.baitSpent) / sumOf((l) => l.goldIn))} of gold earned), lost to pillage ${fmt(quant(done.map((l) => l.pillageLost), 0.5))}`);
 console.log('  Gold in hand at rank-up (median): ' + content.ranks.slice(1).map((r) => `R${r.rank} ${fmt(quant(logs.map((l) => l.goldAtRank[r.rank]).filter((x): x is number => x !== undefined), 0.5))}`).join(', '));
 console.log(`  Hunts that dropped loot: ${pct(sumOf((l) => l.lootHunts) / sumOf((l) => l.hunts))}`);

@@ -205,24 +205,24 @@ Add power, luck and Allure, and the later ones have a **type affinity** bonus to
 
 One bait is used on every hunt, whether it catches or not. Higher Allure pulls rarer elves more often. **Each area has its own bait**: a bait from another area still gets used up, but the catch always fails (a red warning on the Hunt screen, in the bait picker and on the Travel map tells you, and arriving with the wrong bait armed shows a notice). Cookie Pantry: Pantry Crumbs, Stale Cookie, Sugar Cookie, Fruitcake. Wrapping Room: Glitter Gumdrop, Ribbon Candy, Golden Bow Bonbon. Carol Loft: Honey Lozenge, Spiced Honey Drop. Toy Workshop: Gingersnap, Peppermint Bark. Reindeer Stables: Hay Biscuit, Hot Cocoa, Gilded Cocoa. If you run out of bait in the Cookie Pantry you sweep up free Pantry Crumbs (weak, home area only), so you can always rebuild. Elsewhere, with no bait and under 50 gold, Mrs. Claus slips you 10 of the cheapest bait that works where you are.
 
-**The farm and push loop.** Every area is a **farm stage** (Cookie Pantry, Toy Workshop, Carol Loft) or a **sink stage** (Wrapping Room, Reindeer Stables). Farm with the area's **cheap bait** to earn gold, then spend it on the **pricey push bait** to draw rare elves, mini bosses and bosses, and repeat. Gold from catches drops by a quarter for every rank you have above an area (after one free rank), down to a quarter, so move on once you outgrow a farm. The Hunt screen shows a **Gold this session** card (earned, spent, net and net per hunt) and each log row shows its net gold.
+**The farm and push loop.** Every area is a **farm stage** (Cookie Pantry, Toy Workshop, Carol Loft) or a **sink stage** (Wrapping Room, Reindeer Stables). Farm with the area's **cheap bait** to earn gold, then spend it on the **pricey push bait** to draw rare elves, mini bosses and bosses, and repeat. Every area pays far more gold per catch than the one before, and its bait costs more too, so you move on: arrive with your old trap, farm at a low catch rate, save for the area's own trap, then push. Rare **jackpot elves** (Gingerbread Rascal, Glitterbug, Wind-up Elf, Carrot Crook, Silver Piper) pay a big pile of gold; catch one and you get a head start on the next area. The Hunt screen shows a **Gold this session** card (earned, spent, net and net per hunt) and each log row shows its net gold.
 
 | Bait                  | Allure | Rank | Price                                                          | Notes                                                                         |
 |-----------------------|--------|------|----------------------------------------------------------------|-------------------------------------------------------------------------------|
 | **Stale Cookie**      | 70%    | 1    | 8 gold                                                         | Cookie Pantry bait.                                                           |
 | **Sugar Cookie**      | 78%    | 1    | 20 gold                                                        | Draws more Sootcaps in the Pantry.                                            |
-| **Peppermint Bark**   | 86%    | 3    | 60 gold                                                        | Toy Workshop bait.                                                            |
+| **Peppermint Bark**   | 86%    | 3    | 450 gold                                                       | Toy Workshop bait.                                                            |
 | **Fruitcake**         | 85%    | 2    | Crafted / reward (3× Candied Peel, 1× Cookie Tin + 100 gold)   | Doubles rare, mini boss and boss odds (cannot skip the Wrapping Room ladder). |
 | **Ribbon Candy**      | 82%    | 2    | Crafted / reward (2× Sugar Twist, 1× Candied Peel + 90 gold)   | Wrapping Room ladder tier 2.                                                  |
 | **Golden Bow Bonbon** | 86%    | 2    | Crafted / reward (1× Sugar Glass, 1× Golden Ribbon + 200 gold) | Wrapping Room ladder tier 3: the bait Madame Shredwell takes.                 |
-| **Hot Cocoa**         | 92%    | 4    | 90 gold                                                        | Reindeer Stables bait.                                                        |
-| **Glitter Gumdrop**   | 80%    | 2    | 16 gold                                                        | Wrapping Room shop bait (ladder tier 1).                                      |
-| **Honey Lozenge**     | 78%    | 2    | 8 gold                                                         | Carol Loft bait.                                                              |
+| **Hot Cocoa**         | 92%    | 4    | 1,200 gold                                                       | Reindeer Stables bait.                                                        |
+| **Glitter Gumdrop**   | 80%    | 2    | 24 gold                                                        | Wrapping Room shop bait (ladder tier 1).                                      |
+| **Honey Lozenge**     | 78%    | 2    | 24 gold                                                        | Carol Loft bait.                                                              |
 | **Pantry Crumbs**     | 55%    | 1    | Free fallback (Cookie Pantry only)                             | Used automatically when you run out of bait in the Pantry.                    |
-| **Gingersnap**        | 78%    | 3    | 15 gold                                                        | Toy Workshop farm bait.                                                       |
-| **Hay Biscuit**       | 78%    | 4    | 25 gold                                                        | Reindeer Stables farm bait.                                                   |
-| **Spiced Honey Drop** | 86%    | 2    | 30 gold                                                        | Carol Loft push bait: rarer singers show up more.                             |
-| **Gilded Cocoa**      | 95%    | 4    | Crafted (1× Brimstone Coal, 10× Hot Cocoa + 2,000 gold, makes 10) | Reindeer Stables push bait: the strongest, and a big gold sink.            |
+| **Gingersnap**        | 78%    | 3    | 150 gold                                                       | Toy Workshop farm bait.                                                       |
+| **Hay Biscuit**       | 78%    | 4    | 450 gold                                                       | Reindeer Stables farm bait.                                                   |
+| **Spiced Honey Drop** | 86%    | 2    | 75 gold                                                        | Carol Loft push bait: rarer singers show up more.                             |
+| **Gilded Cocoa**      | 95%    | 4    | Crafted (1× Brimstone Coal, 4× Hot Cocoa + 2,000 gold, makes 10) | Reindeer Stables push bait: the strongest, and a big gold sink.            |
 
 ## Charms
 
@@ -327,11 +327,11 @@ Three bait tiers, each crafted from the last tier's drops. Shop bait draws commo
 
 ### Toy Workshop: Order Board
 
-Each order is 3 slots, each asking for a trap type. A catch with the right type fills the next slot. A finished order pays a Toy Crate (400 gold plus a reward). Every 3rd finished order triggers an Inspection: **Hammerhand** (mini boss) comes next. After that you can take a 5-slot Rush order; finishing it brings **General Grimbolt**. This makes you own traps of every type.
+Each order is 3 slots, each asking for a trap type. A catch with the right type fills the next slot. A finished order pays a Toy Crate (1,000 gold plus a reward). Every 3rd finished order triggers an Inspection: **Hammerhand** (mini boss) comes next. After that you can take a 5-slot Rush order; finishing it brings **General Grimbolt**. This makes you own traps of every type.
 
 ### Reindeer Stables: Sleigh Run
 
-Start a run and get Readiness to 100 within 40 hunts. Common catches add 5, rares 12, the Antler Ripper (mini boss, appears from 50 readiness) 20. Escapes from the Bell Thief (−8) or Harness Snipper (−5) set you back. Launching pays 2,000 gold and a Silver Sleighbell, then **Cinderhoof** ambushes the sleigh. A run costs gold: **100 gold upkeep every hunt** on top of bait, and catches pay only a quarter of their gold, so a run is a net loss until it launches. A failed run pays 10 gold per readiness. You can **abandon a run at any time** (Readiness goes back to 0, launches already made stay) and start again. Farm gold with the run off, then pay for the run.
+Start a run and get Readiness to 100 within 40 hunts. Common catches add 5, rares 12, the Antler Ripper (mini boss, appears from 50 readiness) 20. Escapes from the Bell Thief (−8) or Harness Snipper (−5) set you back. Launching pays 8,000 gold and a Silver Sleighbell, then **Cinderhoof** ambushes the sleigh. A run costs gold: **300 gold upkeep every hunt** on top of bait, and catches pay only a quarter of their gold, so a run is a net loss until it launches. A failed run pays 30 gold per readiness. You can **abandon a run at any time** (Readiness goes back to 0, launches already made stay) and start again. Farm gold with the run off, then pay for the run.
 
 ### Carol Loft
 

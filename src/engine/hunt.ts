@@ -1,6 +1,6 @@
 import type { Content, Imp, PillageKind } from '../content/schema.js';
 import { baitGoldValue, gameData, itemOfKind } from './data.js';
-import { allureFactor, baitWorksHere, catchChance, effectiveness, goldFalloff, impWeights, luckFactor, setupStats } from './odds.js';
+import { allureFactor, baitWorksHere, catchChance, effectiveness, impWeights, luckFactor, setupStats } from './odds.js';
 import { addItem, bump, count, rankFor, type PlayerState } from './player.js';
 import { pickWeighted, type Rng } from './rng.js';
 import { afterHunt, objectiveState, objectiveWeights, type ObjectiveResult } from './objectives.js';
@@ -21,8 +21,6 @@ export interface JournalEntry {
   baitCost?: number;
   /** The free fallback bait was armed because the player ran out. */
   floorBait?: boolean;
-  /** Share of the catch gold paid because the player outranks this area (missing: full pay). */
-  falloff?: number;
   gold: number;
   points: number;
   loot: { item: string; amount: number }[];
@@ -170,8 +168,6 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0, b
   addItem(p, bait, -baitTaken);
   entry.baitUsed = baitTaken;
   entry.baitCost = baitTaken * baitGoldValue(data, bait);
-  const falloff = goldFalloff(c, location, p.rank);
-  if (falloff < 1) entry.falloff = falloff;
   if (p.setup.charm && count(p, p.setup.charm) > 0 && itemOfKind(data, p.setup.charm, 'charm')) {
     addItem(p, p.setup.charm, -1);
     entry.charmUsed = true;
@@ -191,7 +187,7 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0, b
   if (won) {
     entry.outcome = 'catch';
     const ticket = mods.ticket > 1;
-    entry.gold = Math.round(imp.gold * mult * mods.goldMult * mods.ticket * runGoldMult * falloff);
+    entry.gold = Math.round(imp.gold * mult * mods.goldMult * mods.ticket * runGoldMult);
     entry.points = Math.round(imp.points * mult * mods.pointsMult * mods.ticket);
     if (ticket) useBuff(p, 'goldPointsMult');
     p.gold += entry.gold;

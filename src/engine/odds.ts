@@ -62,16 +62,6 @@ export function baitWorksHere(location: Location, baitId: string | null): boolea
   return !location.baits || (baitId !== null && location.baits.includes(baitId));
 }
 
-/**
- * Rank falloff: catch gold in an area shrinks once the player outranks it, so nobody camps in an old farm.
- * Full pay up to `grace` ranks above the area's rank, then `perRank` less per further rank, never below `floor`.
- */
-export function goldFalloff(c: Content['constants'], location: Location, rank: number): number {
-  const f = c.goldFalloff;
-  const over = Math.max(0, rank - location.rank - f.grace);
-  return Math.max(f.floor, 1 - f.perRank * over);
-}
-
 /** Allure: the multiplier on rare, mini boss and boss weights, from the setup's attraction. */
 export function allureFactor(c: Content['constants'], attraction: number): number {
   return attraction / c.allure.baseline;
@@ -105,8 +95,7 @@ export interface HuntOdds {
 }
 
 /** Exact expected outcome of one hunt with this setup, used by the UI and the simulator. */
-/** `rank` (optional) applies the rank falloff to the expected gold. */
-export function huntOdds(content: Content, setup: Setup, locationId: string, rank?: number): HuntOdds {
+export function huntOdds(content: Content, setup: Setup, locationId: string): HuntOdds {
   const data = gameData(content);
   const location = data.locations.get(locationId);
   if (!location) throw new Error(`unknown location ${locationId}`);
@@ -118,14 +107,13 @@ export function huntOdds(content: Content, setup: Setup, locationId: string, ran
     encounter: weights[i]! / total,
     catchChance: baitWorksHere(location, setup.bait) ? catchChance(stats, imp, content.constants.catchCap, luckFactor(content.constants, imp)) : 0,
   }));
-  const goldMult = rank === undefined ? 1 : goldFalloff(content.constants, location, rank);
   let catchPerHunt = 0;
   let expectedGold = 0;
   let expectedPoints = 0;
   for (const o of imps) {
     const p = o.encounter * o.catchChance;
     catchPerHunt += p;
-    expectedGold += p * o.imp.gold * goldMult;
+    expectedGold += p * o.imp.gold;
     expectedPoints += p * o.imp.points;
   }
   return { stats, imps, catchPerHunt, expectedGold, expectedPoints };

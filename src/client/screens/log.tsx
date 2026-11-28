@@ -78,6 +78,7 @@ function HuntRow({ row }: { row: JournalRow & { kind: 'hunt' } }) {
             <span class="tier">{TIER_NAME[imp.tier]}</span>
             {e.firstCatch && <span class="pill gold">Portrait unlocked</span>}
             {e.key && <span class="pill gold">Key found</span>}
+            {caught && imp.jackpot && <span class="pill gold">Jackpot!</span>}
             {e.pillage && <span class="pill red">Pillaged</span>}
           </div>
           {caught
@@ -88,7 +89,6 @@ function HuntRow({ row }: { row: JournalRow & { kind: 'hunt' } }) {
                 ? <>Escaped. The {e.baitLeft ? itemName(e.baitLeft.item) : 'bait'} doesn't tempt elves here, so the catch could not happen.</>
                 : <>Escaped. {rateText(e.catchChance ?? 0)} chance</>}
           {e.upkeep ? <div class="muted small">Sleigh run upkeep: −{num(e.upkeep)} gold</div> : null}
-          {e.falloff ? <div class="muted small">Outranked area: gold paid at {Math.round(e.falloff * 100)}%</div> : null}
           {e.baitCost || e.gold ? <div class="muted small">Net {huntNet(e) >= 0 ? '+' : '−'}{num(Math.abs(huntNet(e)))} gold ({num(e.baitCost ?? 0)} bait{e.upkeep ? `, ${num(e.upkeep)} upkeep` : ''})</div> : null}
           {e.objective && <ObjectiveNote o={e.objective} itemName={itemName} />}
           <HuntExtras e={e} />

@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { count, huntOdds, type Setup } from '../../engine/index.js';
-import { goldFalloff } from '../../engine/index.js';
 import { useGame } from '../game.js';
 import { Art, Icon } from '../lib/art.js';
 import { num, pct, plural } from '../lib/format.js';
@@ -180,12 +179,11 @@ const ROLE_HELP = {
 
 /** Says whether this area is a farm or a sink, which bait suits each half of the loop, and when the area has stopped paying. */
 function StageCard() {
-  const { content, data, player } = useGame();
+  const { data, player } = useGame();
   const location = data.locations.get(player.location)!;
   if (!location.role) return null;
   const baits = (location.baits ?? []).map((id) => data.items.get(id)).filter((b) => b?.kind === 'bait');
   const pick = (role: 'farm' | 'push') => baits.filter((b) => b?.kind === 'bait' && b.role === role).map((b) => b!.name).join(' or ');
-  const mult = goldFalloff(content.constants, location, player.rank);
   return (
     <div class={`card stage-card ${location.role}`}>
       <div class="row-head">
@@ -195,7 +193,6 @@ function StageCard() {
       <small class="muted">
         {location.role === 'farm' ? 'Farm with ' : 'Farm gold with '}{pick('farm') || 'cheap bait'}; push a boss or progress with {pick('push') || 'pricey bait'}. Then come back and farm again.
       </small>
-      {mult < 1 && <small class="warn-text"><b>You have outranked this area:</b> catches pay {Math.round(mult * 100)}% gold. Farm somewhere new.</small>}
     </div>
   );
 }

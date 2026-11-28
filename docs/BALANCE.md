@@ -123,33 +123,48 @@ Net gold per hunt = expected gold from catches (encounter weight x catch rate x 
 
 | Area | Rank | 1. Beginner: net gold / hunt | 2. Recommended: net gold / hunt | 3. Endgame: net gold / hunt | Farm index (endgame here vs recommended in Reindeer Stables) |
 | --- | --- | --- | --- | --- | --- |
-| Cookie Pantry | 1 | 9 (gold 17, Stale Cookie 8) | 9 (gold 17, Stale Cookie 8) | 20 (gold 28, Stale Cookie 8) | 6% |
-| Wrapping Room | 2 | 29 (gold 45, Glitter Gumdrop 16) | 47 (gold 63, Glitter Gumdrop 16) | 54 (gold 70, Glitter Gumdrop 16) | 17% |
-| Toy Workshop | 3 | 89 (gold 104, Gingersnap 15) | 114 (gold 129, Gingersnap 15) | 139 (gold 154, Gingersnap 15) | 43% |
-| Reindeer Stables | 4 | 279 (gold 304, Hay Biscuit 25) | 324 (gold 349, Hay Biscuit 25) | 324 (gold 349, Hay Biscuit 25) | 100% |
-| Carol Loft | 2 | 25 (gold 33, Honey Lozenge 8) | 26 (gold 34, Honey Lozenge 8) | 37 (gold 45, Honey Lozenge 8) | 11% |
+| Cookie Pantry | 1 | 10 (gold 18, Stale Cookie 8) | 10 (gold 18, Stale Cookie 8) | 24 (gold 32, Stale Cookie 8) | 3% |
+| Wrapping Room | 2 | 53 (gold 77, Glitter Gumdrop 24) | 83 (gold 107, Glitter Gumdrop 24) | 95 (gold 119, Glitter Gumdrop 24) | 10% |
+| Toy Workshop | 3 | 135 (gold 285, Gingersnap 150) | 201 (gold 351, Gingersnap 150) | 267 (gold 417, Gingersnap 150) | 29% |
+| Reindeer Stables | 4 | 743 (gold 1193, Hay Biscuit 450) | 919 (gold 1369, Hay Biscuit 450) | 919 (gold 1369, Hay Biscuit 450) | 100% |
+| Carol Loft | 2 | 54 (gold 78, Honey Lozenge 24) | 58 (gold 82, Honey Lozenge 24) | 86 (gold 110, Honey Lozenge 24) | 9% |
 
 ### 1d. Reindeer Stables: gold per hunt with the sleigh run off and on
 
-**Off** = hunting without starting a run (the 1c numbers). **On** = back-to-back sleigh runs: each run lasts up to 40 hunts, catches add Readiness (common +5, rare +12, miniboss +20), escapes from Bell Thief and Harness Snipper take some away, and from 50 Readiness Antler Ripper comes at weight 6. While a run is on, each hunt costs 100 gold of upkeep and catches pay 25% of their gold. A launch (100 Readiness) pays 2000 gold; a run that times out pays 10 gold per Readiness. Solved exactly over every Readiness and hunts-left state, with the cheapest-net bait (the same as 1c, so the bait cost is small). Left out: the launch item (silver_sleighbell), the forced Cinderhoof fight after 2 launches, pillage.
+**Off** = hunting without starting a run (the 1c numbers). **On** = back-to-back sleigh runs: each run lasts up to 40 hunts, catches add Readiness (common +5, rare +12, miniboss +20), escapes from Bell Thief and Harness Snipper take some away, and from 50 Readiness Antler Ripper comes at weight 6. While a run is on, each hunt costs 300 gold of upkeep and catches pay 25% of their gold. A launch (100 Readiness) pays 8000 gold; a run that times out pays 30 gold per Readiness. Solved exactly over every Readiness and hunts-left state, with the cheapest-net bait (the same as 1c, so the bait cost is small). Left out: the launch item (silver_sleighbell), the forced Cinderhoof fight after 2 launches, pillage.
 
 | Gear | Setup used | Gold / hunt, ride off | Gold / hunt, ride on (after upkeep) | On vs off | Hunts per run | Runs that launch | Net per hunt after bait (off / on) |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1. Beginner | Snow Globe Prison + Yule Log Base | 304 | -3 | -101% | 38.9 | 17% | 279 / -28 |
-| 2. Recommended | Sleigh-Bell Snapper + Gingerbread Cottage | 349 | 22 | -94% | 36.7 | 43% | 324 / -3 |
-| 3. Endgame | Sleigh-Bell Snapper + Gingerbread Cottage | 349 | 22 | -94% | 36.7 | 43% | 324 / -3 |
+| 1. Beginner | Snow Globe Prison + Yule Log Base | 1193 | 64 | -95% | 39.0 | 15% | 743 / -386 |
+| 2. Recommended | Sleigh-Bell Snapper + Gingerbread Cottage | 1369 | 162 | -88% | 37.1 | 40% | 919 / -288 |
+| 3. Endgame | Sleigh-Bell Snapper + Gingerbread Cottage | 1369 | 162 | -88% | 37.1 | 40% | 919 / -288 |
 
 ### 1e. Farm and push: the loop in every area
 
-The loop (eddy, 28 Nov): **farm** a stage with its cheap bait to earn gold, **push** a boss or progress with its pricey bait (a sink: it costs more per hunt than it earns, and returns keys, crafting loot and portraits that gold cannot buy), then repeat. Numbers are net gold per hunt with Recommended gear (as 1c) at the highest rank the area still pays in full (area rank + grace). Farm = best cheap `farm` bait; Push = the priciest `push` bait (crafted bait is priced at its recipe gold per bait, materials left out). **Falloff** = the share of catch gold paid to a rank 5 player; **Endgame farm** = farm net per hunt with endgame gear at rank 5 with that falloff applied.
+The loop (eddy, 28 Nov): **farm** a stage with its cheap bait to earn gold, **push** a boss or progress with its pricey bait (a sink: it costs more per hunt than it earns, and returns keys, crafting loot and portraits that gold cannot buy), then repeat. Numbers use Recommended gear (as 1c). Farm = best cheap `farm` bait; Push = the priciest `push` bait (crafted bait is priced at its recipe gold per bait, materials left out). **Costs scale with rank** (eddy, 28 Nov): each area's bait and gear should cost well above what the previous area earns, so an outranked farm cannot keep up. The last two columns are that check: the cheapest farm bait against the previous area's gross gold per hunt, and the intended trap's price in hunts of the previous area's income.
 
-| Area | Stage | Farm: net gold / hunt (bait, cost) | Push: net gold / hunt (bait, cost) | Push premium (farm minus push) | Falloff at rank 5 | Endgame farm net at rank 5 |
-| --- | --- | --- | --- | --- | --- | --- |
-| Cookie Pantry | farm | 9 (Stale Cookie 8) | -3 (Sugar Cookie 20) | 11 | 25% | -1 |
-| Wrapping Room | sink | 47 (Glitter Gumdrop 16) | -6 (Golden Bow Bonbon 100) | 53 | 50% | 19 |
-| Toy Workshop | farm | 114 (Gingersnap 15) | 48 (Peppermint Bark 60) | 66 | 75% | 100 |
-| Reindeer Stables | sink | 324 (Hay Biscuit 25) | 76 (Gilded Cocoa 290) | 248 | 100% | 324 |
-| Carol Loft | farm | 26 (Honey Lozenge 8) | 1 (Spiced Honey Drop 30) | 25 | 50% | 15 |
+| Area | Stage | Gross gold / hunt (farm bait) | Farm: net gold / hunt (bait, cost) | Push: net gold / hunt (bait, cost) | Previous area earns / hunt | Farm bait cost vs previous earnings | Intended trap cost in hunts of previous area | Arrival: net / hunt with the previous area's gear | Arrival vs previous farm |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Cookie Pantry | farm | 18 | 10 (Stale Cookie 8) | -1 (Sugar Cookie 20) | - | - | - | - | - |
+| Wrapping Room | sink | 107 | 83 (Glitter Gumdrop 24) | 73 (Golden Bow Bonbon 100) | 18 (Cookie Pantry) | 1.3x | 66 | 16 (gross 40) | 1.6x |
+| Toy Workshop | farm | 351 | 201 (Gingersnap 150) | -145 (Peppermint Bark 450) | 107 (Wrapping Room) | 1.4x | 84 | 143 (gross 293) | 1.7x |
+| Reindeer Stables | sink | 1369 | 919 (Hay Biscuit 450) | 210 (Hot Cocoa 1200) | 351 (Toy Workshop) | 1.3x | 71 | 437 (gross 887) | 2.2x |
+| Carol Loft | farm | 82 | 58 (Honey Lozenge 24) | 1 (Spiced Honey Drop 75) | 18 (Cookie Pantry) | 1.3x | 66 | 23 (gross 47) | 2.3x |
+
+**Jackpot elves** (`jackpot: true`): rare elves with a low encounter weight (more with push bait) that pay far more gold than the area's usual catch, enough to feel like a leap forward or to buy part of the next area's gear. Recommended gear, best set per bait. **Share of income** = jackpot gold per hunt over the area's gross gold per hunt.
+
+| Area | Jackpot elf | Gold per catch | Bait | Encounter | Hunts per jackpot catch | Share of income | Worth, next area's intended trap |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Cookie Pantry | Gingerbread Rascal | 150 | farm: Stale Cookie | 4.4% | 56 | 14.8% | 13% of Star Lantern |
+| Cookie Pantry | Gingerbread Rascal | 150 | push: Sugar Cookie | 7.1% | 35 | 22.2% | 13% of Star Lantern |
+| Wrapping Room | Glitterbug | 500 | farm: Glitter Gumdrop | 0.0% | - | 0.0% | 6% of Nutcracker Jaws |
+| Wrapping Room | Glitterbug | 500 | push: Golden Bow Bonbon | 10.5% | 12 | 21.9% | 6% of Nutcracker Jaws |
+| Toy Workshop | Wind-up Elf | 1500 | farm: Gingersnap | 4.7% | 28 | 15.2% | 6% of Snow Globe Prison |
+| Toy Workshop | Wind-up Elf | 1500 | push: Peppermint Bark | 7.2% | 18 | 23.7% | 6% of Snow Globe Prison |
+| Reindeer Stables | Carrot Crook | 5200 | farm: Hay Biscuit | 5.0% | 29 | 13.0% | - |
+| Reindeer Stables | Carrot Crook | 5200 | push: Hot Cocoa | 7.3% | 20 | 18.3% | - |
+| Carol Loft | Silver Piper | 380 | farm: Honey Lozenge | 5.1% | 28 | 16.7% | 4% of Nutcracker Jaws |
+| Carol Loft | Silver Piper | 380 | push: Spiced Honey Drop | 7.8% | 18 | 23.1% | 4% of Nutcracker Jaws |
 
 ### 2. Rare, mini boss and boss catch rates: fresh player vs endgame gear
 
@@ -259,18 +274,19 @@ Written for eddy. Findings and recommendations first, numbers second. Report 1 u
 
 **Standard game-length metrics (eddy, 27 Nov): every report states both.** (1) Median hunts to rank 5. (2) Hunts to catch every elf, 100% of the Naughty List portraits, Carol Loft and bosses included. The simulator prints both at the top of every run, with the mean, p10, p90 and the share of players who finish (cap 20,000 hunts, `--max-collect-hunts`).
 
-### Report 12: farm and push loop (200 players, seed 1, Cheer and events on)
+### Report 12: farm and push loop, costs scaled by rank, jackpots (200 players, seed 1, Cheer and events on)
 
-Built on `integration` (eddy, 28 Nov). Each area is a farm or sink stage with a cheap farm bait and a pricey push bait, catch gold falls 25% per rank above an area (floor 25%), Pantry Crumbs are a free fallback, Ribbon Candy (30 to 90 gold) and Golden Bow Bonbon (100 to 200 gold) recipes cost more, Peppermint Bark 60 and Hot Cocoa 90 are push baits, new Gingersnap 15, Hay Biscuit 25 and Spiced Honey Drop 30, and Gilded Cocoa is a crafted endgame bait. `npm run balance` gains section 1e (farm and push per area, falloff, camping check) with `economy` thresholds. No flag changed.
+Built on `integration` (eddy, 28 Nov). Each area is a farm or sink stage with a cheap farm bait and a pricey push bait. A first version cut catch gold once a player outranked an area; eddy rejected it, so the final version scales costs with rank instead: area gold per catch x1.7 (Wrapping Room), x2.9 (Toy Workshop), x3.8 (Stables), farm baits cost 1.3 to 1.4x the previous area's gross gold per hunt, the sleigh run costs 300 upkeep per hunt and pays 8,000 on launch, and a player arriving with the previous area's gear nets 1.6 to 2.3x what the previous area paid. Five rares became gold jackpots (Rascal 150, Glitterbug 500, Wind-up Elf 1,500, Carrot Crook 5,200, Silver Piper 380). Section 1e of the balance check covers it all (`economy` thresholds). No older flag changed (9 flags, as before).
 
 | Metric | Before | After |
 | --- | --- | --- |
-| Hunts to rank 5 | median 1,697 | median 1,544 |
-| Hunts to catch all 28 elves | median 2,781 (p10 1,798, p90 5,308) | median 2,868 (p10 1,703, p90 5,167) |
-| Ranks 1 to 4 (median hunts) | 127, 291, 444, 810 (rank 4 too slow) | 127, 291, 449, 630 (targets 150, 250, 400, 600) |
-| Net gold per hunt, recommended gear, farm bait | Pantry 9, Wrapping 47, Workshop 89, Stables 304 | Pantry 9, Wrapping 47, Workshop 114, Stables 324 |
+| Hunts to rank 5 | median 1,697 | median 1,496 (196 of 200 reach it) |
+| Hunts to catch all 28 elves | median 2,781 (p10 1,798, p90 5,308) | median 3,209 (p10 1,831, p90 7,560; 190 of 200 finish) |
+| Ranks 1 to 4 (median hunts) | 127, 291, 444, 810 (rank 4 too slow) | 126, 287, 413, 664 (targets 150, 250, 400, 600) |
+| Jackpot elves | | 33 caught per player, 11% of gold from catches |
+| Net gold per hunt, recommended gear, farm bait | Pantry 9, Wrapping 47, Workshop 89, Stables 304 | Pantry 10, Wrapping 83, Workshop 201, Stables 919 |
 
-The Workshop and Stables farm baits are cheaper than the single bait they replace, so rank 4 saving is faster; the push baits cost more, which is where the gold sink is. Seed 1 is the simulator default; the earlier report's "seed 42" label was the same seed 1 run.
+Limits: 4 players never reach rank 5 and 10 never catch every elf in 20,000 hunts. The greedy bot is gold-starved by the dearer baits and the 300-gold run upkeep, and it picks bait by best net gold, so it does not buy push baits; the push-bait numbers are exact odds, not simulated spend.
 
 ### Report 1: baseline (Allure built, no Cheer Meter or events yet)
 

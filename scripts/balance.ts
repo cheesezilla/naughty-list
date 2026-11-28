@@ -16,7 +16,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { loadContent } from '../src/content/load.js';
 import type { Content, Imp, Location } from '../src/content/schema.js';
 import { baitGoldValue, gameData } from '../src/engine/data.js';
-import { goldFalloff, allureFactor, baitWorksHere, catchChance, huntOdds, impWeights, luckFactor, setupStats } from '../src/engine/odds.js';
+import { allureFactor, baitWorksHere, catchChance, huntOdds, impWeights, luckFactor, setupStats } from '../src/engine/odds.js';
 
 const args = process.argv.slice(2);
 const flag = (n: string) => args.includes(`--${n}`);
@@ -246,50 +246,96 @@ const goldRows: { id: string; beg: number; rec: number; end: number }[] = [];
 
 // ---- 1e. Farm and push stages ---------------------------------------------------------------------------------------
 h('### 1e. Farm and push: the loop in every area');
-out.push('The loop (eddy, 28 Nov): **farm** a stage with its cheap bait to earn gold, **push** a boss or progress with its pricey bait (a sink: it costs more per hunt than it earns, and returns keys, crafting loot and portraits that gold cannot buy), then repeat. Numbers are net gold per hunt with Recommended gear (as 1c) at the highest rank the area still pays in full (area rank + grace). Farm = best cheap `farm` bait; Push = the priciest `push` bait (crafted bait is priced at its recipe gold per bait, materials left out). **Falloff** = the share of catch gold paid to a rank 5 player; **Endgame farm** = farm net per hunt with endgame gear at rank 5 with that falloff applied.', '');
-const econ = T.economy as { farmMinNet: Record<string, number>; sinkMinPushCost: Record<string, number>; campMargin: number };
+out.push('The loop (eddy, 28 Nov): **farm** a stage with its cheap bait to earn gold, **push** a boss or progress with its pricey bait (a sink: it costs more per hunt than it earns, and returns keys, crafting loot and portraits that gold cannot buy), then repeat. Numbers use Recommended gear (as 1c). Farm = best cheap `farm` bait; Push = the priciest `push` bait (crafted bait is priced at its recipe gold per bait, materials left out). **Costs scale with rank** (eddy, 28 Nov): each area\'s bait and gear should cost well above what the previous area earns, so an outranked farm cannot keep up. The last two columns are that check: the cheapest farm bait against the previous area\'s gross gold per hunt, and the intended trap\'s price in hunts of the previous area\'s income.', '');
+const econ = T.economy as { farmMinNet: Record<string, number>; sinkMinPushCost: Record<string, number>; baitCostMargin: number; arrivalMargin: number; jackpotMaxShare: number; minGearHunts: Record<string, number> };
 {
   const shop = I.baits;
-  const finalRank = content.ranks.at(-1)!.rank;
-  const bestNet = (loc: Location, sets: Setup[], role: 'farm' | 'push', rank: number) => {
-    let top = { net: -Infinity, bait: '', price: -1 };
+  const bestNet = (loc: Location, sets: Setup[], role: 'farm' | 'push') => {
+    let top = { net: -Infinity, gross: 0, bait: '', price: -1 };
     for (const s of sets) for (const b of shop) {
       if (b.role !== role || !baitWorksHere(loc, b.id) || b.rank > loc.rank + 1) continue;
       const price = baitGoldValue(data, b.id);
       if (role === 'farm' && b.price === null) continue;
-      const net = huntOdds(content, { ...s, bait: b.id }, loc.id, rank).expectedGold - price;
+      const gross = huntOdds(content, { ...s, bait: b.id }, loc.id).expectedGold;
+      const net = gross - price;
       // Farming takes the bait that nets the most; pushing takes the priciest push bait (the sink end of the loop).
-      if (role === 'farm' ? net > top.net : price > top.price) top = { net, bait: b.id, price };
+      if (role === 'farm' ? net > top.net : price > top.price) top = { net, gross, bait: b.id, price };
     }
     return top;
   };
   const rows: string[][] = [];
-  const farmNets: Record<string, number> = {};
-  const endNets: Record<string, number> = {};
-  const allSets: Setup[] = allTraps.flatMap((trap) => allBases.map((base) => ({ trap, base, charm: null })));
+  const grossOf: Record<string, number> = {};
+  const farmOf: Record<string, ReturnType<typeof bestNet>> = {};
+  const main = content.locations.filter((l) => !l.side);
+  const prevOf = (loc: Location) => main.filter((l) => l.rank < loc.rank).sort((a, b) => b.rank - a.rank)[0];
+  const setsOf = (id: string): Setup[] => {
+    const R = T.recommended?.[id];
+    return R ? (R.traps as string[]).flatMap((trap) => (R.bases as string[]).map((base) => ({ trap, base, charm: null as string | null }))) : [];
+  };
   for (const loc of content.locations) {
-    const R = T.recommended?.[loc.id];
-    if (!R || !loc.role) continue;
-    const sets = (R.traps as string[]).flatMap((trap) => (R.bases as string[]).map((base) => ({ trap, base, charm: null as string | null })));
-    const rank = loc.rank + content.constants.goldFalloff.grace;
-    const farm = bestNet(loc, sets, 'farm', rank);
-    const push = bestNet(loc, sets, 'push', rank);
-    const end = bestNet(loc, allSets, 'farm', finalRank);
-    farmNets[loc.id] = farm.net; endNets[loc.id] = end.net;
-    const fall = goldFalloff(content.constants, loc, finalRank);
-    rows.push([loc.name, loc.role, farm.net.toFixed(0) + ` (${name(farm.bait)} ${farm.price})`, push.net > -Infinity ? push.net.toFixed(0) + ` (${name(push.bait)} ${push.price})` : '-', push.net > -Infinity ? (farm.net - push.net).toFixed(0) : '-', `${(fall * 100).toFixed(0)}%`, end.net.toFixed(0)]);
+    if (!loc.role || !setsOf(loc.id).length) continue;
+    farmOf[loc.id] = bestNet(loc, setsOf(loc.id), 'farm');
+    grossOf[loc.id] = farmOf[loc.id]!.gross;
+  }
+  for (const loc of content.locations) {
+    const farm = farmOf[loc.id];
+    if (!farm) continue;
+    const push = bestNet(loc, setsOf(loc.id), 'push');
+    const prev = prevOf(loc);
+    // Arrival: the player has just walked in with the previous area's recommended gear (eddy 28 Nov): low catch rate, but each catch pays far more.
+    const arrival = prev ? bestNet(loc, setsOf(prev.id), 'farm') : undefined;
+    const prevNet = prev ? farmOf[prev.id]?.net : undefined;
+    const prevGross = prev ? grossOf[prev.id] : undefined;
+    // The intended trap's price (shop price, or the crafting gold) against what the previous area earns per hunt.
+    const meant = (T.fresh[loc.id]?.meant as string[] | undefined)?.[0];
+    const gear = meant ? (data.items.get(meant) as any) : undefined;
+    const gearPrice = gear ? (gear.price ?? content.recipes.find((r) => r.output.item === meant)?.gold ?? 0) : 0;
+    const ratio = prevGross ? farm.price / prevGross : NaN;
+    const gearHunts = prevGross && gearPrice ? gearPrice / prevGross : NaN;
+    rows.push([loc.name, loc.role!, farm.gross.toFixed(0), `${farm.net.toFixed(0)} (${name(farm.bait)} ${farm.price})`, push.net > -Infinity ? `${push.net.toFixed(0)} (${name(push.bait)} ${push.price})` : '-', prev ? `${prevGross!.toFixed(0)} (${prev.name})` : '-', Number.isNaN(ratio) ? '-' : `${ratio.toFixed(1)}x`, Number.isNaN(gearHunts) ? '-' : `${gearHunts.toFixed(0)}`, arrival && arrival.net > -Infinity ? `${arrival.net.toFixed(0)} (gross ${arrival.gross.toFixed(0)})` : '-', arrival && prevNet ? `${(arrival.net / prevNet).toFixed(1)}x` : '-']);
+    if (arrival && prevNet && prevNet > 0 && arrival.net < prevNet * econ.arrivalMargin) warn('economy', `${loc.name} arrival`, `Arriving with ${prev!.name} gear earns ${arrival.net.toFixed(0)} net gold per hunt, under ${econ.arrivalMargin}x what ${prev!.name} pays (${prevNet.toFixed(0)}): a new area should pay more at once, even at a low catch rate.`);
     const min = econ.farmMinNet[loc.id];
     if (loc.role === 'farm' && min !== undefined && farm.net < min) warn('economy', `${loc.name} farm`, `Farm stage earns ${farm.net.toFixed(0)} net gold per hunt with recommended gear, under the ${min} target.`);
     if (loc.role === 'sink' && push.net > -Infinity && push.net >= farm.net) warn('economy', `${loc.name} sink`, `Pushing earns ${push.net.toFixed(0)} net gold per hunt, no less than farming (${farm.net.toFixed(0)}): a sink should cost gold compared with farming.`);
     const minCost = econ.sinkMinPushCost[loc.id];
     if (loc.role === 'sink' && minCost !== undefined && push.price < minCost) warn('economy', `${loc.name} push bait`, `Push bait costs ${push.price} gold per hunt, under the ${minCost} that makes pushing a real spend.`);
+    if (!Number.isNaN(ratio) && ratio < econ.baitCostMargin) warn('economy', `${loc.name} bait cost`, `The cheapest farm bait costs ${farm.price} gold, only ${ratio.toFixed(1)}x what ${prev!.name} earns per hunt (${prevGross!.toFixed(0)}); costs should scale up with rank, at least ${econ.baitCostMargin}x.`);
+    const minGear = econ.minGearHunts[loc.id];
+    if (minGear !== undefined && !Number.isNaN(gearHunts) && gearHunts < minGear) warn('economy', `${loc.name} gear cost`, `${name(meant!)} costs ${gearPrice} gold, only ${gearHunts.toFixed(0)} hunts of ${prev!.name} income; it should take at least ${minGear}.`);
   }
-  table(['Area', 'Stage', 'Farm: net gold / hunt (bait, cost)', 'Push: net gold / hunt (bait, cost)', 'Push premium (farm minus push)', 'Falloff at rank 5', 'Endgame farm net at rank 5'], rows);
-  const mainFarm = Math.max(...Object.entries(farmNets).filter(([id]) => !locOf(id).side).map(([, v]) => v));
+  table(['Area', 'Stage', 'Gross gold / hunt (farm bait)', 'Farm: net gold / hunt (bait, cost)', 'Push: net gold / hunt (bait, cost)', 'Previous area earns / hunt', 'Farm bait cost vs previous earnings', 'Intended trap cost in hunts of previous area', 'Arrival: net / hunt with the previous area\'s gear', 'Arrival vs previous farm'], rows);
+
+  // Jackpot elves: rare elves that pay far more gold than the area's usual catch and are met seldom (eddy, 28 Nov).
+  out.push('', '**Jackpot elves** (`jackpot: true`): rare elves with a low encounter weight (more with push bait) that pay far more gold than the area\'s usual catch, enough to feel like a leap forward or to buy part of the next area\'s gear. Recommended gear, best set per bait. **Share of income** = jackpot gold per hunt over the area\'s gross gold per hunt.', '');
+  const jrows: string[][] = [];
   for (const loc of content.locations) {
-    if (endNets[loc.id] === undefined || loc.rank >= Math.max(...content.locations.map((l) => l.rank))) continue;
-    if (endNets[loc.id]! > mainFarm * econ.campMargin) warn('economy', `${loc.name} camping`, `An outranked ${loc.name} still pays ${endNets[loc.id]!.toFixed(0)} net gold per hunt at rank 5 with endgame gear, over ${(econ.campMargin * 100).toFixed(0)}% of the best farm (${mainFarm.toFixed(0)}).`);
+    const jp = loc.imps.find((i) => i.jackpot);
+    const farm = farmOf[loc.id];
+    if (!jp || !farm) continue;
+    const next = main.filter((l) => l.rank > loc.rank).sort((a, b) => a.rank - b.rank)[0];
+    const nextTrap = next ? ((T.fresh[next.id]?.meant as string[] | undefined)?.[0]) : undefined;
+    const nextItem = nextTrap ? (data.items.get(nextTrap) as any) : undefined;
+    const nextPrice = nextItem ? (nextItem.price ?? content.recipes.find((r) => r.output.item === nextTrap)?.gold ?? 0) : 0;
+    const cell = (baitId: string) => {
+      let best = { rate: 0, enc: 0, catchPerHunt: 0 };
+      for (const set of setsOf(loc.id)) {
+        const o = huntOdds(content, { ...set, bait: baitId }, loc.id);
+        const e = o.imps.find((x) => x.imp.id === jp.id)!;
+        const per = e.encounter * e.catchChance;
+        if (per > best.rate) best = { rate: per, enc: e.encounter, catchPerHunt: o.expectedGold };
+      }
+      return best;
+    };
+    const pushId = I.baits.filter((b) => b.role === 'push' && baitWorksHere(loc, b.id) && b.rank <= loc.rank + 1).sort((a, b) => baitGoldValue(data, b.id) - baitGoldValue(data, a.id))[0]?.id;
+    for (const [label, id] of [['farm', farm.bait], ['push', pushId]] as const) {
+      if (!id) continue;
+      const c = cell(id);
+      const hunts = c.rate > 0 ? 1 / c.rate : Infinity;
+      jrows.push([loc.name, jp.name, String(jp.gold), `${label}: ${name(id)}`, pc(c.enc), Number.isFinite(hunts) ? hunts.toFixed(0) : '-', pc(c.rate * jp.gold / (c.catchPerHunt || 1)), nextPrice ? `${(jp.gold / nextPrice * 100).toFixed(0)}% of ${name(nextTrap!)}` : '-']);
+      if (c.rate > 0 && c.rate * jp.gold / (c.catchPerHunt || 1) > econ.jackpotMaxShare) warn('economy', `${loc.name} jackpot`, `${jp.name} adds ${pc(c.rate * jp.gold / c.catchPerHunt)} to income with ${name(id)}, over the ${pc(econ.jackpotMaxShare)} cap: it should be a windfall, not the main income.`);
+    }
   }
+  table(['Area', 'Jackpot elf', 'Gold per catch', 'Bait', 'Encounter', 'Hunts per jackpot catch', 'Share of income', 'Worth, next area\'s intended trap'], jrows);
 }
 
 // ---- 2. Elves: fresh vs endgame -----------------------------------------------------------------------------------
