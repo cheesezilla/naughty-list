@@ -7,11 +7,15 @@ A Christmas elf-trapping browser game for eddy and friends. Scrinch, a horned de
 - Every hunt meets an elf (Allure), a Cheer Meter gives pick-1-of-3 boons, and Santa and Mrs. Claus drop in with gifts. Achievements, badges and a hunters' leaderboard keep friends competing.
 - Phone-first web page with original art, accounts with open sign-up, server-side hunts and SQLite saves.
 
-## Current version: 1.0.1
+## Current version: 1.0.2
 
 Release notes for every version are in [CHANGELOG.md](CHANGELOG.md). The version lives in `package.json`.
 
 ### What's new
+
+1.0.2 (2026-11-28), patch:
+
+- Fresh release notes so the What's new popup shows once on the first load after updating.
 
 1.0.1 (2026-11-28), balance and fixes:
 
