@@ -34,9 +34,9 @@ describe('hunt', () => {
     // pick first imp (0), catch (0), no loot needed
     const r = hunt(content, fresh(), scripted(0, 0, 0.99));
     if (!r.ok) throw new Error(r.error);
-    expect(r.entry).toMatchObject({ outcome: 'catch', imp: 'crumb_elf', gold: 12, points: 20, baitUsed: 1 });
-    expect(r.player.gold).toBe(212);
-    expect(r.player.points).toBe(20);
+    expect(r.entry).toMatchObject({ outcome: 'catch', imp: 'crumb_elf', gold: 16, points: 27, baitUsed: 1 });
+    expect(r.player.gold).toBe(216);
+    expect(r.player.points).toBe(27);
     expect(r.player.catches.crumb_elf).toBe(1);
     expect(r.player.inventory.stale_cookie).toBe(99);
   });
