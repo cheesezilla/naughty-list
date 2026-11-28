@@ -6,7 +6,21 @@ Each version's section is also the text of its GitHub Release, so write it for p
 
 ## [Unreleased]
 
-- If the game is updated while you have it open, a popup now asks you to refresh your browser so you get the new version.
+## [1.0.1] - 2026-11-28
+
+A balance and fixes release.
+
+### Fixes
+- If the game is updated while you have it open, a popup now asks you to refresh your browser so you get the new version. It also checks when you come back to an idle tab.
+- The admin "always catch" switch now works on bosses that are immune to your armed trap type.
+- The Cheer Meter now resets when you travel to another area.
+- Fixed leftover quiet-hunt wording in hints and badges, and the Carol Loft hint now says Carol Horn needs 5 Hymn Reeds.
+
+### Balance
+- **Cinderhoof** is much harder: about 25% to catch even with the best gear.
+- **Carol Horn** needs luck 1 instead of 10, and luck now only counts when your trap type matches the elf's weakness.
+- Commons and General Grimbolt were tuned to the balance bands, with gold and points raised to keep pace. Recommended gear is now clearly needed for each local boss.
+- Small gear buffs: Wind-up Key Charm, Yule Log Base and Gingerbread Cottage.
 
 ## [1.0.0] - 2026-11-27
 
@@ -49,5 +63,6 @@ The first full release. The big change since the earlier builds: **there are no 
 - A strategy **walkthrough** (docs/WIKI.md) takes you from the Cookie Pantry to the last boss.
 - The simulator now reports how many hunts it takes to reach rank 5 **and** to catch every elf (about 1,250 hunts for a full collection).
 
-[Unreleased]: https://github.com/cheesezilla/naughty-list/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/cheesezilla/naughty-list/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/cheesezilla/naughty-list/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/cheesezilla/naughty-list/releases/tag/v1.0.0
