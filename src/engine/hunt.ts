@@ -1,5 +1,5 @@
 import type { Content, Imp, PillageKind } from '../content/schema.js';
-import { gameData, itemOfKind } from './data.js';
+import { baitGoldValue, gameData, itemOfKind } from './data.js';
 import { allureFactor, baitWorksHere, catchChance, effectiveness, impWeights, luckFactor, setupStats } from './odds.js';
 import { addItem, bump, count, rankFor, type PlayerState } from './player.js';
 import { pickWeighted, type Rng } from './rng.js';
@@ -17,6 +17,10 @@ export interface JournalEntry {
   wrongBait?: boolean;
   /** Gold the sleigh run cost this hunt on top of bait. */
   upkeep?: number;
+  /** Gold value of the bait this hunt used (shop price, or recipe gold per crafted bait). */
+  baitCost?: number;
+  /** The free fallback bait was armed because the player ran out. */
+  floorBait?: boolean;
   gold: number;
   points: number;
   loot: { item: string; amount: number }[];
@@ -87,8 +91,15 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0, b
   if (!location) return { ok: false, error: 'You are in an unknown location.' };
 
   let rescued = false;
+  let floored = false;
   if (!p.setup.bait || count(p, p.setup.bait) < 1) {
-    if (!hasAnyBait(content, p) && p.gold < c.rescue.maxGold) {
+    const floor = content.items.baits.find((b) => b.role === 'floor' && baitWorksHere(location, b.id));
+    if (floor) {
+      // Safety floor: a weak free bait that only works in the home area, so a broke player can always rebuild.
+      addItem(p, floor.id, 1);
+      p.setup.bait = floor.id;
+      floored = true;
+    } else if (!hasAnyBait(content, p) && p.gold < c.rescue.maxGold) {
       // The rescue gives the cheapest bait that works here, so a stranded player is never stuck with bait that always fails.
       const fit = content.items.baits.filter((b) => b.price !== null && baitWorksHere(location, b.id)).sort((a, b) => (a.price ?? 0) - (b.price ?? 0))[0];
       const rescueItem = fit && !baitWorksHere(location, c.rescue.item) ? fit.id : c.rescue.item;
@@ -112,6 +123,7 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0, b
   const stats = { ...baseStats, power: baseStats.power * mods.powerMult, luck: (baseStats.luck + mods.luckAdd) * mods.luckMult };
   const entry: JournalEntry = { outcome: 'quiet', location: location.id, gold: 0, points: 0, loot: [], baitUsed: 0, charmUsed: false };
   if (rescued) entry.rescued = true;
+  if (floored) entry.floorBait = true;
 
   objectiveState(p, location, rng);
   const track = (imp: Imp | undefined, caught: boolean) => {
@@ -155,6 +167,7 @@ export function hunt(content: Content, player: PlayerState, rng: Rng, now = 0, b
   const baitTaken = mods.freeBait ? 0 : Math.min(mods.baitCost, count(p, bait));
   addItem(p, bait, -baitTaken);
   entry.baitUsed = baitTaken;
+  entry.baitCost = baitTaken * baitGoldValue(data, bait);
   if (p.setup.charm && count(p, p.setup.charm) > 0 && itemOfKind(data, p.setup.charm, 'charm')) {
     addItem(p, p.setup.charm, -1);
     entry.charmUsed = true;

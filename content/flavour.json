@@ -110,6 +110,31 @@
       "description": "A gumdrop rolled in edible glitter. Wrapping Room elves can't look away from it.",
       "backstory": "Wrapping Room elves hoard anything that sparkles, and a gumdrop in gold glitter is the best thing they have ever seen. The hunters who tested it report that the elves stared, forgot their ribbons, and walked straight into the trap."
     },
+    "pantry_crumbs": {
+      "tagline": "Free, weak, and better than nothing.",
+      "description": "Crumbs swept from the Pantry floor. Only the Pantry elves will bother with them.",
+      "backstory": "Mrs. Claus insists no hunter should ever be stranded. If you are out of bait in the Pantry, sweep the floor: the hexed bakers will still come for crumbs, just not the clever ones."
+    },
+    "gingersnap": {
+      "tagline": "Cheap, snappy and good for farming.",
+      "description": "A plain gingersnap the Toy Workshop elves chew on while they work.",
+      "backstory": "The toymakers are always hungry, and a gingersnap costs next to nothing. It draws the usual crowd, so it is the bait to hunt on while you save up for the real thing."
+    },
+    "hay_biscuit": {
+      "tagline": "A stable favourite, cheap by the sackful.",
+      "description": "A dry hay biscuit that the Stables hands nibble on all day.",
+      "backstory": "Reindeer feed that the hexed stable hands cannot leave alone. It will not tempt the big prizes, but it keeps your purse healthy between sleigh runs."
+    },
+    "spiced_honey_drop": {
+      "tagline": "Sweet, spiced, and a bit showy.",
+      "description": "A spiced honey drop that makes the Loft carollers sing their best worst notes.",
+      "backstory": "A pricier cousin of the lozenge. The Silver Piper and Choirmaster Hollowvoice cannot resist the spice, so it raises the odds of the rarer singers."
+    },
+    "gilded_cocoa": {
+      "tagline": "Cocoa dusted with real gold.",
+      "description": "Crafted by Mrs. Claus from Brimstone Coal and Hot Cocoa. The strongest bait in the lair.",
+      "backstory": "A very expensive way to say please. Gilded Cocoa draws rare and mighty elves from across the Stables, and every cup burns a fortune."
+    },
     "honey_lozenge": {
       "tagline": "Soothes a sore throat. Lures a sorer one.",
       "description": "A golden lozenge the Carol Loft singers suck on between hexed hymns.",

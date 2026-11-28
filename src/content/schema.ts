@@ -52,6 +52,8 @@ export const Imp = z.object({
   gold: z.number().int().nonnegative(),
   points: z.number().int().nonnegative(),
   weight: z.number().nonnegative(),
+  /** A jackpot elf: a rare that is seldom met (low weight, more with push bait) and pays far more gold than its area's usual catch. */
+  jackpot: z.boolean().optional(),
   baitWeights: z.record(id, z.number().nonnegative()).optional(),
   effectiveness: z.partialRecord(PowerType, z.number().nonnegative()).optional(),
   loot: z.array(z.object({ item: id, chance, amount: z.number().int().positive().optional() })).optional(),
@@ -117,6 +119,8 @@ export const Location = z.object({
   after: id.optional(),
   /** Power types recommended here, shown on the location banner. */
   homeTypes: z.array(PowerType).default([]),
+  /** `farm` areas are where gold is earned (cheap bait); `sink` areas are where it is spent to push a boss or progress. Every area has both a farm segment (cheap bait) and a push segment (pricey bait). */
+  role: z.enum(['farm', 'sink']).optional(),
   /** The only baits that work here. Any other bait is used up and the catch always fails. Missing: every bait works. */
   baits: z.array(id).min(1).optional(),
   objective: Objective.optional(),
@@ -144,6 +148,8 @@ export const Base = z.object({
 export const Bait = z.object({
   id, name: z.string(), attraction: chance,
   rareMultiplier: z.number().positive().optional(), rank: z.number().int().positive(), price,
+  /** The bait's job in the farm-then-push loop: `floor` is the free fallback, `farm` the cheap bait that earns gold, `push` the pricey bait that raises rare, mini boss and boss odds. */
+  role: z.enum(['floor', 'farm', 'push']).optional(),
   flavour: Flavour.optional(),
 });
 export const Charm = z.object({

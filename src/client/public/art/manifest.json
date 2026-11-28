@@ -385,6 +385,61 @@
       "prompt": "Hot Cocoa: a red mug of hot cocoa with marshmallows and steam, snowflake on the mug. Single item thumbnail on a transparent background, 512x512, centred, soft ground shadow. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
     },
     {
+      "id": "pantry_crumbs",
+      "slot": "baits",
+      "file": "baits/pantry_crumbs.svg",
+      "width": 512,
+      "height": 512,
+      "transparent": true,
+      "source": "generated",
+      "description": "Pantry Crumbs: a small scatter of cookie crumbs",
+      "prompt": "Pantry Crumbs: a small scatter of cookie crumbs. Single item thumbnail on a transparent background, 512x512, centred, soft ground shadow. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
+    },
+    {
+      "id": "gingersnap",
+      "slot": "baits",
+      "file": "baits/gingersnap.svg",
+      "width": 512,
+      "height": 512,
+      "transparent": true,
+      "source": "generated",
+      "description": "Gingersnap: a round gingersnap biscuit with a cream star pattern",
+      "prompt": "Gingersnap: a round gingersnap biscuit with a cream star pattern. Single item thumbnail on a transparent background, 512x512, centred, soft ground shadow. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
+    },
+    {
+      "id": "hay_biscuit",
+      "slot": "baits",
+      "file": "baits/hay_biscuit.svg",
+      "width": 512,
+      "height": 512,
+      "transparent": true,
+      "source": "generated",
+      "description": "Hay Biscuit: a golden hay biscuit with straw sticking out",
+      "prompt": "Hay Biscuit: a golden hay biscuit with straw sticking out. Single item thumbnail on a transparent background, 512x512, centred, soft ground shadow. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
+    },
+    {
+      "id": "spiced_honey_drop",
+      "slot": "baits",
+      "file": "baits/spiced_honey_drop.svg",
+      "width": 512,
+      "height": 512,
+      "transparent": true,
+      "source": "generated",
+      "description": "Spiced Honey Drop: a teardrop of spiced honey with red spice flecks",
+      "prompt": "Spiced Honey Drop: a teardrop of spiced honey with red spice flecks. Single item thumbnail on a transparent background, 512x512, centred, soft ground shadow. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
+    },
+    {
+      "id": "gilded_cocoa",
+      "slot": "baits",
+      "file": "baits/gilded_cocoa.svg",
+      "width": 512,
+      "height": 512,
+      "transparent": true,
+      "source": "generated",
+      "description": "Gilded Cocoa: a gold-plated mug of cocoa with steam and sparkles",
+      "prompt": "Gilded Cocoa: a gold-plated mug of cocoa with steam and sparkles. Single item thumbnail on a transparent background, 512x512, centred, soft ground shadow. Original storybook Christmas game art for \"The Naughty List\". Flat cel-shaded shapes with a thick dark-brown outline (#2b1d14), warm palette of pine green (#0f3d2e), berry red (#b3261e), gold (#e9c46a) and cream (#fdf8ef), small white highlights, friendly-mischievous mood, no text, no logos."
+    },
+    {
       "id": "mistletoe_charm",
       "slot": "charms",
       "file": "charms/mistletoe_charm.webp",

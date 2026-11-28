@@ -744,3 +744,9 @@ body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
 .wrong-bait { border: 2px solid #b3261e; background: #fdecea; color: #5c1410; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .wrong-bait .small-btn { margin-left: auto; }
 .warn-text { color: #b3261e; font-weight: 600; }
+
+/* Farm and sink stage card, and gold this session */
+.stage-card, .session-card { display: flex; flex-direction: column; gap: 4px; }
+.stage-card.farm { border-left: 4px solid #2f7d4f; }
+.stage-card.sink { border-left: 4px solid #c9962b; }
+.session-card .text-btn { align-self: flex-end; }

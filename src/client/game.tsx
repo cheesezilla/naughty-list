@@ -4,7 +4,19 @@ import type { Content } from '../content/schema.js';
 import type { GameData, JournalRow, PlayerState } from '../engine/index.js';
 import type { User } from './api.js';
 
+/** Gold flow since the page was opened (or since the player reset it): the "gold this session" card. */
+export interface SessionStats { hunts: number; earned: number; spent: number; since: number }
+export const emptySession = (): SessionStats => ({ hunts: 0, earned: 0, spent: 0, since: Date.now() });
+
+/** Net gold of one hunt: catch gold minus bait, sleigh upkeep and anything pillaged. */
+export function huntNet(e: { gold: number; baitCost?: number; upkeep?: number; pillage?: { gold: number } }): number {
+  return e.gold - (e.baitCost ?? 0) - (e.upkeep ?? 0) - (e.pillage?.gold ?? 0);
+}
+
 export interface Game {
+  /** Gold earned and spent since the page opened. */
+  session: SessionStats;
+  resetSession: () => void;
   content: Content;
   data: GameData;
   user: User;
