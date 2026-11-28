@@ -104,6 +104,33 @@ h('### 1. Areas: commons catch rate with the intended gear');
   table(['Area', 'Intended gear', 'Commons caught', 'Target band', 'Status', 'Best possible (any gear)'], rows);
 }
 
+// ---- 1b. Every elf in every area: beginner gear vs endgame gear --------------------------------------------------
+h('### 1b. Catch rate of every elf with the recommended gear: beginner vs endgame');
+out.push('**Beginner** = a player who has just unlocked the area, using the area\'s recommended trap and base (the gear they already own or is nearly within reach), no charm. **Endgame** = a player who owns everything: the best trap, base and charm for that elf. "Commons" rows are weighted by encounter weight.', '');
+{
+  const rows: string[][] = [];
+  for (const loc of content.locations) {
+    const f = T.fresh[loc.id];
+    if (!f) continue;
+    const rec = (f.meant as string[]).map((trap) => ({ trap, base: f.base as string, charm: null as string | null }));
+    const recBest = (imp: Imp) => rec.reduce((a, s) => { const r = rateOf(s, imp, loc); return r > a.r ? { r, s } : a; }, { r: -1, s: rec[0]! });
+    const endCommons = (() => {
+      const cs = loc.imps.filter((i) => i.tier === 'common');
+      const w = cs.reduce((n, i) => n + i.weight, 0) || 1;
+      return cs.reduce((n, i) => n + (i.weight / w) * best(i, loc, allTraps, allBases, allCharms).rate, 0);
+    })();
+    const begCommons = Math.max(...rec.map((s) => commonsRate(loc, s)));
+    rows.push([`**${loc.name}**`, `**Commons (all)**`, 'common', `**${pc(begCommons)}**`, `**${pc(endCommons)}**`, 'best setup per elf, see below']);
+    for (const imp of loc.imps) {
+      const b = recBest(imp);
+      const e = best(imp, loc, allTraps, allBases, allCharms);
+      rows.push([loc.name, imp.name, imp.tier, pc(b.r), pc(e.rate), fmt(e.setup)]);
+    }
+  }
+  table(['Area', 'Elf', 'Tier', 'Beginner gear (recommended trap + base)', 'Endgame gear', 'Endgame setup'], rows);
+  out.push('', 'Recommended beginner gear per area: ' + content.locations.filter((l) => T.fresh[l.id]).map((l) => `${l.name}: ${(T.fresh[l.id].meant as string[]).map(name).join(' or ')} + ${name(T.fresh[l.id].base)}`).join('; ') + '. Madame Shredwell is weak to Carol, so a beginner with a Carol Horn catches her much more often than the Star Lantern figure (see section 2).');
+}
+
 // ---- 2. Elves: fresh vs endgame -----------------------------------------------------------------------------------
 h('### 2. Rare, mini boss and boss catch rates: fresh player vs endgame gear');
 out.push('Fresh = the best trap the player could own on entering the area, on the area\'s base, no charm. Endgame = best trap, base and charm of everything in the game. Best setup per elf.', '');
