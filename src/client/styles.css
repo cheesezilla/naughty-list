@@ -749,3 +749,5 @@ body.pillaged .hunt-btn { animation: pillage-shake 0.45s ease-in-out; }
 .stage-card.farm { border-left: 4px solid #2f7d4f; }
 .stage-card.sink { border-left: 4px solid #c9962b; }
 .session-card .text-btn { align-self: flex-end; }
+
+.pick small.warn-text, .pick small.warn-text b { color: #d00000; font-weight: 800; }

@@ -196,7 +196,7 @@ Add power, luck and Allure, and the later ones have a **type affinity** bonus to
 | **Yule Log Base**         | 600   | 5    | +10%         | 3    | Crafted / reward (3× Toymaker's Gear, 1× Golden Ribbon, 2× Sugar Glass + 4,000 gold)       | —                                                                                                 |
 | **Toffee Anvil**          | 300   | 0    | —            | 2    | 3,500 gold                                                                                 | Bosses and mini bosses                                                                            |
 | **Chestnut Brazier**      | 100   | 1    | +15%         | 2    | 3,500 gold                                                                                 | Cheap bait                                                                                        |
-| **Wishbone Plinth**       | 50    | 4    | —            | 2    | 4,500 gold                                                                                 | Farming common elves                                                                              |
+| **Wishbone Plinth**       | 50    | 4    | —            | 2    | 4,500 gold                                                                                 | Catching common elves                                                                              |
 | **Sleigh Runner**         | 1300  | 2    | —            | 4    | Crafted / reward (2× Silver Sleighbell, 2× Toymaker's Gear + 12,000 gold)                  | Bosses, best with Clockwork traps; +10% power with Clockwork                                      |
 | **Gingerbread Cottage**   | 550   | 4    | +30%         | 4    | Crafted / reward (3× Cookie Tin, 2× Golden Ribbon, 1× Candy Cane Platform + 8,000 gold)    | Cheap bait, best with Frost traps; +10% power with Frost                                          |
 | **Wishing Star Pedestal** | 300   | 9    | —            | 4    | Crafted / reward (1× Clockwork Heart, 2× Enchanted Wrapping, 4× Sugar Glass + 12,000 gold) | Elves that resist your trap, best with Starlight and Carol traps; +10% power with Starlight/Carol |
@@ -205,7 +205,7 @@ Add power, luck and Allure, and the later ones have a **type affinity** bonus to
 
 One bait is used on every hunt, whether it catches or not. Higher Allure pulls rarer elves more often. **Each area has its own bait**: a bait from another area still gets used up, but the catch always fails (a red warning on the Hunt screen, in the bait picker and on the Travel map tells you, and arriving with the wrong bait armed shows a notice). Cookie Pantry: Pantry Crumbs, Stale Cookie, Sugar Cookie, Fruitcake. Wrapping Room: Glitter Gumdrop, Ribbon Candy, Golden Bow Bonbon. Carol Loft: Honey Lozenge, Spiced Honey Drop. Toy Workshop: Gingersnap, Peppermint Bark. Reindeer Stables: Hay Biscuit, Hot Cocoa, Gilded Cocoa. If you run out of bait in the Cookie Pantry you sweep up free Pantry Crumbs (weak, home area only), so you can always rebuild. Elsewhere, with no bait and under 50 gold, Mrs. Claus slips you 10 of the cheapest bait that works where you are.
 
-**The farm and push loop.** Every area is a **farm stage** (Cookie Pantry, Toy Workshop, Carol Loft) or a **sink stage** (Wrapping Room, Reindeer Stables). Farm with the area's **cheap bait** to earn gold, then spend it on the **pricey push bait** to draw rare elves, mini bosses and bosses, and repeat. Every area pays far more gold per catch than the one before, and its bait costs more too, so you move on: arrive with your old trap, farm at a low catch rate, save for the area's own trap, then push. Rare **jackpot elves** (Gingerbread Rascal, Glitterbug, Wind-up Elf, Carrot Crook, Silver Piper) pay a big pile of gold; catch one and you get a head start on the next area. The Hunt screen shows a **Gold this session** card (earned, spent, net and net per hunt) and each log row shows its net gold.
+**Gold and bait.** Every area has cheap bait that earns gold and pricey bait that draws rare elves, mini bosses and bosses (the bait sheet calls them Budget bait and Premium bait). Every area pays far more gold per catch than the one before, and its bait costs more too, so you move on: arrive with your old trap, hunt at a low catch rate, save for the area's own trap, then go for the boss. Rare **jackpot elves** (Gingerbread Rascal, Glitterbug, Wind-up Elf, Carrot Crook, Silver Piper) pay a big pile of gold; catch one and you get a head start on the next area. Each log row shows its net gold.
 
 | Bait                  | Allure | Rank | Price                                                          | Notes                                                                         |
 |-----------------------|--------|------|----------------------------------------------------------------|-------------------------------------------------------------------------------|
@@ -219,10 +219,10 @@ One bait is used on every hunt, whether it catches or not. Higher Allure pulls r
 | **Glitter Gumdrop**   | 80%    | 2    | 24 gold                                                        | Wrapping Room shop bait (ladder tier 1).                                      |
 | **Honey Lozenge**     | 78%    | 2    | 24 gold                                                        | Carol Loft bait.                                                              |
 | **Pantry Crumbs**     | 55%    | 1    | Free fallback (Cookie Pantry only)                             | Used automatically when you run out of bait in the Pantry.                    |
-| **Gingersnap**        | 78%    | 3    | 150 gold                                                       | Toy Workshop farm bait.                                                       |
-| **Hay Biscuit**       | 78%    | 4    | 450 gold                                                       | Reindeer Stables farm bait.                                                   |
-| **Spiced Honey Drop** | 86%    | 2    | 75 gold                                                        | Carol Loft push bait: rarer singers show up more.                             |
-| **Gilded Cocoa**      | 95%    | 4    | Crafted (1× Brimstone Coal, 4× Hot Cocoa + 2,000 gold, makes 10) | Reindeer Stables push bait: the strongest, and a big gold sink.            |
+| **Gingersnap**        | 78%    | 3    | 150 gold                                                       | Toy Workshop budget bait.                                                       |
+| **Hay Biscuit**       | 78%    | 4    | 450 gold                                                       | Reindeer Stables budget bait.                                                   |
+| **Spiced Honey Drop** | 86%    | 2    | 75 gold                                                        | Carol Loft premium bait: rarer singers show up more.                             |
+| **Gilded Cocoa**      | 95%    | 4    | Crafted (1× Brimstone Coal, 4× Hot Cocoa + 2,000 gold, makes 10) | Reindeer Stables premium bait: the strongest, and a big gold sink.            |
 
 ## Charms
 
@@ -331,7 +331,7 @@ Each order is 3 slots, each asking for a trap type. A catch with the right type 
 
 ### Reindeer Stables: Sleigh Run
 
-Start a run and get Readiness to 100 within 40 hunts. Common catches add 5, rares 12, the Antler Ripper (mini boss, appears from 50 readiness) 20. Escapes from the Bell Thief (−8) or Harness Snipper (−5) set you back. Launching pays 8,000 gold and a Silver Sleighbell, then **Cinderhoof** ambushes the sleigh. A run costs gold: **300 gold upkeep every hunt** on top of bait, and catches pay only a quarter of their gold, so a run is a net loss until it launches. A failed run pays 30 gold per readiness. You can **abandon a run at any time** (Readiness goes back to 0, launches already made stay) and start again. Farm gold with the run off, then pay for the run.
+Start a run and get Readiness to 100 within 40 hunts. Common catches add 5, rares 12, the Antler Ripper (mini boss, appears from 50 readiness) 20. Escapes from the Bell Thief (−8) or Harness Snipper (−5) set you back. Launching pays 8,000 gold and a Silver Sleighbell, then **Cinderhoof** ambushes the sleigh. A run costs gold: **300 gold upkeep every hunt** on top of bait, and catches pay only a quarter of their gold, so a run is a net loss until it launches. A failed run pays 30 gold per readiness. You can **abandon a run at any time** (Readiness goes back to 0, launches already made stay) and start again. Earn gold with the run off, then pay for the run.
 
 ### Carol Loft
 
@@ -566,7 +566,7 @@ Rank 5, the top rank for now.
 
 ## Walkthrough
 
-From sign-up to a full Naughty List (all 28 elves, rank 5). Built from `content/*.json` and the engine, 27 Nov 2026. Catch odds are worked out with the game's formula for the setup shown (no Cheer boon, no gift) and are rough. Each area has a table with trap 1 (what you arrive with) and trap 2 (what you farm for, and what you bring back to beat the local boss); recommended gear is almost always needed to catch the boss at a reasonable rate. Tables are generated from `content/*.json` with the engine's formula (28 Nov 2026 tuning). Numbers are draft and change when tuning lands, so update this page with any PR that changes them.
+From sign-up to a full Naughty List (all 28 elves, rank 5). Built from `content/*.json` and the engine, 27 Nov 2026. Catch odds are worked out with the game's formula for the setup shown (no Cheer boon, no gift) and are rough. Each area has a table with trap 1 (what you arrive with) and trap 2 (what you hunt for, and what you bring back to beat the local boss); recommended gear is almost always needed to catch the boss at a reasonable rate. Tables are generated from `content/*.json` with the engine's formula (28 Nov 2026 tuning). Numbers are draft and change when tuning lands, so update this page with any PR that changes them.
 
 ### Rules that decide everything
 
@@ -652,13 +652,13 @@ Commons: Hay Hoarder and Bell Thief (weak Frost), Harness Snipper (weak Clockwor
 
 
 - **Frost build (trap 2):** Snow Globe Prison (25,000 g, Frost 1,800), Gingerbread Cottage base (power 1,550, Frost affinity +10%, more Allure), Wind-up Key Charm (+35% power). See the table above: Cinderhoof about 26% (16% with trap 1).
-- **Sleigh Run:** start a run (it costs 100 gold per hunt while it is on, so bring about 6,000 gold; farm with the run off first) and reach 100 readiness within 40 hunts. Commons add 5, Carrot Crook 12, Antler Ripper 20 (it appears only above 50 readiness). A Bell Thief escape costs 8, a Harness Snipper escape 5. Launching pays 2,000 g and a Silver Sleighbell, then Cinderhoof ambushes the next hunt.
+- **Sleigh Run:** start a run (it costs 100 gold per hunt while it is on, so bring about 6,000 gold; hunt with the run off first) and reach 100 readiness within 40 hunts. Commons add 5, Carrot Crook 12, Antler Ripper 20 (it appears only above 50 readiness). A Bell Thief escape costs 8, a Harness Snipper escape 5. Launching pays 2,000 g and a Silver Sleighbell, then Cinderhoof ambushes the next hunt.
 - **Antler Ripper** (5,000 power, weak Frost) is about 60% with trap 2. **Cinderhoof** (20,500 power, weak Frost, immune to Starlight) is about 26% with trap 2 (16% with trap 1), so expect several tries. Escapes never cost rank.
 - Optional: Sleigh Runner base (2 Silver Sleighbell + 2 Toymaker's Gear + 12,000 g) and Sleigh-Bell Snapper trap (3 Silver Sleighbell + Clockwork Heart + Nutcracker Jaws + 15,000 g) are for the Workshop and Wrapping Room bosses and for completionists; against Cinderhoof the Frost build above is just as good. The Wishing Star Pedestal (1 Clockwork Heart, 2 Enchanted Wrapping, 4 Sugar Glass, 12,000 g) adds luck 9.
 
 ### Carol Loft (optional side area)
 
-**Steps.** Optional side trip inside rank 2. Trap 1: **Icicle Jar + Candy Cane Platform**. Farm Hymn Reed and the Songsheet, craft the Carol Horn, and trap 2 is **Carol Horn + Candy Cane Platform + Mistletoe Charm**. Catch rates:
+**Steps.** Optional side trip inside rank 2. Trap 1: **Icicle Jar + Candy Cane Platform**. Hunt for Hymn Reed and the Songsheet, craft the Carol Horn, and trap 2 is **Carol Horn + Candy Cane Platform + Mistletoe Charm**. Catch rates:
 
 | Elf | Tier | Power | Weak | Trap 1 | Trap 2 |
 | --- | --- | --- | --- | --- | --- |
@@ -671,10 +671,10 @@ Commons: Hay Hoarder and Bell Thief (weak Frost), Harness Snipper (weak Clockwor
 ### Cheer Meter and Overcharge
 
 - Catches fill pips (1 each, 2 for a rare, mini boss or boss). An escape costs 3. At 10 pips, cash in: pick 1 of 3 boons.
-- **Usually cash in at 10.** Lucky Stocking, Sweet Tooth, Double Haul and Free Bait suit farming.
+- **Usually cash in at 10.** Lucky Stocking, Sweet Tooth, Double Haul and Free Bait suit steady gold hunting.
 - **Hold only just before a boss attempt.** Hold to 13 or more, then cash in right before Shredwell, Grimbolt or Cinderhoof. Hot and Blazing draws favour rares and legendaries (Santa's Blessing x2.5 power for 3 hunts, Cocoa Rush x1.5, Boss Bell). At 15 you get 2 rare or legendary cards, a reroll and a perk such as two Santa's Blessings back to back (six boss hunts at x2.5). While held above 10, an escape costs 5, so do not hold while farming hard commons.
 - **Boss Bell** makes the next hunt the room's boss. It skips the Bonbon ladder, the Rush order and the Sleigh Run, so save it for a boss and pair it with a Blessing.
-- Cheer charms (Cheer Bauble, Tinsel, Gold Star) fill the meter faster but use the charm slot: wear one while farming, then swap back to the Wind-up Key Charm for bosses.
+- Cheer charms (Cheer Bauble, Tinsel, Gold Star) fill the meter faster but use the charm slot: wear one for everyday hunting, then swap back to the Wind-up Key Charm for bosses.
 
 ### The last elves
 
