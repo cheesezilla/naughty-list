@@ -94,7 +94,7 @@ function CheerSheet({ onClose }: { onClose: () => void }) {
   const cards = draw.cards.map((id) => content.boons.find((b) => b.id === id)!).filter(Boolean);
   return (
     <Sheet title={`Pick a boon · ${draw.tier}`} onClose={onClose}>
-      <p class="muted">{(draw.picks ?? 1) > 1 ? `Overcharged: choose ${draw.picks} of these.` : 'Choose one.'} It lasts a number of hunts. Boons count {Math.round(cc.farmScale * 100)}% while farming and {Math.round(cc.pushScale * 100)}% with push bait, where a pick has a {Math.round(cc.surgeChance * 100)}% chance to Surge and last {cc.surgeMult}x as long. Closing this keeps your draw.</p>
+      <p class="muted">{(draw.picks ?? 1) > 1 ? `Overcharged: choose ${draw.picks} of these.` : 'Choose one.'} It lasts a number of hunts. Boons count {Math.round(cc.farmScale * 100)}% with budget bait and {Math.round(cc.pushScale * 100)}% with premium bait, where a pick has a {Math.round(cc.surgeChance * 100)}% chance to Surge and last {cc.surgeMult}x as long, and catches fill the meter {cc.pushPipMult}x as fast. Closing this keeps your draw.</p>
       <div class="boon-cards">
         {cards.map((b) => (
           <button class={`boon-card ${b.rarity}`} onClick={async () => { if (await act('/api/cheer', { action: 'pick', boon: b.id }) && (draw.picks ?? 1) <= 1) onClose(); }}>

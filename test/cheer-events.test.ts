@@ -60,6 +60,14 @@ describe('cheer meter extras', () => {
 });
 
 describe('cheer boons by context', () => {
+  it('catches fill the meter twice as fast while pushing', () => {
+    const farm = fresh();
+    const push = fresh((q) => { q.setup.bait = 'sugar_cookie'; });
+    cheerAfterHunt(content, farm, common, true, none);
+    cheerAfterHunt(content, push, common, true, none);
+    expect(farm.cheer!.pips).toBe(1);
+    expect(push.cheer!.pips).toBe(2);
+  });
   const pickAs = (bait: string, roll: number) => {
     const p = fresh((q) => { q.setup.bait = bait; cheerOf(q).draw = { cards: ['steady_hands'], rerolls: 0, tier: 'Full', picks: 1 }; });
     const r = cheerAction(content, p, 'pick', () => roll, 'steady_hands');

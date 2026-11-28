@@ -28,7 +28,7 @@
   },
   "cheer": {
     "enabled": true, "full": 10, "max": 15, "catchPips": 1, "bigCatchPips": 2, "escapePips": 3, "heldEscapePips": 5, "orderPips": 1, "blessingCopies": 2,
-    "farmScale": 0.5, "pushScale": 1.5, "surgeChance": 0.25, "surgeMult": 2,
+    "farmScale": 0.5, "pushScale": 1.5, "surgeChance": 0.25, "surgeMult": 2, "pushPipMult": 2,
     "pity": { "rare": 3, "legendary": 8 },
     "tiers": [
       { "from": 0, "name": "Full", "cards": 3, "rerolls": 0, "weights": { "common": 70, "rare": 25, "legendary": 5 } },

@@ -54,7 +54,7 @@ export function cheerAfterHunt(content: Content, p: PlayerState, imp: Imp, caugh
     if (!locked) {
       // A Cheer charm adds at most one pip; Cheer Surge doubles the total.
       const add = Math.min(1, Math.max(charm?.all ?? 0, isBig(imp) ? charm?.rare ?? 0 : 0));
-      const total = s.pips + ((isBig(imp) ? c.bigCatchPips : c.catchPips) + add) * mods.pipMult;
+      const total = s.pips + ((isBig(imp) ? c.bigCatchPips : c.catchPips) + add) * mods.pipMult * (isPushing(content, p) ? c.pushPipMult : 1);
       s.pips = Math.min(s.held ? c.max : c.full, total);
       if (!s.held && total > c.full) s.carry += total - c.full;
       gained = s.pips - before;

@@ -357,7 +357,7 @@ A streak meter on the Hunt screen. When it fills, you pick **1 of 3 random boons
 - **Pity:** after 3 draws with no rare or better one is guaranteed; after 8 draws with no legendary one is guaranteed.
 - **Overcharge:** instead of cashing in, **Hold** the charge up to 15 pips for a better draw (Warm 11-12, Hot 13-14, Blazing 15 with 4 cards and a reroll). While held, an escape costs −5.
 - **Cheer charms** (Cheer Bauble, Tinsel, Gold Star) fill the meter faster.
-- **Farming versus pushing:** boons are built for pushes. With push bait armed their bonuses count at **150%**; with any other bait they count at **50%**. A boon you pick with push bait armed has a **25% chance to Surge** and last twice as many hunts. Boons that just switch something on (Free Bait, Cosy Mittens, Mulligan, Boss Bell) are not scaled. The table shows the base values: a +30% boon is +45% with push bait and +15% while farming.
+- **Bait matters:** boons are built for your big hunts. With **premium bait** armed their bonuses count at **150%** and catches fill the meter **twice as fast**; with budget bait they count at **50%**. A boon you pick with premium bait armed has a **25% chance to Surge** and last twice as many hunts. A full meter waits for you, so you can bank it and cash in as you start using premium bait. Boons that just switch something on (Free Bait, Cosy Mittens, Mulligan, Boss Bell) are not scaled. The table shows the base values: a +30% boon is +45% with premium bait and +15% with budget bait.
 
 | Boon                 | Rarity    | Lasts   | Effect                                                                             |
 |----------------------|-----------|---------|------------------------------------------------------------------------------------|
