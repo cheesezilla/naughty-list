@@ -405,6 +405,55 @@ export const baits: Record<string, () => string> = {
       glint(300, 230, 0.8),
     ),
 
+  pantry_crumbs: () =>
+    g(
+      {},
+      shadow(256, 420, 150),
+      circle(190, 330, 34, ol('#b98d58')), circle(290, 350, 26, ol('#b98d58')), circle(340, 300, 20, ol('#b98d58')),
+      circle(240, 280, 16, ol('#b98d58', 6)), circle(150, 390, 12, ol('#b98d58', 5)), circle(380, 380, 11, ol('#b98d58', 5)),
+      circle(200, 322, 7, { fill: P.cocoa }), circle(298, 346, 6, { fill: P.cocoa }),
+    ),
+
+  gingersnap: () =>
+    g(
+      {},
+      shadow(256, 420, 150),
+      circle(256, 270, 140, ol('#a8672c')),
+      circle(256, 270, 100, line(8, '#c98a4c')),
+      path('M170 230 L256 180 L342 230 M200 330 L256 360 L312 330', line(8, P.cream)),
+      circle(256, 270, 14, ol(P.goldBright, 6)),
+    ),
+
+  hay_biscuit: () =>
+    g(
+      {},
+      shadow(256, 420, 160),
+      path('M120 330 Q120 210 256 210 Q392 210 392 330 Q392 390 256 390 Q120 390 120 330 Z', ol('#d9b45a')),
+      path('M170 250 L210 380 M230 230 L260 385 M290 232 L312 384 M345 260 L350 372', line(8, '#a8832f')),
+      path('M150 200 L190 150 M256 190 L256 130 M360 200 L330 150', line(10, '#d9b45a')),
+    ),
+
+  spiced_honey_drop: () =>
+    g(
+      {},
+      shadow(256, 420, 150),
+      path('M256 120 Q380 260 380 330 Q380 420 256 420 Q132 420 132 330 Q132 260 256 120 Z', ol(P.gold)),
+      path('M190 330 Q190 280 240 220', line(12, P.cream)),
+      circle(300, 340, 10, ol(P.red, 5)), circle(260, 370, 8, ol(P.red, 5)),
+      sparkle(350, 190, 14), glint(210, 260, 0.8),
+    ),
+
+  gilded_cocoa: () =>
+    g(
+      {},
+      shadow(256, 430, 160),
+      path('M140 220 L372 220 L352 400 Q352 420 332 420 L180 420 Q160 420 160 400 Z', ol(P.goldBright)),
+      path('M372 250 Q440 250 436 320 Q432 370 360 366', line(14, P.gold)),
+      ellipse(256, 222, 114, 26, ol(P.cocoa)),
+      path('M200 200 Q190 150 215 110 M260 200 Q250 150 275 110 M320 200 Q310 150 335 110', line(8, P.cream)),
+      sparkle(190, 320, 16), sparkle(320, 350, 14), glint(200, 260, 0.9),
+    ),
+
   honey_lozenge: () =>
     g(
       {},

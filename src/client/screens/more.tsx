@@ -85,6 +85,7 @@ export function TravelScreen() {
                 <b>{l.name}</b>
                 <small>Rank {rankName} · unlock {l.unlockCost ? `${num(l.unlockCost)} gold` : 'free'}{' '}<span class={`pill ${open ? 'green' : ''}`}>{open ? 'Unlocked' : 'Locked'}</span></small>
                 <small class="desc">{l.description}</small>
+                {l.role && <small><span class={`pill ${l.role === 'farm' ? 'green' : 'gold'}`}>{l.role === 'farm' ? 'Farm stage' : 'Sink stage'}</span> {l.role === 'farm' ? 'Earn gold with cheap bait.' : 'Spend gold on pricey bait to push a boss or progress.'}</small>}
                 {l.side && <small>Side area: no boss key, and nothing later needs it.</small>}
                 {needAfter && <small>Opens once you have unlocked the {needAfter.name}.</small>}
                 {!open && l.rank > player.rank && <small><b>Needs rank {rankName}</b> ({num((content.ranks[l.rank - 1]?.points ?? 0) - player.points)} more points).{needKey && !missingKey ? ` You already have the ${needKey.name}.` : ''}</small>}

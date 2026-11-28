@@ -72,7 +72,7 @@ describe('Toy Workshop order board', () => {
   });
 
   it('pays a Toy Crate per order and sends the mini boss every third order, then a Rush order brings the boss', () => {
-    let p = at('toy_workshop', { trap: 'jack_in_the_box' });
+    let p = at('toy_workshop', { trap: 'jack_in_the_box', bait: 'peppermint_bark' });
     const gold0 = p.gold;
     for (let i = 0; i < 9; i++) p = ok(hunt(content, p, scripted(0, 0, 0, 0, 0, 0, 0, 0, 0, 0))).player;
     const s = p.objectives?.toy_workshop;
@@ -109,7 +109,7 @@ describe('Reindeer Stables sleigh run', () => {
   };
 
   it('counts every hunt, quiet ones included, and pays for the work done when time runs out', () => {
-    let p = start(at('reindeer_stables', {}, { hot_cocoa: 100 }));
+    let p = start({ ...at('reindeer_stables', {}, { hot_cocoa: 100 }), gold: 1_000_000 });
     expect(objectiveAction(content, p, 'start_run', scripted(0)).ok).toBe(false);
     for (let i = 0; i < 39; i++) p = ok(hunt(content, p, scripted(0.999))).player;
     expect(p.objectives?.reindeer_stables).toMatchObject({ active: true, left: 1, readiness: 0 });
@@ -117,16 +117,16 @@ describe('Reindeer Stables sleigh run', () => {
     const gold = p.gold;
     const last = ok(hunt(content, p, scripted(0, 0, 0, 0.99)));
     expect(last.player.objectives?.reindeer_stables).toMatchObject({ active: false, readiness: 5 });
-    // the catch pays 25% of 435 gold while the run is on, minus 100 upkeep, plus 50 for the work done
-    expect(last.player.gold - gold).toBe(109 - 100 + 50);
+    // the catch pays 25% of 1,643 gold while the run is on, minus 300 upkeep, plus 150 for the work done
+    expect(last.player.gold - gold).toBe(411 - 300 + 150);
   });
 
   it('a run costs upkeep every hunt, and can be abandoned at any point', () => {
     let p = start(at('reindeer_stables'));
     const gold = p.gold;
     const r = ok(hunt(content, p, scripted(0.999)));
-    expect(r.entry.upkeep).toBe(100);
-    expect(r.player.gold).toBe(gold - 100 + r.entry.gold);
+    expect(r.entry.upkeep).toBe(300);
+    expect(r.player.gold).toBe(gold - 300 + r.entry.gold);
     p = r.player;
     p.objectives!.reindeer_stables = { type: 'sleigh_run', active: true, left: 20, readiness: 60, launches: 1 };
     const after = objectiveAction(content, p, 'abandon_run', scripted(0));
@@ -152,7 +152,7 @@ describe('Reindeer Stables sleigh run', () => {
     const r = ok(hunt(content, p, scripted(0, 0, 0, 0.99)));
     expect(r.player.objectives?.reindeer_stables).toMatchObject({ active: false, launches: 1 });
     expect(r.player.objectives?.reindeer_stables?.forced).toBeUndefined();
-    expect(r.entry.objective?.gold).toBe(2000);
+    expect(r.entry.objective?.gold).toBe(8000);
   });
 
   it('launches at 100 Readiness, pays out and sends Cinderhoof', () => {
@@ -161,7 +161,7 @@ describe('Reindeer Stables sleigh run', () => {
     const r = ok(hunt(content, p, scripted(0, 0, 0, 0.99)));
     expect(r.player.objectives?.reindeer_stables).toMatchObject({ active: false, launches: 2, forced: 'cinderhoof' });
     expect(r.player.inventory.silver_sleighbell).toBe(1);
-    expect(r.entry.objective?.gold).toBe(2000);
+    expect(r.entry.objective?.gold).toBe(8000);
     expect(objectiveAction(content, r.player, 'start_run', scripted(0)).ok).toBe(false);
     const boss = ok(hunt(content, r.player, scripted(0, 0, 0.999, 0.999)));
     expect(boss.entry.imp).toBe('cinderhoof');
