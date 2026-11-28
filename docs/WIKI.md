@@ -324,7 +324,7 @@ Each order is 3 slots, each asking for a trap type. A catch with the right type 
 
 ### Reindeer Stables: Sleigh Run
 
-Start a run and get Readiness to 100 within 37 hunts. Common catches add 5, rares 12, the Antler Ripper (mini boss, appears from 50 readiness) 20. Escapes from the Bell Thief (−8) or Harness Snipper (−5) set you back. Launching pays 2,000 gold and a Silver Sleighbell, then **Cinderhoof** ambushes the sleigh. A run costs gold: **100 gold upkeep every hunt** on top of bait, and catches pay only a quarter of their gold, so a run is a net loss until it launches. A failed run pays 10 gold per readiness. You can **abandon a run at any time** (Readiness goes back to 0, launches already made stay) and start again. Farm gold with the run off, then pay for the run.
+Start a run and get Readiness to 100 within 40 hunts. Common catches add 5, rares 12, the Antler Ripper (mini boss, appears from 50 readiness) 20. Escapes from the Bell Thief (−8) or Harness Snipper (−5) set you back. Launching pays 2,000 gold and a Silver Sleighbell, then **Cinderhoof** ambushes the sleigh. A run costs gold: **100 gold upkeep every hunt** on top of bait, and catches pay only a quarter of their gold, so a run is a net loss until it launches. A failed run pays 10 gold per readiness. You can **abandon a run at any time** (Readiness goes back to 0, launches already made stay) and start again. Farm gold with the run off, then pay for the run.
 
 ### Carol Loft
 
@@ -645,7 +645,7 @@ Commons: Hay Hoarder and Bell Thief (weak Frost), Harness Snipper (weak Clockwor
 
 
 - **Frost build (trap 2):** Snow Globe Prison (25,000 g, Frost 1,800), Gingerbread Cottage base (power 1,550, Frost affinity +10%, more Allure), Wind-up Key Charm (+35% power). See the table above: Cinderhoof about 26% (16% with trap 1).
-- **Sleigh Run:** start a run (it costs 100 gold per hunt while it is on, so bring about 6,000 gold; farm with the run off first) and reach 100 readiness within 37 hunts. Commons add 5, Carrot Crook 12, Antler Ripper 20 (it appears only above 50 readiness). A Bell Thief escape costs 8, a Harness Snipper escape 5. Launching pays 2,000 g and a Silver Sleighbell, then Cinderhoof ambushes the next hunt.
+- **Sleigh Run:** start a run (it costs 100 gold per hunt while it is on, so bring about 6,000 gold; farm with the run off first) and reach 100 readiness within 40 hunts. Commons add 5, Carrot Crook 12, Antler Ripper 20 (it appears only above 50 readiness). A Bell Thief escape costs 8, a Harness Snipper escape 5. Launching pays 2,000 g and a Silver Sleighbell, then Cinderhoof ambushes the next hunt.
 - **Antler Ripper** (5,000 power, weak Frost) is about 60% with trap 2. **Cinderhoof** (20,500 power, weak Frost, immune to Starlight) is about 26% with trap 2 (16% with trap 1), so expect several tries. Escapes never cost rank.
 - Optional: Sleigh Runner base (2 Silver Sleighbell + 2 Toymaker's Gear + 12,000 g) and Sleigh-Bell Snapper trap (3 Silver Sleighbell + Clockwork Heart + Nutcracker Jaws + 15,000 g) are for the Workshop and Wrapping Room bosses and for completionists; against Cinderhoof the Frost build above is just as good. The Wishing Star Pedestal (1 Clockwork Heart, 2 Enchanted Wrapping, 4 Sugar Glass, 12,000 g) adds luck 9.
 

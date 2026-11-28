@@ -226,7 +226,7 @@ describe('server', () => {
     const again = (await post('/api/travel', { location: 'reindeer_stables' }, c)).json();
     expect(again.logs.map((r: { entry: { type: string } }) => r.entry.type)).toEqual(['travel']);
     const run = (await post('/api/objective', { action: 'start_run' }, c)).json();
-    expect(run.player.objectives.reindeer_stables).toMatchObject({ type: 'sleigh_run', active: true, left: 37, readiness: 0 });
+    expect(run.player.objectives.reindeer_stables).toMatchObject({ type: 'sleigh_run', active: true, left: 40, readiness: 0 });
     expect(run.log.entry).toEqual({ type: 'objective', location: 'reindeer_stables', action: 'start_run' });
     expect((await post('/api/objective', { action: 'start_run' }, c)).statusCode).toBe(400);
     expect((await post('/api/objective', { action: 'rush_order' }, c)).statusCode).toBe(400);

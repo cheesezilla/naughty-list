@@ -111,7 +111,7 @@ describe('Reindeer Stables sleigh run', () => {
   it('counts every hunt, quiet ones included, and pays for the work done when time runs out', () => {
     let p = start(at('reindeer_stables', {}, { hot_cocoa: 100 }));
     expect(objectiveAction(content, p, 'start_run', scripted(0)).ok).toBe(false);
-    for (let i = 0; i < 36; i++) p = ok(hunt(content, p, scripted(0.999))).player;
+    for (let i = 0; i < 39; i++) p = ok(hunt(content, p, scripted(0.999))).player;
     expect(p.objectives?.reindeer_stables).toMatchObject({ active: true, left: 1, readiness: 0 });
     // a common catch adds 5, then the run ends at 5 Readiness: 50 gold
     const gold = p.gold;

@@ -74,7 +74,7 @@
     "rank": 4,
     "unlockCost": 5000,
     "objective": {
-      "type": "sleigh_run", "hunts": 37,
+      "type": "sleigh_run", "hunts": 40,
       "gain": { "common": 5, "rare": 12, "miniboss": 20 },
       "loss": { "bell_thief": 8, "harness_snipper": 5 },
       "bossAfterLaunches": 2, "minibossFrom": 50, "minibossWeight": 6,
