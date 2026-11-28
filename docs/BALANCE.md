@@ -274,7 +274,7 @@ Written for eddy. Findings and recommendations first, numbers second. Report 1 u
 
 **Standard game-length metrics (eddy, 27 Nov): every report states both.** (1) Median hunts to rank 5. (2) Hunts to catch every elf, 100% of the Naughty List portraits, Carol Loft and bosses included. The simulator prints both at the top of every run, with the mean, p10, p90 and the share of players who finish (cap 20,000 hunts, `--max-collect-hunts`).
 
-### Report 14: Cheer boons weaker on farms, stronger on pushes (200 players, seed 1, Cheer and events on)
+### Report 15: Cheer boons weaker on farms, stronger on pushes (200 players, seed 1, Cheer and events on)
 
 Content change (eddy, 28 Nov): Cheer boon bonuses count at 50% while the armed bait is not push bait and at 150% with push bait, and a boon picked with push bait has a 25% chance to Surge (twice the hunts). `npm run balance` is unchanged (it does not model boons), so the flags are the same. Same seed, before and after:
 
@@ -287,6 +287,10 @@ Content change (eddy, 28 Nov): Cheer boon bonuses count at 50% while the armed b
 | Random boosts per 100 stale hunts: jackpots, events, Cheer draws | 2.3, 0.7, 0.7 | 2.3, 0.7, 0.7 |
 
 The game gets about 3% slower to rank 5 and 7% slower to finish the collection. Cheer draws are about 1 per 100 hunts and most land while farming, so the bot rarely holds a boon during a push; in real play, banking a draw for the push is the intended skill. Jackpot rares are still the main windfall in stale farming. Levers: raise `pushScale` or `surgeChance` to win back the pace, or raise `farmScale` to soften the farming nerf.
+
+### Report 14: pacing targets for ranks 3 and 4 raised (200 players, seed 1, Cheer and events on)
+
+Targets only, no content or gameplay change (eddy, 28 Nov: pacing is fine). The loop bot takes a median 496 hunts in rank 3 and 742 in rank 4, so the simulator targets move from 400 to 500 (rank 3) and from 600 to 750 (rank 4). Ranks 1 and 2 stay at 150 and 250. All four ranks now read ok (143, 268, 496, 742). Rank 5 median stays 1,679 hunts.
 
 ### Report 13: simulator plays the farm and push loop (200 players, seed 1, Cheer and events on)
 

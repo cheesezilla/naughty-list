@@ -58,7 +58,7 @@ const traceLines: string[] = [];
 const WITHOUT = new Set((args[args.indexOf('--without') + 1] ?? '').split(',').filter((x) => args.includes('--without') && x));
 
 /** Target hunts spent in each rank, from the plan. */
-const TARGET_HUNTS_IN_RANK: Record<number, number> = { 1: 150, 2: 250, 3: 400, 4: 600 };
+const TARGET_HUNTS_IN_RANK: Record<number, number> = { 1: 150, 2: 250, 3: 500, 4: 750 };
 
 const content: Content = loadContent(strOpt('content', 'content'));
 content.constants.cheer.enabled = !NO_CHEER;
