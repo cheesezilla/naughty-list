@@ -274,6 +274,10 @@ Written for eddy. Findings and recommendations first, numbers second. Report 1 u
 
 **Standard game-length metrics (eddy, 27 Nov): every report states both.** (1) Median hunts to rank 5. (2) Hunts to catch every elf, 100% of the Naughty List portraits, Carol Loft and bosses included. The simulator prints both at the top of every run, with the mean, p10, p90 and the share of players who finish (cap 20,000 hunts, `--max-collect-hunts`).
 
+### Report 14: pacing targets for ranks 3 and 4 raised (200 players, seed 1, Cheer and events on)
+
+Targets only, no content or gameplay change (eddy, 28 Nov: pacing is fine). The loop bot takes a median 496 hunts in rank 3 and 742 in rank 4, so the simulator targets move from 400 to 500 (rank 3) and from 600 to 750 (rank 4). Ranks 1 and 2 stay at 150 and 250. All four ranks now read ok (143, 268, 496, 742). Rank 5 median stays 1,679 hunts.
+
 ### Report 13: simulator plays the farm and push loop (200 players, seed 1, Cheer and events on)
 
 Simulator change only, no content changed (`npm run balance` still shows the same 9 flags). Review of the bot against the farm and push loop (eddy, 28 Nov): the old bot picked bait by best net gold, so it farmed with cheap bait, never bought push bait (crafted bait was costed at 0 gold, so the ladder looked free), never planned a push, started sleigh runs it could not win (8.0 started, 0.5 launched per player), and stalled whenever it ran out of a run bait it could not buy. The new default bot (`--bot loop`; the old one stays as `--bot legacy` for comparison) plays farm, then push, then repeats:
