@@ -49,7 +49,7 @@ export function MoreMenu() {
 }
 
 export function TravelScreen() {
-  const { content, player, act } = useGame();
+  const { content, data, player, act, toast } = useGame();
   const map = artEntry('map', 'lair_map');
   return (
     <MainScreen tab="more">
@@ -88,6 +88,7 @@ export function TravelScreen() {
                 {l.side && <small>Side area: no boss key, and nothing later needs it.</small>}
                 {needAfter && <small>Opens once you have unlocked the {needAfter.name}.</small>}
                 {needKey && <small>{missingKey ? `Needs the ${needKey.name}: catch ${bossName} to get it.` : `${needKey.name} found.`}</small>}
+                {l.baits && <small>Bait that works here: <b>{l.baits.map((id) => data.items.get(id)?.name ?? id).join(', ')}</b>. Any other bait always fails.</small>}
                 <span class="weak-row"><small>Best traps</small>{l.homeTypes.map((t) => <TypeMedal type={t} size={22} />)}</span>
               </div>
               {here ? <span class="pill gold">You are here</span>
@@ -95,7 +96,16 @@ export function TravelScreen() {
                 : missingKey ? <span class="small muted">Needs key</span>
                 : needAfter ? <span class="small muted">Needs {needAfter.name}</span>
                 : <button class="primary-btn" disabled={!open && player.gold < l.unlockCost}
-                    onClick={async () => { if (await act('/api/travel', { location: l.id }, `Welcome to the ${l.name}.`)) go('hunt'); }}>
+                    onClick={async () => {
+                      if (await act('/api/travel', { location: l.id }, `Welcome to the ${l.name}.`)) {
+                        const armed = player.setup.bait ? data.items.get(player.setup.bait) : undefined;
+                        // Say so at once if the armed bait will fail here, so the first hunt isn't wasted.
+                        if (l.baits && !(player.setup.bait && l.baits.includes(player.setup.bait))) {
+                          toast(`${armed ? `Your ${armed.name} won't work` : 'You have no bait that works'} in the ${l.name}. Buy ${l.baits.map((id) => data.items.get(id)?.name ?? id).join(' or ')} and arm it before you hunt.`, 'bad');
+                        }
+                        go('hunt');
+                      }
+                    }}>
                     {open ? 'Go' : `Unlock ${num(l.unlockCost)}`}
                   </button>}
             </div>

@@ -203,7 +203,7 @@ Add power, luck and Allure, and the later ones have a **type affinity** bonus to
 
 ## Baits
 
-One bait is used on every hunt, whether it catches or not. Higher Allure pulls rarer elves more often. **Each area has its own bait**: a bait from another area still gets used up, but the catch always fails (the Hunt screen warns you). Cookie Pantry: Stale Cookie, Sugar Cookie, Fruitcake. Wrapping Room: Glitter Gumdrop, Ribbon Candy, Golden Bow Bonbon. Carol Loft: Honey Lozenge. Toy Workshop: Peppermint Bark. Reindeer Stables: Hot Cocoa. If you run out of bait and gold, Mrs. Claus slips you 10 of the cheapest bait that works where you are.
+One bait is used on every hunt, whether it catches or not. Higher Allure pulls rarer elves more often. **Each area has its own bait**: a bait from another area still gets used up, but the catch always fails (a red warning on the Hunt screen, in the bait picker and on the Travel map tells you, and arriving with the wrong bait armed shows a notice). Cookie Pantry: Stale Cookie, Sugar Cookie, Fruitcake. Wrapping Room: Glitter Gumdrop, Ribbon Candy, Golden Bow Bonbon. Carol Loft: Honey Lozenge. Toy Workshop: Peppermint Bark. Reindeer Stables: Hot Cocoa. If you run out of bait and gold, Mrs. Claus slips you 10 of the cheapest bait that works where you are.
 
 | Bait                  | Allure | Rank | Price                                                          | Notes                                                                         |
 |-----------------------|--------|------|----------------------------------------------------------------|-------------------------------------------------------------------------------|

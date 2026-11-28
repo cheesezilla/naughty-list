@@ -1118,7 +1118,7 @@ Every hunt uses one bait, but the bait was almost free: a Stale Cookie (8 gold) 
 | Toy Workshop | Peppermint Bark | 40 | price 50 to 40 |
 | Reindeer Stables | Hot Cocoa | 45 | price 90 to 45; the old half-attraction penalty for other baits is gone (replaced by the always-fail rule) |
 
-The Bait Ladder's tier 1 is now Glitter Gumdrop only. New bait art is placeholder SVG (`npm run art`); the real art can come from ChatGPT later. Flavour text for both baits is in `content/flavour.json`.
+**Warnings before the hunt:** a red "Wrong bait" card on the Hunt screen (with a Change bait button), baits that will not work in the current area are marked "Won't work" in the bait sheet and equipping one needs "Use ... anyway", the Travel map lists each area's baits, and arriving in an area with the wrong bait armed shows a toast naming the bait to buy. The Bait Ladder's tier 1 is now Glitter Gumdrop only. New bait art is placeholder SVG drawn by `npm run art` (a gold-glittered gumdrop with a bow, a honey lozenge); the real art can come from ChatGPT later and replaces the SVG through the manifest. Flavour text for both baits is in `content/flavour.json`.
 
 ### The benchmark and the numbers
 
