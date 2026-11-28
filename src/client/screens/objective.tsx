@@ -203,6 +203,7 @@ function SleighPanel({ o, s, location }: { o: Sleigh; s?: Extract<ObjectiveState
       </div>
       <p class="panel-line"><b>Readiness {s.readiness}</b> / 100 · {s.readiness >= o.minibossFrom ? `${name(o.miniboss)} is about (${o.minibossFrom}+)` : `${name(o.miniboss)} comes at ${o.minibossFrom}`}</p>
       {last && <p class="panel-line small">Last: {last}</p>}
+      <p class="panel-line small">Tip: Hot Cocoa bait draws the best elves. A Wind-up Key, Mistletoe or Cheer charm helps you catch more of them.</p>
       {(o.upkeep > 0 || o.catchGoldMult < 1) && <p class="panel-line small muted">While the run is on, each hunt costs {o.upkeep} gold and catches pay {Math.round(o.catchGoldMult * 100)}% gold.</p>}
       <button class="text-btn wide" onClick={() => { if (!sure) { setSure(true); return; } setSure(false); act('/api/objective', { action: 'abandon_run' }, 'Sleigh run abandoned.'); }}>
         {sure ? 'Tap again to abandon (Readiness resets to 0)' : 'Abandon run and restart'}

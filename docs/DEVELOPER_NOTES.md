@@ -43,7 +43,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Cheer Meter and boons (eddy): a streak meter, pick 1 of 3 from 14 boons in three rarities, Overcharge and Cheer charms; see [Cheer Meter](#cheer-meter-and-boons-eddy-26-nov-2026-built-on-integration) | Built on `integration` (test playground), draft numbers | this PR |
 | Full-game strategy walkthrough: [Wiki walkthrough](WIKI.md#walkthrough), gear, bosses and Cheer Meter use for every location | Done | this PR |
 | Docs consolidated into three: Developer notes, Balance notes, Wiki with walkthrough | Done | this PR |
-| Area baits (each area has its own bait, a wrong bait always fails), sleigh run costs gold and can be abandoned, net gold per hunt benchmark in `npm run balance`; see [Area baits](#area-baits-and-the-sleigh-run-cost-eddy-28-nov-2026-built-on-integration) | Built on `integration` | this PR |
+| Area baits (each area has its own bait, a wrong bait always fails), sleigh run costs gold and can be abandoned, net gold per hunt benchmark in `npm run balance`; see [Area baits](#area-baits-and-the-sleigh-run-cost-eddy-28-nov-2026-built-on-integration) | Built on `integration` | this PR (sleigh run tip added) |
 | Farm and push loop (eddy, 28 Nov): every area is a farm or sink stage with a cheap farm bait and a pricey push bait; bait, gear and area gold all scale up with rank so a new area pays far more per catch even with the old trap; a free fallback bait (Pantry Crumbs); five existing rares reworked into gold jackpots; a Gilded Cocoa craft as the endgame gold sink; gold this session and net per hunt in the UI; farm, sink, arrival and jackpot bands in `npm run balance`; see [Farm and push loop](#farm-and-push-the-gold-loop-eddy-28-nov-2026-built-on-integration) | Built on `integration` | this PR |
 | Simulator plays the farm and push loop (`--bot loop`), stage and stale-stretch reports; see Balance notes Report 13 | Done | this PR |
 | 5. Tune from play-test | Planned | |
@@ -1731,3 +1731,4 @@ To stay on a version or roll back, set the image line to `ghcr.io/cheesezilla/na
 | 2026-11-25 | #3 | NAS deploy: compose file with optional Cloudflare Tunnel, DEPLOY.md guide, entrypoint that fixes save-folder ownership, image smoke test in CI |
 | 2026-11-25 | #2 | Milestone 3: accounts (first one is admin), invite codes, server-side hunts with rate limit, SQLite saves, login screen and Invites tab; local run steps |
 | 2026-11-25 | #1 | Plan added to the repo; milestones 1 and 2 built; first simulator run recorded |
+| 2026-11-28 | this PR | **Sleigh run tip (eddy).** While a run is active the Stables Sleigh Run box shows a short tip naming Hot Cocoa bait and the helpful charms (Wind-up Key, Mistletoe, Cheer). UI text only, no game numbers changed |
