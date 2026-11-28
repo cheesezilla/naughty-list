@@ -117,6 +117,8 @@ export const Location = z.object({
   after: id.optional(),
   /** Power types recommended here, shown on the location banner. */
   homeTypes: z.array(PowerType).default([]),
+  /** `farm` areas are where gold is earned (cheap bait); `sink` areas are where it is spent to push a boss or progress. Every area has both a farm segment (cheap bait) and a push segment (pricey bait). */
+  role: z.enum(['farm', 'sink']).optional(),
   /** The only baits that work here. Any other bait is used up and the catch always fails. Missing: every bait works. */
   baits: z.array(id).min(1).optional(),
   objective: Objective.optional(),
@@ -144,6 +146,8 @@ export const Base = z.object({
 export const Bait = z.object({
   id, name: z.string(), attraction: chance,
   rareMultiplier: z.number().positive().optional(), rank: z.number().int().positive(), price,
+  /** The bait's job in the farm-then-push loop: `floor` is the free fallback, `farm` the cheap bait that earns gold, `push` the pricey bait that raises rare, mini boss and boss odds. */
+  role: z.enum(['floor', 'farm', 'push']).optional(),
   flavour: Flavour.optional(),
 });
 export const Charm = z.object({
@@ -183,6 +187,8 @@ export const Constants = z.object({
   catchCap: chance,
   /** Luck: its bonus is `scale` x luck squared x the weight of the elf's tier, so luck helps most against common elves and least against bosses. */
   luck: z.object({ scale: z.number().nonnegative(), tierWeight: z.object({ common: z.number(), uncommon: z.number(), rare: z.number(), miniboss: z.number(), boss: z.number() }) }),
+  /** Gold from catches falls once the player outranks an area: full pay up to `grace` ranks above the area's rank, then `perRank` less for each further rank, never below `floor`. */
+  goldFalloff: z.object({ grace: z.number().int().nonnegative(), perRank: chance, floor: chance }).default({ grace: 1, perRank: 0.25, floor: 0.25 }),
   sellBackRate: chance,
   rescue: z.object({ maxGold: z.number().int().nonnegative(), item: id, amount: z.number().int().positive() }),
   maxHuntsPerSecond: z.number().positive(),

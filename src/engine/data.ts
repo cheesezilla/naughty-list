@@ -54,3 +54,14 @@ export function sellValue(data: GameData, item: AnyItem): number {
   if (item.price === null) return 0;
   return Math.floor(item.price * data.content.constants.sellBackRate);
 }
+
+/** What one bait costs in gold: its shop price, or for crafted bait the recipe's gold per bait, else 0. */
+export function baitGoldValue(data: GameData, baitId: string): number {
+  const item = data.items.get(baitId);
+  if (item && item.kind === 'bait' && item.price !== null) return item.price;
+  const r = data.content.recipes.find((x) => x.output.item === baitId);
+  if (!r) return 0;
+  // Crafted bait costs the recipe's gold plus any bait it is made from.
+  const inputs = Object.entries(r.ingredients).reduce((n, [id, k]) => n + (data.items.get(id)?.kind === 'bait' ? baitGoldValue(data, id) * k : 0), 0);
+  return Math.round((r.gold + inputs) / r.output.amount);
+}

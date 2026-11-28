@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { count, huntOdds, type Setup } from '../../engine/index.js';
+import { goldFalloff } from '../../engine/index.js';
 import { useGame } from '../game.js';
 import { Art, Icon } from '../lib/art.js';
 import { num, pct, plural } from '../lib/format.js';
@@ -139,6 +140,8 @@ export function HuntScreen() {
             </div>
           )}
 
+          <StageCard />
+          <SessionCard />
           <ObjectivePanel location={location} onHint={() => setHint(true)} />
           <BoonCard />
           <CheerCard />
@@ -164,6 +167,51 @@ export function HuntScreen() {
       <BottomNav tab="hunt" />
       {sheet && <BaitSheet initial={sheet} onClose={() => setSheet(null)} />}
       {hint && <HintSheet location={location} onClose={() => setHint(false)} />}
+    </div>
+  );
+}
+
+const ROLE_NAME = { floor: 'Free fallback', farm: 'Farm bait', push: 'Push bait' } as const;
+const ROLE_HELP = {
+  floor: 'free and weak, home area only',
+  farm: 'cheap: earns gold',
+  push: 'pricey: more rare, mini boss and boss elves',
+} as const;
+
+/** Says whether this area is a farm or a sink, which bait suits each half of the loop, and when the area has stopped paying. */
+function StageCard() {
+  const { content, data, player } = useGame();
+  const location = data.locations.get(player.location)!;
+  if (!location.role) return null;
+  const baits = (location.baits ?? []).map((id) => data.items.get(id)).filter((b) => b?.kind === 'bait');
+  const pick = (role: 'farm' | 'push') => baits.filter((b) => b?.kind === 'bait' && b.role === role).map((b) => b!.name).join(' or ');
+  const mult = goldFalloff(content.constants, location, player.rank);
+  return (
+    <div class={`card stage-card ${location.role}`}>
+      <div class="row-head">
+        <span class={`pill ${location.role === 'farm' ? 'green' : 'gold'}`}>{location.role === 'farm' ? 'Farm stage' : 'Sink stage'}</span>
+        <b>{location.role === 'farm' ? 'Earn gold here' : 'Spend gold here to push on'}</b>
+      </div>
+      <small class="muted">
+        {location.role === 'farm' ? 'Farm with ' : 'Farm gold with '}{pick('farm') || 'cheap bait'}; push a boss or progress with {pick('push') || 'pricey bait'}. Then come back and farm again.
+      </small>
+      {mult < 1 && <small class="warn-text"><b>You have outranked this area:</b> catches pay {Math.round(mult * 100)}% gold. Farm somewhere new.</small>}
+    </div>
+  );
+}
+
+/** Gold this session: earned, spent on bait, upkeep and pillage, net, and net per hunt. */
+function SessionCard() {
+  const { session, resetSession } = useGame();
+  if (session.hunts === 0) return null;
+  const net = session.earned - session.spent;
+  const per = net / session.hunts;
+  const sign = (n: number) => `${n >= 0 ? '+' : '−'}${num(Math.abs(Math.round(n)))}`;
+  return (
+    <div class="card session-card" aria-label="Gold this session">
+      <div class="row-head"><b>Gold this session</b><span class={`pill ${net >= 0 ? 'green' : 'red'}`}>{sign(net)}</span></div>
+      <small class="muted">Earned {num(session.earned)} · spent {num(session.spent)} (bait, upkeep, pillage) · {sign(per)} per hunt over {plural(session.hunts, 'hunt')}</small>
+      <button class="text-btn" onClick={resetSession}>Reset</button>
     </div>
   );
 }
@@ -228,7 +276,7 @@ function BaitSheet({ initial, onClose }: { initial: 'bait' | 'charm'; onClose: (
   };
   const describe = (i: (typeof list)[number]) => {
     const it = data.items.get(i.id)!;
-    if (it.kind === 'bait') return [exact && pct(it.attraction), it.rareMultiplier && `rares ×${it.rareMultiplier}`].filter(Boolean).join(', ');
+    if (it.kind === 'bait') return [it.role && ROLE_NAME[it.role], exact && pct(it.attraction), it.rareMultiplier && `rares ×${it.rareMultiplier}`].filter(Boolean).join(', ');
     if (it.kind === 'charm') return [it.luck && `+${it.luck} luck`, exact && it.attraction && `+${pct(it.attraction)} attr.`, it.powerBonus && `+${pct(it.powerBonus)} power`].filter(Boolean).join(', ');
     return '';
   };
@@ -261,6 +309,7 @@ function BaitSheet({ initial, onClose }: { initial: 'bait' | 'charm'; onClose: (
       {chosen !== current && (
         <div class="preview-box">
           {wrongHere(chosen ?? null) && <p class="warn-text"><b>Wrong bait for the {here!.name}.</b> Every hunt here would use it up and the catch always fails. Use {goodNames}.</p>}
+          {item?.kind === 'bait' && item.role && <p class="small"><b>{ROLE_NAME[item.role]}:</b> {ROLE_HELP[item.role]}.</p>}
           {item?.flavour && <p><b>{item.name}:</b> {item.flavour.description}</p>}
           <p class="small">Catch chance {change(catchIfAttracted(before), catchIfAttracted(after), rateText)}; allure {change(before.stats.attraction, after.stats.attraction, rateText)}; power {change(before.stats.power, after.stats.power, num)}; luck {change(before.stats.luck, after.stats.luck, num)}</p>
           <button class="primary-btn wide" onClick={use}>

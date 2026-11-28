@@ -203,19 +203,26 @@ Add power, luck and Allure, and the later ones have a **type affinity** bonus to
 
 ## Baits
 
-One bait is used on every hunt, whether it catches or not. Higher Allure pulls rarer elves more often. **Each area has its own bait**: a bait from another area still gets used up, but the catch always fails (a red warning on the Hunt screen, in the bait picker and on the Travel map tells you, and arriving with the wrong bait armed shows a notice). Cookie Pantry: Stale Cookie, Sugar Cookie, Fruitcake. Wrapping Room: Glitter Gumdrop, Ribbon Candy, Golden Bow Bonbon. Carol Loft: Honey Lozenge. Toy Workshop: Peppermint Bark. Reindeer Stables: Hot Cocoa. If you run out of bait and gold, Mrs. Claus slips you 10 of the cheapest bait that works where you are.
+One bait is used on every hunt, whether it catches or not. Higher Allure pulls rarer elves more often. **Each area has its own bait**: a bait from another area still gets used up, but the catch always fails (a red warning on the Hunt screen, in the bait picker and on the Travel map tells you, and arriving with the wrong bait armed shows a notice). Cookie Pantry: Pantry Crumbs, Stale Cookie, Sugar Cookie, Fruitcake. Wrapping Room: Glitter Gumdrop, Ribbon Candy, Golden Bow Bonbon. Carol Loft: Honey Lozenge, Spiced Honey Drop. Toy Workshop: Gingersnap, Peppermint Bark. Reindeer Stables: Hay Biscuit, Hot Cocoa, Gilded Cocoa. If you run out of bait in the Cookie Pantry you sweep up free Pantry Crumbs (weak, home area only), so you can always rebuild. Elsewhere, with no bait and under 50 gold, Mrs. Claus slips you 10 of the cheapest bait that works where you are.
+
+**The farm and push loop.** Every area is a **farm stage** (Cookie Pantry, Toy Workshop, Carol Loft) or a **sink stage** (Wrapping Room, Reindeer Stables). Farm with the area's **cheap bait** to earn gold, then spend it on the **pricey push bait** to draw rare elves, mini bosses and bosses, and repeat. Gold from catches drops by a quarter for every rank you have above an area (after one free rank), down to a quarter, so move on once you outgrow a farm. The Hunt screen shows a **Gold this session** card (earned, spent, net and net per hunt) and each log row shows its net gold.
 
 | Bait                  | Allure | Rank | Price                                                          | Notes                                                                         |
 |-----------------------|--------|------|----------------------------------------------------------------|-------------------------------------------------------------------------------|
 | **Stale Cookie**      | 70%    | 1    | 8 gold                                                         | Cookie Pantry bait.                                                           |
 | **Sugar Cookie**      | 78%    | 1    | 20 gold                                                        | Draws more Sootcaps in the Pantry.                                            |
-| **Peppermint Bark**   | 82%    | 3    | 40 gold                                                        | Toy Workshop bait.                                                            |
+| **Peppermint Bark**   | 86%    | 3    | 60 gold                                                        | Toy Workshop bait.                                                            |
 | **Fruitcake**         | 85%    | 2    | Crafted / reward (3× Candied Peel, 1× Cookie Tin + 100 gold)   | Doubles rare, mini boss and boss odds (cannot skip the Wrapping Room ladder). |
-| **Ribbon Candy**      | 82%    | 2    | Crafted / reward (2× Sugar Twist, 1× Candied Peel + 30 gold)   | Wrapping Room ladder tier 2.                                                  |
-| **Golden Bow Bonbon** | 86%    | 2    | Crafted / reward (1× Sugar Glass, 1× Golden Ribbon + 100 gold) | Wrapping Room ladder tier 3: the bait Madame Shredwell takes.                 |
-| **Hot Cocoa**         | 88%    | 4    | 45 gold                                                        | Reindeer Stables bait.                                                        |
+| **Ribbon Candy**      | 82%    | 2    | Crafted / reward (2× Sugar Twist, 1× Candied Peel + 90 gold)   | Wrapping Room ladder tier 2.                                                  |
+| **Golden Bow Bonbon** | 86%    | 2    | Crafted / reward (1× Sugar Glass, 1× Golden Ribbon + 200 gold) | Wrapping Room ladder tier 3: the bait Madame Shredwell takes.                 |
+| **Hot Cocoa**         | 92%    | 4    | 90 gold                                                        | Reindeer Stables bait.                                                        |
 | **Glitter Gumdrop**   | 80%    | 2    | 16 gold                                                        | Wrapping Room shop bait (ladder tier 1).                                      |
 | **Honey Lozenge**     | 78%    | 2    | 8 gold                                                         | Carol Loft bait.                                                              |
+| **Pantry Crumbs**     | 55%    | 1    | Free fallback (Cookie Pantry only)                             | Used automatically when you run out of bait in the Pantry.                    |
+| **Gingersnap**        | 78%    | 3    | 15 gold                                                        | Toy Workshop farm bait.                                                       |
+| **Hay Biscuit**       | 78%    | 4    | 25 gold                                                        | Reindeer Stables farm bait.                                                   |
+| **Spiced Honey Drop** | 86%    | 2    | 30 gold                                                        | Carol Loft push bait: rarer singers show up more.                             |
+| **Gilded Cocoa**      | 95%    | 4    | Crafted (1× Brimstone Coal, 10× Hot Cocoa + 2,000 gold, makes 10) | Reindeer Stables push bait: the strongest, and a big gold sink.            |
 
 ## Charms
 
@@ -256,8 +263,8 @@ Done in **Santa's Workshop** with gold plus materials. Materials can also be sol
 |---------------------------|--------------------------|--------------------------------------------------------------|--------|------|
 | **Mistletoe Charm**       | 10× Mistletoe Charm      | 1× Sugar Glass                                               | 150    | 1    |
 | **Fruitcake**             | 5× Fruitcake             | 3× Candied Peel, 1× Cookie Tin                               | 100    | 2    |
-| **Ribbon Candy**          | 3× Ribbon Candy          | 2× Sugar Twist, 1× Candied Peel                              | 30     | 2    |
-| **Golden Bow Bonbon**     | 2× Golden Bow Bonbon     | 1× Sugar Glass, 1× Golden Ribbon                             | 100    | 2    |
+| **Ribbon Candy**          | 3× Ribbon Candy          | 2× Sugar Twist, 1× Candied Peel                              | 90     | 2    |
+| **Golden Bow Bonbon**     | 2× Golden Bow Bonbon     | 1× Sugar Glass, 1× Golden Ribbon                             | 200    | 2    |
 | **Carol Horn**            | 1× Carol Horn            | 5× Hymn Reed, 1× Carol Songsheet                             | 600    | 2    |
 | **Constellation Wreath**  | 1× Constellation Wreath  | 3× Enchanted Wrapping, 2× Brass Spring                       | 6,000  | 3    |
 | **Yule Log Base**         | 1× Yule Log Base         | 3× Toymaker's Gear, 1× Golden Ribbon, 2× Sugar Glass         | 4,000  | 3    |

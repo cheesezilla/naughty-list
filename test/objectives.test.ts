@@ -72,7 +72,7 @@ describe('Toy Workshop order board', () => {
   });
 
   it('pays a Toy Crate per order and sends the mini boss every third order, then a Rush order brings the boss', () => {
-    let p = at('toy_workshop', { trap: 'jack_in_the_box' });
+    let p = at('toy_workshop', { trap: 'jack_in_the_box', bait: 'peppermint_bark' });
     const gold0 = p.gold;
     for (let i = 0; i < 9; i++) p = ok(hunt(content, p, scripted(0, 0, 0, 0, 0, 0, 0, 0, 0, 0))).player;
     const s = p.objectives?.toy_workshop;

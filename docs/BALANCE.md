@@ -123,11 +123,11 @@ Net gold per hunt = expected gold from catches (encounter weight x catch rate x 
 
 | Area | Rank | 1. Beginner: net gold / hunt | 2. Recommended: net gold / hunt | 3. Endgame: net gold / hunt | Farm index (endgame here vs recommended in Reindeer Stables) |
 | --- | --- | --- | --- | --- | --- |
-| Cookie Pantry | 1 | 9 (gold 17, Stale Cookie 8) | 9 (gold 17, Stale Cookie 8) | 20 (gold 28, Stale Cookie 8) | 7% |
-| Wrapping Room | 2 | 29 (gold 45, Glitter Gumdrop 16) | 47 (gold 63, Glitter Gumdrop 16) | 54 (gold 70, Glitter Gumdrop 16) | 18% |
-| Toy Workshop | 3 | 65 (gold 105, Peppermint Bark 40) | 89 (gold 129, Peppermint Bark 40) | 114 (gold 154, Peppermint Bark 40) | 38% |
-| Reindeer Stables | 4 | 261 (gold 306, Hot Cocoa 45) | 304 (gold 349, Hot Cocoa 45) | 304 (gold 349, Hot Cocoa 45) | 100% |
-| Carol Loft | 2 | 25 (gold 33, Honey Lozenge 8) | 26 (gold 34, Honey Lozenge 8) | 37 (gold 45, Honey Lozenge 8) | 12% |
+| Cookie Pantry | 1 | 9 (gold 17, Stale Cookie 8) | 9 (gold 17, Stale Cookie 8) | 20 (gold 28, Stale Cookie 8) | 6% |
+| Wrapping Room | 2 | 29 (gold 45, Glitter Gumdrop 16) | 47 (gold 63, Glitter Gumdrop 16) | 54 (gold 70, Glitter Gumdrop 16) | 17% |
+| Toy Workshop | 3 | 89 (gold 104, Gingersnap 15) | 114 (gold 129, Gingersnap 15) | 139 (gold 154, Gingersnap 15) | 43% |
+| Reindeer Stables | 4 | 279 (gold 304, Hay Biscuit 25) | 324 (gold 349, Hay Biscuit 25) | 324 (gold 349, Hay Biscuit 25) | 100% |
+| Carol Loft | 2 | 25 (gold 33, Honey Lozenge 8) | 26 (gold 34, Honey Lozenge 8) | 37 (gold 45, Honey Lozenge 8) | 11% |
 
 ### 1d. Reindeer Stables: gold per hunt with the sleigh run off and on
 
@@ -135,9 +135,21 @@ Net gold per hunt = expected gold from catches (encounter weight x catch rate x 
 
 | Gear | Setup used | Gold / hunt, ride off | Gold / hunt, ride on (after upkeep) | On vs off | Hunts per run | Runs that launch | Net per hunt after bait (off / on) |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1. Beginner | Snow Globe Prison + Yule Log Base | 306 | -2 | -101% | 38.8 | 18% | 261 / -47 |
-| 2. Recommended | Sleigh-Bell Snapper + Gingerbread Cottage | 349 | 22 | -94% | 36.7 | 43% | 304 / -23 |
-| 3. Endgame | Sleigh-Bell Snapper + Gingerbread Cottage | 349 | 22 | -94% | 36.7 | 43% | 304 / -23 |
+| 1. Beginner | Snow Globe Prison + Yule Log Base | 304 | -3 | -101% | 38.9 | 17% | 279 / -28 |
+| 2. Recommended | Sleigh-Bell Snapper + Gingerbread Cottage | 349 | 22 | -94% | 36.7 | 43% | 324 / -3 |
+| 3. Endgame | Sleigh-Bell Snapper + Gingerbread Cottage | 349 | 22 | -94% | 36.7 | 43% | 324 / -3 |
+
+### 1e. Farm and push: the loop in every area
+
+The loop (eddy, 28 Nov): **farm** a stage with its cheap bait to earn gold, **push** a boss or progress with its pricey bait (a sink: it costs more per hunt than it earns, and returns keys, crafting loot and portraits that gold cannot buy), then repeat. Numbers are net gold per hunt with Recommended gear (as 1c) at the highest rank the area still pays in full (area rank + grace). Farm = best cheap `farm` bait; Push = the priciest `push` bait (crafted bait is priced at its recipe gold per bait, materials left out). **Falloff** = the share of catch gold paid to a rank 5 player; **Endgame farm** = farm net per hunt with endgame gear at rank 5 with that falloff applied.
+
+| Area | Stage | Farm: net gold / hunt (bait, cost) | Push: net gold / hunt (bait, cost) | Push premium (farm minus push) | Falloff at rank 5 | Endgame farm net at rank 5 |
+| --- | --- | --- | --- | --- | --- | --- |
+| Cookie Pantry | farm | 9 (Stale Cookie 8) | -3 (Sugar Cookie 20) | 11 | 25% | -1 |
+| Wrapping Room | sink | 47 (Glitter Gumdrop 16) | -6 (Golden Bow Bonbon 100) | 53 | 50% | 19 |
+| Toy Workshop | farm | 114 (Gingersnap 15) | 48 (Peppermint Bark 60) | 66 | 75% | 100 |
+| Reindeer Stables | sink | 324 (Hay Biscuit 25) | 76 (Gilded Cocoa 290) | 248 | 100% | 324 |
+| Carol Loft | farm | 26 (Honey Lozenge 8) | 1 (Spiced Honey Drop 30) | 25 | 50% | 15 |
 
 ### 2. Rare, mini boss and boss catch rates: fresh player vs endgame gear
 
@@ -246,6 +258,19 @@ Attraction and Cheer charms (Jingle Bell, Cheer charms) do not change catch chan
 Written for eddy. Findings and recommendations first, numbers second. Report 1 used `npm run simulate -- --players 1000 --seeds 5` (5,000 virtual hunters). Report 2 uses 1,000 players, seed 1 per scenario (eddy asked to cut the run time); the baseline there is 1,286 against 1,291 above, so the two agree within 0.5%. Tuning is a separate task: nothing in `content/` changed.
 
 **Standard game-length metrics (eddy, 27 Nov): every report states both.** (1) Median hunts to rank 5. (2) Hunts to catch every elf, 100% of the Naughty List portraits, Carol Loft and bosses included. The simulator prints both at the top of every run, with the mean, p10, p90 and the share of players who finish (cap 20,000 hunts, `--max-collect-hunts`).
+
+### Report 12: farm and push loop (200 players, seed 1, Cheer and events on)
+
+Built on `integration` (eddy, 28 Nov). Each area is a farm or sink stage with a cheap farm bait and a pricey push bait, catch gold falls 25% per rank above an area (floor 25%), Pantry Crumbs are a free fallback, Ribbon Candy (30 to 90 gold) and Golden Bow Bonbon (100 to 200 gold) recipes cost more, Peppermint Bark 60 and Hot Cocoa 90 are push baits, new Gingersnap 15, Hay Biscuit 25 and Spiced Honey Drop 30, and Gilded Cocoa is a crafted endgame bait. `npm run balance` gains section 1e (farm and push per area, falloff, camping check) with `economy` thresholds. No flag changed.
+
+| Metric | Before | After |
+| --- | --- | --- |
+| Hunts to rank 5 | median 1,697 | median 1,544 |
+| Hunts to catch all 28 elves | median 2,781 (p10 1,798, p90 5,308) | median 2,868 (p10 1,703, p90 5,167) |
+| Ranks 1 to 4 (median hunts) | 127, 291, 444, 810 (rank 4 too slow) | 127, 291, 449, 630 (targets 150, 250, 400, 600) |
+| Net gold per hunt, recommended gear, farm bait | Pantry 9, Wrapping 47, Workshop 89, Stables 304 | Pantry 9, Wrapping 47, Workshop 114, Stables 324 |
+
+The Workshop and Stables farm baits are cheaper than the single bait they replace, so rank 4 saving is faster; the push baits cost more, which is where the gold sink is. Seed 1 is the simulator default; the earlier report's "seed 42" label was the same seed 1 run.
 
 ### Report 1: baseline (Allure built, no Cheer Meter or events yet)
 

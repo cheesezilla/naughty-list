@@ -24,15 +24,20 @@
     { "id": "wishing_star_pedestal", "name": "Wishing Star Pedestal", "power": 300, "luck": 9, "rank": 4, "price": null, "affinity": { "types": ["starlight", "carol"], "powerBonus": 0.1 }, "goodFor": "Elves that resist your trap, best with Starlight and Carol traps" }
   ],
   "baits": [
-    { "id": "stale_cookie", "name": "Stale Cookie", "attraction": 0.7, "rank": 1, "price": 8 },
-    { "id": "sugar_cookie", "name": "Sugar Cookie", "attraction": 0.78, "rank": 1, "price": 20 },
-    { "id": "peppermint_bark", "name": "Peppermint Bark", "attraction": 0.82, "rank": 3, "price": 40 },
-    { "id": "glitter_gumdrop", "name": "Glitter Gumdrop", "attraction": 0.8, "rank": 2, "price": 16 },
-    { "id": "honey_lozenge", "name": "Honey Lozenge", "attraction": 0.78, "rank": 2, "price": 8 },
-    { "id": "fruitcake", "name": "Fruitcake", "attraction": 0.85, "rareMultiplier": 2, "rank": 2, "price": null },
-    { "id": "ribbon_candy", "name": "Ribbon Candy", "attraction": 0.82, "rank": 2, "price": null },
-    { "id": "golden_bow_bonbon", "name": "Golden Bow Bonbon", "attraction": 0.86, "rank": 2, "price": null },
-    { "id": "hot_cocoa", "name": "Hot Cocoa", "attraction": 0.88, "rank": 4, "price": 45 }
+    { "id": "stale_cookie", "name": "Stale Cookie", "attraction": 0.7, "rank": 1, "price": 8, "role": "farm" },
+    { "id": "sugar_cookie", "name": "Sugar Cookie", "attraction": 0.78, "rank": 1, "price": 20, "role": "push" },
+    { "id": "peppermint_bark", "name": "Peppermint Bark", "attraction": 0.86, "rareMultiplier": 1.5, "rank": 3, "price": 60, "role": "push" },
+    { "id": "glitter_gumdrop", "name": "Glitter Gumdrop", "attraction": 0.8, "rank": 2, "price": 16, "role": "farm" },
+    { "id": "honey_lozenge", "name": "Honey Lozenge", "attraction": 0.78, "rank": 2, "price": 8, "role": "farm" },
+    { "id": "fruitcake", "name": "Fruitcake", "attraction": 0.85, "rareMultiplier": 2, "rank": 2, "price": null, "role": "push" },
+    { "id": "ribbon_candy", "name": "Ribbon Candy", "attraction": 0.82, "rank": 2, "price": null, "role": "push" },
+    { "id": "golden_bow_bonbon", "name": "Golden Bow Bonbon", "attraction": 0.86, "rank": 2, "price": null, "role": "push" },
+    { "id": "hot_cocoa", "name": "Hot Cocoa", "attraction": 0.92, "rareMultiplier": 1.5, "rank": 4, "price": 90, "role": "push" },
+    { "id": "pantry_crumbs", "name": "Pantry Crumbs", "attraction": 0.55, "rank": 1, "price": null, "role": "floor" },
+    { "id": "gingersnap", "name": "Gingersnap", "attraction": 0.78, "rank": 3, "price": 15, "role": "farm" },
+    { "id": "hay_biscuit", "name": "Hay Biscuit", "attraction": 0.78, "rank": 4, "price": 25, "role": "farm" },
+    { "id": "spiced_honey_drop", "name": "Spiced Honey Drop", "attraction": 0.86, "rareMultiplier": 1.5, "rank": 2, "price": 30, "role": "push" },
+    { "id": "gilded_cocoa", "name": "Gilded Cocoa", "attraction": 0.95, "rareMultiplier": 2.5, "rank": 4, "price": null, "role": "push" }
   ],
   "charms": [
     { "id": "mistletoe_charm", "name": "Mistletoe Charm", "luck": 4, "rank": 1, "price": 30 },

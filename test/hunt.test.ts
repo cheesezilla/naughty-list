@@ -68,19 +68,49 @@ describe('hunt', () => {
     expect(r.player.rank).toBe(2);
   });
 
-  it('refuses to hunt with no bait when the player can afford some', () => {
-    const p = fresh();
+  it('refuses to hunt with no bait outside the home area when the player can afford some', () => {
+    const p = { ...fresh(), location: 'wrapping_room', unlocked: ['cookie_pantry', 'wrapping_room'], rank: 2 };
     delete p.inventory.stale_cookie;
     expect(hunt(content, p, scripted(0)).ok).toBe(false);
   });
 
-  it("gives free cookies to a broke player so nobody gets stuck", () => {
-    const p = { ...fresh(), gold: 10 };
+  it('the free Pantry Crumbs keep a player with no bait hunting in the Pantry', () => {
+    const p = fresh();
+    delete p.inventory.stale_cookie;
+    const r = hunt(content, p, scripted(0.99));
+    if (!r.ok) throw new Error(r.error);
+    expect(r.entry.floorBait).toBe(true);
+    expect(r.player.setup.bait).toBe('pantry_crumbs');
+    expect(r.player.inventory.pantry_crumbs).toBeUndefined();
+    expect(r.entry.baitCost).toBe(0);
+  });
+
+  it('Pantry Crumbs do not work outside the Pantry', () => {
+    const wr = content.locations.find((l) => l.id === 'wrapping_room')!;
+    expect(wr.baits).not.toContain('pantry_crumbs');
+  });
+
+  it('gold from catches falls once the player outranks an area', () => {
+    const gold = (rank: number) => {
+      const r = hunt(content, { ...fresh(), rank }, scripted(0, 0, 0, 0));
+      if (!r.ok) throw new Error(r.error);
+      return r.entry.gold;
+    };
+    const full = gold(2);
+    expect(full).toBeGreaterThan(0);
+    expect(gold(3)).toBe(Math.round(full * 0.75));
+    expect(gold(5)).toBe(Math.round(full * 0.25));
+    const r = hunt(content, { ...fresh(), rank: 4 }, scripted(0, 0, 0, 0));
+    if (r.ok) expect(r.entry.falloff).toBe(0.5);
+  });
+
+  it("gives free cookies to a broke player outside the home area so nobody gets stuck", () => {
+    const p = { ...fresh(), gold: 10, location: 'carol_loft', unlocked: ['cookie_pantry', 'wrapping_room', 'carol_loft'], rank: 2 };
     delete p.inventory.stale_cookie;
     const r = hunt(content, p, scripted(0.99));
     if (!r.ok) throw new Error(r.error);
     expect(r.entry.rescued).toBe(true);
-    expect(r.player.inventory.stale_cookie).toBe(9);
+    expect(r.player.setup.bait).toBe('honey_lozenge');
   });
 
   it("the wrong area's bait is used up and the catch always fails", () => {
@@ -99,7 +129,7 @@ describe('hunt', () => {
     const r = hunt(content, p, scripted(0.99));
     if (!r.ok) throw new Error(r.error);
     expect(r.entry.rescued).toBe(true);
-    expect(r.player.setup.bait).toBe('peppermint_bark');
+    expect(r.player.setup.bait).toBe('gingersnap');
   });
 
   it('uses and then unequips a charm when the last one is spent', () => {

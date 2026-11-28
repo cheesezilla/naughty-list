@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks'
 import type { Content } from '../content/schema.js';
 import { gameData, type JournalRow, type PlayerState } from '../engine/index.js';
 import { api, checkVersion, onStale, stale, type User } from './api.js';
-import { GameContext, trimLog, type Game } from './game.js';
+import { emptySession, GameContext, trimLog, type Game, type SessionStats } from './game.js';
 import { loadArt } from './lib/art.js';
 import { buzz, getPrefs, playSound } from './lib/prefs.js';
 import { AchievementBanner, AchievementPopup, ReleasePopup, WelcomePopup } from './screens/achievements.js';
@@ -74,6 +74,7 @@ function Playing({ content, me, onLogout }: { content: Content; me: MeResponse; 
   const [player, setPlayer] = useState(me.player);
   const [log, setLog] = useState(me.journal);
   const [busy, setBusy] = useState(false);
+  const [session, setSession] = useState<SessionStats>(emptySession);
   const [toastState, setToast] = useState<Toast | null>(null);
   const [newCatch, setNewCatch] = useState<(NewCatch & { quiet: boolean }) | null>(null);
   const [badges, setBadges] = useState<{ ids: string[]; backfill: boolean } | null>(
@@ -133,6 +134,7 @@ function Playing({ content, me, onLogout }: { content: Content; me: MeResponse; 
       celebrate(r.newAchievements ?? []);
       if (r.entry.kind === 'hunt') {
         const e = r.entry.entry;
+        setSession((s) => ({ ...s, hunts: s.hunts + 1, earned: s.earned + e.gold, spent: s.spent + (e.baitCost ?? 0) + (e.upkeep ?? 0) + (e.pillage?.gold ?? 0) }));
         const imp = e.imp ? data.imps.get(e.imp) : undefined;
         if (e.outcome === 'catch' && e.firstCatch && e.imp) setNewCatch({ imp: e.imp, points: e.points ?? 0, quiet: !getPrefs().newCatchPopups });
         if (e.rankUp) {
@@ -159,6 +161,7 @@ function Playing({ content, me, onLogout }: { content: Content; me: MeResponse; 
   }, [content, data, toast, celebrate]);
 
   const game: Game = {
+    session, resetSession: () => setSession(emptySession()),
     content, data, user: me.user, player, log, act, toast, hunt, busy, setPlayer, celebrate,
     resetLog: (rows = []) => setLog(rows),
     logout: () => { api('POST', '/api/auth/logout', {}).finally(() => { go('hunt', true); onLogout(); }); },

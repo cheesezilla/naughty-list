@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'preact/hooks';
 import type { GameEvent, JournalEntry, JournalRow, Pillage } from '../../engine/index.js';
 import { api } from '../api.js';
-import { useGame } from '../game.js';
+import { huntNet, useGame } from '../game.js';
 import { Art } from '../lib/art.js';
 import { dayLabel, num, TIER_NAME, when } from '../lib/format.js';
 import { usePrefs } from '../lib/prefs.js';
@@ -62,7 +62,7 @@ function HuntRow({ row }: { row: JournalRow & { kind: 'hunt' } }) {
       return (
         <div class="log-row quiet">
           <span class="empty-thumb" aria-hidden="true">empty</span>
-          <div class="row-body"><b>Quiet hunt</b><br />Nothing took the bait.{e.rescued && ' Mrs. Claus slipped you 10 Stale Cookies.'}{e.objective && <ObjectiveNote o={e.objective} itemName={itemName} />}<HuntExtras e={e} /><BaitLeft e={e} itemName={itemName} /></div>
+          <div class="row-body"><b>Quiet hunt</b><br />Nothing took the bait.{e.rescued && ' Mrs. Claus slipped you free bait.'}{e.floorBait && ' Out of bait, so you swept up Pantry Crumbs (free, weak).'}{e.objective && <ObjectiveNote o={e.objective} itemName={itemName} />}<HuntExtras e={e} /><BaitLeft e={e} itemName={itemName} /></div>
           {time}
         </div>
       );
@@ -88,6 +88,8 @@ function HuntRow({ row }: { row: JournalRow & { kind: 'hunt' } }) {
                 ? <>Escaped. The {e.baitLeft ? itemName(e.baitLeft.item) : 'bait'} doesn't tempt elves here, so the catch could not happen.</>
                 : <>Escaped. {rateText(e.catchChance ?? 0)} chance</>}
           {e.upkeep ? <div class="muted small">Sleigh run upkeep: −{num(e.upkeep)} gold</div> : null}
+          {e.falloff ? <div class="muted small">Outranked area: gold paid at {Math.round(e.falloff * 100)}%</div> : null}
+          {e.baitCost || e.gold ? <div class="muted small">Net {huntNet(e) >= 0 ? '+' : '−'}{num(Math.abs(huntNet(e)))} gold ({num(e.baitCost ?? 0)} bait{e.upkeep ? `, ${num(e.upkeep)} upkeep` : ''})</div> : null}
           {e.objective && <ObjectiveNote o={e.objective} itemName={itemName} />}
           <HuntExtras e={e} />
           <BaitLeft e={e} itemName={itemName} />

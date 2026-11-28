@@ -67,8 +67,8 @@ function baitPrice(id: string): number {
 }
 
 /** Score of a setup: points plus net gold per hunt, so both progress and profit count. */
-function score(setup: Setup, location: string) {
-  const o = huntOdds(content, setup, location);
+function score(setup: Setup, location: string, rank?: number) {
+  const o = huntOdds(content, setup, location, rank);
   const net = o.expectedGold - baitPrice(setup.bait ?? '');
   return { odds: o, net, value: o.expectedPoints + net };
 }
@@ -82,7 +82,7 @@ function bestSetup(p: PlayerState, location: string, allowBuyBait: boolean): { s
   let best = { setup: p.setup, value: -Infinity, net: -Infinity };
   for (const t of traps) for (const b of bases) for (const bait of baits.length ? baits : [null]) {
     const setup: Setup = { trap: t.id, base: b.id, bait: bait?.id ?? null, charm: null };
-    const s = score(setup, location);
+    const s = score(setup, location, p.rank);
     if (s.value > best.value) best = { setup, value: s.value, net: s.net };
   }
   return best;

@@ -66,6 +66,13 @@
 
   "charmValue": { "minAllGain": 0.01, "maxBossGain": 0.20 },
 
+  "economy": {
+    "_note": "eddy 28 Nov: the loop is farm (cheap bait, earn gold), then push (pricey bait, a sink for a boss or progress), then repeat. farmMinNet = least net gold per hunt a farm stage must earn with recommended gear; sinkMinPushCost = push bait must cost at least this much gold per hunt; campMargin = an outranked area with endgame gear at the top rank must pay under this share of the best farm.",
+    "farmMinNet": { "cookie_pantry": 5, "carol_loft": 15, "toy_workshop": 80 },
+    "sinkMinPushCost": { "wrapping_room": 30, "reindeer_stables": 60 },
+    "campMargin": 0.8
+  },
+
   "accepted": [],
   "_acceptedNote": "Flags eddy has reviewed and accepted: { \"rule\": \"cheese\", \"subject\": \"Carol Horn in Toy Workshop\", \"why\": \"...\" }. They are listed in the report but no longer warn in CI."
 }
