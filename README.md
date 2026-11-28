@@ -2,14 +2,16 @@
 
 A Christmas imp-trapping browser game. Scrinch's imps are raiding Santa's secret lair; you arm a trap, pick a bait and hunt them, back to back, with no wait timer. Bait cost paces progress instead.
 
-Design plan: [docs/PLAN.md](docs/PLAN.md) (updated with every PR)
+Developer notes (design plan, art, deployment, releasing): [docs/DEVELOPER_NOTES.md](docs/DEVELOPER_NOTES.md), updated with every PR
 
-Strategy walkthrough: [docs/WALKTHROUGH.md](docs/WALKTHROUGH.md)
+Wiki and strategy walkthrough: [docs/WIKI.md](docs/WIKI.md)
+
+Balance notes (gear balance check and simulations): [docs/BALANCE.md](docs/BALANCE.md)
 
 ## Status
 
 - Milestones 1 to 3 are in: hunt engine, v1 content (4 locations, 24 imps), balance simulator, accounts with open sign-up, server-side hunts and SQLite saves, and a phone-first UI with original art.
-- Deploys to a UGREEN NAS with Docker; see [docs/DEPLOY.md](docs/DEPLOY.md).
+- Deploys to a UGREEN NAS with Docker; see [Developer notes, Deployment guide](docs/DEVELOPER_NOTES.md#deployment-guide-nas).
 - Next: leaderboard and catch feed.
 
 ## Run it
@@ -59,7 +61,7 @@ Edit, then run `npm run check-content` and `npm run simulate` to see the effect.
 
 ## Deploy on the UGREEN NAS
 
-Follow [docs/DEPLOY.md](docs/DEPLOY.md). Pushing to `main` builds `ghcr.io/cheesezilla/naughty-list:latest`, and a new version number in `package.json` also publishes a pinned `:1.0.0` image, a `v1.0.0` tag and a GitHub Release. Release notes are in [CHANGELOG.md](CHANGELOG.md) and the process is in [docs/RELEASING.md](docs/RELEASING.md). In the NAS Docker app, create a project from `compose.yaml`, and the game is at `http://<nas-address>:8081`. An optional Cloudflare Tunnel in the same file lets friends play from anywhere.
+Follow [Developer notes, Deployment guide](docs/DEVELOPER_NOTES.md#deployment-guide-nas). Pushing to `main` builds `ghcr.io/cheesezilla/naughty-list:latest`, and a new version number in `package.json` also publishes a pinned `:1.0.0` image, a `v1.0.0` tag and a GitHub Release. Release notes are in [CHANGELOG.md](CHANGELOG.md) and the process is in [Developer notes, Releasing](docs/DEVELOPER_NOTES.md#releasing). In the NAS Docker app, create a project from `compose.yaml`, and the game is at `http://<nas-address>:8081`. An optional Cloudflare Tunnel in the same file lets friends play from anywhere.
 
 ## Layout
 

@@ -203,7 +203,7 @@ export const GENERATED_MARKER = 'generated-by: scripts/art';
 export function svg(width: number, height: number, title: string, body: string): string {
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" role="img" aria-label="${esc(title)}">` +
-    `<!-- ${GENERATED_MARKER} (npm run art). Replace this file freely; see docs/ART.md -->` +
+    `<!-- ${GENERATED_MARKER} (npm run art). Replace this file freely; see docs/DEVELOPER_NOTES.md, Art reference -->` +
     `<title>${esc(title)}</title>${body}</svg>\n`
   );
 }

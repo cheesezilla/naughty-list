@@ -1,6 +1,6 @@
-# The Naughty List: design and v1 plan
+# The Naughty List: developer notes
 
-Living design document. It is updated in every pull request that changes the game, so it always matches `main`.
+Living design and discussion document: where game mechanics are planned and debated before they are built, plus how the game is made, deployed and released. Update it in every pull request that changes the game, so it always matches the code. The other two docs are [Balance notes](BALANCE.md) (gear balance check and simulation history) and the [Wiki](WIKI.md) (player-facing reference and walkthrough).
 Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this file is now the source of truth).
 
 ## Implementation status
@@ -15,7 +15,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Flavour text for every item and elf | Done | #9 (shown in the UI since #11) |
 | Art for every UI slot: 97 original SVGs + manifest, named by game id | Done | #10 (shown in the UI since #11) |
 | Custom PNG portraits for all 10 cookie-pantry/wrapping-room/toy-workshop/reindeer-stables elves | Done | #13 |
-| Custom AI-generated art for every slot except the 24px icons (97 pictures: 29 elves, traps, bases, baits, charms, materials, trap types, ranks, locations, map, brand, how-to), resized and saved as WebP; see [ART_PROGRESS.md](ART_PROGRESS.md) | Done | #14, #40 |
+| Custom AI-generated art for every slot except the 24px icons (97 pictures: 29 elves, traps, bases, baits, charms, materials, trap types, ranks, locations, map, brand, how-to), resized and saved as WebP; see [ART_PROGRESS.md](#custom-art-progress) | Done | #14, #40 |
 | New phone-first UI (layout D2): bottom menu, hunt log with events and full history, Arsenal, Elf Emporium, Santa's Workshop, More pages, open sign-up with admin switch | Done | #11 |
 | Holly power type renamed Starlight; its three traps reworked (Starlit Stocking, Star Lantern, Constellation Wreath) with new text and SVG art, old saves migrated | In review | #17 |
 | Intro letter from Santa: the game's backstory as the first hunt-log entry of every new game, and on How to play | In review | #12 |
@@ -36,14 +36,15 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Boss keys: the local boss drops a key on its first catch, and the next location needs it to unlock (existing saves are granted the keys they have earned); see [Progression](#progression) | In review | this PR |
 | Branching progression (eddy): luck rework (luck helps most against commons, least against bosses), Madame Shredwell weak to a new Carol type, and the Carol Loft side area where the Carol Horn is made; see [Branching progression](#branching-progression) | In review | this PR |
 | New bases: two tiers of power, attraction and luck bases, with build affinity and a "good for" line; see [New bases](#new-bases-power-attraction-and-luck) | In review | #21 |
-| Playtest and simulation plan: what the simulator must report for Allure, Cheer Meter, events and goals, targets and how to read them (plan only); see [Playtest and simulation plan](#playtest-and-simulation-plan-eddy-27-nov-2026-plan-only). Baseline simulator built (Allure tiers, goals, gold flow, progress feel, `--seeds`, `--trace`); Cheer and events policies and metrics included; findings in [SIMULATION_REPORT.md](SIMULATION_REPORT.md) | In progress | this PR |
+| Playtest and simulation plan: what the simulator must report for Allure, Cheer Meter, events and goals, targets and how to read them (plan only); see [Playtest and simulation plan](#playtest-and-simulation-plan-eddy-27-nov-2026-plan-only). Baseline simulator built (Allure tiers, goals, gold flow, progress feel, `--seeds`, `--trace`); Cheer and events policies and metrics included; findings in [SIMULATION_REPORT.md](BALANCE.md#simulation-history) | In progress | this PR |
 | Commons and Grimbolt tuned to the balance bands; balance report gets a Recommended gear tier and a boss-gap flag; walkthrough rewritten as trap 1 / trap 2 per area | Done | this PR |
-| Balance check: `npm run balance` flags catch-rate problems for every trap x base x charm against every elf (fresh and endgame profiles), thresholds in `balance/thresholds.json`, report in [docs/BALANCE.md](BALANCE.md), advisory in CI | Done | this PR |
+| Balance check: `npm run balance` flags catch-rate problems for every trap x base x charm against every elf (fresh and endgame profiles), thresholds in `balance/thresholds.json`, report in [Balance notes](BALANCE.md), advisory in CI | Done | this PR |
 | Random events after a hunt (Santa and Mrs. Claus boons with a safe or big choice and rare free Grand Gifts; Scrinch's random events were removed again, he stays the story villain), plus a parked-ideas list; see [Random events](#random-events-built-on-integration) | Built on `integration` (test playground), draft numbers | this PR |
 | Cheer Meter and boons (eddy): a streak meter, pick 1 of 3 from 14 boons in three rarities, Overcharge and Cheer charms; see [Cheer Meter](#cheer-meter-and-boons-eddy-26-nov-2026-built-on-integration) | Built on `integration` (test playground), draft numbers | this PR |
-| Full-game strategy walkthrough: [docs/WALKTHROUGH.md](WALKTHROUGH.md), gear, bosses and Cheer Meter use for every location | Done | this PR |
+| Full-game strategy walkthrough: [Wiki walkthrough](WIKI.md#walkthrough), gear, bosses and Cheer Meter use for every location | Done | this PR |
+| Docs consolidated into three: Developer notes, Balance notes, Wiki with walkthrough | Done | this PR |
 | 5. Tune from play-test | Planned | |
-| Versioned releases: semver in `package.json`, `CHANGELOG.md`, merging a new version into `main` publishes version-tagged Docker images, a `vX.Y.Z` tag and a GitHub Release, plus in-game release notes (`content/releases.json`, What's new popup and More screen); first release 1.0.0 (integration promoted to main); see [Deployment](#deployment) and [RELEASING.md](RELEASING.md) | Done | this PR |
+| Versioned releases: semver in `package.json`, `CHANGELOG.md`, merging a new version into `main` publishes version-tagged Docker images, a `vX.Y.Z` tag and a GitHub Release, plus in-game release notes (`content/releases.json`, What's new popup and More screen); first release 1.0.0 (integration promoted to main); see [Deployment](#deployment) and [RELEASING.md](#releasing) | Done | this PR |
 
 The server runs every hunt and saves each player in SQLite. To play locally, follow "Run it locally" below.
 
@@ -166,7 +167,7 @@ Nothing here is built and no game number changes. It says what the simulator and
 
 ### Balance check (standard step for every balance PR)
 
-`npm run balance` ([docs/BALANCE.md](BALANCE.md)) computes catch rates with the real engine formula for every trap x base x charm against every elf, for a **fresh player** (the traps they could own on entering the area, the area's base, no charm) for **recommended gear** (what docs/WALKTHROUGH.md has the player farm for, including optional crafts) and for **endgame gear** (an over-ranked player with traps and bases from later areas; best setup per elf). It flags commons outside the bands in "Balance targets per location", elves off their stated target (Madame Shredwell about 10% off-type and 30% with Carol, Cinderhoof about 25% with the best gear), bosses and mini bosses too easy or near impossible, cheese (a trap that outclasses the intended gear of an area), obsolete traps gear that adds little for its cost, and a boss that is less than 10 points easier with recommended gear than with beginner gear (eddy: recommended gear should almost always be needed for the local boss). Thresholds live in `balance/thresholds.json`; CI runs it as an advisory step (`continue-on-error`, warnings only).
+`npm run balance` ([Balance notes](BALANCE.md)) computes catch rates with the real engine formula for every trap x base x charm against every elf, for a **fresh player** (the traps they could own on entering the area, the area's base, no charm) for **recommended gear** (what docs/WALKTHROUGH.md has the player farm for, including optional crafts) and for **endgame gear** (an over-ranked player with traps and bases from later areas; best setup per elf). It flags commons outside the bands in "Balance targets per location", elves off their stated target (Madame Shredwell about 10% off-type and 30% with Carol, Cinderhoof about 25% with the best gear), bosses and mini bosses too easy or near impossible, cheese (a trap that outclasses the intended gear of an area), obsolete traps gear that adds little for its cost, and a boss that is less than 10 points easier with recommended gear than with beginner gear (eddy: recommended gear should almost always be needed for the local boss). Thresholds live in `balance/thresholds.json`; CI runs it as an advisory step (`continue-on-error`, warnings only).
 
 **Workflow for a PR that changes gear, elf power, luck, effectiveness, prices, recipes or the catch formula:** (1) `npm run balance` before the change, (2) change `content/*.json`, (3) `npm run balance` again and read the new flags, (4) `npm run balance -- --write` to refresh `docs/BALANCE.md`, (5) `npm run check-content`, `npm test`, `npm run simulate`, (6) in the PR description, say which flags the change fixes, adds or leaves. A flag that is a deliberate design choice goes under `accepted` in the thresholds file with the reason. A new elf, area, trap or base needs an entry in `fresh` (and `elfTargets` if it has a stated target). First run (27 Nov, `integration` at PR 75): 19 flags; 13 once PR 76 (Carol Horn luck 1) is merged. `docs/BALANCE.md` section 1b lists every elf's catch rate with the area's recommended beginner gear and with endgame gear; see the findings there.
 
@@ -1094,7 +1095,7 @@ Before the home types, with the old buying rule, the simulator never bought a Fr
 
 ## Art
 
-Every picture has a fixed name, `src/client/public/art/<slot>/<id>.<ext>`, where the id is the game-data id (`traps/jack_in_the_box.webp`, `imps/crumb_elf.webp`, `locations/cookie_pantry.webp`). `art/manifest.json` lists each one with its size, a description and a prompt for regenerating it with an image tool. Full rules, sizes and how to swap in a PNG: [docs/ART.md](ART.md).
+Every picture has a fixed name, `src/client/public/art/<slot>/<id>.<ext>`, where the id is the game-data id (`traps/jack_in_the_box.webp`, `imps/crumb_elf.webp`, `locations/cookie_pantry.webp`). `art/manifest.json` lists each one with its size, a description and a prompt for regenerating it with an image tool. Full rules, sizes and how to swap in a PNG: [docs/ART.md](#art-reference).
 
 | Slot | Count | Size (px) | Notes |
 | --- | --- | --- | --- |
@@ -1198,9 +1199,9 @@ The first account you create is the admin. Friends create their own accounts fro
 
 ## Deployment
 
-The game ships as one Docker image (`ghcr.io/cheesezilla/naughty-list`), built and published by GitHub Actions: each push to `main` publishes `:latest`, each push to `integration` publishes `:integration`, and a `main` push with a new `package.json` version also publishes `:1.0.0` and `:1.0`, tags `v1.0.0` and creates a GitHub Release. Release process: [docs/RELEASING.md](RELEASING.md); player-facing history: [CHANGELOG.md](../CHANGELOG.md). The UGREEN DXP4800 has an Intel x86 processor, so the amd64 image works.
+The game ships as one Docker image (`ghcr.io/cheesezilla/naughty-list`), built and published by GitHub Actions: each push to `main` publishes `:latest`, each push to `integration` publishes `:integration`, and a `main` push with a new `package.json` version also publishes `:1.0.0` and `:1.0`, tags `v1.0.0` and creates a GitHub Release. Release process: [docs/RELEASING.md](#releasing); player-facing history: [CHANGELOG.md](../CHANGELOG.md). The UGREEN DXP4800 has an Intel x86 processor, so the amd64 image works.
 
-Step-by-step guide: [docs/DEPLOY.md](DEPLOY.md). In short:
+Step-by-step guide: [Deployment guide](#deployment-guide-nas). In short:
 
 1. Make the GitHub package public once, or log the NAS in to ghcr.io with a `read:packages` token.
 2. In the UGOS Docker app, create a project from `compose.yaml`. Saves go to `/volume1/docker/naughty-list`.
@@ -1282,12 +1283,234 @@ The first idea (replace the attraction roll where no elf takes the bait) is trac
 ## Still to sort out
 
 - [ ] A domain on Cloudflare for the friends' address (or choose Tailscale), needed at milestone 4.
-- [ ] Make the GitHub package public, or give the NAS a read token (DEPLOY.md part 1).
+- [ ] Make the GitHub package public, or give the NAS a read token (Deployment guide part 1).
+
+## Art reference
+
+Every picture in the game lives in `src/client/public/art/` and is served at `/art/...`. The first set is original vector art (SVG) drawn in code by `scripts/art/`, in one house style. Any file can be swapped for a hand-made or AI-generated image without touching game code.
+
+The generated SVGs have been replaced by custom AI-generated WebP pictures for every slot except `icons` (see [ART_PROGRESS.md](#custom-art-progress)). The tables below still describe the sizes each picture is resized to.
+
+#### Naming rule
+
+```
+src/client/public/art/<slot>/<id>.<ext>
+```
+
+- **slot** is the kind of picture (table below) and is also the folder name.
+- **id** is the game-data id from `content/*.json` (for example `jack_in_the_box`, `crumb_elf`, `cookie_pantry`), so the game finds a picture by the same key it already uses for the thing itself. Pictures that are not game data use the fixed ids in the table.
+- **ext** is `svg` for the generated art. A replacement may be `png`, `webp`, `jpg`, `avif` or `gif`.
+- Ids are lower case `snake_case`. An id that starts with `_` is a special state, not game data (`imps/_locked`).
+
+`src/client/public/art/manifest.json` lists every picture: `id`, `slot`, `file`, `width`, `height`, `transparent`, `source` (`generated` or `custom`), a one-line `description` and a `prompt` you can paste into an image tool to make a new version. Some entries carry extra fields, listed below. The UI should read paths from the manifest rather than build them, so a `png` replacement just works.
+
+#### Slots
+
+| Slot (folder) | Ids | Size (px) | Background | Used on |
+| --- | --- | --- | --- | --- |
+| `brand` | `icon`, `key_art` | icon 1024×1024; key art 1170×1290 | Filled | Top strip and login (icon); login screen, full bleed (key art) |
+| `traps` | trap ids | 600×450 | Transparent | Hunt screen, Arsenal, Emporium, Workshop. Drawn **on top of** the base |
+| `bases` | base ids | 600×450 | Transparent | Same places, drawn **under** the trap |
+| `baits` | bait ids | 512×512 | Transparent | Thumbnails everywhere |
+| `charms` | charm ids | 512×512 | Transparent | Thumbnails everywhere |
+| `materials` | material ids | 512×512 | Transparent | Workshop ingredients, loot lines |
+| `trap_types` | `clockwork`, `starlight`, `frost` | 256×256 | Transparent corners | Trap type badges, elf weakness hints |
+| `locations` | location ids | 1170×470 (5:2) | Filled | Hunt screen banner; crop with `object-fit: cover` for Travel list thumbnails |
+| `map` | `lair_map` | 1600×900 (16:9) | Filled | Travel map. Entry has `pins`: `{ "<location id>": { "x", "y" } }` in map pixels |
+| `imps` | elf ids (the slot keeps its old name), plus `_locked` | 512×512 | Filled card | Naughty List grid, elf file, hunt log. `_locked` is the "?" card for elves not caught yet. Entries have `tier` and `location` |
+| `ranks` | `rank_<number>` (`rank_1` … `rank_5`) | 256×256 | Transparent | Top bar rank thumbnail, rank-up, How to play |
+| `icons` | `nav_*`, `menu_*`, `stat_*` (below) | 24×24 | Transparent | Bottom nav, More menu, stat labels |
+| `howto` | `hunt`, `attraction`, `power`, `luck`, `trap_types`, `loot`, `pillage`, `ranks` | 640×360 | Filled | How to play page, one per section |
+
+Icons: `nav_hunt`, `nav_naughty_list`, `nav_emporium`, `nav_workshop`, `nav_more`, `menu_travel`, `menu_hunters`, `menu_stats`, `menu_howto`, `menu_settings`, `menu_admin`, `menu_account`, `menu_logout`, `stat_gold`, `stat_points`, `stat_power`, `stat_luck`, `stat_attraction`, `stat_catch`. They are line icons drawn in `currentColor`, so to colour them with the text, inline them or use them as a CSS `mask-image`; as a plain `<img>` they draw in black.
+
+**Layering traps and bases:** both share one 600×450 canvas. The base's top surface and the trap's bottom are both at y = 340, so stacking the two images at the same size and position puts the trap on the base. Keep that line when you replace either one. Trap and base entries carry `layer` (`trap` or `base`).
+
+#### Replacing a picture
+
+1. Make the new image at the size in the table (bigger is fine if the aspect ratio matches). The manifest `prompt` gives the subject, framing and house style.
+2. Save it next to the old one with the same name and your extension, for example `art/imps/crumb_elf.png`. You can delete the old `.svg` or leave it.
+3. Run `npm run art`. It sees the custom file, points the manifest at it and marks it `"source": "custom"`. It never overwrites a custom file.
+
+You can also edit or replace an `.svg` directly: the generator only overwrites SVGs that still contain the `generated-by: scripts/art` comment, so remove that line from a hand-edited SVG to keep it.
+
+#### Regenerating the vector art
+
+- `npm run art` writes any missing or changed generated SVGs and rebuilds the manifest.
+- `npm run art -- --force` rewrites every generated SVG (custom files are still kept).
+- Drawings live in `scripts/art/`: `items.ts` (traps, bases, baits, charms, materials, trap types), `imps.ts` (portraits), `world.ts` (icon, key art, locations, map), `ui.ts` (ranks, icons, How to play). Shared palette and helpers are in `lib.ts`.
+- Adding a new trap, elf, location or rank to `content/` needs a drawing (or a custom file) and a manifest entry: `npm run art` stops with a message naming the missing id, and `npm test` fails until the manifest covers it.
+
+#### House style
+
+Flat storybook shapes with a thick dark-brown outline (`#2b1d14`), the UI palette (pine `#0f3d2e`, berry red `#b3261e`, gold `#e9c46a`, cream `#fdf8ef`), small white highlights, no text in pictures except the How-to-play diagrams. Hexed-elf portraits share one head shape with pointed ears, a pointed cap in the room's colour and a soot smudge from the hex (the Gingerbread Rascal, General Grimbolt and Cinderhoof have their own shapes); each lair room has its own cap colour and background, and the frame shows tier: plain (common), gold (rare), silver (mini boss), red and gold with stars (boss). All art is original to this game.
+
+### Custom art progress
+
+Tracks the pass replacing the generated SVG art (from PR #10) with custom
+AI-generated pictures, asset by asset. See [Art reference](#art-reference) for the naming
+rule and how a replacement picture is picked up, and
+[Art](#art) for the overall art section.
+
+Icons (`icons` slot: `nav_*`, `menu_*`, `stat_*`, 19 total) are **not** being
+regenerated — they're plain single-colour shapes the SVG generator already
+does well.
+
+How these are generated (tools, prompts, transparency via `rembg`, Gemini's
+daily quota): see the `gemini-art-generation` project memory.
+
+##### Done (26 Nov 2026)
+
+All 97 pictures outside the icons are custom art, imported from eddy's downloaded set (one file per id): 29 elf portraits (`imps` slot, incl. `_locked`), 9 traps, 11 bases, 7 baits, 3 charms, 13 materials, 4 trap types, 5 ranks, 5 locations, `lair_map`, `icon`, `key_art` and 8 how-to-play pictures. They are resized to the slot sizes in [Art reference](#art-reference) and saved as WebP; traps, bases, baits, charms and materials are transparent, and the trap type and rank badges had their flat background removed. The old generated SVGs for those ids were deleted.
+
+Icons (`icons` slot, 19) stay generated SVG.
+
+Each asset's `prompt` for regenerating it is in `art/manifest.json`. Older custom PNGs of the retired imps are in `art-archive/imps/`.
+
+## Deployment guide (NAS)
+
+These steps run the game on a UGREEN DXP4800 (UGOS Pro) with its Docker app. Part 1 and part 2 get it running on your home network. Part 3 is optional: it gives the game a public HTTPS address through Cloudflare. To play away from home over a VPN instead, see "Playing away from home over a VPN".
+
+Button names can differ a little between UGOS versions. If a label doesn't match, look for the closest one.
+
+#### Part 1: let the NAS download the game (once)
+
+Every merge to `main` publishes the image `ghcr.io/cheesezilla/naughty-list:latest`. GitHub makes new packages private, so the NAS can't download it yet. Pick one of these:
+
+- **Make the package public (simplest).** On GitHub, go to your profile, open **Packages**, then **naughty-list**. Choose **Package settings**, then **Change visibility**, and set it to **Public**. Only the built game becomes public. The source code stays private.
+- **Or keep it private.** Create a GitHub personal access token (classic) with only the `read:packages` scope. In the UGOS Docker app, open **Registry** (or **Image > Add registry**), add `ghcr.io`, and log in with your GitHub username and the token as the password.
+
+#### Part 2: run it on the NAS
+
+1. In **File Manager**, make sure there is a shared folder called `docker` on volume 1. Create it if it's missing. The game creates its own `naughty-list` folder inside it.
+2. Open the **Docker** app, go to **Project** and choose **Create**.
+3. Name the project `naughty-list`, and paste in the contents of [`compose.yaml`](../compose.yaml) from this repo.
+4. Optional: `TZ=Asia/Singapore` sets the time zone for the server's log. Change it to yours if needed. The game uses port 8081 on the NAS. If that port is taken, change the left number, for example `"8090:8080"`.
+5. Choose **Deploy** (or **Create and start**). The first start downloads about 60 MB.
+6. Open `http://<your-NAS-address>:8081`, for example `http://192.168.1.50:8081`. You can find the address in UGOS under **Control Panel > Network**.
+7. Create your account. The first account on a new server becomes the admin.
+
+Saves live in `/volume1/docker/naughty-list/naughty-list.db`. Include that folder in your UGOS backups.
+
+#### Playing away from home over a VPN
+
+The game runs over plain `http://`. That's fine on your home network and over a VPN such as WireGuard, because the VPN already encrypts the traffic. Connect to the VPN, then open `http://<NAS-address>:8081`, for example `http://192.168.50.156:8081`. Friends who want to play need their own WireGuard profile on your VPN.
+
+Some browsers, especially Chrome on phones, try `https://` first and then show a warning or an error. If that happens, type the address with `http://` in full. If it still switches to `https://`, turn off **Always use secure connections** in Chrome's **Settings > Privacy and security**.
+
+Send friends the address privately. They tap **Create account** on the login screen. Once everyone has joined, turn off **Allow new accounts** under **More > Admin**.
+
+#### Part 3 (optional): public HTTPS address with Cloudflare
+
+A Cloudflare Tunnel gives the game a public `https://` address without opening any ports on your router. You need a free Cloudflare account and a domain whose DNS is managed by Cloudflare.
+
+1. In the Cloudflare dashboard, open **Zero Trust**, then **Networks > Tunnels**, and choose **Create a tunnel**.
+2. Choose **Cloudflared**, name the tunnel `naughty-list`, and choose **Docker** as the environment. Copy the long token from the command shown. It's the part after `--token`.
+3. Under **Public hostname**, add one:
+   - Subdomain: for example `naughtylist`
+   - Domain: your domain
+   - Service: type **HTTP**, URL `naughty-list:8080`
+4. In the UGOS Docker app, edit the `naughty-list` project. Remove the `#` from the `cloudflared` lines at the bottom of the compose file, paste your token in place of `paste-your-token-here`, and redeploy.
+5. Open `https://naughtylist.<your-domain>`. Share that address with friends so they can create accounts, then turn off **Allow new accounts** under **More > Admin** once everyone has joined.
+
+Tailscale is an alternative if you'd rather keep the game off the public internet. Every friend then has to install Tailscale and join your network.
+
+#### Updating to a new version
+
+After a pull request is merged, wait for the **Docker image** check on GitHub to finish, which takes about 3 minutes. Then, in the UGOS Docker app:
+
+1. Open **Image**, find `ghcr.io/cheesezilla/naughty-list`, and pull or update `latest`.
+2. Open **Project > naughty-list** and redeploy, or stop and start it.
+
+Saves are kept, because they live in the shared folder rather than in the container.
+
+Merging `integration` into `main` is a release. When the version in `package.json` is new, the same build also publishes a numbered image (for example `1.0.0`), `ghcr.io/cheesezilla/naughty-list:1.0.0`. Use that tag in the compose file to stay on one version or to roll back. See [RELEASING.md](#releasing) for how releases are made.
+
+##### Trying a pull request before it is merged
+
+Every pull request also publishes a test image tagged `pr-<number>`, for example `ghcr.io/cheesezilla/naughty-list:pr-11`. To try it on the NAS:
+
+1. Back up the save first: copy `/volume1/docker/naughty-list` (with the game stopped) to somewhere safe. A newer version may upgrade the save, and an older version might not read it afterwards.
+2. In **Project > naughty-list**, edit the compose file and change the image line to `ghcr.io/cheesezilla/naughty-list:pr-11`. Save and redeploy.
+3. When the pull request is merged, change the line back to `:latest`, pull `latest` and redeploy.
+
+##### A second NAS project for the integration branch
+
+The `integration` branch is a test branch that threads can push to directly, without a pull request, so you can try changes straight away. Every push to it publishes the image `ghcr.io/cheesezilla/naughty-list:integration`. `main` stays pull-request only, and the main project keeps pulling `:latest`.
+
+Create a second project in the UGOS Docker app named `naughty-list-test` and paste this. It uses a different container name, host port and save folder, so it never shares a database with the main project:
+
+```yaml
+services:
+  naughty-list-test:
+    image: ghcr.io/cheesezilla/naughty-list:integration
+    container_name: naughty-list-test
+    ports:
+      - "8082:8080"   # main project uses 8081
+    volumes:
+      - /volume1/docker/naughty-list-test:/data   # separate save folder
+    environment:
+      - TZ=Asia/Singapore
+    restart: unless-stopped
+```
+
+Open `http://<your-NAS-address>:8082`. To get the newest integration build, pull the image and redeploy the project. The test save starts empty, and you can delete `/volume1/docker/naughty-list-test` any time to start fresh. When integration work is ready, a pull request merges it into `main`.
+
+#### Troubleshooting
+
+| Problem | Fix |
+| --- | --- |
+| Pulling the image fails with "denied" or "not found" | The package is still private. See part 1. |
+| The page doesn't load | Check the container is running in **Container**. Open its log, which should end with `Server listening at http://0.0.0.0:8080`. Check that the port in the address matches the left number in `ports`. |
+| The log says `unable to open database file`, or the container keeps restarting | Update to the latest image, which fixes most cases by itself and otherwise prints what is wrong. Check that `volumes` maps the folder `/volume1/docker/naughty-list` to `/data`, not a single file. If `naughty-list.db` on the NAS is a folder, delete it and redeploy. |
+| The log says it can't write to the save folder | Make sure `/volume1/docker` exists. The container fixes folder ownership itself on start, so redeploying usually clears this. |
+| Friends get a Cloudflare error page | Check the `naughty-list-tunnel` container is running and its log shows a connection. Check the public hostname's service is `http://naughty-list:8080`. |
+| You forgot the admin password | Stop the project, move `naughty-list.db` somewhere safe, and start again. This creates a fresh game. Password reset comes in a later version. |
+
+## Releasing
+
+A release is **merging `integration` into `main` and deploying `main` on the NAS**. Everything else happens by itself.
+
+Versions follow [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`, with the current one in `package.json`.
+
+| Bump | When | Example |
+| --- | --- | --- |
+| **MAJOR** | A change that restarts or breaks saves, or rebuilds the core loop | 2.0.0 |
+| **MINOR** | New content, features or balance changes players will notice | 1.1.0 |
+| **PATCH** | Bug fixes, wording, art and UI polish with no rule changes | 1.0.1 |
+
+#### Before the integration → main PR
+
+Do these on `integration` (a normal pull request into it, or the release PR itself):
+
+1. Bump `version` in `package.json` and the root entries of `package-lock.json`.
+2. In `CHANGELOG.md`, rename `## [Unreleased]` to `## [X.Y.Z] - date` (plus a new empty `[Unreleased]` above it and the compare links at the bottom). Write for players.
+3. Add the same notes to the top of `content/releases.json` (newest first). This is the **What's new** popup, shown once to every player after an update, and the **More > What's new** screen. A test fails if its first version differs from `package.json` or is missing from `CHANGELOG.md`.
+4. Add a `docs/DEVELOPER_NOTES.md` changelog row.
+
+Between releases, add a line under `[Unreleased]` in every pull request that players would notice.
+
+#### What happens when `integration` is merged into `main`
+
+The **Docker image** workflow runs on the `main` push:
+
+- publishes `ghcr.io/cheesezilla/naughty-list:latest` (the image the NAS pulls),
+- if `package.json` has a version with no git tag yet, it also publishes `:X.Y.Z` and `:X.Y`, then creates the tag `vX.Y.Z` and a GitHub Release using that version's `CHANGELOG.md` section as the notes. If the section is missing, the release step fails: fix the changelog on `main` and re-run the workflow.
+- a push to `main` with the same version as before only refreshes `:latest`, so the version tag is never overwritten.
+
+`/api/health` shows the running version: `X.Y.Z` for a release image, the commit for other images.
+
+#### Deploying on the NAS
+
+After the workflow finishes (about 3 minutes), pull `latest` and redeploy the project, as in [the deployment guide](#updating-to-a-new-version). The first time each player opens the game after the update, they see the What's new popup.
+
+To stay on a version or roll back, set the image line to `ghcr.io/cheesezilla/naughty-list:1.0.0`. Newer versions upgrade saves in place and older ones may not read them, so copy `/volume1/docker/naughty-list` first.
 
 ## Changelog
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-28 | this PR | **Docs consolidated into three (eddy).** `docs/PLAN.md` became `docs/DEVELOPER_NOTES.md` (design and planning, plus the former ART, ART_PROGRESS, DEPLOY and RELEASING docs as sections); `docs/SIMULATION_REPORT.md` moved into `docs/BALANCE.md` as the Simulation history; `docs/WALKTHROUGH.md` became the Walkthrough section of the new player-facing `docs/WIKI.md`. README, CHANGELOG, CLAUDE.md and script comments point at the new files. No game change. |
 | 2026-11-28 | this PR | **Commons and Grimbolt tuned to the balance bands (eddy).** Elf power raised: Pantry x2.2 (Crumb Elf 40 to 90 and so on), Wrapping Room x2.0, Stables commons x2.55, rares and mini bosses of those rooms raised alongside (table above); General Grimbolt 2,800 to 5,900 so endgame gear catches him 59.1%. **Small gear buffs (eddy):** Wind-up Key Charm +35% power (was +20%), Yule Log Base power 800 (was 600), Gingerbread Cottage power 1,550 (was 550), Cinderhoof power 20,500 (was 16,800), so recommended gear beats beginner gear by 10+ points on every boss (Grimbolt 25% to 37%, Cinderhoof 16% to 26%). Gold and points per elf x1.35 (Pantry, Wrapping Room) and x1.45 (Stables) so rank pace holds (ranks 128, 270, 428, 616 hunts; median 1,448 to rank 5, 2,386 to catch every elf). Shredwell and Cinderhoof untouched. `npm run balance`: commons in band everywhere, Grimbolt flag fixed; new Recommended gear tier in BALANCE.md section 1b and a recommended-gap flag (closed by the gear buffs). docs/WALKTHROUGH.md rewritten: per area, equip trap 1, hunt until trap 2, come back for the boss, with an elf table of catch rates for both |
 | 2026-11-27 | this PR | **Balance check workflow (eddy).** New `npm run balance` (`scripts/balance.ts`, thresholds in `balance/thresholds.json`, report `docs/BALANCE.md`): catch rate of every trap x base x charm against every elf with the real engine formula, fresh-player and endgame profiles for rares, mini bosses and bosses, flags for commons bands, stated elf targets, bosses too easy or near impossible, cheese, obsolete traps, low-value gear and charms. Advisory CI step. CLAUDE.md and this plan make it part of every balance PR. No game numbers changed. First run: 19 flags on `integration`, 13 with PR 76 merged. Section 1b: beginner and endgame catch rate for every elf |
 | 2026-11-27 | this PR | **Quiet-hunt wording removed; Carol Loft hint fixed.** The Carol Loft hint said 6 Hymn Reeds but the Carol Horn recipe needs 5. Quiet hunts left the engine in #49, but the Reindeer Stables hints, the On a Roll badge text and the sleigh run notes still mentioned them. All reworded; old `quiet` log rows still display, and release notes and past changelog rows are unchanged. No game numbers changed |
