@@ -49,7 +49,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | 5. Tune from play-test | Planned | |
 | Daily branch cleanup: keeps the 10 most recently merged PR branches, deletes older merged ones (`cleanup-branches.yml`) | Done | this PR |
 | Versioned releases: semver in `package.json`, `CHANGELOG.md`, merging a new version into `main` publishes version-tagged Docker images, a `vX.Y.Z` tag and a GitHub Release, plus in-game release notes (`content/releases.json`, What's new popup and More screen); first release 1.0.0 (integration promoted to main); see [Deployment](#deployment) and [RELEASING.md](#releasing) | Done | this PR |
-| 60. Quick bait restock card on the Hunt screen when shop bait runs out | Done | this PR |
+| Quick bait restock card on the Hunt screen when shop bait runs out | Done | this PR |
 
 The server runs every hunt and saves each player in SQLite. To play locally, follow "Run it locally" below.
 
