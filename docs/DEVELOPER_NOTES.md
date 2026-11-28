@@ -1567,8 +1567,11 @@ services:
       - /volume1/docker/naughty-list-test:/data   # separate save folder
     environment:
       - TZ=Asia/Singapore
+      - COOKIE_NAME=nl_session_test   # own login cookie, see below
     restart: unless-stopped
 ```
+
+**Separate logins (28 Nov 2026).** Browsers share cookies across ports on the same host, so two deployments on one NAS used to log each other out. The session cookie name is now the `COOKIE_NAME` environment variable and defaults to `nl_session`, so the main project keeps its name and nobody is logged out. Give every other deployment on the same host its own name (the test project uses `nl_session_test`), not the port number: a name set in compose stays correct if the port changes. Players on 8082 log in once more after this change.
 
 Open `http://<your-NAS-address>:8082`. To get the newest integration build, pull the image and redeploy the project. The test save starts empty, and you can delete `/volume1/docker/naughty-list-test` any time to start fresh. When integration work is ready, a pull request merges it into `main`.
 
@@ -1626,6 +1629,7 @@ To stay on a version or roll back, set the image line to `ghcr.io/cheesezilla/na
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-28 | this PR | **Separate login cookies per deployment.** `COOKIE_NAME` env var (default `nl_session`) names the session cookie so the main and test projects on one host no longer log each other out; test compose sets `nl_session_test`. See [Deployment](#deployment). |
 | 2026-11-28 | this PR | **Farm and push loop built on `integration`.** Areas tagged farm or sink; every area gets a cheap farm bait and a pricey push bait (new Gingersnap 150, Hay Biscuit 450, Spiced Honey Drop 75; Peppermint Bark 450, Hot Cocoa 1,200, Glitter Gumdrop 24, Honey Lozenge 24); free Pantry Crumbs fallback bait; costs scale with rank (area gold x1.7 Wrapping, x2.9 Workshop, x3.8 Stables, sleigh upkeep 300, launch 8,000, crates 1,000), replacing a rank gold falloff eddy rejected; five rares reworked into gold jackpots (Rascal 150, Glitterbug 500, Wind-up Elf 1,500, Carrot Crook 5,200, Silver Piper 380); Ribbon Candy and Bonbon recipes cost more gold; Gilded Cocoa craft; Gold this session card and net per hunt in the log; `npm run balance` 1e farm, push, arrival and jackpot bands. Sim: median 1,496 hunts to rank 5 (1,697 before), 3,209 to catch every elf (2,781 before); rank 4 664 (810 before) |
 | 2026-11-28 | this PR | **Area baits built on `integration`.** Each area only works with its own bait (new Glitter Gumdrop 16 and Honey Lozenge 8, Peppermint Bark 50 to 40, Hot Cocoa 90 to 45); a wrong bait is used up and the catch always fails; the old Stables half-attraction rule is removed. A sleigh run costs 100 gold upkeep per hunt and catches pay 25% gold (net negative while on); a run can be abandoned at any time; the stranded-player rescue gives the area's cheapest bait. `npm run balance` gains 1c (net gold per hunt, farm index) and 1d (Stables run off/on). Sim: median 1,697 hunts to rank 5 (1,460 before), 2,781 to catch every elf (2,433 before); rank 4 now flagged slow (810 vs 600) |
 | 2026-11-28 | this PR | **Release 1.0.3 (integration only).** What's new popup is derived from the save (not a mount-time flag) and More > What's new has a "Show the latest notes popup" button for re-testing. New games and Start over still skip the popup by design (`releaseSeen` starts at the latest version). Every API call, hunts included, runs the `x-app-version` check. |

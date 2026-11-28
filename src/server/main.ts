@@ -24,7 +24,7 @@ try {
   console.error(explainOpenError(dataDir, e));
   process.exit(1);
 }
-const app = await buildApp({ content, store, clientDir, version: process.env.APP_VERSION, logger: true });
+const app = await buildApp({ content, store, clientDir, version: process.env.APP_VERSION, cookieName: process.env.COOKIE_NAME, logger: true });
 
 const shutdown = async () => {
   await app.close();

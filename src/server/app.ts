@@ -21,9 +21,11 @@ export interface AppOptions {
   /** Injected for tests; defaults to a cryptographic random source. */
   rng?: Rng;
   now?: () => number;
+  /** Session cookie name. Cookies are shared across ports on one host, so each deployment needs its own. */
+  cookieName?: string;
 }
 
-const COOKIE = 'nl_session';
+const DEFAULT_COOKIE = 'nl_session';
 const SESSION_DAYS = 30;
 
 const cryptoRng: Rng = () => randomInt(0, 2 ** 32) / 2 ** 32;
@@ -58,6 +60,7 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
     const ids = checkAchievements(content, p, t, { topHunter, hunt: afterHunt ? p.stats.hunts : undefined, rewards });
     return ids.length ? { type: 'achievement', ids, rewards } : null;
   }
+  const COOKIE = opts.cookieName || DEFAULT_COOKIE;
   const lastHunt = new Map<number, number>();
 
   const app = Fastify({ logger: opts.logger ?? false, trustProxy: true });
