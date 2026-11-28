@@ -117,6 +117,18 @@ Recommended gear per area: Cookie Pantry: Jack-in-the-Box / Starlit Stocking on 
 
 Beginner gear per area: Cookie Pantry: Jack-in-the-Box + Gingerbread Slab; Wrapping Room: Star Lantern + Candy Cane Platform; Toy Workshop: Nutcracker Jaws + Ice Block; Reindeer Stables: Snow Globe Prison + Yule Log Base; Carol Loft: Star Lantern or Icicle Jar or Jack-in-the-Box + Candy Cane Platform. Madame Shredwell is weak to Carol, so a beginner with a Carol Horn catches her much more often than the Star Lantern figure (see section 2).
 
+### 1c. Gold profit per hunt in every area: beginner, recommended, endgame gear
+
+Net gold per hunt = expected gold from catches (encounter weight x catch rate x elf gold, using the exact hunt odds) minus the price of the one bait a hunt uses. Every hunt uses one bait and the best bait is picked per area and tier (shop baits only; beginner and recommended players can only use baits up to the area's rank). Charms are left out (one-use, 25 to 90 gold each) and so are boons, events and pillage. Gear tiers are the same as 1b; for each tier the trap and base with the most net gold per hunt in that area are used. **Farm index** = endgame net gold per hunt here divided by the recommended net gold per hunt in the area the player would be progressing in (the highest-rank main area): below 100% means farming here with endgame gear pays less than hunting in the top area with recommended gear.
+
+| Area | Rank | 1. Beginner: net gold / hunt | 2. Recommended: net gold / hunt | 3. Endgame: net gold / hunt | Farm index (endgame here vs recommended in Reindeer Stables) |
+| --- | --- | --- | --- | --- | --- |
+| Cookie Pantry | 1 | 9 (gold 17, Stale Cookie 8) | 9 (gold 17, Stale Cookie 8) | 20 (gold 28, Stale Cookie 8) | 6% |
+| Wrapping Room | 2 | 37 (gold 45, Stale Cookie 8) | 55 (gold 63, Stale Cookie 8) | 62 (gold 70, Stale Cookie 8) | 19% |
+| Toy Workshop | 3 | 96 (gold 104, Stale Cookie 8) | 120 (gold 128, Stale Cookie 8) | 145 (gold 153, Stale Cookie 8) | 43% |
+| Reindeer Stables | 4 | 289 (gold 297, Stale Cookie 8) | 335 (gold 343, Stale Cookie 8) | 335 (gold 343, Stale Cookie 8) | 100% |
+| Carol Loft | 2 | 24 (gold 32, Stale Cookie 8) | 25 (gold 33, Stale Cookie 8) | 37 (gold 45, Stale Cookie 8) | 11% |
+
 ### 2. Rare, mini boss and boss catch rates: fresh player vs endgame gear
 
 Fresh = the best trap the player could own on entering the area, on the area's base, no charm. Endgame = best trap, base and charm of everything in the game. Best setup per elf.
@@ -419,3 +431,7 @@ eddy: the Carol Horn (a rank 2 Carol trap) caught Stables commons 98% with the b
 - **Reading it:** the Horn now sits 6 points above the rank 1 trap, 10 above the Star Lantern and 5 below an on-type rank 2 Frost trap. It no longer outshines the on-type traps. The best Carol build (Wishing Star Pedestal) is about 70%; before it was 98%.
 - **Shredwell:** Carol Horn on a Candy Cane Platform with a Mistletoe Charm is 30% (31% before), 35% with a Wind-up Key. Power was not raised: luck cannot be traded for power here without lifting Shredwell (+2 points per 50 power).
 - **Cost:** the game is 7% longer, because the Horn also made the Wrapping Room and Carol Loft quicker. Rank 3 is 405 against 400. The Toy Workshop commons (44%, target 55 to 65%) were already below target before this change and are not retuned.
+
+### Report 11: gold profit benchmark (200 players, seed 42, no content change)
+
+`npm run balance` gains section 1c: net gold per hunt per area (expected gold minus the bait used) for Beginner, Recommended and Endgame gear, with a farm index against the top area. Baseline net per hunt at Recommended gear: 9 (Cookie Pantry), 55 (Wrapping Room), 25 (Carol Loft), 120 (Toy Workshop), 335 (Reindeer Stables); farm index 6%, 19%, 11%, 43%, 100%. The area-bait plan in [Developer notes](DEVELOPER_NOTES.md#area-baits-limiting-gold-farming-eddy-28-nov-2026-plan-only) uses it. Simulator baseline: median 1,460 hunts to rank 5; hunts to catch every elf median 2,433 (p10 1,562, p90 4,251).
