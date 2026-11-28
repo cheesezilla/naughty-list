@@ -1124,7 +1124,7 @@ Every hunt uses one bait, but the bait was almost free: a Stale Cookie (8 gold) 
 | Toy Workshop | **Gingersnap** (farm), Peppermint Bark (push) | 150, 450 | Gingersnap new; Bark 50 to 450, 0.86 attraction with rares x1.5 |
 | Reindeer Stables | **Hay Biscuit** (farm), Hot Cocoa (push), **Gilded Cocoa** (push, crafted) | 450, 1,200 | Hay Biscuit and Gilded Cocoa new; Cocoa 90 to 1,200, 0.92 attraction with rares x1.5; the old half-attraction penalty for other baits is gone (replaced by the always-fail rule) |
 
-**Warnings before the hunt:** a red "Wrong bait" card on the Hunt screen (with a Change bait button), baits that will not work in the current area are marked "Won't work" in the bait sheet and equipping one needs "Use ... anyway", the Travel map lists each area's baits, and arriving in an area with the wrong bait armed shows a toast naming the bait to buy. The Bait Ladder's tier 1 is now Glitter Gumdrop only. New bait art is placeholder SVG drawn by `npm run art` (a gold-glittered gumdrop with a bow, a honey lozenge); the real art can come from ChatGPT later and replaces the SVG through the manifest. Flavour text for both baits is in `content/flavour.json`.
+**Warnings before the hunt:** a red "Wrong bait" card on the Hunt screen (with a Change bait button), baits that will not work in the current area are marked "Won't work" in the bait sheet and equipping one needs "Use ... anyway", the Travel map lists each area's baits, and arriving in an area with the wrong bait armed shows a toast naming the bait to buy. The Bait Ladder's tier 1 is now Glitter Gumdrop only. The bait art for the new area baits is now custom ChatGPT art too (see Custom art progress). Flavour text for both baits is in `content/flavour.json`.
 
 ### The benchmark and the numbers
 
@@ -1483,6 +1483,10 @@ All 97 pictures outside the icons are custom art, imported from eddy's downloade
 
 Icons (`icons` slot, 19) stay generated SVG.
 
+##### Done (28 Nov 2026)
+
+The 10 pictures that were still generated SVG placeholders are now custom ChatGPT art (3D Disney/Pixar-like, transparent, made in batches of 3 per prompt): 7 baits (`glitter_gumdrop`, `honey_lozenge`, `gingersnap`, `hay_biscuit`, `spiced_honey_drop`, `pantry_crumbs`, `gilded_cocoa`) and 3 Cheer charms (`cheer_bauble`, `gold_star_cheer_charm`, `tinsel_cheer_charm`). Each is cropped to its content, fitted into 512x512 with about 6% margin and saved as WebP; the SVGs were deleted and the manifest shows `custom`. Still to do: the Cinderhoof trap part and trap (another thread) get placeholder art first and need the same pass once they land.
+
 Each asset's `prompt` for regenerating it is in `art/manifest.json`. Older custom PNGs of the retired imps are in `art-archive/imps/`.
 
 ## Deployment guide (NAS)
@@ -1631,6 +1635,7 @@ To stay on a version or roll back, set the image line to `ghcr.io/cheesezilla/na
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-28 | this PR | **Placeholder art replaced (eddy).** The 7 area and top-tier baits and the 3 Cheer charms that were still generated SVG are now custom ChatGPT WebP (512x512, transparent). SVGs deleted, manifest sources are `custom`. No game rules or numbers changed. |
 | 2026-11-28 | this PR | **Santa's favour more forgiving (eddy).** `constants.events` `grandBase` 0.10 to 0.12 and `grandPerBoon` 0.05 to 0.06. Boons before a Grand Gift: 3.5 on average before, 3.0 after (4.5 to 4.0 offers per Grand Gift, exact from the pity chain; a gift offer every 87 hunts or so with the 20-hunt gap, so one Grand Gift per ~350 hunts, was ~390). Test numbers updated; WIKI no longer mentions Scrinch challenges in events or favour |
 | 2026-11-28 | this PR | **Sleigh run tip (eddy).** While a run is active the Stables Sleigh Run box shows a short tip naming Hot Cocoa bait and the helpful charms (Wind-up Key, Mistletoe, Cheer). UI text only, no game numbers changed |
 | 2026-11-28 | this PR | **Quick bait restock on the Hunt screen (eddy).** `QuickBait` card (`src/client/screens/hunt.tsx`) shows when the equipped shop bait hits 0, or when the free fallback bait took over: buy ×1/×10/×25/×100/max (affordable) for the gold price, then it arms the bait via `/api/buy` + `/api/setup`. Only offers bait that works in the current area (`baitWorksHere`); crafted baits and a new player on Pantry Crumbs see nothing. Engine: optional `PlayerState.lastBait`, set in `hunt` when the fallback is armed over a shop bait, so the card knows what to restock. No game numbers changed; Pantry Crumbs fallback unchanged |

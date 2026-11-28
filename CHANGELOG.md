@@ -6,6 +6,8 @@ Each version's section is also the text of its GitHub Release, so write it for p
 
 ## [Unreleased]
 
+- New pictures for the Glitter Gumdrop, Honey Lozenge, Gingersnap, Hay Biscuit, Spiced Honey Drop, Pantry Crumbs, Gilded Cocoa and the three Cheer charms.
+
 ## [1.0.3] - 2026-11-28
 
 A small patch release.
