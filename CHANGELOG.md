@@ -6,6 +6,10 @@ Each version's section is also the text of its GitHub Release, so write it for p
 
 ## [Unreleased]
 
+### Balance
+- Saved gold and points are capped once by the update, to match the new farm and sink economy. Your rank, gear, items, catches and badges are kept, and nobody drops a rank.
+
+### Art
 - New pictures for the Glitter Gumdrop, Honey Lozenge, Gingersnap, Hay Biscuit, Spiced Honey Drop, Pantry Crumbs, Gilded Cocoa and the three Cheer charms.
 
 ## [1.0.3] - 2026-11-28
