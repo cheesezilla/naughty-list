@@ -1,7 +1,46 @@
 # The Naughty List: wiki
 
-Everything about the game for players: every area, elf, item and rule, with a full-game walkthrough at the end. Numbers come from `content/*.json`; this page is one of the three docs in `docs/` (see [Developer notes](DEVELOPER_NOTES.md) for design discussion and [Balance notes](BALANCE.md) for catch-rate and pace analysis). Update it in any PR that changes what a player can see or do.
+Everything about the game for players: every area, elf, item and rule, with a full-game walkthrough at the end. Numbers come from `content/*.json`; this page is one of the four tracked docs (three in `docs/`, plus the UI design canvas, which lives only as an artifact) (see [Developer notes](DEVELOPER_NOTES.md) for design discussion and [Balance notes](BALANCE.md) for catch-rate and pace analysis). Update it in any PR that changes what a player can see or do.
 
+
+## Contents
+
+- [Overview](#overview)
+- [Locations](#locations)
+  - [Cookie Pantry](#cookie-pantry)
+  - [Wrapping Room](#wrapping-room)
+  - [Toy Workshop](#toy-workshop)
+  - [Reindeer Stables](#reindeer-stables)
+  - [Carol Loft](#carol-loft)
+- [Elves and bosses](#elves-and-bosses)
+- [Ranks](#ranks)
+- [Traps](#traps)
+- [Bases](#bases)
+- [Baits](#baits)
+- [Charms](#charms)
+- [Power types](#power-types)
+- [Crafting and materials](#crafting-and-materials)
+- [Hunting](#hunting)
+- [Allure](#allure)
+- [Luck, power and catch odds](#luck-power-and-catch-odds)
+- [Pillage](#pillage)
+- [Area objectives](#area-objectives)
+- [Keys and unlocks](#keys-and-unlocks)
+- [Cheer Meter](#cheer-meter)
+- [Random events](#random-events)
+- [Scrinch](#scrinch)
+- [Achievements](#achievements)
+- [Goals and tips](#goals-and-tips)
+- [Glossary](#glossary)
+- [Walkthrough](#walkthrough)
+  - [Rules that decide everything](#rules-that-decide-everything)
+  - [1. Cookie Pantry (rank 1, 0 to 2,500 points)](#1-cookie-pantry-rank-1-0-to-2500-points)
+  - [2. Wrapping Room (rank 2, to 12,000 points)](#2-wrapping-room-rank-2-to-12000-points)
+  - [3. Toy Workshop (rank 3)](#3-toy-workshop-rank-3)
+  - [4. Reindeer Stables (rank 4, to 217,000 points; 5,000 g + Cog Key)](#4-reindeer-stables-rank-4-to-217000-points-5000-g--cog-key)
+  - [Carol Loft (optional side area)](#carol-loft-optional-side-area)
+  - [Cheer Meter and Overcharge](#cheer-meter-and-overcharge)
+  - [The last elves](#the-last-elves)
 
 ## Overview
 
