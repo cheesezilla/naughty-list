@@ -59,6 +59,10 @@ function LadderPanel({ o, location }: { o: Ladder; location: Location }) {
   const recipe = tier.recipe ? data.recipes.get(tier.recipe) : undefined;
   const boss = location.imps.find((i) => i.id === o.boss);
   const top = o.tiers.at(-1)!;
+  // On the lower tabs, nudge the player toward the next bait; the faceoff advice shows only on the top tab.
+  const next = o.tiers[sel + 1];
+  const nextRecipe = next?.recipe ? data.recipes.get(next.recipe) : undefined;
+  const makings = nextRecipe ? Object.keys(nextRecipe.ingredients).map((id) => data.items.get(id)?.name ?? id).join(' and ') : '';
   return (
     <>
       <h3><Art slot="baits" id="ribbon_candy" class="panel-icon" alt="" />Bait Ladder <small>Tier {armed + 1} armed</small></h3>
@@ -98,7 +102,8 @@ function LadderPanel({ o, location }: { o: Ladder; location: Location }) {
         </div>
       </div>
       <p class="panel-line">{boss?.name} only comes for {top.name}s.</p>
-      {boss && (
+      {next && makings && <p class="panel-line">Keep hunting here to gather {makings}, the makings of {next.name}.</p>}
+      {boss && sel === o.tiers.length - 1 && (
         <p class="panel-line">
           <b>Prepare before the faceoff:</b> {boss.name} is weak only to the Carol power type, and Clockwork traps do half damage. Bring a Carol trap. The elves in the Workshop say they can make a Carol Horn from a bundle of bent reeds and a torn songsheet. Listen for singing drifting down from somewhere above.
         </p>

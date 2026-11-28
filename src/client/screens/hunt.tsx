@@ -170,16 +170,17 @@ export function HuntScreen() {
   );
 }
 
-const ROLE_NAME = { floor: 'Free fallback', farm: 'Farm bait', push: 'Push bait' } as const;
+const ROLE_NAME = { floor: 'Free fallback', farm: 'Budget bait', push: 'Premium bait' } as const;
 const ROLE_HELP = {
   floor: 'free and weak, home area only',
   farm: 'cheap: earns gold',
   push: 'pricey: more rare, mini boss and boss elves',
 } as const;
 
-/** Says whether this area is a farm or a sink, which bait suits each half of the loop, and when the area has stopped paying. */
+/** Admin-only dev card: says whether this area is a farm or a sink, which bait suits each half of the loop, and when the area has stopped paying. */
 function StageCard() {
-  const { data, player } = useGame();
+  const { data, player, user } = useGame();
+  if (!user.isAdmin) return null;
   const location = data.locations.get(player.location)!;
   if (!location.role) return null;
   const baits = (location.baits ?? []).map((id) => data.items.get(id)).filter((b) => b?.kind === 'bait');
@@ -197,10 +198,10 @@ function StageCard() {
   );
 }
 
-/** Gold this session: earned, spent on bait, upkeep and pillage, net, and net per hunt. */
+/** Admin-only dev card. Gold this session: earned, spent on bait, upkeep and pillage, net, and net per hunt. */
 function SessionCard() {
-  const { session, resetSession } = useGame();
-  if (session.hunts === 0) return null;
+  const { session, resetSession, user } = useGame();
+  if (!user.isAdmin || session.hunts === 0) return null;
   const net = session.earned - session.spent;
   const per = net / session.hunts;
   const sign = (n: number) => `${n >= 0 ? '+' : '−'}${num(Math.abs(Math.round(n)))}`;
@@ -298,7 +299,7 @@ function BaitSheet({ initial, onClose }: { initial: 'bait' | 'charm'; onClose: (
             {current === i.id && <span class="pill green corner">Equipped</span>}
             <b>{i.name}</b>
             <small>×{num(count(player, i.id))} · {describe(i)}</small>
-            {wrongHere(i.id) && <small class="warn-text">Won't work in the {here!.name}</small>}
+            {wrongHere(i.id) && <small class="warn-text"><b>Won't work in the {here!.name}</b></small>}
           </button>
         ))}
       </div>

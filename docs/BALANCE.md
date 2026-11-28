@@ -243,7 +243,7 @@ Gain = mean change in catch rate (best setup per elf) from owning the item, over
 | Yule Log Base | base | 3 | 4,000 gold + 6 materials | +5.6 / +6.4 | +0.0 / +0.0 | replaced later |
 | Toffee Anvil (Bosses and mini bosses) | base | 2 | 3,500 gold | +2.6 / +1.0 | +0.0 / +0.0 | FLAG: no value |
 | Chestnut Brazier (Cheap bait) | base | 2 | 3,500 gold | +0.0 / +0.0 | +0.0 / +0.0 | FLAG: no value |
-| Wishbone Plinth (Farming common elves) | base | 2 | 4,500 gold | +0.0 / +4.7 | +0.0 / +0.0 | replaced later |
+| Wishbone Plinth (Catching common elves) | base | 2 | 4,500 gold | +0.0 / +4.7 | +0.0 / +0.0 | replaced later |
 | Sleigh Runner (Bosses, best with Clockwork traps) | base | 4 | 12,000 gold + 4 materials | +3.5 / +3.2 | +0.0 / +0.0 | replaced later |
 | Gingerbread Cottage (Cheap bait, best with Frost traps) | base | 4 | 8,000 gold + 6 materials | +6.8 / +6.5 | +3.3 / +2.9 | ok |
 | Wishing Star Pedestal (Elves that resist your trap, best with Starlight and Carol traps) | base | 4 | 12,000 gold + 7 materials | +0.0 / +0.0 | +0.0 / +0.0 | FLAG: no value |
