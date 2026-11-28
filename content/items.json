@@ -9,7 +9,7 @@
     { "id": "constellation_wreath", "name": "Constellation Wreath", "type": "starlight", "power": 1400, "luck": 5, "attraction": 0.05, "rank": 3, "price": null },
     { "id": "snow_globe_prison", "name": "Snow Globe Prison", "type": "frost", "power": 1800, "luck": 4, "rank": 4, "price": 25000 },
     { "id": "sleigh_bell_snapper", "name": "Sleigh-Bell Snapper", "type": "clockwork", "power": 2600, "luck": 6, "attraction": 0.05, "rank": 4, "price": null },
-    { "id": "quenchhorn_snare", "name": "Quenchhorn Snare", "type": "frost", "power": 2400, "luck": 5, "rank": 4, "price": null }
+    { "id": "tidepool_pail", "name": "Tidepool Pail", "type": "tide", "power": 2600, "luck": 5, "rank": 4, "price": null }
   ],
   "bases": [
     { "id": "cardboard_box", "name": "Cardboard Box", "power": 20, "luck": 0, "rank": 1, "price": null },
@@ -60,7 +60,7 @@
     { "id": "clockwork_heart", "name": "Clockwork Heart", "sellPrice": 200 },
     { "id": "silver_sleighbell", "name": "Silver Sleighbell", "sellPrice": 200 },
     { "id": "brimstone_coal", "name": "Brimstone Coal", "sellPrice": 200 },
-    { "id": "ember_antler", "name": "Ember Antler", "sellPrice": 600 },
+    { "id": "steam_pearl", "name": "Steam Pearl", "sellPrice": 600 },
     { "id": "hymn_reed", "name": "Hymn Reed", "sellPrice": 25 },
     { "id": "carol_songsheet", "name": "Carol Songsheet", "sellPrice": 150 }
   ]

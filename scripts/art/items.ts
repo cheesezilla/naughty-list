@@ -189,18 +189,21 @@ export const traps: Record<string, () => string> = {
       glint(300, 190, 0.8),
     ),
 
-  quenchhorn_snare: () =>
+  tidepool_pail: () =>
     g(
       {},
-      path('M220 340 L238 290 L362 290 L380 340 Z', ol(P.cocoa)),
-      circle(300, 250, 60, ol(P.frostLight)),
-      // spiralled frozen horn
-      path('M270 250 Q250 170 290 120 Q330 70 380 90 Q340 110 330 150 Q320 200 340 250 Z', ol(P.frostLight)),
-      path('M280 210 Q310 200 330 215 M284 170 Q310 160 328 172', line(6, P.white)),
-      // ember tines
-      path('M250 196 Q220 150 232 110', line(14, P.orange)), path('M300 110 Q290 70 310 40', line(14, P.orange)), path('M366 94 Q396 70 392 40', line(14, P.orange)),
-      circle(232, 106, 8, { fill: P.goldBright }), circle(310, 36, 8, { fill: P.goldBright }), circle(392, 36, 8, { fill: P.goldBright }),
-      glint(330, 130, 0.8),
+      // pail body and rim
+      path('M214 340 L236 190 L364 190 L386 340 Z', ol(P.silver)),
+      path('M226 250 L374 250 M222 290 L378 290', line(8, P.silverDark)),
+      path('M228 190 Q300 168 372 190', line(14, P.silverDark)),
+      // water with a wave
+      path('M236 190 Q262 150 300 168 Q336 186 364 190 Z', ol('#2fa3b8')),
+      path('M250 176 Q276 148 304 164', line(8, P.white)),
+      // handle
+      path('M236 200 Q300 90 364 200', line(10, P.cocoa)),
+      // pearls
+      circle(268, 120, 14, ol(P.white, 6)), circle(312, 98, 11, ol(P.white, 6)), circle(344, 134, 9, ol(P.white, 6)),
+      glint(262, 114, 0.6),
     ),
 
   sleigh_bell_snapper: () =>
@@ -818,16 +821,15 @@ export const materials: Record<string, () => string> = {
       sparkle(430, 300, 18, P.white), sparkle(84, 330, 14, P.white),
     ),
 
-  ember_antler: () =>
+  steam_pearl: () =>
     g(
       {},
-      shadow(256, 440, 150),
-      path('M170 420 Q150 280 220 200 Q270 140 330 110 L350 140 Q300 170 270 220 Q240 280 250 420 Z', ol(P.coal)),
-      path('M250 250 Q300 230 340 180 L356 196 Q310 250 252 290 Z', ol(P.coal)),
-      path('M330 110 Q350 70 380 60 Q372 90 350 140 Z', { fill: P.orange }),
-      path('M356 196 Q392 190 410 160 Q400 210 366 230 Z', { fill: P.orange }),
-      path('M200 330 L230 300 M214 260 L240 240', line(6, P.orange)),
-      path('M380 56 Q360 20 384 -4', line(8, P.silver)),
+      shadow(256, 440, 130),
+      circle(256, 290, 130, ol(P.white, 12)),
+      circle(256, 290, 130, { fill: '#cfeef6', opacity: 0.7 }),
+      path('M200 250 Q230 200 280 214', line(14, P.white)),
+      path('M226 160 Q200 110 240 70 Q262 40 244 10', line(12, P.silver)),
+      glint(210, 246, 0.8),
     ),
 
   brimstone_coal: () =>
@@ -860,6 +862,15 @@ export const trapTypes: Record<string, () => string> = {
       sparkle(66, 70, 14, P.white), sparkle(192, 186, 10, P.white), sparkle(196, 64, 8, P.goldBright),
     ),
   frost: () => g({}, circle(128, 128, 116, ol(P.cream, 8)), circle(128, 128, 82, ol(P.frostLight, 8)), snowflake(128, 128, 64, P.frostDark, 12)),
+  tide: () =>
+    g(
+      {},
+      circle(128, 128, 116, ol('#0d4a5c', 8)),
+      circle(128, 130, 84, { fill: '#2fa3b8' }),
+      path('M128 52 C164 98 184 122 184 150 A56 56 0 0 1 72 150 C72 122 92 98 128 52 Z', ol(P.white, 8)),
+      path('M92 196 Q128 214 164 196', line(8, P.white)),
+      sparkle(196, 66, 10, P.white),
+    ),
   carol: () =>
     g(
       {},

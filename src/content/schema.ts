@@ -2,8 +2,8 @@ import { z } from 'zod';
 
 /** The three core types: the order board asks for these and "own every type" counts them. */
 export const powerTypes = ['clockwork', 'starlight', 'frost'] as const;
-/** Every type. Carol is the side-area type (the Carol Loft) and is kept out of the core three. */
-export const PowerType = z.enum([...powerTypes, 'carol']);
+/** Every type. Carol (the Carol Loft) and Tide (the Cinderhoof reward trap) are kept out of the core three. */
+export const PowerType = z.enum([...powerTypes, 'carol', 'tide']);
 export const ImpTier = z.enum(['common', 'uncommon', 'rare', 'miniboss', 'boss']);
 
 const id = z.string().regex(/^[a-z0-9_]+$/, 'ids are lowercase letters, digits and underscores');
@@ -266,7 +266,7 @@ export const Story = z.object({
 export const achievementStats = [
   'hunts', 'caught', 'escapes', 'goldEarned', 'bossesCaught', 'weaknessCatches', 'bought', 'crafted', 'newTrap',
   'unlocked', 'pillaged', 'ordersDone', 'rushOrders', 'launches', 'expressLaunches', 'sleighFails', 'ladderBoss', 'starterBoss',
-  'catches_clockwork', 'catches_starlight', 'catches_frost', 'catches_carol', 'bestCatchStreak', 'bestEscapeStreak', 'bestQuietStreak',
+  'catches_clockwork', 'catches_starlight', 'catches_frost', 'catches_carol', 'catches_tide', 'bestCatchStreak', 'bestEscapeStreak', 'bestQuietStreak',
 ] as const;
 export const AchievementStat = z.enum(achievementStats);
 
