@@ -78,8 +78,29 @@ function baitPrice(id: string): number {
 /** Score of a setup: points plus net gold per hunt, so both progress and profit count. */
 function score(setup: Setup, location: string) {
   const o = huntOdds(content, setup, location);
-  const net = o.expectedGold - baitPrice(setup.bait ?? '');
+  const net = o.expectedGold - baitPrice(setup.bait ?? '') - charmPrice(setup.charm);
   return { odds: o, net, value: o.expectedPoints + net };
+}
+
+/** Gold a charm costs per hunt (one is used up each hunt). */
+const charmPrice = (id: string | null) => (id && LOOP ? (priceOf(data.items.get(id)!) ?? 0) : 0);
+/** Charms the loop bot weighs: none, plus any power or luck charm it owns or can afford 10 hunts of. Cheer charms only move the meter, so it leaves them out. */
+function charmChoices(p: PlayerState): (string | null)[] {
+  if (!LOOP) return [null];
+  const out: (string | null)[] = [null];
+  for (const c of content.items.charms) {
+    if (c.cheer || c.rank > p.rank) continue;
+    if (count(p, c.id) > 0 || (c.price !== null && p.gold >= c.price * 10)) out.push(c.id);
+  }
+  return out;
+}
+/** Buy a stock of the armed charm (a hunt uses one) and arm it. */
+function stockCharm(p: PlayerState, id: string | null, want: number): PlayerState {
+  if (!id) return apply(p, equip(content, p, 'charm', null));
+  const price = priceOf(data.items.get(id)!) ?? 0;
+  const n = Math.min(want - count(p, id), price > 0 ? Math.floor(p.gold / price) : 0);
+  if (n > 0) p = apply(p, buy(content, p, id, n));
+  return count(p, id) > 0 ? apply(p, equip(content, p, 'charm', id)) : p;
 }
 
 type BaitMode = 'any' | 'farm' | 'push';
@@ -99,8 +120,9 @@ function bestSetup(p: PlayerState, location: string, allowBuyBait: boolean, mode
     return count(p, b.id) > 0 || (allowBuyBait && b.price !== null && b.rank <= p.rank && p.gold >= b.price * 10);
   });
   let best = { setup: p.setup, value: -Infinity, net: -Infinity };
-  for (const t of traps) for (const b of bases) for (const bait of baits.length ? baits : [null]) {
-    const setup: Setup = { trap: t.id, base: b.id, bait: bait?.id ?? null, charm: null };
+  const charms = mode === 'farm' ? [null] : charmChoices(p);
+  for (const t of traps) for (const b of bases) for (const bait of baits.length ? baits : [null]) for (const charm of charms) {
+    const setup: Setup = { trap: t.id, base: b.id, bait: bait?.id ?? null, charm };
     const s = score(setup, location);
     const v = score2(s, setup);
     if (v > best.value) best = { setup, value: v, net: s.net };
@@ -355,16 +377,16 @@ function pushPlan(p: PlayerState, want: Map<string, number>, goal: number, conti
     const loc = data.locations.get(locId)!;
     if (!loc.imps.some((i) => want.has(i.id))) continue;
     for (const t of content.items.traps.filter((x) => count(p, x.id) > 0)) for (const b of content.items.bases.filter((x) => count(p, x.id) > 0)) {
-      for (const bait of content.items.baits) {
+      for (const bait of content.items.baits) for (const charm of charmChoices(p)) {
         if (!baitOk(bait.id, locId)) continue;
-        const setup: Setup = { trap: t.id, base: b.id, bait: bait.id, charm: null };
+        const setup: Setup = { trap: t.id, base: b.id, bait: bait.id, charm };
         const o = huntOdds(content, setup, locId);
         let rate = 0;
         for (const x of o.imps) rate += x.encounter * x.catchChance * (want.get(x.imp.id) ?? 0);
         if (rate <= 0) continue;
-        const perHunt = baitPrice(bait.id);
+        const perHunt = baitPrice(bait.id) + charmPrice(charm);
         const need = (continuing ? 5 : PUSH_HUNTS) * perHunt + farmReserve + (continuing ? 0 : Math.min(goal, 2 * PUSH_HUNTS * perHunt));
-        const have = p.gold + count(p, bait.id) * perHunt;
+        const have = p.gold + count(p, bait.id) * baitPrice(bait.id);
         if (have < need) continue;
         // Prefer the push that reaches the wanted elves fastest per gold spent.
         const sc = rate / (1 + perHunt / 100);
@@ -383,12 +405,12 @@ function runSetup(p: PlayerState, loc: string): { setup: Setup; ready: number } 
   if (ob?.type !== 'sleigh_run') return best;
   const canCraft = (id: string) => { const r = content.recipes.find((x) => x.output.item === id && x.rank <= p.rank); return !!r && Object.entries(r.ingredients).every(([i, k]) => count(p, i) >= k) && p.gold >= r.gold; };
   const baits = content.items.baits.filter((b) => b.role !== 'floor' && baitWorksHere(L, b.id) && (count(p, b.id) > 0 || (b.price !== null && b.rank <= p.rank && p.gold >= b.price * 20) || (b.price === null && canCraft(b.id))));
-  for (const t of content.items.traps.filter((x) => count(p, x.id) > 0)) for (const b of content.items.bases.filter((x) => count(p, x.id) > 0)) for (const bait of baits) {
-    const setup: Setup = { trap: t.id, base: b.id, bait: bait.id, charm: null };
+  for (const t of content.items.traps.filter((x) => count(p, x.id) > 0)) for (const b of content.items.bases.filter((x) => count(p, x.id) > 0)) for (const bait of baits) for (const charm of charmChoices(p)) {
+    const setup: Setup = { trap: t.id, base: b.id, bait: bait.id, charm };
     let ready = 0;
     for (const x of huntOdds(content, setup, loc).imps) ready += x.encounter * (x.catchChance * (ob.gain[x.imp.tier] ?? 0) - (1 - x.catchChance) * (ob.loss[x.imp.id] ?? 0));
     // Prefer the cheaper bait when the Readiness is nearly the same.
-    ready -= baitPrice(bait.id) / 20000;
+    ready -= (baitPrice(bait.id) + charmPrice(charm)) / 20000;
     if (ready > best.ready) best = { setup, ready };
   }
   return best;
@@ -466,6 +488,7 @@ function planLoop(p: PlayerState, log: Log, huntNo: number): PlayerState {
       if (brain.mode !== 'push') log.pushRuns++;
       brain.mode = 'push';
       for (const slot of ['trap', 'base', 'bait'] as const) { const id = push.setup[slot]; if (id && count(p, id) > 0) p = apply(p, equip(content, p, slot, id)); }
+      p = stockCharm(p, push.setup.charm, Math.min(PUSH_HUNTS, 40));
       return p;
     }
   }
@@ -483,6 +506,8 @@ function planLoop(p: PlayerState, log: Log, huntNo: number): PlayerState {
     const id = chosen[slot];
     if (id && count(p, id) > 0) p = apply(p, equip(content, p, slot, id));
   }
+  // Farming runs charm-free: a charm is a per-hunt cost that only pays on push hunts with premium bait.
+  p = stockCharm(p, null, 0);
   // The free floor bait is armed by the engine when the bait runs out; any other empty or wrong bait is swapped for one that works here.
   const here = data.locations.get(p.location)!;
   if (p.setup.bait && (count(p, p.setup.bait) === 0 || !baitWorksHere(here, p.setup.bait))) {
@@ -558,6 +583,7 @@ function playObjective(p: PlayerState, rng: Rng, log: Log): PlayerState {
           else { const rc = content.recipes.find((x) => x.output.item === bid); for (let i = 0; rc && i < 6 && count(q, bid) < ob.hunts; i++) { const c = craft(content, q, rc.id); if (!c.ok) break; q = c.player; } }
         }
         for (const slot of ['trap', 'base', 'bait'] as const) { const id = rs[slot]; if (id && count(q, id) > 0) q = apply(q, equip(content, q, slot, id)); }
+        q = stockCharm(q, rs.charm, ob.hunts);
       }
       const r = objectiveAction(content, q, 'start_run', rng);
       if (r.ok) { p = r.player; log.objectives.runs++; }
@@ -774,7 +800,7 @@ function play(rng: Rng, playerNo: number): Log {
     if (e.outcome === 'catch' || milestone) log.goodAny.push(n);
     if (milestone) log.goodMilestone.push(n);
     if (traceMe) {
-      traceLines.push(JSON.stringify({ n, location: loc, tier: t, imp: e.imp, outcome: e.outcome, chance: e.catchChance && Math.round(e.catchChance * 1000) / 1000, gold: e.gold, points: e.points, loot: e.loot.map((l) => `${l.item}x${l.amount}`), firstCatch: e.firstCatch, rankUp: e.rankUp, pillage: e.pillage?.gold, goldTotal: p.gold, good: milestone, pips: e.cheer?.pips ?? null, boons: (p.cheer?.active ?? []).map((a) => `${a.id}:${a.hunts}`), event: e.events?.map((x) => x.id) ?? null }));
+      traceLines.push(JSON.stringify({ n, rank: p.rank, setup: `${p.setup.trap}+${p.setup.base}+${p.setup.bait}+${p.setup.charm ?? "-"}`, location: loc, tier: t, imp: e.imp, outcome: e.outcome, chance: e.catchChance && Math.round(e.catchChance * 1000) / 1000, gold: e.gold, points: e.points, loot: e.loot.map((l) => `${l.item}x${l.amount}`), firstCatch: e.firstCatch, rankUp: e.rankUp, pillage: e.pillage?.gold, goldTotal: p.gold, good: milestone, pips: e.cheer?.pips ?? null, boons: (p.cheer?.active ?? []).map((a) => `${a.id}:${a.hunts}`), event: e.events?.map((x) => x.id) ?? null }));
     }
     if (p.rank >= finalRank) { log.finished = true; break; }
   }
