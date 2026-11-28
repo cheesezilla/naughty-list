@@ -350,9 +350,9 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
     }));
     game.post('/api/objective', playerAction((p, b) => {
       const action = str(b.action);
-      if (action !== 'start_run' && action !== 'rush_order') return { ok: false, error: 'Unknown action.' };
+      if (action !== 'start_run' && action !== 'abandon_run' && action !== 'rush_order') return { ok: false, error: 'Unknown action.' };
       return objectiveAction(content, p, action, rng);
-    }, (_before, after, b) => ({ type: 'objective', location: after.location, action: str(b.action) as 'start_run' | 'rush_order' })));
+    }, (_before, after, b) => ({ type: 'objective', location: after.location, action: str(b.action) as 'start_run' | 'abandon_run' | 'rush_order' })));
     // Cheer Meter: draw (cash in), hold (Overcharge), reroll and pick. Only a pick is logged.
     game.post('/api/cheer', playerAction((p, b) => {
       const action = str(b.action);

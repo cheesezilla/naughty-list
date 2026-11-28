@@ -171,7 +171,7 @@ export function afterHunt(
   return undefined;
 }
 
-export type ObjectiveAction = 'start_run' | 'rush_order';
+export type ObjectiveAction = 'start_run' | 'abandon_run' | 'rush_order';
 
 /** Player actions on a location's loop: start a sleigh run, or take a Rush order. */
 export function objectiveAction(content: Content, player: PlayerState, action: ObjectiveAction, rng: Rng): ActionResult {
@@ -184,6 +184,12 @@ export function objectiveAction(content: Content, player: PlayerState, action: O
     if (s.active) return { ok: false, error: 'A sleigh run is already going.' };
     if (s.forced) return { ok: false, error: 'Deal with the attack on the sleigh first.' };
     Object.assign(s, { active: true, left: o.hunts, readiness: 0 });
+    return { ok: true, player: p };
+  }
+  if (action === 'abandon_run' && o.type === 'sleigh_run' && s?.type === 'sleigh_run') {
+    if (!s.active) return { ok: false, error: 'There is no sleigh run to abandon.' };
+    // Walking away pays nothing and drops the Readiness; launches already made stay.
+    Object.assign(s, { active: false, left: 0, readiness: 0 });
     return { ok: true, player: p };
   }
   if (action === 'rush_order' && o.type === 'order_board' && s?.type === 'order_board') {

@@ -16,7 +16,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { loadContent } from '../src/content/load.js';
 import type { Content, Imp, Location } from '../src/content/schema.js';
 import { gameData } from '../src/engine/data.js';
-import { allureFactor, catchChance, huntOdds, impWeights, luckFactor, setupStats } from '../src/engine/odds.js';
+import { allureFactor, baitWorksHere, catchChance, huntOdds, impWeights, luckFactor, setupStats } from '../src/engine/odds.js';
 
 const args = process.argv.slice(2);
 const flag = (n: string) => args.includes(`--${n}`);
@@ -151,7 +151,7 @@ const goldRows: { id: string; beg: number; rec: number; end: number }[] = [];
   const netBest = (loc: Location, sets: Setup[], maxRank: number) => {
     let top = { net: -Infinity, gold: 0, bait: '', price: 0, s: sets[0]! };
     for (const s of sets) for (const b of shopBaits) {
-      if (b.rank > maxRank) continue;
+      if (b.rank > maxRank || !baitWorksHere(loc, b.id)) continue;
       const o = huntOdds(content, { ...s, bait: b.id }, loc.id);
       const net = o.expectedGold - (b.price as number);
       if (net > top.net) top = { net, gold: o.expectedGold, bait: b.id, price: b.price as number, s };
@@ -187,7 +187,7 @@ const goldRows: { id: string; beg: number; rec: number; end: number }[] = [];
   const f = loc ? T.fresh[loc.id] : undefined;
   if (loc && ob && f) {
     h(`### 1d. ${loc.name}: gold per hunt with the sleigh run off and on`);
-    out.push(`**Off** = hunting without starting a run (the 1c numbers). **On** = back-to-back sleigh runs: each run lasts up to ${ob.hunts} hunts, catches add Readiness (${Object.entries(ob.gain).map(([k, v]) => `${k} +${v}`).join(', ')}), escapes from ${Object.keys(ob.loss).map((id) => impName(id)).join(' and ')} take some away, and from ${ob.minibossFrom} Readiness ${impName(ob.miniboss)} comes at weight ${ob.minibossWeight}. A launch (100 Readiness) pays ${ob.launchGold} gold; a run that times out pays ${ob.failGoldPerReadiness} gold per Readiness. Solved exactly over every Readiness and hunts-left state, with the cheapest-net bait (the same as 1c, so the bait cost is small). Left out: the launch item (${Object.keys(ob.launchItems).join(', ')}), the forced ${impName(ob.boss)} fight after ${ob.bossAfterLaunches} launches, pillage.`, '');
+    out.push(`**Off** = hunting without starting a run (the 1c numbers). **On** = back-to-back sleigh runs: each run lasts up to ${ob.hunts} hunts, catches add Readiness (${Object.entries(ob.gain).map(([k, v]) => `${k} +${v}`).join(', ')}), escapes from ${Object.keys(ob.loss).map((id) => impName(id)).join(' and ')} take some away, and from ${ob.minibossFrom} Readiness ${impName(ob.miniboss)} comes at weight ${ob.minibossWeight}. While a run is on, each hunt costs ${ob.upkeep ?? 0} gold of upkeep and catches pay ${Math.round((ob.catchGoldMult ?? 1) * 100)}% of their gold. A launch (100 Readiness) pays ${ob.launchGold} gold; a run that times out pays ${ob.failGoldPerReadiness} gold per Readiness. Solved exactly over every Readiness and hunts-left state, with the cheapest-net bait (the same as 1c, so the bait cost is small). Left out: the launch item (${Object.keys(ob.launchItems).join(', ')}), the forced ${impName(ob.boss)} fight after ${ob.bossAfterLaunches} launches, pillage.`, '');
     const shop = I.baits.filter((b) => b.price !== null && b.price !== undefined);
     const allSets: Setup[] = allTraps.flatMap((trap) => allBases.map((base) => ({ trap, base, charm: null })));
     const run = (s: Setup, baitId: string, price: number) => {
@@ -200,10 +200,10 @@ const goldRows: { id: string; beg: number; rec: number; end: number }[] = [];
       const G: number[][] = [], Tm: number[][] = [], L: number[][] = [];
       for (let left = 0; left <= ob.hunts; left++) { G.push(new Array(101).fill(0)); Tm.push(new Array(101).fill(0)); L.push(new Array(101).fill(0)); }
       for (let left = 1; left <= ob.hunts; left++) for (let r = 0; r < 100; r++) {
-        let g = 0, t = 1, l = 0;
+        let g = -(ob.upkeep ?? 0), t = 1, l = 0;
         for (const o of (r >= ob.minibossFrom ? hot : cold)) {
           const gain = (ob.gain as Record<string, number>)[o.imp.tier] ?? 0;
-          const outcomes: [number, number, number][] = [[o.c, Math.min(100, r + gain), o.imp.gold], [1 - o.c, Math.max(0, r - ((ob.loss as Record<string, number>)[o.imp.id] ?? 0)), 0]];
+          const outcomes: [number, number, number][] = [[o.c, Math.min(100, r + gain), o.imp.gold * (ob.catchGoldMult ?? 1)], [1 - o.c, Math.max(0, r - ((ob.loss as Record<string, number>)[o.imp.id] ?? 0)), 0]];
           for (const [pr, r2, gold] of outcomes) {
             const w = o.p * pr;
             if (w === 0) continue;
@@ -222,7 +222,7 @@ const goldRows: { id: string; beg: number; rec: number; end: number }[] = [];
     const pick = (sets: Setup[], maxRank: number) => {
       let top: ReturnType<typeof run> & { s: Setup; bait: string } | null = null;
       for (const s of sets) for (const b of shop) {
-        if (b.rank > maxRank) continue;
+        if (b.rank > maxRank || !baitWorksHere(loc, b.id)) continue;
         const r = run(s, b.id, b.price as number);
         if (!top || r.on - r.price > top.on - top.price) top = { ...r, s, bait: b.id };
       }
@@ -240,7 +240,7 @@ const goldRows: { id: string; beg: number; rec: number; end: number }[] = [];
       const r = pick(sets, mr);
       rows.push([label, fmt(r.s), r.off.toFixed(0), r.on.toFixed(0), `${(r.on - r.off >= 0 ? '+' : '')}${(((r.on / r.off) - 1) * 100).toFixed(0)}%`, r.hunts.toFixed(1), `${(r.launches * 100).toFixed(0)}%`, `${(r.off - r.price).toFixed(0)} / ${(r.on - r.price).toFixed(0)}`]);
     }
-    table(['Gear', 'Setup used', 'Gold / hunt, ride off', 'Gold / hunt, ride on', 'On vs off', 'Hunts per run', 'Runs that launch', 'Net per hunt after bait (off / on)'], rows);
+    table(['Gear', 'Setup used', 'Gold / hunt, ride off', 'Gold / hunt, ride on (after upkeep)', 'On vs off', 'Hunts per run', 'Runs that launch', 'Net per hunt after bait (off / on)'], rows);
   }
 }
 

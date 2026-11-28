@@ -1,6 +1,7 @@
 [
   {
     "id": "cookie_pantry",
+    "baits": ["stale_cookie", "sugar_cookie", "fruitcake"],
     "homeTypes": ["clockwork", "starlight"],
     "name": "Cookie Pantry",
     "description": "Santa's pantry, stacked with cookie jars and milk churns. The hexed baker elves never left.",
@@ -16,6 +17,7 @@
   },
   {
     "id": "wrapping_room",
+    "baits": ["glitter_gumdrop", "ribbon_candy", "golden_bow_bonbon"],
     "homeTypes": ["starlight"],
     "name": "Wrapping Room",
     "description": "Miles of ribbon and paper. The hexed wrappers still can't resist anything that shines.",
@@ -25,7 +27,7 @@
     "objective": {
       "type": "bait_ladder",
       "tiers": [
-        { "name": "Shop bait", "baits": ["stale_cookie", "sugar_cookie", "peppermint_bark", "hot_cocoa"] },
+        { "name": "Shop bait", "baits": ["glitter_gumdrop"] },
         { "name": "Ribbon Candy", "baits": ["ribbon_candy"], "recipe": "ribbon_candy_x3" },
         { "name": "Golden Bow Bonbon", "baits": ["golden_bow_bonbon"], "recipe": "golden_bow_bonbon_x2" }
       ],
@@ -42,6 +44,7 @@
   },
   {
     "id": "toy_workshop",
+    "baits": ["peppermint_bark"],
     "homeTypes": ["clockwork"],
     "name": "Toy Workshop",
     "description": "Benches, gears and paint pots. The hexed toymakers can't keep their hands off a wind-up.",
@@ -64,13 +67,12 @@
   },
   {
     "id": "reindeer_stables",
+    "baits": ["hot_cocoa"],
     "homeTypes": ["frost"],
     "name": "Reindeer Stables",
     "description": "Warm stalls, jingling harnesses and a sleigh that must be ready by Christmas Eve. The hexed stable hands crave the warmth and bolt from the cold.",
     "rank": 4,
     "unlockCost": 5000,
-    "preferredBait": "hot_cocoa",
-    "otherBaitPenalty": 0.5,
     "objective": {
       "type": "sleigh_run", "hunts": 40,
       "gain": { "common": 5, "rare": 12, "miniboss": 20 },
@@ -78,6 +80,7 @@
       "bossAfterLaunches": 2, "minibossFrom": 50, "minibossWeight": 6,
       "launchGold": 2000, "launchItems": { "silver_sleighbell": 1 },
       "failGoldPerReadiness": 10,
+      "catchGoldMult": 0.25, "upkeep": 100,
       "miniboss": "antler_ripper", "boss": "cinderhoof"
     },
     "imps": [
@@ -91,6 +94,7 @@
   },
   {
     "id": "carol_loft",
+    "baits": ["honey_lozenge"],
     "homeTypes": ["clockwork", "frost", "starlight"],
     "name": "Carol Loft",
     "description": "The draughty attic above the Wrapping Room, where hexed carollers sing flat on purpose. A side trip: nothing here is needed to move on, but it is where Carol traps are made.",

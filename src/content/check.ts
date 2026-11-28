@@ -21,7 +21,7 @@ export function checkReferences(c: Content): string[] {
   for (const loc of c.locations) {
     if (locIds.has(loc.id)) problems.push(`duplicate location id "${loc.id}"`);
     locIds.add(loc.id);
-    if (loc.preferredBait) need(loc.preferredBait, `location ${loc.id} preferredBait`);
+    for (const b of loc.baits ?? []) need(b, `location ${loc.id} baits`);
     for (const imp of loc.imps) {
       if (impIds.has(imp.id)) problems.push(`duplicate imp id "${imp.id}"`);
       impIds.add(imp.id);

@@ -123,21 +123,21 @@ Net gold per hunt = expected gold from catches (encounter weight x catch rate x 
 
 | Area | Rank | 1. Beginner: net gold / hunt | 2. Recommended: net gold / hunt | 3. Endgame: net gold / hunt | Farm index (endgame here vs recommended in Reindeer Stables) |
 | --- | --- | --- | --- | --- | --- |
-| Cookie Pantry | 1 | 9 (gold 17, Stale Cookie 8) | 9 (gold 17, Stale Cookie 8) | 20 (gold 28, Stale Cookie 8) | 6% |
-| Wrapping Room | 2 | 37 (gold 45, Stale Cookie 8) | 55 (gold 63, Stale Cookie 8) | 62 (gold 70, Stale Cookie 8) | 19% |
-| Toy Workshop | 3 | 96 (gold 104, Stale Cookie 8) | 120 (gold 128, Stale Cookie 8) | 145 (gold 153, Stale Cookie 8) | 43% |
-| Reindeer Stables | 4 | 289 (gold 297, Stale Cookie 8) | 335 (gold 343, Stale Cookie 8) | 335 (gold 343, Stale Cookie 8) | 100% |
-| Carol Loft | 2 | 24 (gold 32, Stale Cookie 8) | 25 (gold 33, Stale Cookie 8) | 37 (gold 45, Stale Cookie 8) | 11% |
+| Cookie Pantry | 1 | 9 (gold 17, Stale Cookie 8) | 9 (gold 17, Stale Cookie 8) | 20 (gold 28, Stale Cookie 8) | 7% |
+| Wrapping Room | 2 | 29 (gold 45, Glitter Gumdrop 16) | 47 (gold 63, Glitter Gumdrop 16) | 54 (gold 70, Glitter Gumdrop 16) | 18% |
+| Toy Workshop | 3 | 65 (gold 105, Peppermint Bark 40) | 89 (gold 129, Peppermint Bark 40) | 114 (gold 154, Peppermint Bark 40) | 38% |
+| Reindeer Stables | 4 | 261 (gold 306, Hot Cocoa 45) | 304 (gold 349, Hot Cocoa 45) | 304 (gold 349, Hot Cocoa 45) | 100% |
+| Carol Loft | 2 | 25 (gold 33, Honey Lozenge 8) | 26 (gold 34, Honey Lozenge 8) | 37 (gold 45, Honey Lozenge 8) | 12% |
 
 ### 1d. Reindeer Stables: gold per hunt with the sleigh run off and on
 
-**Off** = hunting without starting a run (the 1c numbers). **On** = back-to-back sleigh runs: each run lasts up to 40 hunts, catches add Readiness (common +5, rare +12, miniboss +20), escapes from Bell Thief and Harness Snipper take some away, and from 50 Readiness Antler Ripper comes at weight 6. A launch (100 Readiness) pays 2000 gold; a run that times out pays 10 gold per Readiness. Solved exactly over every Readiness and hunts-left state, with the cheapest-net bait (the same as 1c, so the bait cost is small). Left out: the launch item (silver_sleighbell), the forced Cinderhoof fight after 2 launches, pillage.
+**Off** = hunting without starting a run (the 1c numbers). **On** = back-to-back sleigh runs: each run lasts up to 40 hunts, catches add Readiness (common +5, rare +12, miniboss +20), escapes from Bell Thief and Harness Snipper take some away, and from 50 Readiness Antler Ripper comes at weight 6. While a run is on, each hunt costs 100 gold of upkeep and catches pay 25% of their gold. A launch (100 Readiness) pays 2000 gold; a run that times out pays 10 gold per Readiness. Solved exactly over every Readiness and hunts-left state, with the cheapest-net bait (the same as 1c, so the bait cost is small). Left out: the launch item (silver_sleighbell), the forced Cinderhoof fight after 2 launches, pillage.
 
-| Gear | Setup used | Gold / hunt, ride off | Gold / hunt, ride on | On vs off | Hunts per run | Runs that launch | Net per hunt after bait (off / on) |
+| Gear | Setup used | Gold / hunt, ride off | Gold / hunt, ride on (after upkeep) | On vs off | Hunts per run | Runs that launch | Net per hunt after bait (off / on) |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1. Beginner | Snow Globe Prison + Yule Log Base | 297 | 316 | +6% | 39.3 | 11% | 289 / 308 |
-| 2. Recommended | Sleigh-Bell Snapper + Gingerbread Cottage | 343 | 376 | +10% | 37.5 | 35% | 335 / 368 |
-| 3. Endgame | Sleigh-Bell Snapper + Gingerbread Cottage | 343 | 376 | +10% | 37.5 | 35% | 335 / 368 |
+| 1. Beginner | Snow Globe Prison + Yule Log Base | 306 | -2 | -101% | 38.8 | 18% | 261 / -47 |
+| 2. Recommended | Sleigh-Bell Snapper + Gingerbread Cottage | 349 | 22 | -94% | 36.7 | 43% | 304 / -23 |
+| 3. Endgame | Sleigh-Bell Snapper + Gingerbread Cottage | 349 | 22 | -94% | 36.7 | 43% | 304 / -23 |
 
 ### 2. Rare, mini boss and boss catch rates: fresh player vs endgame gear
 
@@ -442,8 +442,15 @@ eddy: the Carol Horn (a rank 2 Carol trap) caught Stables commons 98% with the b
 - **Shredwell:** Carol Horn on a Candy Cane Platform with a Mistletoe Charm is 30% (31% before), 35% with a Wind-up Key. Power was not raised: luck cannot be traded for power here without lifting Shredwell (+2 points per 50 power).
 - **Cost:** the game is 7% longer, because the Horn also made the Wrapping Room and Carol Loft quicker. Rank 3 is 405 against 400. The Toy Workshop commons (44%, target 55 to 65%) were already below target before this change and are not retuned.
 
-### Report 11: gold profit benchmark (200 players, seed 42, no content change)
+### Report 11: area baits and the sleigh run cost (200 players, seed 42, Cheer and events on)
 
-`npm run balance` gains section 1c: net gold per hunt per area (expected gold minus the bait used) for Beginner, Recommended and Endgame gear, with a farm index against the top area. Baseline net per hunt at Recommended gear: 9 (Cookie Pantry), 55 (Wrapping Room), 25 (Carol Loft), 120 (Toy Workshop), 335 (Reindeer Stables); farm index 6%, 19%, 11%, 43%, 100%. The area-bait plan in [Developer notes](DEVELOPER_NOTES.md#area-baits-limiting-gold-farming-eddy-28-nov-2026-plan-only) uses it. Simulator baseline: median 1,460 hunts to rank 5; hunts to catch every elf median 2,433 (p10 1,562, p90 4,251).
+Built on `integration` (eddy, 28 Nov). Each area only works with its own bait (a wrong bait always fails the catch), new baits Glitter Gumdrop 16 and Honey Lozenge 8, Peppermint Bark 50 to 40, Hot Cocoa 90 to 45; the sleigh run costs 100 gold upkeep per hunt, catches pay 25% gold while it is on, and it can be abandoned. `npm run balance` gains section 1c (net gold per hunt per area, three gear tiers, farm index) and 1d (Reindeer Stables with the run off and on). Details in [Developer notes](DEVELOPER_NOTES.md#area-baits-and-the-sleigh-run-cost-eddy-28-nov-2026-built-on-integration).
 
-Update (eddy asked for the Stables map with the sleigh ride on and off separately): section 1d gives gold per hunt for the Reindeer Stables with the run off and on. Recommended gear earns 343 off and 376 on (+10%), beginner 297 vs 316 (+6%); about 35% of recommended runs launch (11% for beginners).
+| Metric | Before | After |
+| --- | --- | --- |
+| Hunts to rank 5 | median 1,460 | median 1,697 |
+| Hunts to catch all 28 elves | median 2,433 (p10 1,562, p90 4,251) | median 2,781 (p10 1,798, p90 5,308) |
+| Ranks 1 to 4 (median hunts) | | 127, 291, 444, 810 (targets 150, 250, 400, 600; rank 4 flagged too slow) |
+| Net gold per hunt, Stables, recommended gear | 335 (run on 368) | 304 off, -23 on |
+
+The simulated player only starts a run with the whole cost in hand and a Snow Globe Prison or Sleigh-Bell Snapper, and abandons a run it cannot pay for; without that rule it never saved the 25,000 gold for the trap.

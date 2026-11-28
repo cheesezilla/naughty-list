@@ -43,7 +43,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Cheer Meter and boons (eddy): a streak meter, pick 1 of 3 from 14 boons in three rarities, Overcharge and Cheer charms; see [Cheer Meter](#cheer-meter-and-boons-eddy-26-nov-2026-built-on-integration) | Built on `integration` (test playground), draft numbers | this PR |
 | Full-game strategy walkthrough: [Wiki walkthrough](WIKI.md#walkthrough), gear, bosses and Cheer Meter use for every location | Done | this PR |
 | Docs consolidated into three: Developer notes, Balance notes, Wiki with walkthrough | Done | this PR |
-| Area baits to limit gold farming: net gold per hunt benchmark added to `npm run balance` (section 1c); plan for a signature bait per area with prices, see [Area baits](#area-baits-limiting-gold-farming-eddy-28-nov-2026-plan-only) | Benchmark done, baits planned (not built) | this PR |
+| Area baits (each area has its own bait, a wrong bait always fails), sleigh run costs gold and can be abandoned, net gold per hunt benchmark in `npm run balance`; see [Area baits](#area-baits-and-the-sleigh-run-cost-eddy-28-nov-2026-built-on-integration) | Built on `integration` | this PR |
 | 5. Tune from play-test | Planned | |
 | Daily branch cleanup: keeps the 10 most recently merged PR branches, deletes older merged ones (`cleanup-branches.yml`) | Done | this PR |
 | Versioned releases: semver in `package.json`, `CHANGELOG.md`, merging a new version into `main` publishes version-tagged Docker images, a `vX.Y.Z` tag and a GitHub Release, plus in-game release notes (`content/releases.json`, What's new popup and More screen); first release 1.0.0 (integration promoted to main); see [Deployment](#deployment) and [RELEASING.md](#releasing) | Done | this PR |
@@ -1073,7 +1073,7 @@ Gold comes in only from catches and sales, and goes out on bait, charms, gear, l
 | Location | Meant-for gear | Bait cost / gold per attracted hunt | Catch rate (commons) |
 | --- | --- | --- | --- |
 | Cookie Pantry | Jack-in-the-Box + Gingerbread Slab | about 60% | 60 to 70% |
-| Wrapping Room | Star Lantern + Candy Cane Platform | about 50% | 55 to 65% |
+| Wrapping Room | Star Lantern + Candy Cane Platform | about 25% (Glitter Gumdrop 16) | 55 to 65% |
 | Toy Workshop | Nutcracker Jaws + Ice Block | about 45% | 55 to 65% |
 | Reindeer Stables | Snow Globe Prison or Sleigh-Bell Snapper + Yule Log Base | about 45% | 45 to 55% |
 
@@ -1095,77 +1095,60 @@ Previous run (hexed elves and home power types, 200 players): all reached rank 5
 
 Before the home types, with the old buying rule, the simulator never bought a Frost trap for the Workshop and finished only 0.5 toy orders per player; that was a gap in the simulated player, not in the game, and the buying rule above fixed it.
 
-## Area baits: limiting gold farming (eddy, 28 Nov 2026, plan only)
-
-**Status: plan only. No game content changed.** eddy decides after reading this; nothing below is built.
+## Area baits and the sleigh run cost (eddy, 28 Nov 2026, built on integration)
 
 ### Why
 
-Every hunt uses one bait, but the bait is almost free. A Stale Cookie costs 8 gold, so at recommended gear the bait is 47% of a Cookie Pantry hunt's gold, 13% in the Wrapping Room, 6% in the Toy Workshop and 2% in the Reindeer Stables. The "bait cost / gold per hunt" targets in [Economy](#economy) (about 60%, 50%, 45%, 45%) were never reached once Allure made every hunt meet an elf. The result is that gold is a non-issue past rank 2, and nothing makes a player spend on the area they are in.
+Every hunt uses one bait, but the bait was almost free: a Stale Cookie (8 gold) was 2% of a Reindeer Stables hunt's gold, so gold was a non-issue past rank 2 and nothing made a player spend on the area they were in. The "bait cost / gold per hunt" targets in [Economy](#economy) (about 60%, 50%, 45%, 45%) were never reached once Allure made every hunt meet an elf.
 
-### The benchmark (built, in `npm run balance`)
+### The rules (eddy's decisions, 28 Nov)
 
-Section 1c of [Balance notes](BALANCE.md) gives **net gold per hunt** (expected gold from catches minus the bait used) for every area with Beginner, Recommended and Endgame gear, plus a **farm index**: endgame net gold in this area divided by recommended net gold in the top area (Reindeer Stables). Below 100% means farming here with endgame gear pays less than playing the top area. Today's numbers (bait always the cheapest, because every shop bait is nearly free):
+1. **Each area has its own baits** (`baits` on the location). Any other bait is still used up, but **the catch always fails** (Allure is irrelevant; the hunt log says why, and the Hunt screen shows a "Wrong bait" warning with a Change bait button). Admin "exact odds" speed-run still wins.
+2. **The sleigh run costs gold.** While a run is on, every hunt costs **100 gold upkeep** (taken from what you have, never below 0) on top of bait, and catches pay only **25% of their gold** (`upkeep` and `catchGoldMult` on the sleigh run objective). Launch (2,000 gold and a Silver Sleighbell) and the 10-gold-per-Readiness payout for a timed-out run are unchanged. The run is the only road to Cinderhoof (two launches), so fighting Cinderhoof costs gold; hunting with the run off still earns.
+3. **A player can abandon a run at any time** (`abandon_run` action, "Abandon run and restart" button with a second tap to confirm): the run ends, Readiness goes to 0, no payout, launches already made stay, and a new run can be started at once.
+4. **Stranded players** (no bait and under 50 gold) get 10 of the cheapest shop bait that works in their area, not always Stale Cookies.
 
-| Area | Beginner | Recommended | Endgame | Farm index |
-| --- | --- | --- | --- | --- |
-| Cookie Pantry | 9 | 9 | 20 | 6% |
-| Wrapping Room | 37 | 55 | 62 | 19% |
-| Carol Loft (side) | 24 | 25 | 37 | 11% |
-| Toy Workshop | 96 | 120 | 145 | 43% |
-| Reindeer Stables | 289 | 335 | 335 | 100% |
+### Baits
 
-**Reindeer Stables, sleigh run off and on (section 1d).** The sleigh run adds a 2,000 gold launch (and a Silver Sleighbell) when Readiness hits 100, and pays 10 gold per Readiness if the 40 hunts run out, so the Stables earns more with the ride on. Solved exactly over every Readiness and hunts-left state, back-to-back runs, bait and charms as above:
+| Area | Baits that work | Shop price | New or changed |
+| --- | --- | --- | --- |
+| Cookie Pantry | Stale Cookie, Sugar Cookie, Fruitcake (crafted) | 8, 20 | unchanged |
+| Wrapping Room | **Glitter Gumdrop** (ladder tier 1), Ribbon Candy, Golden Bow Bonbon (crafted) | 16 | Glitter Gumdrop new: attraction 0.80, rank 2 |
+| Carol Loft (side) | **Honey Lozenge** | 8 | new: attraction 0.78, rank 2 |
+| Toy Workshop | Peppermint Bark | 40 | price 50 to 40 |
+| Reindeer Stables | Hot Cocoa | 45 | price 90 to 45; the old half-attraction penalty for other baits is gone (replaced by the always-fail rule) |
 
-| Gear | Gold per hunt, ride off | Ride on | On vs off | Hunts per run | Runs that launch |
-| --- | --- | --- | --- | --- | --- |
-| Beginner (Snow Globe Prison + Yule Log Base) | 297 | 316 | +6% | 39.3 | 11% |
-| Recommended (Sleigh-Bell Snapper + Gingerbread Cottage) | 343 | 376 | +10% | 37.5 | 35% |
-| Endgame (same) | 343 | 376 | +10% | 37.5 | 35% |
+The Bait Ladder's tier 1 is now Glitter Gumdrop only. New bait art is placeholder SVG (`npm run art`); the real art can come from ChatGPT later. Flavour text for both baits is in `content/flavour.json`.
 
-With the proposed Hot Cocoa at 90, net per hunt becomes 207 / 253 / 253 ride off and 226 / 286 / 286 ride on (beginner / recommended / endgame). The top-area figure the farm index compares against is the ride-off one, so a lower area's farm index is a little lower again when the player rides. The 2,000 launch gold is only about 5 to 10% of income, so the bait price rule (25 to 35%) holds either way: at 90 Hot Cocoa is 24% of ride-on gold at recommended gear (28% for beginners). Not counted: the Sleighbell, the forced Cinderhoof fight after two launches, pillage.
+### The benchmark and the numbers
 
-Reading it: farming low areas is already weaker than the top area per hunt. The real gap is that net gold per hunt equals gold per hunt (bait is a rounding error), and with no cooldown a player can spam hunts at 2 a second, so the top area's 335 a hunt is about 40,000 gold a minute. Charms (25 to 90 gold, used up per hunt) are not in the benchmark.
+Section 1c of [Balance notes](BALANCE.md) gives **net gold per hunt** (expected gold minus the bait used) per area with Beginner, Recommended and Endgame gear, plus a **farm index**: endgame net gold in this area divided by recommended net gold in the Reindeer Stables. Section 1d solves the Stables with the sleigh run off and on (exact, over every Readiness and hunts-left state). Before and after:
 
-### Proposal
+| Area | Net gold / hunt before (beginner / recommended / endgame) | After | Farm index before to after |
+| --- | --- | --- | --- |
+| Cookie Pantry | 9 / 9 / 20 | 9 / 9 / 20 | 6% to 7% |
+| Wrapping Room | 37 / 55 / 62 | 29 / 47 / 54 | 19% to 18% |
+| Carol Loft | 24 / 25 / 37 | 25 / 26 / 37 | 11% to 12% |
+| Toy Workshop | 96 / 120 / 145 | 65 / 89 / 114 | 43% to 38% |
+| Reindeer Stables, run off | 289 / 335 / 335 | 261 / 304 / 304 | 100% |
+| Reindeer Stables, run on | about 308 / 368 / 368 | **-47 / -23 / -23** | |
 
-1. **One signature bait per area, rank-locked and sold in the shop at that area.** Gold per hunt grows about 20x from Pantry to Stables, so bait price grows with it.
-2. **A mismatched bait halves the catch chance** (a new `otherBaitPenalty` on catch chance; today it only scales attraction, i.e. rare and boss encounter weights, and only in the Stables). The bait is still used up. Without this, a player just buys the cheapest bait everywhere. The price rule below keeps the area's own bait the better buy.
-3. **Price rule:** the area bait costs roughly 25 to 35% of the area's gold per hunt with Recommended gear, never above 50% (past 50% the half-catch Stale Cookie wins). Beginner players, who earn less, stay under about 40%.
-4. Higher-area baits used in a lower area are penalised the same way, so there is no cheap "best bait everywhere" and no free upgrade for farming down.
+A run on recommended gear costs about 850 gold (36.7 hunts at -23); on beginner gear about 1,800 (38.8 hunts at -47), about 3 and 7 hunts of ride-off income. Only 18% (beginner) to 43% (recommended) of runs launch, so two launches need roughly 5 to 11 runs. Bait is now 18 to 33% of a hunt's gold in the Pantry-to-Stables range at recommended gear, within the 25 to 35% rule, except the Pantry (47%, left as the starter area).
 
-### Proposed baits and costs (recommended: moderate)
+### Simulator results (200 players, seed 42, bot starts a run only with its whole cost in hand and a Frost trap that can win it, and abandons a run it can no longer pay for)
 
-| Area | Signature bait | New or existing | Price | % of gold, beginner / recommended | Net gold per hunt, beginner / recommended / endgame | Farm index |
-| --- | --- | --- | --- | --- | --- | --- |
-| Cookie Pantry | Stale Cookie (Sugar Cookie 20 stays the optional rare-hunter) | Existing | 8 | 47% / 47% | 9 / 9 / 20 | 8% |
-| Wrapping Room | **Glitter Gumdrop** (rank 2) | New | 16 | 35% / 26% | 29 / 47 / 54 | 21% |
-| Carol Loft (side) | **Honey Lozenge** (rank 2) | New | 8 | 25% / 24% | 24 / 25 / 37 | 15% |
-| Toy Workshop | **Peppermint Bark** (rank 3, already in the game and in the Order Board crates) | Existing, price 50 to 40 | 40 | 38% / 31% | 64 / 88 / 113 | 45% |
-| Reindeer Stables | **Hot Cocoa** (rank 4, already the preferred bait) | Existing | 90 | 30% / 26% | 207 / 253 / 253 | 100% |
+| Metric | Before | After |
+| --- | --- | --- |
+| Hunts to rank 5 | median 1,460 | **median 1,697** |
+| Hunts to catch every elf | median 2,433 (p10 1,562, p90 4,251) | **median 2,781 (p10 1,798, p90 5,308)** |
+| Ranks 1 to 4 (median hunts) | | 127, 291, 444, 810 (targets 150, 250, 400, 600) |
+| Sleigh runs per player / launched | | 6.9 / 0.9 |
 
-New names are original: Glitter Gumdrop (wrapping glitter on a sweet) and Honey Lozenge (a throat sweet for hexed carollers). Attraction: Gumdrop 0.80, Lozenge 0.78, so rare and boss Allure stays about where it is. The Wrapping Room's ribbon candy ladder is untouched; Ribbon Candy and Golden Bow Bonbon stay crafted, area-only upgrades.
+Rank 4 is now flagged too slow (810 vs 600): the Snow Globe Prison costs 25,000 and the Stables bait and run upkeep slow the saving. The full collection takes about 350 more hunts because Antler Ripper needs runs. Not retuned: levers if eddy wants it faster are Hot Cocoa 45 to 30, upkeep 100 to 70, or launch gold 2,000 to 3,000.
 
-Checks done with the numbers above: a half-catch Stale Cookie in a higher area always earns less than the right bait (Stables 163 vs 253, Toy Workshop 69 vs 113, Wrapping Room 27 vs 54, endgame gear), and farming any area below the top with endgame gear earns 8 to 45% of the top area's recommended net.
+### Build notes
 
-**Alternative (stricter, for eddy to pick):** use the old Economy targets, bait at 50% / 45% / 45% of gold per hunt: Wrapping Room about 32, Toy Workshop about 58, Reindeer Stables about 154. That halves net profit everywhere and leaves little margin above the 50% cap, so I do not recommend it unless gold is still too plentiful after play-testing the moderate version.
-
-### Side effects to watch when built
-
-- Net gold per hunt at Recommended drops from 335 to 253 in the Stables and from 120 to 88 in the Toy Workshop, so unlock saving is a bit slower (Toy Workshop to Stables unlock, 5,000 gold: about 42 hunts today, about 57 after). Hunts to rank 5 should barely move because rank is points, not gold; the simulator will confirm.
-- Beginner players with a thin purse: the gold rescue (under 50 gold, 10 Stale Cookies) only gives the Pantry bait. Give the rescue an area-bait variant or leave it as a Pantry safety net.
-- Pillage of bait now matters more because bait is worth something; the existing crafted-bait save chance (85%) stays.
-- The Bait Ladder "Shop bait" tier keeps counting any shop bait; Gumdrop would be added to it.
-
-### Build order (when approved)
-
-1. Content: two new baits, Peppermint Bark price, a `signatureBait` (or reuse `preferredBait`) per location and a catch-chance penalty field; schema and check-content rules.
-2. Engine: apply the penalty in `catchChance` through `setupStats`; shop and hunt screen show the area bait and warn on a mismatch.
-3. Simulator: buy the area bait; report bait cost per area again.
-4. Balance thresholds: a net-gold band per area and a farm-index flag (suggested: warn if endgame net gold at any lower area exceeds 60% of the top area's recommended net).
-5. Run `npm run balance` and `npm run simulate` before and after; report hunts to rank 5 and hunts to catch every elf.
-
-**Baseline for that comparison (this PR, no content change, 200 players, seed 42):** median 1,460 hunts to rank 5; hunts to catch every elf: median 2,433 (p10 1,562, p90 4,251).
+`Location.baits`, `baitWorksHere()` (odds.ts, used by `hunt` and `huntOdds`), `entry.wrongBait`, `entry.upkeep`, sleigh `catchGoldMult` and `upkeep`, `abandon_run` in `/api/objective`, hunt-log lines for all three. The balance check and simulator only use baits that work in the area. Not built: a farm-index flag in `thresholds.json` (suggested: warn if endgame net gold at a lower area exceeds 60% of the top area's recommended net).
 
 ## Art
 
@@ -1586,7 +1569,7 @@ To stay on a version or roll back, set the image line to `ghcr.io/cheesezilla/na
 
 | Date | PR | Change |
 | --- | --- | --- |
-| 2026-11-28 | this PR | Plan only: area-specific baits to limit gold farming. `npm run balance` gains section 1c (net gold per hunt per area for Beginner, Recommended and Endgame gear, with a farm index); plan with a signature bait per area, catch penalty for a mismatched bait and proposed prices. No game number changes; baseline sim 1,460 hunts to rank 5, 2,433 to catch every elf |
+| 2026-11-28 | this PR | **Area baits built on `integration`.** Each area only works with its own bait (new Glitter Gumdrop 16 and Honey Lozenge 8, Peppermint Bark 50 to 40, Hot Cocoa 90 to 45); a wrong bait is used up and the catch always fails; the old Stables half-attraction rule is removed. A sleigh run costs 100 gold upkeep per hunt and catches pay 25% gold (net negative while on); a run can be abandoned at any time; the stranded-player rescue gives the area's cheapest bait. `npm run balance` gains 1c (net gold per hunt, farm index) and 1d (Stables run off/on). Sim: median 1,697 hunts to rank 5 (1,460 before), 2,781 to catch every elf (2,433 before); rank 4 now flagged slow (810 vs 600) |
 | 2026-11-28 | this PR | **Release 1.0.3 (integration only).** What's new popup is derived from the save (not a mount-time flag) and More > What's new has a "Show the latest notes popup" button for re-testing. New games and Start over still skip the popup by design (`releaseSeen` starts at the latest version). Every API call, hunts included, runs the `x-app-version` check. |
 | 2026-11-28 | this PR | **Release 1.0.2 (integration only).** Version bump with fresh release notes so the What's new popup can be re-tested on the :integration image. No code or game numbers changed. |
 | 2026-11-28 | this PR | **Release 1.0.1.** `package.json` and lockfile bumped, `CHANGELOG.md` and `content/releases.json` carry the 1.0.1 notes (PRs 71 to 81: refresh popup, admin always-catch fix, Cheer Meter reset on travel, Cinderhoof harder, wording fixes, Carol Horn luck 1, balance check, commons, Grimbolt and gear tuning, docs consolidated, branch cleanup workflow). No game numbers changed in this PR |

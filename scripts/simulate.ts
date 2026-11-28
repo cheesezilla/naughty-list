@@ -235,9 +235,19 @@ function plan(p: PlayerState, log: Log, huntNo: number): PlayerState {
 function playObjective(p: PlayerState, rng: Rng, log: Log): PlayerState {
   const loc = data.locations.get(p.location)!;
   const s = p.objectives?.[loc.id];
-  if (loc.objective?.type === 'sleigh_run' && (!s || (s.type === 'sleigh_run' && !s.active && !s.forced))) {
-    const r = objectiveAction(content, p, 'start_run', rng);
-    if (r.ok) { p = r.player; log.objectives.runs++; }
+  if (loc.objective?.type === 'sleigh_run') {
+    // A run costs gold every hunt, so the bot only starts one with its whole cost in hand and a trap that can win it (farming
+    // ride-off hunts until then), and abandons a run it can no longer pay for.
+    const ownsRunTrap = (q: PlayerState) => ['snow_globe_prison', 'sleigh_bell_snapper'].some((t) => count(q, t) > 0);
+    const ob = loc.objective;
+    const perHunt = ob.upkeep + baitPrice(p.setup.bait ?? '');
+    if ((!s || (s.type === 'sleigh_run' && !s.active && !s.forced)) && p.gold >= ob.hunts * perHunt && ownsRunTrap(p)) {
+      const r = objectiveAction(content, p, 'start_run', rng);
+      if (r.ok) { p = r.player; log.objectives.runs++; }
+    } else if (s?.type === 'sleigh_run' && s.active && p.gold < 3 * perHunt) {
+      const r = objectiveAction(content, p, 'abandon_run', rng);
+      if (r.ok) p = r.player;
+    }
   }
   if (s?.type === 'order_board') {
     if (s.rushReady && s.rushLeft === 0) {

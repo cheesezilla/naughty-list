@@ -96,6 +96,10 @@ export const Objective = z.discriminatedUnion('type', [
     launchGold: z.number().int().nonnegative(),
     launchItems: z.record(id, z.number().int().positive()),
     failGoldPerReadiness: z.number().nonnegative(),
+    /** While a run is going, catches pay this share of their gold (the rest goes into the sleigh). */
+    catchGoldMult: z.number().min(0).max(1).default(1),
+    /** Gold the run costs per hunt on top of bait, taken from what the player has. */
+    upkeep: z.number().int().nonnegative().default(0),
     miniboss: id,
     boss: id,
   }),
@@ -113,8 +117,8 @@ export const Location = z.object({
   after: id.optional(),
   /** Power types recommended here, shown on the location banner. */
   homeTypes: z.array(PowerType).default([]),
-  preferredBait: id.optional(),
-  otherBaitPenalty: chance.optional(),
+  /** The only baits that work here. Any other bait is used up and the catch always fails. Missing: every bait works. */
+  baits: z.array(id).min(1).optional(),
   objective: Objective.optional(),
   /** Dropped on the first catch of this location's boss. The next location in the list needs it to unlock. */
   key: z.object({ id, name: z.string(), description: z.string() }).optional(),

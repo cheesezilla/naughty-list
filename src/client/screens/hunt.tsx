@@ -132,6 +132,13 @@ export function HuntScreen() {
             </div>
           </div>
 
+          {location.baits && !(player.setup.bait && location.baits.includes(player.setup.bait)) && (
+            <div class="card tip-card" role="alert">
+              <b>Wrong bait for the {location.name}.</b> {bait ? `${bait.name} won't tempt the elves here: every catch fails.` : 'You have no bait armed.'} Use {location.baits.map((id) => data.items.get(id)?.name ?? id).join(' or ')}.
+              <button class="small-btn" onClick={() => setSheet('bait')}>Change bait</button>
+            </div>
+          )}
+
           <ObjectivePanel location={location} onHint={() => setHint(true)} />
           <BoonCard />
           <CheerCard />

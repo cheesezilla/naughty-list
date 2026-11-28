@@ -203,17 +203,19 @@ Add power, luck and Allure, and the later ones have a **type affinity** bonus to
 
 ## Baits
 
-One bait is used on every hunt, whether it catches or not. Higher Allure pulls rarer elves more often.
+One bait is used on every hunt, whether it catches or not. Higher Allure pulls rarer elves more often. **Each area has its own bait**: a bait from another area still gets used up, but the catch always fails (the Hunt screen warns you). Cookie Pantry: Stale Cookie, Sugar Cookie, Fruitcake. Wrapping Room: Glitter Gumdrop, Ribbon Candy, Golden Bow Bonbon. Carol Loft: Honey Lozenge. Toy Workshop: Peppermint Bark. Reindeer Stables: Hot Cocoa. If you run out of bait and gold, Mrs. Claus slips you 10 of the cheapest bait that works where you are.
 
 | Bait                  | Allure | Rank | Price                                                          | Notes                                                                         |
 |-----------------------|--------|------|----------------------------------------------------------------|-------------------------------------------------------------------------------|
-| **Stale Cookie**      | 70%    | 1    | 8 gold                                                         | Works everywhere.                                                             |
+| **Stale Cookie**      | 70%    | 1    | 8 gold                                                         | Cookie Pantry bait.                                                           |
 | **Sugar Cookie**      | 78%    | 1    | 20 gold                                                        | Draws more Sootcaps in the Pantry.                                            |
-| **Peppermint Bark**   | 82%    | 3    | 50 gold                                                        | A solid mid-game shop bait.                                                   |
+| **Peppermint Bark**   | 82%    | 3    | 40 gold                                                        | Toy Workshop bait.                                                            |
 | **Fruitcake**         | 85%    | 2    | Crafted / reward (3× Candied Peel, 1× Cookie Tin + 100 gold)   | Doubles rare, mini boss and boss odds (cannot skip the Wrapping Room ladder). |
 | **Ribbon Candy**      | 82%    | 2    | Crafted / reward (2× Sugar Twist, 1× Candied Peel + 30 gold)   | Wrapping Room ladder tier 2.                                                  |
 | **Golden Bow Bonbon** | 86%    | 2    | Crafted / reward (1× Sugar Glass, 1× Golden Ribbon + 100 gold) | Wrapping Room ladder tier 3: the bait Madame Shredwell takes.                 |
-| **Hot Cocoa**         | 88%    | 4    | 90 gold                                                        | Reindeer Stables elves show up at half rate with any other bait.              |
+| **Hot Cocoa**         | 88%    | 4    | 45 gold                                                        | Reindeer Stables bait.                                                        |
+| **Glitter Gumdrop**   | 80%    | 2    | 16 gold                                                        | Wrapping Room shop bait (ladder tier 1).                                      |
+| **Honey Lozenge**     | 78%    | 2    | 8 gold                                                         | Carol Loft bait.                                                              |
 
 ## Charms
 
@@ -322,7 +324,7 @@ Each order is 3 slots, each asking for a trap type. A catch with the right type 
 
 ### Reindeer Stables: Sleigh Run
 
-Start a run and get Readiness to 100 within 40 hunts. Common catches add 5, rares 12, the Antler Ripper (mini boss, appears from 50 readiness) 20. Escapes from the Bell Thief (−8) or Harness Snipper (−5) set you back. Launching pays 2,000 gold and a Silver Sleighbell, then **Cinderhoof** ambushes the sleigh. A failed run pays 10 gold per readiness and can be restarted.
+Start a run and get Readiness to 100 within 40 hunts. Common catches add 5, rares 12, the Antler Ripper (mini boss, appears from 50 readiness) 20. Escapes from the Bell Thief (−8) or Harness Snipper (−5) set you back. Launching pays 2,000 gold and a Silver Sleighbell, then **Cinderhoof** ambushes the sleigh. A run costs gold: **100 gold upkeep every hunt** on top of bait, and catches pay only a quarter of their gold, so a run is a net loss until it launches. A failed run pays 10 gold per readiness. You can **abandon a run at any time** (Readiness goes back to 0, launches already made stay) and start again. Farm gold with the run off, then pay for the run.
 
 ### Carol Loft
 
@@ -492,7 +494,7 @@ Secret (6)
 - **Cookie Pantry goals panel:** a main goal ("Rank up and move on", ticked at the next area's rank) and an optional one (catch every portrait, shown as caught/total).
 - Match the trap type to the area: the home-type medals on the Hunt screen show what is best.
 - Use luck gear (and Wishbone Plinth) for commons, power gear (and Toffee Anvil) for bosses.
-- Bait is your cost: keep a cheap bait for farming and a rich bait for objectives.
+- Bait is your cost, and every area has its own: buy the area's bait when you arrive, since a bait from another area never catches anything.
 - The Naughty List screen shows each elf's weakness once you have its card.
 - Beginner tips appear once each as a small card above your gear. Start over resets your save but keeps your feedback.
 
@@ -605,7 +607,7 @@ Commons: Ribbon Tangler (weak Frost), Tape Biter and Bow Burglar (weak Starlight
 | Step | What to do |
 | --- | --- |
 | Gear | **Star Lantern** (1,200 g, Starlight 300) and **Candy Cane Platform** (2,500 g): about 55 to 64% on the commons. Later the **Icicle Jar** (3,000 g, Frost) for Ribbon Tanglers and Hammerhand. |
-| Bait tier 1 | Any shop bait. Commons drop Sugar Twist and Candied Peel. |
+| Bait tier 1 | Glitter Gumdrop (16 g), the Wrapping Room's shop bait. Commons drop Sugar Twist and Candied Peel. |
 | Bait tier 2 | 2 Sugar Twist + 1 Candied Peel + 30 g = 3 **Ribbon Candy**. Draws Glitterbug (Sugar Glass 50%) and Spoolwick (always a Golden Ribbon). |
 | Bait tier 3 | 1 Sugar Glass + 1 Golden Ribbon + 100 g = 2 **Golden Bow Bonbons**. The only bait that draws Shredwell (half of visits). Craft 4 to 6, because she steals bait when she escapes. |
 | Boss gear | Madame Shredwell is tough without Carol. With the rank 2 setup (Star Lantern or Icicle Jar on a Candy Cane Platform) she is about 10 to 13%. A Carol Horn on the same platform gives about 30%, 31% with a Mistletoe Charm; a Toffee Anvil base adds a couple of points. Use a Cheer boon (Santa's Blessing, Boss Bell) and craft plenty of Bonbons, because she steals bait when she escapes.
@@ -643,7 +645,7 @@ Commons: Hay Hoarder and Bell Thief (weak Frost), Harness Snipper (weak Clockwor
 
 
 - **Frost build (trap 2):** Snow Globe Prison (25,000 g, Frost 1,800), Gingerbread Cottage base (power 1,550, Frost affinity +10%, more Allure), Wind-up Key Charm (+35% power). See the table above: Cinderhoof about 26% (16% with trap 1).
-- **Sleigh Run:** start a run (free) and reach 100 readiness within 40 hunts. Commons add 5, Carrot Crook 12, Antler Ripper 20 (it appears only above 50 readiness). A Bell Thief escape costs 8, a Harness Snipper escape 5. Launching pays 2,000 g and a Silver Sleighbell, then Cinderhoof ambushes the next hunt.
+- **Sleigh Run:** start a run (it costs 100 gold per hunt while it is on, so bring about 6,000 gold; farm with the run off first) and reach 100 readiness within 40 hunts. Commons add 5, Carrot Crook 12, Antler Ripper 20 (it appears only above 50 readiness). A Bell Thief escape costs 8, a Harness Snipper escape 5. Launching pays 2,000 g and a Silver Sleighbell, then Cinderhoof ambushes the next hunt.
 - **Antler Ripper** (5,000 power, weak Frost) is about 60% with trap 2. **Cinderhoof** (20,500 power, weak Frost, immune to Starlight) is about 26% with trap 2 (16% with trap 1), so expect several tries. Escapes never cost rank.
 - Optional: Sleigh Runner base (2 Silver Sleighbell + 2 Toymaker's Gear + 12,000 g) and Sleigh-Bell Snapper trap (3 Silver Sleighbell + Clockwork Heart + Nutcracker Jaws + 15,000 g) are for the Workshop and Wrapping Room bosses and for completionists; against Cinderhoof the Frost build above is just as good. The Wishing Star Pedestal (1 Clockwork Heart, 2 Enchanted Wrapping, 4 Sugar Glass, 12,000 g) adds luck 9.
 
