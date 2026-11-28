@@ -17,12 +17,12 @@
 import { writeFileSync } from 'node:fs';
 import { loadContent } from '../src/content/load.js';
 import type { Content } from '../src/content/schema.js';
-import { gameData, priceOf } from '../src/engine/data.js';
+import { baitGoldValue, gameData, priceOf } from '../src/engine/data.js';
 import { hunt } from '../src/engine/hunt.js';
 import { cheerAction, eventAction } from '../src/engine/index.js';
 import { checkAchievements } from '../src/engine/achievements.js';
 import { objectiveAction } from '../src/engine/objectives.js';
-import { catchChance, huntOdds, luckFactor, setupStats } from '../src/engine/odds.js';
+import { baitWorksHere, catchChance, huntOdds, luckFactor, setupStats } from '../src/engine/odds.js';
 import { buy, count, craft, equip, newPlayer, travel, type PlayerState, type Setup } from '../src/engine/player.js';
 import { seededRng, type Rng } from '../src/engine/rng.js';
 
@@ -46,6 +46,11 @@ const NO_CHEER = args.includes('--no-cheer');
 const NO_EVENTS = args.includes('--no-events');
 const BOON_POLICY = strOpt('boon-policy', 'greedy');
 const EVENT_POLICY = strOpt('event-policy', 'safe');
+/** `--bot loop` (default): farm for gold, then push (push bait, boss keys, rares) when the savings allow. `--bot legacy`: the old bot that picks bait by best net gold and never plans a push. */
+const BOT = strOpt('bot', 'loop');
+const LOOP = BOT !== 'legacy';
+/** Hunts of push bait a player wants in hand before starting a push, and the cheapest they will continue on. */
+const PUSH_HUNTS = opt('push-hunts', 30);
 const HAS_CHEER = true;
 const HAS_EVENTS = true;
 const traceLines: string[] = [];
@@ -62,6 +67,7 @@ const data = gameData(content);
 const finalRank = content.ranks.at(-1)!.rank;
 
 function baitPrice(id: string): number {
+  if (LOOP) return baitGoldValue(data, id);
   const b = data.items.get(id);
   return (b && priceOf(b)) ?? 0;
 }
@@ -73,17 +79,28 @@ function score(setup: Setup, location: string) {
   return { odds: o, net, value: o.expectedPoints + net };
 }
 
-function bestSetup(p: PlayerState, location: string, allowBuyBait: boolean): { setup: Setup; value: number; net: number } {
+type BaitMode = 'any' | 'farm' | 'push';
+
+/**
+ * Best setup in a location. `mode` filters the baits: farm uses the free floor bait and cheap farm baits, push uses the dearer
+ * push baits too, any is the legacy choice (everything that works). Baits are owned, bought (10 hunts' worth in hand) or the free floor bait.
+ */
+function bestSetup(p: PlayerState, location: string, allowBuyBait: boolean, mode: BaitMode = 'any', score2: (s: ReturnType<typeof score>, setup: Setup) => number = (s) => s.value): { setup: Setup; value: number; net: number } {
+  const loc = data.locations.get(location)!;
   const traps = content.items.traps.filter((t) => count(p, t.id) > 0);
   const bases = content.items.bases.filter((b) => count(p, b.id) > 0);
-  const baits = content.items.baits.filter(
-    (b) => count(p, b.id) > 0 || (allowBuyBait && b.price !== null && b.rank <= p.rank && p.gold >= b.price * 10),
-  );
+  const baits = content.items.baits.filter((b) => {
+    if (mode === 'farm' && b.role === 'push') return false;
+    if (LOOP && !baitWorksHere(loc, b.id)) return false;
+    if (LOOP && b.role === 'floor') return true;
+    return count(p, b.id) > 0 || (allowBuyBait && b.price !== null && b.rank <= p.rank && p.gold >= b.price * 10);
+  });
   let best = { setup: p.setup, value: -Infinity, net: -Infinity };
   for (const t of traps) for (const b of bases) for (const bait of baits.length ? baits : [null]) {
     const setup: Setup = { trap: t.id, base: b.id, bait: bait?.id ?? null, charm: null };
     const s = score(setup, location);
-    if (s.value > best.value) best = { setup, value: s.value, net: s.net };
+    const v = score2(s, setup);
+    if (v > best.value) best = { setup, value: v, net: s.net };
   }
   return best;
 }
@@ -122,6 +139,16 @@ interface Log {
   goldIn: number;
   jackpotCatches: number;
   jackpotGold: number;
+  /** Farm and push stages: a hunt is a push hunt when the armed bait has role `push`. */
+  stage: Record<'farm' | 'push', { hunts: number; caught: number; gold: number; bait: number; upkeep: number; points: number; jackpotGold: number; firstCatches: number; draws: number; events: number; eventHunts: number }>;
+  pushRuns: number;
+  upkeepSpent: number;
+  /** Stale stretches: 50 or more hunts in a row without a first catch, rank-up, key or gear purchase. */
+  stale: { hunts: number; stretches: number; longest: number; jackpots: number; events: number; draws: number; goldJackpot: number; endedBy: Record<string, number> };
+  floorHunts: number;
+  /** Where the player stood when the run stopped. */
+  final2?: Record<string, unknown>;
+  final?: { location: string; gold: number; rank: number; points: number; bait: string | null; trap: string; unlocked: string[] };
   baitSpent: number;
   pillageLost: number;
   lootHunts: number;
@@ -133,7 +160,7 @@ let collecting = false;
 const allElves = content.locations.flatMap((l) => l.imps.map((i) => i.id));
 const uncaught = (p: PlayerState) => allElves.filter((id) => (p.catches[id] ?? 0) === 0);
 
-function plan(p: PlayerState, log: Log, huntNo: number): PlayerState {
+function planLegacy(p: PlayerState, log: Log, huntNo: number): PlayerState {
   // 1. Unlock the deepest location the rank allows, keeping a bait reserve.
   for (const loc of [...content.locations].filter((l) => !l.side).reverse()) {
     if (!p.unlocked.includes(loc.id) && loc.rank <= p.rank && p.gold >= loc.unlockCost * 1.5) {
@@ -233,6 +260,278 @@ function plan(p: PlayerState, log: Log, huntNo: number): PlayerState {
   return p;
 }
 
+// ---------- The loop bot: farm for gold, then push ----------
+
+/** What the bot is doing now. `push` means it saved up and is spending on push bait to reach elves farm bait does not. */
+interface Brain { mode: 'farm' | 'push'; replan: boolean }
+let brain: Brain = { mode: 'farm', replan: false };
+/** Hunts of farm bait a push always leaves in hand, so a push never leaves the player stranded on the free fallback. */
+const FARM_RESERVE = opt('farm-reserve', 25);
+const RUN_MIN = opt('run-min', 50);
+const RANK_ITEMS = () => [...content.items.traps, ...content.items.bases];
+
+/** Elves the player is still after: rare, mini boss and boss portraits (and keys), loot a wanted recipe needs, and in the collection phase every uncaught elf. */
+function wantedElves(p: PlayerState): Map<string, number> {
+  const out = new Map<string, number>();
+  const add = (id: string, w: number) => out.set(id, Math.max(out.get(id) ?? 0, w));
+  for (const locId of p.unlocked) {
+    for (const imp of data.locations.get(locId)!.imps) {
+      if ((p.catches[imp.id] ?? 0) > 0) continue;
+      if (collecting) add(imp.id, imp.tier === 'boss' ? 3 : imp.tier === 'miniboss' ? 2 : 1);
+      else if (imp.tier === 'boss') add(imp.id, 3);
+      else if (imp.tier === 'miniboss') add(imp.id, 2);
+      else if (imp.tier === 'rare') add(imp.id, 1);
+    }
+  }
+  // Loot a recipe for gear the player does not own yet still needs.
+  for (const r of content.recipes) {
+    const o = data.items.get(r.output.item);
+    if (!o || (o.kind !== 'trap' && o.kind !== 'base') || count(p, o.id) > 0 || WITHOUT.has(o.id) || r.rank > p.rank) continue;
+    // A player only hunts for loot when the gear is a clear upgrade where they work (about 3% more value).
+    const fl = frontier(p);
+    if (gainOf(p, o.id, fl) <= 0.03 * Math.max(1, bestSetup(p, fl, true, 'farm').value)) continue;
+    for (const [ing, need] of Object.entries(r.ingredients)) {
+      if (count(p, ing) >= need || data.items.get(ing)?.kind !== 'material') continue;
+      for (const locId of p.unlocked) for (const imp of data.locations.get(locId)!.imps) {
+        if (imp.loot?.some((l) => l.item === ing)) add(imp.id, imp.tier === 'common' ? 0.5 : 1);
+      }
+    }
+  }
+  // A wanted elf that only comes with a crafted bait (the Wrapping Room ladder) makes the bait's materials wanted too, a step or two down the chain.
+  for (let depth = 0; depth < 3; depth++) {
+    for (const id of [...out.keys()]) {
+      const imp = data.imps.get(id)!;
+      for (const baitId of Object.keys(imp.baitWeights ?? {})) {
+        if ((imp.baitWeights![baitId] ?? 0) <= 0) continue;
+        const r = content.recipes.find((x) => x.output.item === baitId && x.rank <= p.rank);
+        if (!r || count(p, baitId) > 0) continue;
+        for (const [ing, need] of Object.entries(r.ingredients)) {
+          if (count(p, ing) >= need) continue;
+          for (const locId of p.unlocked) for (const m of data.locations.get(locId)!.imps) if (m.loot?.some((l) => l.item === ing)) add(m.id, 0.5);
+        }
+      }
+    }
+  }
+  return out;
+}
+
+/** The deepest main area the player has opened: the one they are working towards farming, so gear that helps there counts as an upgrade. */
+const frontier = (p: PlayerState) => [...content.locations].filter((l) => !l.side && p.unlocked.includes(l.id)).at(-1)?.id ?? p.location;
+/** Best value gain from owning an item, at the farm area or the frontier. */
+function gainOf(p: PlayerState, itemId: string, farmLoc: string): number {
+  const trial = { ...p, inventory: { ...p.inventory, [itemId]: 1 } };
+  let g = 0;
+  for (const loc of new Set([farmLoc, frontier(p)])) g = Math.max(g, bestSetup(trial, loc, true, 'farm').value - bestSetup(p, loc, true, 'farm').value);
+  return g;
+}
+
+/** Gold the bot wants to keep for gear it is saving for: the cheapest rank-open trap or base that would help where it hunts. */
+function savingGoal(p: PlayerState, farmLoc: string): number {
+  let goal = 0;
+  for (const item of RANK_ITEMS()) {
+    if (WITHOUT.has(item.id) || item.price === null || item.rank > p.rank || count(p, item.id) > 0) continue;
+    if (gainOf(p, item.id, farmLoc) > 0 && (goal === 0 || item.price < goal)) goal = item.price;
+  }
+  return goal;
+}
+
+interface PushPlan { loc: string; setup: Setup; perHunt: number; rate: number }
+
+/** The best push the savings allow: an area with wanted elves and a trap, base and bait that reach them (bait is owned, bought or craftable now). */
+function pushPlan(p: PlayerState, want: Map<string, number>, goal: number, continuing: boolean, farmReserve: number): PushPlan | null {
+  let best: (PushPlan & { score: number }) | null = null;
+  const baitOk = (id: string, loc: string) => {
+    const b = data.items.get(id);
+    if (!b || b.kind !== 'bait' || b.role === 'floor' || !baitWorksHere(data.locations.get(loc)!, id)) return false;
+    if (count(p, id) > 0) return true;
+    if (b.price !== null) return b.rank <= p.rank;
+    const r = content.recipes.find((x) => x.output.item === id && x.rank <= p.rank);
+    return !!r && Object.entries(r.ingredients).every(([i, k]) => count(p, i) >= k) && p.gold >= r.gold;
+  };
+  for (const locId of p.unlocked) {
+    const loc = data.locations.get(locId)!;
+    if (!loc.imps.some((i) => want.has(i.id))) continue;
+    for (const t of content.items.traps.filter((x) => count(p, x.id) > 0)) for (const b of content.items.bases.filter((x) => count(p, x.id) > 0)) {
+      for (const bait of content.items.baits) {
+        if (!baitOk(bait.id, locId)) continue;
+        const setup: Setup = { trap: t.id, base: b.id, bait: bait.id, charm: null };
+        const o = huntOdds(content, setup, locId);
+        let rate = 0;
+        for (const x of o.imps) rate += x.encounter * x.catchChance * (want.get(x.imp.id) ?? 0);
+        if (rate <= 0) continue;
+        const perHunt = baitPrice(bait.id);
+        const need = (continuing ? 5 : PUSH_HUNTS) * perHunt + farmReserve + (continuing ? 0 : Math.min(goal, 2 * PUSH_HUNTS * perHunt));
+        const have = p.gold + count(p, bait.id) * perHunt;
+        if (have < need) continue;
+        // Prefer the push that reaches the wanted elves fastest per gold spent.
+        const sc = rate / (1 + perHunt / 100);
+        if (!best || sc > best.score) best = { loc: locId, setup, perHunt, rate, score: sc };
+      }
+    }
+  }
+  return best;
+}
+
+/** Best owned setup for a sleigh run: the most expected Readiness per hunt (baits that work here, owned or bought). */
+function runSetup(p: PlayerState, loc: string): { setup: Setup; ready: number } {
+  const L = data.locations.get(loc)!;
+  const ob = L.objective;
+  let best = { setup: p.setup, ready: -Infinity };
+  if (ob?.type !== 'sleigh_run') return best;
+  const canCraft = (id: string) => { const r = content.recipes.find((x) => x.output.item === id && x.rank <= p.rank); return !!r && Object.entries(r.ingredients).every(([i, k]) => count(p, i) >= k) && p.gold >= r.gold; };
+  const baits = content.items.baits.filter((b) => b.role !== 'floor' && baitWorksHere(L, b.id) && (count(p, b.id) > 0 || (b.price !== null && b.rank <= p.rank && p.gold >= b.price * 20) || (b.price === null && canCraft(b.id))));
+  for (const t of content.items.traps.filter((x) => count(p, x.id) > 0)) for (const b of content.items.bases.filter((x) => count(p, x.id) > 0)) for (const bait of baits) {
+    const setup: Setup = { trap: t.id, base: b.id, bait: bait.id, charm: null };
+    let ready = 0;
+    for (const x of huntOdds(content, setup, loc).imps) ready += x.encounter * (x.catchChance * (ob.gain[x.imp.tier] ?? 0) - (1 - x.catchChance) * (ob.loss[x.imp.id] ?? 0));
+    // Prefer the cheaper bait when the Readiness is nearly the same.
+    ready -= baitPrice(bait.id) / 20000;
+    if (ready > best.ready) best = { setup, ready };
+  }
+  return best;
+}
+
+/** True when a sleigh run looks winnable with the armed setup: the expected Readiness over the run clears 100 with some margin. */
+function worthRun(p: PlayerState): boolean {
+  const ob = data.locations.get(p.location)?.objective;
+  if (ob?.type !== 'sleigh_run') return false;
+  return runSetup(p, p.location).ready * ob.hunts >= RUN_MIN;
+}
+
+function planLoop(p: PlayerState, log: Log, huntNo: number): PlayerState {
+  brain.replan = false;
+  // 1. Open the deepest area the rank and the gold allow (a failed try does not stop the next one).
+  for (const loc of [...content.locations].reverse()) {
+    if (p.unlocked.includes(loc.id) || loc.rank > p.rank || p.gold < loc.unlockCost * 1.5 || (loc.after && !p.unlocked.includes(loc.after))) continue;
+    const r = travel(content, p, loc.id);
+    if (r.ok) { p = r.player; break; }
+  }
+  // 2. Farm area: where the farm bait nets the most gold (the free Crumbs count), so a broke player falls back to the Pantry.
+  const stay = p.objectives?.[p.location];
+  const inRun = stay?.type === 'sleigh_run' && stay.active;
+  let farmLoc = p.location;
+  if (!inRun) {
+    let bestV = -Infinity;
+    const missing = collecting ? uncaught(p) : [];
+    const here = (id: string) => data.locations.get(id)!.imps.some((m) => missing.includes(m.id));
+    const pool = collecting && missing.length ? p.unlocked.filter((id) => here(id) && bestSetup(p, id, true, 'farm').net >= 0) : [];
+    // Collecting: work the shallowest area that still holds an uncaught elf first (the run-only Stables elves come last).
+    for (const id of pool.length ? pool.slice(0, 1) : p.unlocked) {
+      const s = bestSetup(p, id, true, 'farm');
+      const v = s.net >= 0 ? s.value : s.net - 1e6;
+      if (v > bestV) { bestV = v; farmLoc = id; }
+    }
+  }
+  if (farmLoc !== p.location) p = apply(p, travel(content, p, farmLoc));
+  p = craftAndBuy(p, log, huntNo, farmLoc);
+  if (inRun) {
+    // Mid-run the setup stays; just keep the bait stocked.
+    const bait = p.setup.bait ? data.items.get(p.setup.bait) : undefined;
+    if (bait && bait.kind === 'bait' && count(p, bait.id) < 10) {
+      if (bait.price !== null) p = apply(p, buy(content, p, bait.id, Math.min(30, Math.floor(p.gold / Math.max(1, bait.price)))));
+      else { const rc = content.recipes.find((x) => x.output.item === bait.id); for (let i = 0; rc && i < 3 && count(p, bait.id) < 20; i++) { const c = craft(content, p, rc.id); if (!c.ok) break; p = c.player; } }
+    }
+    // Out of the run's bait and no way to restock it: arm the best bait left that works here.
+    if (!p.setup.bait || count(p, p.setup.bait) === 0) {
+      const here = data.locations.get(p.location)!;
+      const any = content.items.baits.filter((b) => count(p, b.id) > 0 && baitWorksHere(here, b.id)).sort((a, b) => (b.attraction - a.attraction))[0];
+      if (any) p = apply(p, equip(content, p, 'bait', any.id));
+    }
+    return p;
+  }
+
+  // 3. Push when the savings allow, otherwise farm.
+  const want = wantedElves(p);
+  const goal = savingGoal(p, farmLoc);
+  const farmBait = bestSetup(p, farmLoc, true, 'farm').setup.bait;
+  const push = inRun ? null : pushPlan(p, want, goal, brain.mode === 'push', FARM_RESERVE * baitPrice(farmBait ?? ''));
+  if (push) {
+    if (push.loc !== p.location) p = apply(p, travel(content, p, push.loc));
+    const bait = push.setup.bait!;
+    const item = data.items.get(bait)!;
+    const target = Math.min(PUSH_HUNTS, 40);
+    if (count(p, bait) < target) {
+      if (item.kind === 'bait' && item.price !== null) {
+        const n = Math.min(target - count(p, bait), Math.floor(p.gold / item.price));
+        if (n > 0) p = apply(p, buy(content, p, bait, n));
+      } else {
+        const r = content.recipes.find((x) => x.output.item === bait);
+        for (let i = 0; r && i < 10 && count(p, bait) < target; i++) { const c = craft(content, p, r.id); if (!c.ok) break; p = c.player; }
+      }
+    }
+    if (count(p, bait) > 0) {
+      if (brain.mode !== 'push') log.pushRuns++;
+      brain.mode = 'push';
+      for (const slot of ['trap', 'base', 'bait'] as const) { const id = push.setup[slot]; if (id && count(p, id) > 0) p = apply(p, equip(content, p, slot, id)); }
+      return p;
+    }
+  }
+  brain.mode = 'farm';
+  const chosen = bestSetup(p, p.location, true, 'farm').setup;
+  const cb = chosen.bait ? data.items.get(chosen.bait) : undefined;
+  if (cb && cb.kind === 'bait' && cb.role !== 'floor' && count(p, cb.id) < 20) {
+    const price = baitPrice(cb.id);
+    if (price > 0 && cb.price !== null) {
+      const n = Math.min(100, Math.floor(p.gold / price));
+      if (n > 0) p = apply(p, buy(content, p, cb.id, n));
+    }
+  }
+  for (const slot of ['trap', 'base', 'bait'] as const) {
+    const id = chosen[slot];
+    if (id && count(p, id) > 0) p = apply(p, equip(content, p, slot, id));
+  }
+  // The free floor bait is armed by the engine when the bait runs out; any other empty or wrong bait is swapped for one that works here.
+  const here = data.locations.get(p.location)!;
+  if (p.setup.bait && (count(p, p.setup.bait) === 0 || !baitWorksHere(here, p.setup.bait))) {
+    const any = content.items.baits.find((b) => count(p, b.id) > 0 && baitWorksHere(here, b.id));
+    if (any) p = apply(p, equip(content, p, 'bait', any.id));
+  }
+  return p;
+}
+
+/** Crafting gear, one trap per type for the order board, and the best affordable upgrade for the farm area. */
+function craftAndBuy(p: PlayerState, log: Log, huntNo: number, loc: string): PlayerState {
+  for (const r of content.recipes) {
+    const out = data.items.get(r.output.item)!;
+    if (WITHOUT.has(out.id) || (out.kind !== 'trap' && out.kind !== 'base') || count(p, out.id) > 0) continue;
+    let q = p;
+    for (const ing of Object.keys(r.ingredients)) {
+      if (q.setup.trap === ing) {
+        const other = content.items.traps.find((t) => t.id !== ing && count(q, t.id) > 0);
+        if (other) q = apply(q, equip(content, q, 'trap', other.id));
+      }
+    }
+    const c = craft(content, q, r.id);
+    if (c.ok) { p = c.player; log.purchases.push({ hunt: huntNo, item: out.id }); }
+  }
+  if (data.locations.get(p.location)?.objective?.type === 'order_board') {
+    for (const type of new Set(content.items.traps.map((t) => t.type))) {
+      if (content.items.traps.some((t) => t.type === type && count(p, t.id) > 0)) continue;
+      const cheapest = content.items.traps.filter((t) => t.type === type && t.price !== null && t.rank <= p.rank).sort((a, b) => a.price! - b.price!)[0];
+      if (!cheapest) continue;
+      const r = buy(content, p, cheapest.id);
+      if (r.ok) { p = r.player; log.purchases.push({ hunt: huntNo, item: cheapest.id }); }
+    }
+  }
+  const current = bestSetup(p, loc, true, 'farm');
+  const reserve = 60 * Math.max(8, baitPrice(current.setup.bait ?? ''));
+  let pick: { id: string; gain: number } | null = null;
+  for (const item of RANK_ITEMS()) {
+    if (WITHOUT.has(item.id) || item.price === null || item.rank > p.rank || count(p, item.id) > 0 || p.gold < item.price + reserve) continue;
+    const gain = gainOf(p, item.id, loc);
+    if (gain > 0 && (!pick || gain > pick.gain)) pick = { id: item.id, gain };
+  }
+  if (pick) {
+    const r = buy(content, p, pick.id);
+    if (r.ok) { p = r.player; log.purchases.push({ hunt: huntNo, item: pick.id }); }
+  }
+  return p;
+}
+
+function plan(p: PlayerState, log: Log, huntNo: number): PlayerState {
+  return LOOP ? planLoop(p, log, huntNo) : planLegacy(p, log, huntNo);
+}
+
 /** Location goals: start sleigh runs, take Rush orders, and bring the best trap for an inspecting mini boss or boss. Orders are parallel, so the bot never swaps for the board itself. */
 function playObjective(p: PlayerState, rng: Rng, log: Log): PlayerState {
   const loc = data.locations.get(p.location)!;
@@ -243,8 +542,21 @@ function playObjective(p: PlayerState, rng: Rng, log: Log): PlayerState {
     const ownsRunTrap = (q: PlayerState) => ['snow_globe_prison', 'sleigh_bell_snapper'].some((t) => count(q, t) > 0);
     const ob = loc.objective;
     const perHunt = ob.upkeep + baitPrice(p.setup.bait ?? '');
-    if ((!s || (s.type === 'sleigh_run' && !s.active && !s.forced)) && p.gold >= ob.hunts * perHunt && ownsRunTrap(p)) {
-      const r = objectiveAction(content, p, 'start_run', rng);
+    // The loop bot also wants a reason (an uncaught Stables mini boss or boss) and fair odds of a launch with what it has armed.
+    const reason = !LOOP || loc.imps.some((i) => (i.tier === 'miniboss' || i.tier === 'boss') && (p.catches[i.id] ?? 0) === 0);
+    if ((!s || (s.type === 'sleigh_run' && !s.active && !s.forced)) && p.gold >= ob.hunts * perHunt && ownsRunTrap(p) && reason && (!LOOP || worthRun(p))) {
+      let q = p;
+      if (LOOP) {
+        const rs = runSetup(p, loc.id).setup;
+        // Stock the run's bait: buy it, or craft it.
+        const bid = rs.bait, bi = bid ? data.items.get(bid) : undefined;
+        if (bid && bi && bi.kind === 'bait' && count(q, bid) < ob.hunts) {
+          if (bi.price !== null) q = apply(q, buy(content, q, bid, Math.min(ob.hunts - count(q, bid), Math.floor(q.gold / Math.max(1, bi.price)))));
+          else { const rc = content.recipes.find((x) => x.output.item === bid); for (let i = 0; rc && i < 6 && count(q, bid) < ob.hunts; i++) { const c = craft(content, q, rc.id); if (!c.ok) break; q = c.player; } }
+        }
+        for (const slot of ['trap', 'base', 'bait'] as const) { const id = rs[slot]; if (id && count(q, id) > 0) q = apply(q, equip(content, q, slot, id)); }
+      }
+      const r = objectiveAction(content, q, 'start_run', rng);
       if (r.ok) { p = r.player; log.objectives.runs++; }
     } else if (s?.type === 'sleigh_run' && s.active && p.gold < 3 * perHunt) {
       const r = objectiveAction(content, p, 'abandon_run', rng);
@@ -342,19 +654,25 @@ const lastFillOf = (log: Log) => log.cheer.fills.reduce((a, b) => a + b, 0);
 
 function play(rng: Rng, playerNo: number): Log {
   let p = newPlayer(content);
-  const log: Log = { rankAt: { 1: 0 }, goldAtRank: {}, purchases: [], byLocation: {}, bossCatches: 0, finished: false, hunts: 0, objectives: { runs: 0, launches: 0, orders: 0 }, bosses: {}, badges: {}, tiers: {}, tiersAt: {}, worstEscapes: 0, firstCatch: {}, portraitDone: {}, goodAny: [], goodMilestone: [], goldIn: 0, jackpotCatches: 0, jackpotGold: 0, baitSpent: 0, pillageLost: 0, lootHunts: 0, cheer: { fills: [], pipsGained: 0, pipsLost: 0, draws: 0, held: 0, heldPips: [], boonHunts: 0, fullWait: 0, picks: {}, offered: {}, rareDraws: 0, legDraws: 0, pityForced: 0, drawsAt: {}, goldUnder: 0, goldOutside: 0, huntsOutside: 0, caughtUnder: 0, caughtOutside: 0, pointsUnder: 0, pointsOutside: 0 }, events: { n: 0, byType: {}, hunts: [], boonGold: 0, boonsA: 0, boonsB: 0, declined: 0 } };
+  const log: Log = { rankAt: { 1: 0 }, goldAtRank: {}, purchases: [], byLocation: {}, bossCatches: 0, finished: false, hunts: 0, objectives: { runs: 0, launches: 0, orders: 0 }, bosses: {}, badges: {}, tiers: {}, tiersAt: {}, worstEscapes: 0, firstCatch: {}, portraitDone: {}, goodAny: [], goodMilestone: [], goldIn: 0, stage: { farm: { hunts: 0, caught: 0, gold: 0, bait: 0, upkeep: 0, points: 0, jackpotGold: 0, firstCatches: 0, draws: 0, events: 0, eventHunts: 0 }, push: { hunts: 0, caught: 0, gold: 0, bait: 0, upkeep: 0, points: 0, jackpotGold: 0, firstCatches: 0, draws: 0, events: 0, eventHunts: 0 } }, pushRuns: 0, upkeepSpent: 0, stale: { hunts: 0, stretches: 0, longest: 0, jackpots: 0, events: 0, draws: 0, goldJackpot: 0, endedBy: {} }, floorHunts: 0, jackpotCatches: 0, jackpotGold: 0, baitSpent: 0, pillageLost: 0, lootHunts: 0, cheer: { fills: [], pipsGained: 0, pipsLost: 0, draws: 0, held: 0, heldPips: [], boonHunts: 0, fullWait: 0, picks: {}, offered: {}, rareDraws: 0, legDraws: 0, pityForced: 0, drawsAt: {}, goldUnder: 0, goldOutside: 0, huntsOutside: 0, caughtUnder: 0, caughtOutside: 0, pointsUnder: 0, pointsOutside: 0 }, events: { n: 0, byType: {}, hunts: [], boonGold: 0, boonsA: 0, boonsB: 0, declined: 0 } };
   let lastFill = 0;
   const traceMe = !!TRACE && playerNo < TRACE_PLAYERS;
   let escRun = 0;
   let badgesBefore = 0;
   let purchasesBefore = 0;
+  let sinceProgress = 0;
+  let staleBoosts = { jackpots: 0, events: 0, draws: 0, goldJackpot: 0 };
   for (let n = 1; n <= MAX_HUNTS; n++) {
-    if (n === 1 || n % 20 === 0 || !p.setup.bait || count(p, p.setup.bait) === 0) p = plan(p, log, n);
+    if (n === 1) brain = { mode: 'farm', replan: false };
+    if (n === 1 || n % (LOOP && brain.mode === 'push' ? 10 : 20) === 0 || brain.replan || !p.setup.bait || count(p, p.setup.bait) === 0) p = plan(p, log, n);
     p = playObjective(p, rng, log);
+    const drawsBefore = log.cheer.draws;
     p = answer(p, rng, log, n);
+    const drewNow = log.cheer.draws > drawsBefore;
     const loc = p.location;
     const baitBefore = p.setup.bait;
     const underBoon = (p.cheer?.active.length ?? 0) > 0;
+    const stageNow = (baitBefore && data.items.get(baitBefore)?.kind === 'bait' && (data.items.get(baitBefore) as { role?: string }).role === 'push') ? 'push' : 'farm';
     const r = hunt(content, p, rng);
     if (!r.ok) { p = plan(p, log, n); continue; }
     p = r.player;
@@ -370,6 +688,18 @@ function play(rng: Rng, playerNo: number): Log {
       if (/order done: a Toy Crate/.test(note)) log.objectives.orders++;
     }
     L.baitCost += r.entry.baitUsed * baitPrice(baitBefore ?? '');
+    {
+      const st = log.stage[stageNow];
+      st.hunts++;
+      st.bait += r.entry.baitUsed * baitPrice(baitBefore ?? '');
+      st.upkeep += r.entry.upkeep ?? 0;
+      if (r.entry.outcome === 'catch') { st.caught++; st.gold += r.entry.gold; st.points += r.entry.points; if (r.entry.imp && data.imps.get(r.entry.imp)?.jackpot) st.jackpotGold += r.entry.gold; }
+      if (r.entry.firstCatch) { st.firstCatches++; brain.replan = true; }
+      if (r.entry.cheer?.full || r.entry.events?.length) { if (r.entry.events?.length) st.events += r.entry.events.length; }
+      if (underBoon) st.eventHunts++;
+      log.upkeepSpent += r.entry.upkeep ?? 0;
+      if (r.entry.floorBait) log.floorHunts++;
+    }
     if (r.entry.pillage) {
       L.pillages++;
       L.pillageCost += r.entry.pillage.gold + (r.entry.pillage.bait ? r.entry.pillage.bait.amount * baitPrice(r.entry.pillage.bait.item) : 0);
@@ -413,6 +743,27 @@ function play(rng: Rng, playerNo: number): Log {
       if (note.type === 'boon' || note.type === 'grand') evs.hunts.push(n);
     }
     const badgesNow = Object.keys(p.achievements ?? {}).length;
+    {
+      const progress = e.firstCatch ? 'first catch' : e.rankUp ? 'rank-up' : e.key ? 'boss key' : log.purchases.length > purchasesBefore ? 'gear' : '';
+      const isJackpot = e.outcome === 'catch' && !!e.imp && !!data.imps.get(e.imp)?.jackpot;
+      sinceProgress++;
+      if (sinceProgress > 50) {
+        // inside a stale stretch: count the random boosts that land
+        if (isJackpot) { staleBoosts.jackpots++; staleBoosts.goldJackpot += e.gold; }
+        if (e.events?.length) staleBoosts.events += e.events.length;
+        if (drewNow) staleBoosts.draws++;
+      }
+      if (progress) {
+        if (sinceProgress >= 50) {
+          const st = log.stale;
+          st.stretches++; st.hunts += sinceProgress; st.longest = Math.max(st.longest, sinceProgress);
+          st.jackpots += staleBoosts.jackpots; st.events += staleBoosts.events; st.draws += staleBoosts.draws; st.goldJackpot += staleBoosts.goldJackpot;
+          const by = progress + (isJackpot ? ' (on a jackpot catch)' : e.events?.length ? ' (on an event)' : '');
+          st.endedBy[by] = (st.endedBy[by] ?? 0) + 1;
+        }
+        sinceProgress = 0; staleBoosts = { jackpots: 0, events: 0, draws: 0, goldJackpot: 0 };
+      }
+    }
     const milestone = !!(e.firstCatch || e.rankUp || e.key || e.loot.length || e.objective?.notes?.length || badgesNow > badgesBefore || log.purchases.length > purchasesBefore || (e.events?.length ?? 0) > 0 || (e.cheer?.full ?? false));
     badgesBefore = badgesNow;
     purchasesBefore = log.purchases.length;
@@ -423,6 +774,7 @@ function play(rng: Rng, playerNo: number): Log {
     }
     if (p.rank >= finalRank) { log.finished = true; break; }
   }
+  log.final = { location: p.location, gold: p.gold, rank: p.rank, points: p.points, bait: p.setup.bait, trap: p.setup.trap, unlocked: [...p.unlocked] };
   log.badges = { ...p.achievements };
   // Second benchmark: keep hunting after the last rank until every elf is caught (or the cap). Stats above are frozen.
   if (log.finished) {
@@ -441,6 +793,7 @@ function play(rng: Rng, playerNo: number): Log {
       if (r.entry.firstCatch && uncaught(p).length === 0) log.collectedAt = n;
     }
     log.missing = uncaught(p);
+    log.final2 = { location: p.location, gold: p.gold, rank: p.rank, points: p.points, bait: p.setup.bait, trap: p.setup.trap + '+' + p.setup.base, unlocked: p.unlocked.length, run: JSON.stringify(p.objectives?.reindeer_stables), inv: JSON.stringify(p.inventory), missing: log.missing };
     collecting = false;
   }
   return log;
@@ -582,7 +935,44 @@ console.log('\nGold flow, players who reached the end (per player, median)');
 console.log(`  Jackpot elves: ${fmt(sumOf((l) => l.jackpotCatches) / TOTAL)} caught per player, worth ${fmt(sumOf((l) => l.jackpotGold) / TOTAL)} gold per player (${pct(sumOf((l) => l.jackpotGold) / sumOf((l) => l.goldIn))} of gold from catches)`);
 console.log(`  Earned from catches ${fmt(quant(done.map((l) => l.goldIn), 0.5))}, bait used ${fmt(quant(done.map((l) => l.baitSpent), 0.5))} (${pct(sumOf((l) => l.baitSpent) / sumOf((l) => l.goldIn))} of gold earned), lost to pillage ${fmt(quant(done.map((l) => l.pillageLost), 0.5))}`);
 console.log('  Gold in hand at rank-up (median): ' + content.ranks.slice(1).map((r) => `R${r.rank} ${fmt(quant(logs.map((l) => l.goldAtRank[r.rank]).filter((x): x is number => x !== undefined), 0.5))}`).join(', '));
+console.log(`  Sleigh upkeep paid ${fmt(quant(done.map((l) => l.upkeepSpent), 0.5))} (median)`);
 console.log(`  Hunts that dropped loot: ${pct(sumOf((l) => l.lootHunts) / sumOf((l) => l.hunts))}`);
+
+// ---------- Farm and push stages ----------
+const totalHuntsAll = logs.reduce((a, l) => a + l.hunts, 0);
+{
+  const ST = (k: 'farm' | 'push') => ({
+    hunts: logs.reduce((a, l) => a + l.stage[k].hunts, 0), caught: logs.reduce((a, l) => a + l.stage[k].caught, 0), gold: logs.reduce((a, l) => a + l.stage[k].gold, 0),
+    bait: logs.reduce((a, l) => a + l.stage[k].bait, 0), upkeep: logs.reduce((a, l) => a + l.stage[k].upkeep, 0), points: logs.reduce((a, l) => a + l.stage[k].points, 0),
+    jackpot: logs.reduce((a, l) => a + l.stage[k].jackpotGold, 0), first: logs.reduce((a, l) => a + l.stage[k].firstCatches, 0), boon: logs.reduce((a, l) => a + l.stage[k].eventHunts, 0), events: logs.reduce((a, l) => a + l.stage[k].events, 0),
+  });
+  console.log(`\nFarm and push stages (a push hunt is one with push bait armed; bot: ${BOT})`);
+  console.log('Stage   Hunts/player  Share  Catch rate  Net gold/hunt  Points/hunt  Jackpot share of gold  First catches/player  Hunts under a boon  Events/100 hunts');
+  const all = ST('farm').hunts + ST('push').hunts;
+  for (const k of ['farm', 'push'] as const) {
+    const x = ST(k);
+    console.log(`${k.padEnd(8)}${fmt(x.hunts / TOTAL).padEnd(14)}${pct(x.hunts / all).padEnd(7)}${pct(x.caught / Math.max(1, x.hunts)).padEnd(12)}${fmt((x.gold - x.bait - x.upkeep) / Math.max(1, x.hunts)).padEnd(15)}${fmt(x.points / Math.max(1, x.hunts)).padEnd(13)}${pct(x.jackpot / Math.max(1, x.gold)).padEnd(23)}${(x.first / TOTAL).toFixed(1).padEnd(22)}${pct(x.boon / Math.max(1, x.hunts)).padEnd(20)}${(x.events / Math.max(1, x.hunts) * 100).toFixed(2)}`);
+  }
+  console.log(`Hunts on the free Pantry Crumbs fallback per player: median ${fmt(quant(logs.map((l) => l.floorHunts), 0.5))}, p90 ${fmt(quant(logs.map((l) => l.floorHunts), 0.9))}`);
+  {
+    const sl = logs.map((l) => l.stale);
+    const sumS = (f: (x: Log['stale']) => number) => sl.reduce((a, x) => a + f(x), 0);
+    const staleHunts = sumS((x) => x.hunts);
+    const by: Record<string, number> = {};
+    for (const x of sl) for (const [k, v] of Object.entries(x.endedBy)) { const key = k.replace(/ \(.*\)$/, ''); by[key] = (by[key] ?? 0) + v; }
+    console.log(`Stale stretches (50+ hunts with no first catch, rank-up, key or gear): ${(sumS((x) => x.stretches) / TOTAL).toFixed(1)} per player, ${pct(staleHunts / Math.max(1, totalHuntsAll))} of all hunts, longest median ${fmt(quant(sl.map((x) => x.longest), 0.5))} / p90 ${fmt(quant(sl.map((x) => x.longest), 0.9))}`);
+    console.log(`  Random boosts landing inside them (per 100 stale hunts): jackpot catches ${(sumS((x) => x.jackpots) / Math.max(1, staleHunts) * 100).toFixed(1)}, event cards or Grand Gifts ${(sumS((x) => x.events) / Math.max(1, staleHunts) * 100).toFixed(1)}, Cheer draws ${(sumS((x) => x.draws) / Math.max(1, staleHunts) * 100).toFixed(1)}; jackpot gold per stale hunt ${fmt(sumS((x) => x.goldJackpot) / Math.max(1, staleHunts))}`);
+    console.log(`  Stretches ended by: ${Object.entries(by).map(([k, v]) => `${k} ${pct(v / Math.max(1, sumS((x) => x.stretches)))}`).join(', ') || '-'}`);
+  }
+  const pushers = logs.filter((l) => l.pushRuns > 0).length;
+  console.log(`Push stretches started per player: median ${fmt(quant(logs.map((l) => l.pushRuns), 0.5))}; players who ever pushed ${pct(pushers / TOTAL)}`);
+  for (const l of logs.filter((x) => x.missing?.length).slice(0, 4)) console.log(`  Not collected: ${JSON.stringify(l.final2)}`);
+  const stuck = logs.filter((l) => !l.finished);
+  if (stuck.length) {
+    console.log(`Players who did not reach rank ${finalRank} (${stuck.length}):`);
+    for (const l of stuck.slice(0, 8)) console.log(`  ${JSON.stringify(l.final)}`);
+  }
+}
 
 function gaps(xs: number[]) {
   const out: number[] = [];
