@@ -53,6 +53,15 @@ function HuntRow({ row }: { row: JournalRow & { kind: 'hunt' } }) {
   const imp = e.imp ? data.imps.get(e.imp) : undefined;
   const itemName = (id: string) => data.items.get(id)?.name ?? id;
   const keyName = (id: string) => content.locations.find((l) => l.key?.id === id)?.key?.name ?? id;
+  const { player } = useGame();
+  /** What the key opens and whether the hunter's rank is still short of that area's minimum. */
+  const keyNote = (id: string) => {
+    const chain = content.locations.filter((l) => !l.side);
+    const next = chain[chain.findIndex((l) => l.key?.id === id) + 1];
+    if (!next) return '';
+    const rk = content.ranks[next.rank - 1];
+    return player.rank >= next.rank ? ` It opens the ${next.name}.` : ` It opens the ${next.name} once you reach ${rk?.name ?? `rank ${next.rank}`}: keep hunting.`;
+  };
   const time = <span class="row-time">#{num(row.n)}<br />{when(row.at, prefs.clock24)}</span>;
   const rankUp = e.rankUp ? content.ranks[e.rankUp - 1] : undefined;
   const nextLoc = rankUp ? content.locations.find((l) => l.rank === rankUp.rank) : undefined;
@@ -81,7 +90,7 @@ function HuntRow({ row }: { row: JournalRow & { kind: 'hunt' } }) {
             {e.pillage && <span class="pill red">Pillaged</span>}
           </div>
           {caught
-            ? <>{e.firstCatch && 'First catch! '}+{num(e.gold)} gold, +{num(e.points)} points{loot.length > 0 && `, ${loot.join(', ')}`}{e.key && <>. The boss dropped a key: <b>{keyName(e.key)}</b></>}</>
+            ? <>{e.firstCatch && 'First catch! '}+{num(e.gold)} gold, +{num(e.points)} points{loot.length > 0 && `, ${loot.join(', ')}`}{e.key && <>. The boss dropped a key: <b>{keyName(e.key)}</b>.{keyNote(e.key)}</>}</>
             : e.pillage
               ? <>Escaped and pillaged you: {pillageText(e.pillage, itemName)}. {rateText(e.catchChance ?? 0)} chance</>
               : e.wrongBait
