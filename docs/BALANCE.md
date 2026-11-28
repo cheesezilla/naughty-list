@@ -274,6 +274,27 @@ Written for eddy. Findings and recommendations first, numbers second. Report 1 u
 
 **Standard game-length metrics (eddy, 27 Nov): every report states both.** (1) Median hunts to rank 5. (2) Hunts to catch every elf, 100% of the Naughty List portraits, Carol Loft and bosses included. The simulator prints both at the top of every run, with the mean, p10, p90 and the share of players who finish (cap 20,000 hunts, `--max-collect-hunts`).
 
+### Report 18: the loop bot wears charms on pushes; walkthrough prices refreshed (200 players, seed 1, Cheer and events on)
+
+Checked the default loop bot against the Walkthrough in `docs/WIKI.md`. It already matched on farming with budget bait, saving, pushing with premium bait (Sugar Cookie, Ribbon Candy and Bonbons, Spiced Honey Drop, Peppermint Bark, Hot Cocoa) once about 30 hunts of it plus the next gear piece are affordable, banking a full Cheer meter until push bait is armed, opening areas under the rank gates (deepest allowed area first, gold fee x1.5), and starting a sleigh run only with the whole run's cost in hand, a run trap and a reason. Mismatches found:
+
+| Mismatch | Bot before | Fix |
+| --- | --- | --- |
+| Charms | never wore one (the walkthrough pushes with Mistletoe or Wind-up Key) | pushes and sleigh runs weigh Mistletoe, Jingle Bell and Wind-up Key charms by catch odds against their price, buy a stock and wear the best; farming stays charm-free (a charm on farm hunts cost 8 to 20% more hunts to rank 5 and missed the rank 3 and 4 targets) |
+| Gear order | buys Icicle Jar and Toffee Anvil before the walkthrough's Star Lantern and Carol Horn, and Nutcracker Jaws in only 72% of runs (it picks the best farm value, not the boss plan) | not changed: the order is a legitimate alternative, and the walkthrough only recommends it |
+| Cheer | banks and cashes at 10 pips, never Overcharges before a boss | not changed: the hold policy is a separate flag (`--boon-policy hold`) |
+| Walkthrough | still quoted pre-economy prices (Hot Cocoa 90 g, Gumdrop 16 g, Ribbon Candy 30 g, Bonbons 100 g, Wind-up Key +35%), rank 5 at about 1,200 hunts, and said nothing of farm and push | updated in `docs/WIKI.md` (farm and push rule, Cheer banking, budget and premium baits per area, sleigh run cost 22,000 g with Hay Biscuit) |
+
+| Metric | Report 17 (100-player re-run of the same code) | After |
+| --- | --- | --- |
+| Hunts to rank 5 | median 1,663 (1,671 re-run) | median 1,698 (197 of 200 reach it) |
+| Hunts to catch every elf | median 1,873 (1,889 re-run; 97 of 100 finish) | median 1,751 (197 of 200 finish) |
+| Ranks 1 to 4 (median hunts; targets 150, 250, 500, 750) | 135, 257, 493, 748 | 136, 262, 499, 737 (all ok) |
+| Sleigh runs launched per player | 1.8 | 2.5 |
+| Farm / push stage | | farm 72% of hunts at +148 gold, push 28% at -130 gold |
+
+The better launch rate (charm raises the odds of the Stables objective) is why more players catch Antler Ripper and Cinderhoof. No content numbers changed, so `npm run balance` is unchanged.
+
 ### Report 17: Steam Pearl drop and Tidepool Pail (200 players, seed 1, Cheer and events on)
 
 eddy (28 Nov): a rare Cinderhoof trap part (Steam Pearl, 40% per catch) and, from 3 of them, the Tidepool Pail, a sealed trap of a new water type, Tide, for a rank 5 Tide area that is not built. It has no effect on any hunt, so `npm run balance` ignores it (flags unchanged) and pace is a regression check only.
@@ -320,27 +341,6 @@ eddy (28 Nov): slower pacing is fine and the 50% farm nerf stays, but boons shou
 | Farm hunts under a boon | about 4% | 5% | 2% |
 
 Pace is now back to or faster than before Report 15, because boons are drawn more often and used where they count. Lever if that is too fast: `pushPipMult` 1.5, or `farmScale` lower.
-
-### Report 15: the loop bot wears charms on pushes; walkthrough prices refreshed (200 players, seed 1, Cheer and events on)
-
-Checked the default loop bot against the Walkthrough in `docs/WIKI.md`. It already matched on farming with budget bait, saving, pushing with premium bait (Sugar Cookie, Ribbon Candy and Bonbons, Spiced Honey Drop, Peppermint Bark, Hot Cocoa) once about 30 hunts of it plus the next gear piece are affordable, banking a full Cheer meter until push bait is armed, opening areas under the rank gates (deepest allowed area first, gold fee x1.5), and starting a sleigh run only with the whole run's cost in hand, a run trap and a reason. Mismatches found:
-
-| Mismatch | Bot before | Fix |
-| --- | --- | --- |
-| Charms | never wore one (the walkthrough pushes with Mistletoe or Wind-up Key) | pushes and sleigh runs weigh Mistletoe, Jingle Bell and Wind-up Key charms by catch odds against their price, buy a stock and wear the best; farming stays charm-free (a charm on farm hunts cost 8 to 20% more hunts to rank 5 and missed the rank 3 and 4 targets) |
-| Gear order | buys Icicle Jar and Toffee Anvil before the walkthrough's Star Lantern and Carol Horn, and Nutcracker Jaws in only 72% of runs (it picks the best farm value, not the boss plan) | not changed: the order is a legitimate alternative, and the walkthrough only recommends it |
-| Cheer | banks and cashes at 10 pips, never Overcharges before a boss | not changed: the hold policy is a separate flag (`--boon-policy hold`) |
-| Walkthrough | still quoted pre-economy prices (Hot Cocoa 90 g, Gumdrop 16 g, Ribbon Candy 30 g, Bonbons 100 g, Wind-up Key +35%), rank 5 at about 1,200 hunts, and said nothing of farm and push | updated in `docs/WIKI.md` (farm and push rule, Cheer banking, budget and premium baits per area, sleigh run cost 22,000 g with Hay Biscuit) |
-
-| Metric | Report 14 | After |
-| --- | --- | --- |
-| Hunts to rank 5 | median 1,679 | median 1,698 (197 of 200 reach it) |
-| Hunts to catch every elf | median 2,311 (186 of 200) | median 1,751 (197 of 200) |
-| Ranks 1 to 4 (median hunts; targets 150, 250, 500, 750) | 143, 268, 496, 742 | 136, 262, 499, 737 (all ok) |
-| Sleigh runs launched per player | 1.8 | 2.5 |
-| Farm / push stage | | farm 72% of hunts at +148 gold, push 28% at -130 gold |
-
-The better launch rate (charm raises the odds of the Stables objective) is why more players catch Antler Ripper and Cinderhoof. No content numbers changed, so `npm run balance` is unchanged.
 
 ### Report 14: pacing targets for ranks 3 and 4 raised (200 players, seed 1, Cheer and events on)
 
