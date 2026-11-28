@@ -85,6 +85,15 @@ describe('hunt', () => {
     expect(r.entry.baitCost).toBe(0);
   });
 
+  it('remembers the shop bait it replaced so the Hunt screen can offer a restock', () => {
+    const p = fresh();
+    delete p.inventory.stale_cookie;
+    p.setup.bait = 'stale_cookie';
+    const r = hunt(content, p, scripted(0.99));
+    if (!r.ok) throw new Error(r.error);
+    expect(r.player.lastBait).toBe('stale_cookie');
+  });
+
   it('Pantry Crumbs do not work outside the Pantry', () => {
     const wr = content.locations.find((l) => l.id === 'wrapping_room')!;
     expect(wr.baits).not.toContain('pantry_crumbs');

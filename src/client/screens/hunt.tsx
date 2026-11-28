@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
-import { count, huntOdds, type Setup } from '../../engine/index.js';
+import { baitWorksHere, count, huntOdds, priceOf, type Setup } from '../../engine/index.js';
 import { useGame } from '../game.js';
 import { Art, Icon } from '../lib/art.js';
 import { num, pct, plural } from '../lib/format.js';
@@ -139,6 +139,7 @@ export function HuntScreen() {
             </div>
           )}
 
+          <QuickBait />
           <StageCard />
           <SessionCard />
           <ObjectivePanel location={location} onHint={() => setHint(true)} />
@@ -166,6 +167,46 @@ export function HuntScreen() {
       <BottomNav tab="hunt" />
       {sheet && <BaitSheet initial={sheet} onClose={() => setSheet(null)} />}
       {hint && <HintSheet location={location} onClose={() => setHint(false)} />}
+    </div>
+  );
+}
+
+/** Offered when the equipped shop bait runs out (or the free fallback took over): buy a pack in one tap and keep hunting. Never offers bait that fails in this area. */
+function QuickBait() {
+  const { data, player, act, busy } = useGame();
+  const location = data.locations.get(player.location)!;
+  const equipped = player.setup.bait ? data.items.get(player.setup.bait) : undefined;
+  const onFallback = !equipped || (equipped.kind === 'bait' && equipped.role === 'floor');
+  const targetId = onFallback ? player.lastBait : equipped && count(player, equipped.id) < 1 ? equipped.id : undefined;
+  const target = targetId ? data.items.get(targetId) : undefined;
+  if (!target || target.kind !== 'bait' || target.price === null || !baitWorksHere(location, target.id)) return null;
+  const price = priceOf(target)!;
+  const affordable = Math.floor(player.gold / price);
+  const have = count(player, target.id);
+  const buy = async (n: number) => {
+    if (!(await act('/api/buy', { item: target.id, amount: n }, `Bought ${num(n)} ${target.name}.`))) return;
+    if (player.setup.bait !== target.id) await act('/api/setup', { slot: 'bait', item: target.id });
+  };
+  const sizes = [10, 25, 100].filter((n) => n > 1 && n <= affordable);
+  const packs = [...sizes];
+  if (affordable > 0 && !packs.includes(affordable) && affordable < 400) packs.push(affordable);
+  return (
+    <div class="card quick-bait" role="status">
+      <b>{have > 0 ? `Re-arm ${target.name}?` : `Out of ${target.name}.`}</b>
+      {affordable > 0 ? (
+        <>
+          <span class="small">{num(price)} gold each. You have {num(player.gold)} gold.</span>
+          <div class="quick-buys">
+            {[1, ...packs].map((n) => (
+              <button class="primary-btn" disabled={busy} onClick={() => buy(n)}>
+                ×{num(n)}<small>{num(n * price)} gold</small>
+              </button>
+            ))}
+          </div>
+        </>
+      ) : (
+        <span class="small">{target.name} costs {num(price)} gold each and you have {num(player.gold)}.{onFallback ? ' Free bait keeps you hunting meanwhile.' : ''}</span>
+      )}
     </div>
   );
 }

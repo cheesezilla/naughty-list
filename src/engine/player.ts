@@ -37,6 +37,8 @@ export interface PlayerState {
   tally?: Record<string, number>;
   /** False until the player closes the welcome popup of a new game. Missing (seen) in older saves. */
   welcomeSeen?: boolean;
+  /** The shop bait the hunter was using when the free fallback bait took over, so the Hunt screen can offer to restock it. */
+  lastBait?: string;
   /** Version of the release notes the player has been shown. Missing in older saves, so they see the current notes once. */
   releaseSeen?: string;
   /** Boss keys found (location key ids). Missing in saves from before keys; the server fills it in on load. */
