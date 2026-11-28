@@ -212,6 +212,12 @@ export const Constants = z.object({
     longBoons: z.number().nonnegative().default(0.5),
     /** The `blessing` Overcharge perk grants this many Santa's Blessings back to back (they do not stack, so the boon lasts this many times as long). */
     blessingCopies: z.number().int().positive().default(1),
+    /** Boon bonuses (power, luck, Allure, gold, points, loot) count at this fraction while farming and this multiple while pushing (push bait). */
+    farmScale: z.number().nonnegative().default(1), pushScale: z.number().nonnegative().default(1),
+    /** Picking a boon while pushing has this chance to make it a Surge: it lasts `surgeMult` times as many hunts. */
+    surgeChance: chance.default(0), surgeMult: z.number().positive().default(1),
+    /** Meter pips from a catch count this many times over while pushing, so a push can fill the meter. */
+    pushPipMult: z.number().positive().default(1),
     /** Draws without a rare (or better) / without a legendary before one card is forced. */
     pity: z.object({ rare: z.number().int().positive(), legendary: z.number().int().positive() }),
     /** Draw table by pips: the last row whose `from` is at most the meter's pips applies. */

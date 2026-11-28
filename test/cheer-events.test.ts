@@ -59,6 +59,35 @@ describe('cheer meter extras', () => {
   });
 });
 
+describe('cheer boons by context', () => {
+  it('catches fill the meter twice as fast while pushing', () => {
+    const farm = fresh();
+    const push = fresh((q) => { q.setup.bait = 'sugar_cookie'; });
+    cheerAfterHunt(content, farm, common, true, none);
+    cheerAfterHunt(content, push, common, true, none);
+    expect(farm.cheer!.pips).toBe(1);
+    expect(push.cheer!.pips).toBe(2);
+  });
+  const pickAs = (bait: string, roll: number) => {
+    const p = fresh((q) => { q.setup.bait = bait; cheerOf(q).draw = { cards: ['steady_hands'], rerolls: 0, tier: 'Full', picks: 1 }; });
+    const r = cheerAction(content, p, 'pick', () => roll, 'steady_hands');
+    return r.ok ? r.player.cheer!.active[0]! : undefined;
+  };
+  it('scales luck and gold by farm or push context', () => {
+    const p = fresh((q) => { cheerOf(q).active = [{ id: 'lucky_stocking', hunts: 3 }, { id: 'double_haul', hunts: 3 }]; });
+    expect(modsOf(content, p).luckAdd).toBeCloseTo(3);
+    expect(modsOf(content, p).goldMult).toBeCloseTo(1.5);
+    p.setup.bait = 'sugar_cookie';
+    expect(modsOf(content, p).luckAdd).toBeCloseTo(9);
+    expect(modsOf(content, p).goldMult).toBeCloseTo(2.5);
+  });
+  it('a boon picked with push bait sometimes Surges and lasts longer; farming never does', () => {
+    expect(pickAs('sugar_cookie', 0.05)).toEqual({ id: 'steady_hands', hunts: 10, surge: true });
+    expect(pickAs('sugar_cookie', 0.9)).toEqual({ id: 'steady_hands', hunts: 5 });
+    expect(pickAs('stale_cookie', 0.05)).toEqual({ id: 'steady_hands', hunts: 5 });
+  });
+});
+
 describe('cheer meter', () => {
   it('fills +1 per catch, +2 for a rare, drains 3 on an escape and stops at full', () => {
     const p = fresh();
@@ -124,7 +153,9 @@ describe('cheer meter', () => {
 
   it('Santa\'s Blessing multiplies trap power by 2.5 and Boss Bell meets the boss', () => {
     const p = fresh((q) => { cheerOf(q).active = [{ id: 'santas_blessing', hunts: 3 }, { id: 'steady_hands', hunts: 3 }]; });
-    expect(modsOf(content, p).powerMult).toBeCloseTo(3.25);
+    expect(modsOf(content, p).powerMult).toBeCloseTo(1.75 * 1.15); // farming: boon bonuses count at half
+    p.setup.bait = 'sugar_cookie';
+    expect(modsOf(content, p).powerMult).toBeCloseTo((1 + 1.5 * 1.5) * (1 + 0.3 * 1.5)); // pushing: half again as strong
     const q = fresh((s) => { s.location = 'toy_workshop'; cheerOf(s).active = [{ id: 'boss_bell', hunts: 1 }]; });
     const r = hunt(content, q, () => 0.99);
     expect(r.ok && r.entry.imp).toBe(content.locations.find((l) => l.id === 'toy_workshop')!.imps.find((i) => i.tier === 'boss')!.id);
@@ -202,7 +233,7 @@ describe('events', () => {
       eventsOf(content, q).buffs = [{ stat: 'powerMult', value: 0.75, label: 'hex', hunts: 5 }, { stat: 'powerMult', value: 1.25, label: 'heirloom', hunts: 5 }];
       cheerOf(q).active = [{ id: 'steady_hands', hunts: 3 }];
     });
-    expect(modsOf(content, p).powerMult).toBeCloseTo(1.3 * 0.75); // higher of 1.3 and 1.25, then the hex
+    expect(modsOf(content, p).powerMult).toBeCloseTo(1.25 * 0.75); // higher of the (farm-scaled) 1.15 and 1.25, then the hex
   });
 
   it('is switched off by constants', () => {

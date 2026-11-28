@@ -9,6 +9,7 @@
  *   npm run simulate -- --trace out.jsonl          # one JSON line per hunt for the first player (--trace-players N for more)
  *
  * Cheer Meter and events run inside hunt(); the simulated player answers them:
+ *   --no-bank                               cash in a full Cheer meter at once (default: bank it for a push)
  *   --no-cheer / --no-events                switch a system off (baselines)
  *   --boon-policy random|greedy|hold       which boon card to pick; hold uses Overcharge up to the max before cashing in
  *   --overcharge-perk none|second_pick|long|blessing   which perk the hold policy takes on an Overcharged draw
@@ -19,7 +20,7 @@ import { loadContent } from '../src/content/load.js';
 import type { Content } from '../src/content/schema.js';
 import { baitGoldValue, gameData, priceOf } from '../src/engine/data.js';
 import { hunt } from '../src/engine/hunt.js';
-import { cheerAction, eventAction } from '../src/engine/index.js';
+import { cheerAction, eventAction, isPushing } from '../src/engine/index.js';
 import { checkAchievements } from '../src/engine/achievements.js';
 import { objectiveAction } from '../src/engine/objectives.js';
 import { baitWorksHere, catchChance, huntOdds, luckFactor, setupStats } from '../src/engine/odds.js';
@@ -43,6 +44,8 @@ const TRACE = strOpt('trace');
 const TRACE_PLAYERS = opt('trace-players', 1);
 const OC_PERK = strOpt('overcharge-perk', 'none');
 const NO_CHEER = args.includes('--no-cheer');
+/** The bot banks a full Cheer meter while farming and cashes it in once push bait is armed (`--no-bank` cashes in at once). */
+const BANK = !args.includes('--no-bank');
 const NO_EVENTS = args.includes('--no-events');
 const BOON_POLICY = strOpt('boon-policy', 'greedy');
 const EVENT_POLICY = strOpt('event-policy', 'safe');
@@ -625,6 +628,7 @@ function answer(p: PlayerState, rng: Rng, log: Log, n: number): PlayerState {
     return p;
   }
   if (s.pips >= c.full) {
+    if (BANK && !isPushing(content, p)) return p;
     if (BOON_POLICY === 'hold' && !s.held && s.pips < c.max) {
       const r = cheerAction(content, p, 'hold', rng);
       if (r.ok) { p = r.player; log.cheer.held++; }
