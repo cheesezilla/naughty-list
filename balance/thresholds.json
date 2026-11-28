@@ -10,6 +10,17 @@
     "reindeer_stables": { "traps": ["jack_in_the_box", "star_lantern", "icicle_jar", "carol_horn", "nutcracker_jaws", "constellation_wreath", "snow_globe_prison"], "meant": ["snow_globe_prison"], "base": "yule_log_base" }
   },
 
+  "recommended": {
+    "_note": "The middle gear tier of the report (section 1b, eddy 28 Nov): the gear docs/WALKTHROUGH.md has a player aim for in that area, including the optional crafts they can make at that point. Cookie Pantry has no boss, so it is the walkthrough's best bought gear. Endgame is different: an over-ranked player with traps from later areas. traps and bases are candidates (the best combination per elf is shown); charm is the one worn. Not used for flags.",
+    "cookie_pantry":    { "traps": ["jack_in_the_box", "starlit_stocking"], "bases": ["gingerbread_slab"], "charm": "mistletoe_charm" },
+    "wrapping_room":    { "traps": ["carol_horn", "star_lantern", "icicle_jar", "constellation_wreath"], "bases": ["candy_cane_platform", "toffee_anvil"], "charm": "mistletoe_charm" },
+    "carol_loft":       { "traps": ["star_lantern", "icicle_jar", "carol_horn"], "bases": ["candy_cane_platform"], "charm": "mistletoe_charm" },
+    "toy_workshop":     { "traps": ["nutcracker_jaws", "constellation_wreath", "carol_horn"], "bases": ["ice_block", "yule_log_base"], "charm": "windup_key_charm" },
+    "reindeer_stables": { "traps": ["snow_globe_prison", "sleigh_bell_snapper"], "bases": ["gingerbread_cottage", "sleigh_runner", "yule_log_base"], "charm": "windup_key_charm" }
+  },
+
+  "recommendedGap": { "_note": "eddy 28 Nov: recommended gear is almost always needed to catch the local boss at a reasonable rate, so a boss must be at least this many points easier with recommended gear than with beginner gear.", "boss": 0.10 },
+
   "commonsBands": {
     "_note": "Catch rate against the area's commons (weighted by encounter weight) with the area's best fresh trap. From docs/PLAN.md 'Balance targets per location'. A band is only flagged when it is missed by more than `tolerance`.",
     "tolerance": 0.05,

@@ -105,8 +105,8 @@ h('### 1. Areas: commons catch rate with the intended gear');
 }
 
 // ---- 1b. Every elf in every area: beginner gear vs endgame gear --------------------------------------------------
-h('### 1b. Catch rate of every elf with the recommended gear: beginner vs endgame');
-out.push('**Beginner** = a player who has just unlocked the area, using the area\'s recommended trap and base (the gear they already own or is nearly within reach), no charm. **Endgame** = a player who owns everything: the best trap, base and charm for that elf. "Commons" rows are weighted by encounter weight.', '');
+h('### 1b. Catch rate of every elf with three gear tiers: beginner, recommended, endgame');
+out.push('**Beginner** = a player who has just entered the area with the gear they can have by then (the area\'s intended trap and base, no charm). **Recommended** = a player who has farmed the area and the one before it and earned the gear meant for beating the local boss (the gear docs/WALKTHROUGH.md has players aim for, including optional crafts available at that point: best listed trap and base per elf, with the listed charm; see `recommended` in thresholds.json). **Endgame** = a player far above the area\'s rank who owns everything, including traps and bases from later areas that a player following the walkthrough cannot have yet: the best trap, base and charm for that elf. "Commons" rows are weighted by encounter weight.', '');
 {
   const rows: string[][] = [];
   for (const loc of content.locations) {
@@ -120,15 +120,26 @@ out.push('**Beginner** = a player who has just unlocked the area, using the area
       return cs.reduce((n, i) => n + (i.weight / w) * best(i, loc, allTraps, allBases, allCharms).rate, 0);
     })();
     const begCommons = Math.max(...rec.map((s) => commonsRate(loc, s)));
-    rows.push([`**${loc.name}**`, `**Commons (all)**`, 'common', `**${pc(begCommons)}**`, `**${pc(endCommons)}**`, 'best setup per elf, see below']);
+    const R = T.recommended?.[loc.id];
+    const rg = ((R?.traps ?? []) as string[]).flatMap((trap) => ((R.bases ?? []) as string[]).map((base) => ({ trap, base, charm: (R.charm ?? null) as string | null })));
+    const rgBest = (imp: Imp) => rg.reduce((a, s) => { const r = rateOf(s, imp, loc); return r > a.r ? { r, s } : a; }, { r: -1, s: rg[0]! });
+    const recCommons = rg.length ? Math.max(...rg.map((s) => commonsRate(loc, s))) : NaN;
+    const rp = (x: number) => (rg.length ? pc(x) : '-');
+    rows.push([`**${loc.name}**`, `**Commons (all)**`, 'common', `**${pc(begCommons)}**`, `**${rp(recCommons)}**`, `**${pc(endCommons)}**`, 'best setup per elf, see below']);
     for (const imp of loc.imps) {
       const b = recBest(imp);
       const e = best(imp, loc, allTraps, allBases, allCharms);
-      rows.push([loc.name, imp.name, imp.tier, pc(b.r), pc(e.rate), fmt(e.setup)]);
+      const g = rg.length ? rgBest(imp) : null;
+      if (g && imp.tier === 'boss' && T.recommendedGap) {
+        const gap = g.r - b.r;
+        if (gap < T.recommendedGap.boss) warn('recommended-gap', imp.name, `with beginner gear ${pc(b.r)}, with the walkthrough's recommended gear ${pc(g.r)}: only ${pp(gap)} points better (eddy: recommended gear should be almost always needed to catch the local boss at a reasonable rate; minimum gain ${pp(T.recommendedGap.boss)} points).`);
+      }
+      rows.push([loc.name, imp.name, imp.tier, pc(b.r), g ? `${pc(g.r)} (${name(g.s.trap)} + ${name(g.s.base)})` : '-', pc(e.rate), fmt(e.setup)]);
     }
   }
-  table(['Area', 'Elf', 'Tier', 'Beginner gear (recommended trap + base)', 'Endgame gear', 'Endgame setup'], rows);
-  out.push('', 'Recommended beginner gear per area: ' + content.locations.filter((l) => T.fresh[l.id]).map((l) => `${l.name}: ${(T.fresh[l.id].meant as string[]).map(name).join(' or ')} + ${name(T.fresh[l.id].base)}`).join('; ') + '. Madame Shredwell is weak to Carol, so a beginner with a Carol Horn catches her much more often than the Star Lantern figure (see section 2).');
+  table(['Area', 'Elf', 'Tier', '1. Beginner gear', '2. Recommended gear (trap used)', '3. Endgame gear', 'Endgame setup'], rows);
+  out.push('', 'Recommended gear per area: ' + content.locations.filter((l) => T.recommended?.[l.id]).map((l) => { const R = T.recommended[l.id]; return `${l.name}: ${(R.traps as string[]).map(name).join(' / ')} on ${(R.bases as string[]).map(name).join(' / ')}${R.charm ? ' + ' + name(R.charm) : ''}`; }).join('; ') + '.');
+  out.push('', 'Beginner gear per area: ' + content.locations.filter((l) => T.fresh[l.id]).map((l) => `${l.name}: ${(T.fresh[l.id].meant as string[]).map(name).join(' or ')} + ${name(T.fresh[l.id].base)}`).join('; ') + '. Madame Shredwell is weak to Carol, so a beginner with a Carol Horn catches her much more often than the Star Lantern figure (see section 2).');
 }
 
 // ---- 2. Elves: fresh vs endgame -----------------------------------------------------------------------------------

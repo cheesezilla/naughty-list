@@ -114,7 +114,7 @@ describe('Reindeer Stables sleigh run', () => {
     const gold = p.gold;
     const last = ok(hunt(content, p, scripted(0, 0, 0, 0.99)));
     expect(last.player.objectives?.reindeer_stables).toMatchObject({ active: false, readiness: 5 });
-    expect(last.player.gold - gold).toBe(300 + 50);
+    expect(last.player.gold - gold).toBe(435 + 50);
   });
 
   it('escaped thieves take Readiness', () => {

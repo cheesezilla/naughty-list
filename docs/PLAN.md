@@ -37,6 +37,7 @@ Original review copy: https://claude.ai/artifact/VRKBh16CBkcZuN8FiqeWn9 (this fi
 | Branching progression (eddy): luck rework (luck helps most against commons, least against bosses), Madame Shredwell weak to a new Carol type, and the Carol Loft side area where the Carol Horn is made; see [Branching progression](#branching-progression) | In review | this PR |
 | New bases: two tiers of power, attraction and luck bases, with build affinity and a "good for" line; see [New bases](#new-bases-power-attraction-and-luck) | In review | #21 |
 | Playtest and simulation plan: what the simulator must report for Allure, Cheer Meter, events and goals, targets and how to read them (plan only); see [Playtest and simulation plan](#playtest-and-simulation-plan-eddy-27-nov-2026-plan-only). Baseline simulator built (Allure tiers, goals, gold flow, progress feel, `--seeds`, `--trace`); Cheer and events policies and metrics included; findings in [SIMULATION_REPORT.md](SIMULATION_REPORT.md) | In progress | this PR |
+| Commons and Grimbolt tuned to the balance bands; balance report gets a Recommended gear tier and a boss-gap flag; walkthrough rewritten as trap 1 / trap 2 per area | Done | this PR |
 | Balance check: `npm run balance` flags catch-rate problems for every trap x base x charm against every elf (fresh and endgame profiles), thresholds in `balance/thresholds.json`, report in [docs/BALANCE.md](BALANCE.md), advisory in CI | Done | this PR |
 | Random events after a hunt (Santa and Mrs. Claus boons with a safe or big choice and rare free Grand Gifts; Scrinch's random events were removed again, he stays the story villain), plus a parked-ideas list; see [Random events](#random-events-built-on-integration) | Built on `integration` (test playground), draft numbers | this PR |
 | Cheer Meter and boons (eddy): a streak meter, pick 1 of 3 from 14 boons in three rarities, Overcharge and Cheer charms; see [Cheer Meter](#cheer-meter-and-boons-eddy-26-nov-2026-built-on-integration) | Built on `integration` (test playground), draft numbers | this PR |
@@ -165,7 +166,7 @@ Nothing here is built and no game number changes. It says what the simulator and
 
 ### Balance check (standard step for every balance PR)
 
-`npm run balance` ([docs/BALANCE.md](BALANCE.md)) computes catch rates with the real engine formula for every trap x base x charm against every elf, for a **fresh player** (the traps they could own on entering the area, the area's base, no charm) and for **endgame gear** (best setup per elf). It flags commons outside the bands in "Balance targets per location", elves off their stated target (Madame Shredwell about 10% off-type and 30% with Carol, Cinderhoof about 25% with the best gear), bosses and mini bosses too easy or near impossible, cheese (a trap that outclasses the intended gear of an area), obsolete traps and gear that adds little for its cost. Thresholds live in `balance/thresholds.json`; CI runs it as an advisory step (`continue-on-error`, warnings only).
+`npm run balance` ([docs/BALANCE.md](BALANCE.md)) computes catch rates with the real engine formula for every trap x base x charm against every elf, for a **fresh player** (the traps they could own on entering the area, the area's base, no charm) for **recommended gear** (what docs/WALKTHROUGH.md has the player farm for, including optional crafts) and for **endgame gear** (an over-ranked player with traps and bases from later areas; best setup per elf). It flags commons outside the bands in "Balance targets per location", elves off their stated target (Madame Shredwell about 10% off-type and 30% with Carol, Cinderhoof about 25% with the best gear), bosses and mini bosses too easy or near impossible, cheese (a trap that outclasses the intended gear of an area), obsolete traps gear that adds little for its cost, and a boss that is less than 10 points easier with recommended gear than with beginner gear (eddy: recommended gear should almost always be needed for the local boss). Thresholds live in `balance/thresholds.json`; CI runs it as an advisory step (`continue-on-error`, warnings only).
 
 **Workflow for a PR that changes gear, elf power, luck, effectiveness, prices, recipes or the catch formula:** (1) `npm run balance` before the change, (2) change `content/*.json`, (3) `npm run balance` again and read the new flags, (4) `npm run balance -- --write` to refresh `docs/BALANCE.md`, (5) `npm run check-content`, `npm test`, `npm run simulate`, (6) in the PR description, say which flags the change fixes, adds or leaves. A flag that is a deliberate design choice goes under `accepted` in the thresholds file with the reason. A new elf, area, trap or base needs an entry in `fresh` (and `elfTargets` if it has a stated target). First run (27 Nov, `integration` at PR 75): 19 flags; 13 once PR 76 (Carol Horn luck 1) is merged. `docs/BALANCE.md` section 1b lists every elf's catch rate with the area's recommended beginner gear and with endgame gear; see the findings there.
 
@@ -271,16 +272,16 @@ The numbers below mirror `content/*.json`. Types: C = Clockwork, S = Starlight, 
 
 | Location | Elf | Tier | Power | Gold | Points | Weak (x1.5) | Resists (x0.5) / immune (x0) | Drops |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Cookie Pantry | Crumb Elf | Common | 40 | 12 | 20 | | | |
-| Cookie Pantry | Sprinkle Snatcher | Common | 70 | 18 | 30 | C | | Candied Peel 10% |
-| Cookie Pantry | Sootcap | Uncommon | 100 | 25 | 45 | S | | |
-| Cookie Pantry | Jarbelly the Glutton | Uncommon | 180 | 40 | 70 | C | | Cookie Tin 30% |
-| Cookie Pantry | Gingerbread Rascal | Rare | 160 | 60 | 100 | F | | Sugar Glass 50%, Brass Spring 15% |
-| Wrapping Room | Ribbon Tangler | Common | 150 | 40 | 60 | F | | Sugar Twist 25%, Ribbon Candy 2% |
-| Wrapping Room | Tape Biter | Common | 220 | 55 | 85 | S | | Sugar Twist 20%, Ribbon Candy 2% |
-| Wrapping Room | Bow Burglar | Common | 280 | 70 | 100 | S | C | Candied Peel 30%, Ribbon Candy 2% |
-| Wrapping Room | Glitterbug | Rare | 350 | 110 | 160 | S | C | Sugar Glass 50% |
-| Wrapping Room | Spoolwick | Mini boss | 600 | 160 | 300 | S | C | Golden Ribbon 100% |
+| Cookie Pantry | Crumb Elf | Common | 130 | 12 | 20 | | | |
+| Cookie Pantry | Sprinkle Snatcher | Common | 230 | 18 | 30 | C | | Candied Peel 10% |
+| Cookie Pantry | Sootcap | Uncommon | 330 | 25 | 45 | S | | |
+| Cookie Pantry | Jarbelly the Glutton | Uncommon | 590 | 40 | 70 | C | | Cookie Tin 30% |
+| Cookie Pantry | Gingerbread Rascal | Rare | 520 | 60 | 100 | F | | Sugar Glass 50%, Brass Spring 15% |
+| Wrapping Room | Ribbon Tangler | Common | 350 | 40 | 60 | F | | Sugar Twist 25%, Ribbon Candy 2% |
+| Wrapping Room | Tape Biter | Common | 510 | 55 | 85 | S | | Sugar Twist 20%, Ribbon Candy 2% |
+| Wrapping Room | Bow Burglar | Common | 660 | 70 | 100 | S | C | Candied Peel 30%, Ribbon Candy 2% |
+| Wrapping Room | Glitterbug | Rare | 820 | 110 | 160 | S | C | Sugar Glass 50% |
+| Wrapping Room | Spoolwick | Mini boss | 960 | 160 | 300 | S | C | Golden Ribbon 100% |
 | Wrapping Room | Madame Shredwell | Boss | 1,100 | 300 | 550 | Carol | C | Enchanted Wrapping 100%, Jingle Bell Charm x5 25% |
 | Carol Loft (side area) | Tin Whistler | Common | 200 | 30 | 42 | C | | Hymn Reed 20% |
 | Carol Loft (side area) | Hoarse Caroller | Common | 260 | 38 | 55 | F | | Hymn Reed 20% |
@@ -292,13 +293,13 @@ The numbers below mirror `content/*.json`. Types: C = Clockwork, S = Starlight, 
 | Toy Workshop | Stuffing Ripper | Common | 1,850 | 220 | 230 | C | F | |
 | Toy Workshop | Wind-up Elf | Rare | 900 | 300 | 320 | C | F immune | Sugar Glass 50% |
 | Toy Workshop | Hammerhand | Mini boss | 1,600 | 400 | 650 | F | | Toymaker's Gear 100% |
-| Toy Workshop | General Grimbolt | Boss | 2,800 | 700 | 1,300 | C | F | Clockwork Heart 100% |
-| Reindeer Stables | Hay Hoarder | Common | 1,000 | 300 | 350 | F | | |
-| Reindeer Stables | Bell Thief | Common | 1,300 | 380 | 420 | F | S | |
-| Reindeer Stables | Harness Snipper | Common | 1,600 | 450 | 480 | C | S | |
-| Reindeer Stables | Carrot Crook | Rare | 2,000 | 600 | 650 | F | S | Sugar Glass 50% |
-| Reindeer Stables | Antler Ripper | Mini boss | 3,500 | 800 | 1,200 | F | S | Silver Sleighbell 100% |
-| Reindeer Stables | Cinderhoof | Boss | 16,800 | 1,500 | 3,000 | F | S immune | Brimstone Coal 100% |
+| Toy Workshop | General Grimbolt | Boss | 5,900 | 700 | 1,300 | C | F | Clockwork Heart 100% |
+| Reindeer Stables | Hay Hoarder | Common | 3,000 | 300 | 350 | F | | |
+| Reindeer Stables | Bell Thief | Common | 3,900 | 380 | 420 | F | S | |
+| Reindeer Stables | Harness Snipper | Common | 4,800 | 450 | 480 | C | S | |
+| Reindeer Stables | Carrot Crook | Rare | 3,200 | 600 | 650 | F | S | Sugar Glass 50% |
+| Reindeer Stables | Antler Ripper | Mini boss | 5,700 | 800 | 1,200 | F | S | Silver Sleighbell 100% |
+| Reindeer Stables | Cinderhoof | Boss | 20,500 | 1,500 | 3,000 | F | S immune | Brimstone Coal 100% |
 
 Baron Crumblewick, the old Pantry boss, is parked in `content/parked/baron_crumblewick.json` and Grizzlewick the Horned, the old Stables boss, in `content/parked/grizzlewick.json` (not loaded) for a later location or event. Elf weights and which elves a bait draws are in `content/locations.json`; the Wrapping Room's rare, mini boss and boss come only for ladder baits, and the Toy Workshop and Stables mini bosses and bosses only through their objective (weight 0 otherwise). Jarbelly, Bow Burglar and Bell Thief always pillage one bait when they escape; other elves pillage by tier (see [Pillage on escape](#pillage-on-escape)). Brimstone Coal has no use in v1; it is saved for later recipes, including The Naughty List.
 
@@ -339,7 +340,7 @@ The home types are data (`homeTypes` per location in `locations.json`; the Cooki
 | Gingerbread Slab | 80 | 1 | | 1 | 500 gold |
 | Candy Cane Platform | 200 | 1 | +5% | 2 | 2,500 gold |
 | Ice Block | 400 | 3 | | 3 | 8,000 gold |
-| Yule Log Base | 600 | 5 | +10% | 3 | Crafted |
+| Yule Log Base | 800 | 5 | +10% | 3 | Crafted |
 
 **Baits**
 
@@ -359,7 +360,7 @@ The home types are data (`homeTypes` per location in `locations.json`; the Cooki
 | --- | --- | --- | --- |
 | Mistletoe Charm | +4 luck | 1 | 30 gold |
 | Jingle Bell Charm | +15% attraction | 2 | 25 gold |
-| Wind-up Key Charm | +20% power | 3 | 60 gold |
+| Wind-up Key Charm | +35% power | 3 | 60 gold |
 
 ## New bases: power, attraction and luck
 
@@ -381,7 +382,7 @@ Built in #21. Six optional bases in two tiers. In each tier there is one base fo
 | Chestnut Brazier | Attraction | 100 | 1 | +15% | | 2 | 3,500 gold |
 | Wishbone Plinth | Luck | 50 | 4 | | | 2 | 4,500 gold |
 | Sleigh Runner | Power | 1,300 | 2 | | Clockwork +10% power | 4 | Crafted: 2 Silver Sleighbell, 2 Toymaker's Gear, 12,000 gold |
-| Gingerbread Cottage | Attraction | 550 | 4 | +30% | Frost +10% power | 4 | Crafted: 3 Cookie Tin, 2 Golden Ribbon, 1 Candy Cane Platform, 8,000 gold |
+| Gingerbread Cottage | Attraction | 1,550 | 4 | +30% | Frost +10% power | 4 | Crafted: 3 Cookie Tin, 2 Golden Ribbon, 1 Candy Cane Platform, 8,000 gold |
 | Wishing Star Pedestal | Luck | 300 | 9 | | Starlight or Carol +10% power | 4 | Crafted: 1 Clockwork Heart, 2 Enchanted Wrapping, 4 Sugar Glass, 12,000 gold |
 
 The rank 2 shop bases sit beside the Candy Cane Platform as sidegrades; none of them replaces the Ice Block (400 power, 3 luck, 8,000 gold), which stays the all-round rank 3 shop base. The rank 4 bases are crafted from loot of the mini bosses and bosses, so they come once a player has farmed the Toy Workshop and the Stables. The Gingerbread Cottage uses up a Candy Cane Platform, so a player who wants it keeps the platform until then. Names are working titles. They follow the theme and copy nothing from other games.
@@ -427,7 +428,7 @@ Art for the six bases is generated SVG (600×450, standing on the y = 340 line) 
 Luck adds a bonus of **scale x luck squared x tier weight** to the catch chance's numerator (see [Formulas](#formulas)), and it ignores weakness and resistance. Constants in `content/constants.json`: scale 3, tier weights common 1, uncommon 1, rare 0.5, mini boss 0.25, boss 0.1.
 
 - **Luck for minions, power for bosses.** Against a common elf luck counts in full. Against a boss it counts a tenth, so only power (and the right type) beats one.
-- **The choice:** the Mistletoe Charm (+4 luck) and the Wind-up Key Charm (+20% power) compete for one slot, and so do luck-leaning bases and power traps. Example in the Toy Workshop with a Nutcracker Jaws and a Yule Log Base: the power build (Wind-up Key, 1,800 power, luck 8) catches Paint Smudger 83% of the time, the luck build (Mistletoe, 1,500 power, luck 12) 92%; against General Grimbolt the power build wins by roughly 4 points (checked in `test/hunt.test.ts`).
+- **The choice:** the Mistletoe Charm (+4 luck) and the Wind-up Key Charm (+35% power) compete for one slot, and so do luck-leaning bases and power traps. Example in the Toy Workshop with a Nutcracker Jaws and a Yule Log Base: the power build (Wind-up Key, 1,800 power, luck 8) catches Paint Smudger 83% of the time, the luck build (Mistletoe, 1,500 power, luck 12) 92%; against General Grimbolt the power build wins by roughly 4 points (checked in `test/hunt.test.ts`).
 - Luck still only counts when the elf is not immune.
 
 ### One off-type boss: Madame Shredwell
@@ -487,11 +488,11 @@ The first location teaches the basic loop and nothing else: catch elves, earn go
 
 | Elf | Tier | Power | Weight (Stale Cookie) | Weight (Sugar Cookie) | Drops |
 | --- | --- | --- | --- | --- | --- |
-| `crumb_elf` | Common | 40 | 40 | 40 | |
-| `sprinkle_snatcher` | Common | 70 | 30 | 30 | Candied Peel 10% (as now) |
-| `sootcap` | Uncommon (was common) | 100 | 15 | 22 | |
-| `jarbelly` | Uncommon (was mini boss) | 180 (was 300) | 10 | 10 | Cookie Tin 30% (was 100%); gold 40 and points 70; always pillages a bait on escape |
-| `gingerbread_rascal` | Rare | 160 | 5 | 8 | Sugar Glass 50% (as now), Brass Spring 15% (new) |
+| `crumb_elf` | Common | 130 | 40 | 40 | |
+| `sprinkle_snatcher` | Common | 230 | 30 | 30 | Candied Peel 10% (as now) |
+| `sootcap` | Uncommon (was common) | 330 | 15 | 22 | |
+| `jarbelly` | Uncommon (was mini boss) | 590 (was 300 before the Pantry rework) | 10 | 10 | Cookie Tin 30% (was 100%); gold 40 and points 70; always pillages a bait on escape |
+| `gingerbread_rascal` | Rare | 520 | 5 | 8 | Sugar Glass 50% (as now), Brass Spring 15% (new) |
 
 - **New tier, uncommon.** The engine, the content schema, the hunt log and the Naughty List gain an `uncommon` tier between common and rare, with its own portrait frame. Fruitcake doubles every tier above common.
 - **Baron Crumblewick leaves the Pantry** and is parked for a later location or event; his art and text stay. His Brass Spring now comes from the Gingerbread Rascal, so Constellation Wreath can still be crafted.
@@ -1075,7 +1076,9 @@ Gold comes in only from catches and sales, and goes out on bait, charms, gear, l
 
 **How we check it:** `npm run simulate` plays virtual hunters through v1 with the real engine and content, reports hunts per rank, catch rates and bait cost per location, and with `--strict` fails if a rank target is missed by more than 25%.
 
-**Latest simulator run (Carol Horn luck 10 to 1, 1,000 players, seed 42: median 1,355 hunts to rank 5 (1,264 before); all 28 elves caught by 100% of players, mean 1,384 hunts, median 1,366, p10 1,236, p90 1,556 (1,300, 1,277, 1,161, 1,439 before); ranks 117, 248, 405, 581 (117, 237, 333, 575 before; rank 3 now 1% over its 400 target); commons catch rate Wrapping Room 77% (88%), Toy Workshop 44% (56%), Stables 78% (80%), Carol Loft 58% (61%); Report 10). Previous run (Cinderhoof power 7,000 to 16,800, 1,000 players, seed 42: median 1,266 hunts to rank 5 (1,226 before); all 28 elves caught by 100% of players, mean 1,301 hunts, median 1,279, p10 1,162, p90 1,461 (1,252, 1,240, 1,123, 1,400 before); ranks 117, 237, 333, 577 (538 before for rank 4); Stables boss catch rate 19% (35%), Cinderhoof 2.9 catches per player (5.0), 94% of players ever catch him (100%); Report 9). Previous run (full-collection benchmark added, 1,000 players, seed 42, PR 66 included: median 1,226 hunts to rank 5; all 28 elves caught by 100% of players, mean 1,252 hunts, median 1,240, p10 1,123, p90 1,400; Report 7). Previous run (Shredwell power 2,900 and x0.6 off-type: median 1,220 hunts to rank 5, ranks 117, 241, 329, 540, Wrapping Room 168 hunts at 86% catch rate, 5% pillage cost there, Shredwell 1.1 catches per player). Previous run (Scrinch events removed: median 1,208 hunts to rank 5, ranks 117, 236, 325, 533, 0.92 boon cards and 0.23 Grand Gifts per 100 hunts; see Report 6). Previous run (parallel Toy Workshop orders, 1,000 players, seed 42, Cheer and events on):** all reached rank 5, median 1,212 hunts (1,359 in the 27 Nov tuning round; the Workshop is a little faster because the simulated player no longer swaps traps for the board). Median hunts in ranks 1 to 4: 118, 237, 324, 532 (targets 150, 250, 400, 600, all ok). Toy Workshop: catch rate 54% (46% before, when the bot swapped to off-best traps for slots), bait 8% of gold, pillage 15% of gold earned there, about 30 orders per player, Hammerhand 4.3 and General Grimbolt 2.5 catches per player, and 3.6 Cheer fills per 100 hunts there (4.2 before; each counted catch now adds 1 pip, not 2). Overall Cheer: 3.4 draws per 100 hunts. It needed a rebalance: with no swapping the Workshop commons were caught about 90% of the time and rank 3 took only about 210 hunts, so their power went to 1,200, 1,500 and 1,850. See `docs/SIMULATION_REPORT.md` Report 5.
+**Latest simulator run (commons and Grimbolt tuned, then small gear buffs, 300 players, seed 42): median 1,448 hunts to rank 5 (1,234 before); all 28 elves caught by 100% of players, mean 2,794 hunts, median 2,386, p10 1,544, p90 4,237 (1,243 median before, so the collection now has a real tail: about 950 extra hunts after rank 5); ranks 128, 270, 428, 616 (targets 150, 250, 400, 600, all ok). Commons caught with the intended gear: Pantry 74%, Wrapping Room 64%, Toy Workshop 57%, Stables 54% (bands above; before 88, 79, 57, 77). Elf power (Pantry x2.2, Wrapping Room x2.0, Stables x2.55) and General Grimbolt (2,800 to 5,900: 59.1% with endgame gear, ceiling 60%) changed; gear buffs so recommended gear is at least 10 points better than beginner gear on every boss (Wind-up Key Charm +20% to +35% power, Yule Log Base 600 to 800, Gingerbread Cottage 550 to 1,550, Cinderhoof 16,800 to 20,500: 26% with best gear); gold and points per elf in those rooms x1.35 (Pantry, Wrapping Room) and x1.45 (Stables) keep rank pace. A first attempt at the band middles without the reward bump gave a median 2,258 hunts to rank 5 and only 18 of 60 test players finishing, which is why the commons sit at the easy end of their bands.**
+
+Previous run (Carol Horn luck 10 to 1, 1,000 players, seed 42: median 1,355 hunts to rank 5 (1,264 before); all 28 elves caught by 100% of players, mean 1,384 hunts, median 1,366, p10 1,236, p90 1,556 (1,300, 1,277, 1,161, 1,439 before); ranks 117, 248, 405, 581 (117, 237, 333, 575 before; rank 3 now 1% over its 400 target); commons catch rate Wrapping Room 77% (88%), Toy Workshop 44% (56%), Stables 78% (80%), Carol Loft 58% (61%); Report 10). Previous run (Cinderhoof power 7,000 to 16,800, 1,000 players, seed 42: median 1,266 hunts to rank 5 (1,226 before); all 28 elves caught by 100% of players, mean 1,301 hunts, median 1,279, p10 1,162, p90 1,461 (1,252, 1,240, 1,123, 1,400 before); ranks 117, 237, 333, 577 (538 before for rank 4); Stables boss catch rate 19% (35%), Cinderhoof 2.9 catches per player (5.0), 94% of players ever catch him (100%); Report 9). Previous run (full-collection benchmark added, 1,000 players, seed 42, PR 66 included: median 1,226 hunts to rank 5; all 28 elves caught by 100% of players, mean 1,252 hunts, median 1,240, p10 1,123, p90 1,400; Report 7). Previous run (Shredwell power 2,900 and x0.6 off-type: median 1,220 hunts to rank 5, ranks 117, 241, 329, 540, Wrapping Room 168 hunts at 86% catch rate, 5% pillage cost there, Shredwell 1.1 catches per player). Previous run (Scrinch events removed: median 1,208 hunts to rank 5, ranks 117, 236, 325, 533, 0.92 boon cards and 0.23 Grand Gifts per 100 hunts; see Report 6). Previous run (parallel Toy Workshop orders, 1,000 players, seed 42, Cheer and events on):** all reached rank 5, median 1,212 hunts (1,359 in the 27 Nov tuning round; the Workshop is a little faster because the simulated player no longer swaps traps for the board). Median hunts in ranks 1 to 4: 118, 237, 324, 532 (targets 150, 250, 400, 600, all ok). Toy Workshop: catch rate 54% (46% before, when the bot swapped to off-best traps for slots), bait 8% of gold, pillage 15% of gold earned there, about 30 orders per player, Hammerhand 4.3 and General Grimbolt 2.5 catches per player, and 3.6 Cheer fills per 100 hunts there (4.2 before; each counted catch now adds 1 pip, not 2). Overall Cheer: 3.4 draws per 100 hunts. It needed a rebalance: with no swapping the Workshop commons were caught about 90% of the time and rank 3 took only about 210 hunts, so their power went to 1,200, 1,500 and 1,850. See `docs/SIMULATION_REPORT.md` Report 5.
 
 Previous run (Allure, 200 players, no retune): all reached rank 5, median 1,289 hunts (1,652 before, because every hunt now meets an elf). Median hunts in ranks 1 to 4: 122, 266, 468, 404 (targets 150, 250, 400, 600); rank 4 is flagged "too fast". Bait cost per gold earned: 65%, 13%, 11%, 3%, 36% in the Pantry, Wrapping Room, Toy Workshop, Stables and Carol Loft. Mini boss and boss catches per player: Spoolwick 3.2, Madame Shredwell 1.3, Hammerhand 2.6, General Grimbolt 1.2, Antler Ripper 3.8, Cinderhoof 2.6, Choirmaster Hollowvoice 1.6. Median 48 of 55 badges. A retune (cheaper pace or higher bait cost) is left for eddy to decide.
 
@@ -1285,6 +1288,7 @@ The first idea (replace the attraction roll where no elf takes the bait) is trac
 
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-28 | this PR | **Commons and Grimbolt tuned to the balance bands (eddy).** Elf power raised: Pantry x2.2 (Crumb Elf 40 to 90 and so on), Wrapping Room x2.0, Stables commons x2.55, rares and mini bosses of those rooms raised alongside (table above); General Grimbolt 2,800 to 5,900 so endgame gear catches him 59.1%. **Small gear buffs (eddy):** Wind-up Key Charm +35% power (was +20%), Yule Log Base power 800 (was 600), Gingerbread Cottage power 1,550 (was 550), Cinderhoof power 20,500 (was 16,800), so recommended gear beats beginner gear by 10+ points on every boss (Grimbolt 25% to 37%, Cinderhoof 16% to 26%). Gold and points per elf x1.35 (Pantry, Wrapping Room) and x1.45 (Stables) so rank pace holds (ranks 128, 270, 428, 616 hunts; median 1,448 to rank 5, 2,386 to catch every elf). Shredwell and Cinderhoof untouched. `npm run balance`: commons in band everywhere, Grimbolt flag fixed; new Recommended gear tier in BALANCE.md section 1b and a recommended-gap flag (closed by the gear buffs). docs/WALKTHROUGH.md rewritten: per area, equip trap 1, hunt until trap 2, come back for the boss, with an elf table of catch rates for both |
 | 2026-11-27 | this PR | **Balance check workflow (eddy).** New `npm run balance` (`scripts/balance.ts`, thresholds in `balance/thresholds.json`, report `docs/BALANCE.md`): catch rate of every trap x base x charm against every elf with the real engine formula, fresh-player and endgame profiles for rares, mini bosses and bosses, flags for commons bands, stated elf targets, bosses too easy or near impossible, cheese, obsolete traps, low-value gear and charms. Advisory CI step. CLAUDE.md and this plan make it part of every balance PR. No game numbers changed. First run: 19 flags on `integration`, 13 with PR 76 merged. Section 1b: beginner and endgame catch rate for every elf |
 | 2026-11-27 | this PR | **Quiet-hunt wording removed; Carol Loft hint fixed.** The Carol Loft hint said 6 Hymn Reeds but the Carol Horn recipe needs 5. Quiet hunts left the engine in #49, but the Reindeer Stables hints, the On a Roll badge text and the sleigh run notes still mentioned them. All reworded; old `quiet` log rows still display, and release notes and past changelog rows are unchanged. No game numbers changed |
 | 2026-11-27 | this PR | **Carol Horn: much less luck (eddy).** Carol Horn goes from luck 10 to luck 1 (power stays 600; a first try at 650 power added nothing but Shredwell points). With luck 10 it caught Stables commons 98% (best build with the Wishing Star Pedestal and a Mistletoe Charm), more than the best Frost or Clockwork build, from a rank 2 trap. Now about 70% with the Pedestal and about 61% with Yule Log Base and Mistletoe (target 60%), Carrot Crook 53%, Antler Ripper 36%, Cinderhoof 12% (best Frost 25%). Madame Shredwell with Carol Horn, Candy Cane Platform and Mistletoe stays about 31% (35% with a Wind-up Key). The luck formula is unchanged (an earlier version of this PR made luck count only on weakness matches; eddy dropped it). Shredwell stays 30% (31% with luck 10), so power was not raised: every extra 50 power adds about 2 points to Shredwell. Against other Stables traps on the same Yule Log Base and Mistletoe, commons average: Jack-in-the-Box 55%, Star Lantern 51%, Carol Horn 61%, Icicle Jar (on-type) 66%, Nutcracker Jaws 72%. Sim in Report 10 |
