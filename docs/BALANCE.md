@@ -321,6 +321,27 @@ eddy (28 Nov): slower pacing is fine and the 50% farm nerf stays, but boons shou
 
 Pace is now back to or faster than before Report 15, because boons are drawn more often and used where they count. Lever if that is too fast: `pushPipMult` 1.5, or `farmScale` lower.
 
+### Report 15: the loop bot wears charms on pushes; walkthrough prices refreshed (200 players, seed 1, Cheer and events on)
+
+Checked the default loop bot against the Walkthrough in `docs/WIKI.md`. It already matched on farming with budget bait, saving, pushing with premium bait (Sugar Cookie, Ribbon Candy and Bonbons, Spiced Honey Drop, Peppermint Bark, Hot Cocoa) once about 30 hunts of it plus the next gear piece are affordable, banking a full Cheer meter until push bait is armed, opening areas under the rank gates (deepest allowed area first, gold fee x1.5), and starting a sleigh run only with the whole run's cost in hand, a run trap and a reason. Mismatches found:
+
+| Mismatch | Bot before | Fix |
+| --- | --- | --- |
+| Charms | never wore one (the walkthrough pushes with Mistletoe or Wind-up Key) | pushes and sleigh runs weigh Mistletoe, Jingle Bell and Wind-up Key charms by catch odds against their price, buy a stock and wear the best; farming stays charm-free (a charm on farm hunts cost 8 to 20% more hunts to rank 5 and missed the rank 3 and 4 targets) |
+| Gear order | buys Icicle Jar and Toffee Anvil before the walkthrough's Star Lantern and Carol Horn, and Nutcracker Jaws in only 72% of runs (it picks the best farm value, not the boss plan) | not changed: the order is a legitimate alternative, and the walkthrough only recommends it |
+| Cheer | banks and cashes at 10 pips, never Overcharges before a boss | not changed: the hold policy is a separate flag (`--boon-policy hold`) |
+| Walkthrough | still quoted pre-economy prices (Hot Cocoa 90 g, Gumdrop 16 g, Ribbon Candy 30 g, Bonbons 100 g, Wind-up Key +35%), rank 5 at about 1,200 hunts, and said nothing of farm and push | updated in `docs/WIKI.md` (farm and push rule, Cheer banking, budget and premium baits per area, sleigh run cost 22,000 g with Hay Biscuit) |
+
+| Metric | Report 14 | After |
+| --- | --- | --- |
+| Hunts to rank 5 | median 1,679 | median 1,698 (197 of 200 reach it) |
+| Hunts to catch every elf | median 2,311 (186 of 200) | median 1,751 (197 of 200) |
+| Ranks 1 to 4 (median hunts; targets 150, 250, 500, 750) | 143, 268, 496, 742 | 136, 262, 499, 737 (all ok) |
+| Sleigh runs launched per player | 1.8 | 2.5 |
+| Farm / push stage | | farm 72% of hunts at +148 gold, push 28% at -130 gold |
+
+The better launch rate (charm raises the odds of the Stables objective) is why more players catch Antler Ripper and Cinderhoof. No content numbers changed, so `npm run balance` is unchanged.
+
 ### Report 14: pacing targets for ranks 3 and 4 raised (200 players, seed 1, Cheer and events on)
 
 Targets only, no content or gameplay change (eddy, 28 Nov: pacing is fine). The loop bot takes a median 496 hunts in rank 3 and 742 in rank 4, so the simulator targets move from 400 to 500 (rank 3) and from 600 to 750 (rank 4). Ranks 1 and 2 stay at 150 and 250. All four ranks now read ok (143, 268, 496, 742). Rank 5 median stays 1,679 hunts.
@@ -358,7 +379,7 @@ Cheer Meter and events are unchanged (greedy boons, safe events), and still land
 5. **Random boosts help only a little during stale farming.** In stretches of 50 or more hunts with no first catch, rank-up, key or gear, per 100 hunts: 2.3 jackpot catches (about 28 gold per stale hunt), 0.7 event cards or Grand Gifts, 0.7 Cheer draws. Gear purchases end 54% of stretches, first catches 30%, rank-ups 16%. Jackpots are the main windfall; the Cheer Meter and events add little because they fire about once per 100 hunts.
 6. **Gold hoards after rank 5** (millions by hunt 20,000) because nothing but bait, upkeep and the Gilded Cocoa craft costs gold. Not a problem for the first run through the game.
 
-Bot limits that remain: no charms, one fixed push length rule, no choice of when to skip a run, and boons are picked by a fixed table, not by stage. The `--push-hunts`, `--farm-reserve` and `--run-min` flags change the bot's thresholds.
+Bot limits that remain: charms only on pushes and runs, one fixed push length rule, no choice of when to skip a run, and boons are picked by a fixed table, not by stage. The `--push-hunts`, `--farm-reserve` and `--run-min` flags change the bot's thresholds.
 
 ### Report 13: Santa's favour more forgiving (200 players, seed 42, Cheer and events on)
 

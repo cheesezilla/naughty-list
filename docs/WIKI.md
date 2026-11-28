@@ -562,7 +562,7 @@ Rank 5, the top rank for now.
 
 ## Walkthrough
 
-From sign-up to a full Naughty List (all 28 elves, rank 5). Built from `content/*.json` and the engine, 27 Nov 2026. Catch odds are worked out with the game's formula for the setup shown (no Cheer boon, no gift) and are rough. Each area has a table with trap 1 (what you arrive with) and trap 2 (what you hunt for, and what you bring back to beat the local boss); recommended gear is almost always needed to catch the boss at a reasonable rate. Tables are generated from `content/*.json` with the engine's formula (28 Nov 2026 tuning). Numbers are draft and change when tuning lands, so update this page with any PR that changes them.
+From sign-up to a full Naughty List (all 28 elves, rank 5). Built from `content/*.json` and the engine, 27 Nov 2026. Catch odds are worked out with the game's formula for the setup shown (no Cheer boon, no gift) and are rough. Each area has a table with trap 1 (what you arrive with) and trap 2 (what you hunt for, and what you bring back to beat the local boss); recommended gear is almost always needed to catch the boss at a reasonable rate. Tables are generated from `content/*.json` with the engine's formula (28 Nov 2026 tuning); prices and the farm and push advice follow the area-bait economy (PRs 86 to 101). Numbers are draft and change when tuning lands, so update this page with any PR that changes them.
 
 ### Rules that decide everything
 
@@ -570,12 +570,14 @@ From sign-up to a full Naughty List (all 28 elves, rank 5). Built from `content/
 - **Luck** helps most against commons and uncommons. Power helps against bosses (luck counts a tenth as much there).
 - Ranks come from points only. A new room needs the rank, its gold fee and the previous boss's key (the Pantry has no boss, so the Wrapping Room needs only rank 2 and 250 gold).
 - Allure (bait) mostly changes how often rare elves show up. Bosses and mini bosses come only through each room's objective.
+- **Farm, then push.** Every area has cheap **budget bait** (Stale Cookie, Glitter Gumdrop, Honey Lozenge, Gingersnap, Hay Biscuit) that earns gold, and dearer **premium bait** (Sugar Cookie, Ribbon Candy and Bonbons, Spiced Honey Drop, Peppermint Bark, Hot Cocoa) that draws rares, mini bosses and bosses. Farm with budget bait and no charm until you have gold for the next piece of gear plus about 30 hunts of premium bait. Then push: arm the strongest trap, premium bait and a Mistletoe or Wind-up Key Charm (one charm is used per hunt, so buy only what the push needs), go for the rare, mini boss or boss, and go back to budget bait when the premium bait runs low. A push costs gold per hunt; the farm pays it back. Bait from another area is used up and always fails, so swap bait when you travel.
+- **Bank your Cheer.** A full meter waits for you. Fill it while farming and cash it in when you start a push, because boons count at 150% with premium bait and 50% with budget bait.
 
 ### 1. Cookie Pantry (rank 1, 0 to 2,500 points)
 
 Start: 200 gold, 100 Stale Cookies, a Starlit Stocking. Elves: Crumb Elf, Sprinkle Snatcher (weak Clockwork), Sootcap (weak Starlight), Jarbelly (uncommon, weak Clockwork, steals bait), rare Gingerbread Rascal (weak Frost). No boss.
 
-**Steps.** 1) You start here with trap 1: **Starlit Stocking + Cardboard Box**. 2) Hunt with Stale Cookie until you have 300 gold, then buy the Jack-in-the-Box, then the Gingerbread Slab (500 g) and a Mistletoe Charm. 3) Trap 2: **Jack-in-the-Box + Gingerbread Slab + Mistletoe Charm**. There is no boss, so trap 2 is simply what you hunt the rest of the room with. Catch rates below (best weakness, no Cheer boon):
+**Steps.** 1) You start here with trap 1: **Starlit Stocking + Cardboard Box**. 2) Farm with Stale Cookie (8 g) until you have 300 gold, then buy the Jack-in-the-Box, then the Gingerbread Slab (500 g). Use Sugar Cookie (20 g) for short pushes at the Rascal and Sootcaps, and a Mistletoe Charm on those pushes. 3) Trap 2: **Jack-in-the-Box + Gingerbread Slab + Mistletoe Charm**. There is no boss, so trap 2 is simply what you hunt the rest of the room with. Catch rates below (best weakness, no Cheer boon):
 
 | Elf | Tier | Power | Weak | Trap 1 | Trap 2 |
 | --- | --- | --- | --- | --- | --- |
@@ -586,8 +588,8 @@ Start: 200 gold, 100 Stale Cookies, a Starlit Stocking. Elves: Crumb Elf, Sprink
 | Gingerbread Rascal | rare | 350 | frost | 19% | 49% |
 
 
-- Hunt with Stale Cookie until you have 300 gold, then buy the **Jack-in-the-Box** (Clockwork 150). Then the **Gingerbread Slab** (500 g) and a Mistletoe Charm for luck.
-- Move to **Sugar Cookie** once affordable: more uncommons and rares. Badge rewards give free Sugar Cookies and charms early.
+- Farm with Stale Cookie until you have 300 gold, then buy the **Jack-in-the-Box** (Clockwork 150). Then the **Gingerbread Slab** (500 g).
+- **Sugar Cookie** is the Pantry's premium bait: more uncommons and rares. Use it in pushes, with a Mistletoe Charm for luck, not for everyday farming. Badge rewards give free Sugar Cookies and charms early.
 - Catch the Rascal for Sugar Glass (10 Mistletoe Charms for 1 Sugar Glass + 150 g). Keep the Candied Peel from Sprinkle Snatchers.
 - At 2,500 points you are an Elf Deputy. Keep 250 gold for the Wrapping Room.
 
@@ -595,7 +597,7 @@ Start: 200 gold, 100 Stale Cookies, a Starlit Stocking. Elves: Crumb Elf, Sprink
 
 Commons: Ribbon Tangler (weak Frost), Tape Biter and Bow Burglar (weak Starlight; Bow Burglar resists Clockwork and steals bait). Rare Glitterbug, mini boss Spoolwick and boss Madame Shredwell come only for ladder baits. Shredwell is weak to Carol (x1.5) and resists every other type (x0.6).
 
-**Steps.** 1) Travel here from the Pantry and equip trap 1: **Star Lantern + Candy Cane Platform** (about 4,000 gold in total). 2) Hunt the commons until you can make trap 2: **Carol Horn + Toffee Anvil + Mistletoe Charm** (Carol Horn: 5 Hymn Reed + 1 Carol Songsheet + 600 g from the Carol Loft; Toffee Anvil 3,500 g). 3) Come back with trap 2 and hunt Madame Shredwell with Golden Bow Bonbons. Catch rates:
+**Steps.** 1) Travel here from the Pantry and equip trap 1: **Star Lantern + Candy Cane Platform** (about 4,000 gold in total). 2) Hunt the commons until you can make trap 2: **Carol Horn + Toffee Anvil + Mistletoe Charm** (Carol Horn: 5 Hymn Reed + 1 Carol Songsheet + 600 g from the Carol Loft; Toffee Anvil 3,500 g). 3) Come back with trap 2 and hunt Madame Shredwell with Golden Bow Bonbons. Farm the commons with Glitter Gumdrop (24 g). Catch rates:
 
 | Elf | Tier | Power | Weak | Trap 1 | Trap 2 |
 | --- | --- | --- | --- | --- | --- |
@@ -610,15 +612,15 @@ Commons: Ribbon Tangler (weak Frost), Tape Biter and Bow Burglar (weak Starlight
 | Step | What to do |
 | --- | --- |
 | Gear | **Star Lantern** (1,200 g, Starlight 300) and **Candy Cane Platform** (2,500 g): about 55 to 64% on the commons. Later the **Icicle Jar** (3,000 g, Frost) for Ribbon Tanglers and Hammerhand. |
-| Bait tier 1 | Glitter Gumdrop (16 g), the Wrapping Room's shop bait. Commons drop Sugar Twist and Candied Peel. |
-| Bait tier 2 | 2 Sugar Twist + 1 Candied Peel + 30 g = 3 **Ribbon Candy**. Draws Glitterbug (Sugar Glass 50%) and Spoolwick (always a Golden Ribbon). |
-| Bait tier 3 | 1 Sugar Glass + 1 Golden Ribbon + 100 g = 2 **Golden Bow Bonbons**. The only bait that draws Shredwell (half of visits). Craft 4 to 6, because she steals bait when she escapes. |
+| Bait tier 1 | Glitter Gumdrop (24 g), the Wrapping Room's budget bait. Commons drop Sugar Twist and Candied Peel. |
+| Bait tier 2 | 2 Sugar Twist + 1 Candied Peel + 90 g = 3 **Ribbon Candy**. Draws Glitterbug (Sugar Glass 50%) and Spoolwick (always a Golden Ribbon). |
+| Bait tier 3 | 1 Sugar Glass + 1 Golden Ribbon + 200 g = 2 **Golden Bow Bonbons**. The only bait that draws Shredwell (half of visits). Craft 4 to 6, because she steals bait when she escapes. |
 | Boss gear | Madame Shredwell is tough without Carol. With the rank 2 setup (Star Lantern or Icicle Jar on a Candy Cane Platform) she is about 10 to 13%. A Carol Horn on the same platform gives about 30%, 31% with a Mistletoe Charm; a Toffee Anvil base adds a couple of points. Use a Cheer boon (Santa's Blessing, Boss Bell) and craft plenty of Bonbons, because she steals bait when she escapes.
 ### 3. Toy Workshop (rank 3)
 
-Commons: Cog Pincher and Stuffing Ripper (weak Clockwork), Paint Smudger (weak Starlight). Rare Wind-up Elf (weak Clockwork, immune to Frost). Mini boss Hammerhand and boss General Grimbolt come through the order board.
+Commons: Cog Pincher and Stuffing Ripper (weak Clockwork), Paint Smudger (weak Starlight). Rare Wind-up Elf (weak Clockwork, immune to Frost). Mini boss Hammerhand and boss General Grimbolt come through the order board. Farm with Gingersnap (150 g); Peppermint Bark (450 g) is the premium bait for pushes.
 
-**Steps.** 1) Travel here with the Wrapping Room's key and equip trap 1: **Nutcracker Jaws + Ice Block** (Nutcracker Jaws 9,000 g, Ice Block 8,000 g). 2) Hunt, clear the order board and craft the Yule Log Base from Toymaker's Gear. Trap 2 is **Nutcracker Jaws + Yule Log Base + Wind-up Key Charm**. 3) Come back with trap 2 for General Grimbolt. Catch rates:
+**Steps.** 1) Travel here with the Wrapping Room's key and equip trap 1: **Nutcracker Jaws + Ice Block** (Nutcracker Jaws 9,000 g, Ice Block 8,000 g). 2) Hunt, clear the order board and craft the Yule Log Base (3 Toymaker's Gear + 1 Golden Ribbon + 2 Sugar Glass + 4,000 g). Trap 2 is **Nutcracker Jaws + Yule Log Base + Wind-up Key Charm**. 3) Come back with trap 2 for General Grimbolt. Catch rates:
 
 | Elf | Tier | Power | Weak | Trap 1 | Trap 2 |
 | --- | --- | --- | --- | --- | --- |
@@ -633,9 +635,9 @@ Commons: Cog Pincher and Stuffing Ripper (weak Clockwork), Paint Smudger (weak S
 
 ### 4. Reindeer Stables (rank 4, to 217,000 points; 5,000 g + Cog Key)
 
-Commons: Hay Hoarder and Bell Thief (weak Frost), Harness Snipper (weak Clockwork). Rare Carrot Crook (weak Frost). They all resist Starlight, so leave those traps at home. Use **Hot Cocoa** (90 g): other bait halves Allure.
+Commons: Hay Hoarder and Bell Thief (weak Frost), Harness Snipper (weak Clockwork). Rare Carrot Crook (weak Frost). They all resist Starlight, so leave those traps at home. Farm with **Hay Biscuit** (450 g) and save for pushes with **Hot Cocoa** (1,200 g, the premium bait); both are Stables-only baits.
 
-**Steps.** 1) Travel here with the Workshop's key and equip trap 1: **Snow Globe Prison + Yule Log Base** (Snow Globe Prison 25,000 g). 2) Hunt and run sleigh runs; craft the Gingerbread Cottage (3 Cookie Tin + 2 Golden Ribbon + 1 Candy Cane Platform + 8,000 g) and wear the Wind-up Key Charm. Trap 2 is **Snow Globe Prison + Gingerbread Cottage + Wind-up Key Charm**. 3) Return with trap 2 for Cinderhoof. Catch rates:
+**Steps.** 1) Travel here with the Workshop's key and equip trap 1: **Snow Globe Prison + Yule Log Base** (Snow Globe Prison 25,000 g). 2) Hunt and run sleigh runs; craft the Gingerbread Cottage (3 Cookie Tin + 2 Golden Ribbon + 1 Candy Cane Platform + 8,000 g) and wear the Wind-up Key Charm on pushes. Trap 2 is **Snow Globe Prison + Gingerbread Cottage + Wind-up Key Charm**. 3) Return with trap 2 for Cinderhoof. Catch rates:
 
 | Elf | Tier | Power | Weak | Trap 1 | Trap 2 |
 | --- | --- | --- | --- | --- | --- |
@@ -647,8 +649,8 @@ Commons: Hay Hoarder and Bell Thief (weak Frost), Harness Snipper (weak Clockwor
 | Cinderhoof | boss | 20,500 | frost | 16% | 26% |
 
 
-- **Frost build (trap 2):** Snow Globe Prison (25,000 g, Frost 1,800), Gingerbread Cottage base (power 1,550, Frost affinity +10%, more Allure), Wind-up Key Charm (+35% power). See the table above: Cinderhoof about 26% (16% with trap 1).
-- **Sleigh Run:** start a run (it costs 100 gold per hunt while it is on, so bring about 6,000 gold; hunt with the run off first) and reach 100 readiness within 40 hunts. Commons add 5, Carrot Crook 12, Antler Ripper 20 (it appears only above 50 readiness). A Bell Thief escape costs 8, a Harness Snipper escape 5. Launching pays 2,000 g and a Silver Sleighbell, then Cinderhoof ambushes the next hunt. While a run is on, the Sleigh Run box shows a tip: Hot Cocoa bait draws the best elves, and a Wind-up Key, Mistletoe or Cheer charm helps you catch more of them.
+- **Frost build (trap 2):** Snow Globe Prison (25,000 g, Frost 1,800), Gingerbread Cottage base (power 1,550, Frost affinity +10%, more Allure), Wind-up Key Charm (+20% power). See the table above: Cinderhoof about 26% (16% with trap 1).
+- **Sleigh Run:** start a run (it costs 100 gold per hunt while it is on plus your bait, so bring about 22,000 gold with Hay Biscuit (52,000 with Hot Cocoa); hunt with the run off first, and abandon it if you run short) and reach 100 readiness within 40 hunts. Commons add 5, Carrot Crook 12, Antler Ripper 20 (it appears only above 50 readiness). A Bell Thief escape costs 8, a Harness Snipper escape 5. Launching pays 2,000 g (most runs, about 43%, launch with the recommended gear) and a Silver Sleighbell, then Cinderhoof ambushes the next hunt. While a run is on, the Sleigh Run box shows a tip: Hot Cocoa bait draws the best elves, and a Wind-up Key, Mistletoe or Cheer charm helps you catch more of them.
 - **Antler Ripper** (5,000 power, weak Frost) is about 60% with trap 2. **Cinderhoof** (20,500 power, weak Frost, immune to Starlight) is about 26% with trap 2 (16% with trap 1), so expect several tries. Escapes never cost rank.
 - Optional: Sleigh Runner base (2 Silver Sleighbell + 2 Toymaker's Gear + 12,000 g) and Sleigh-Bell Snapper trap (3 Silver Sleighbell + Clockwork Heart + Nutcracker Jaws + 15,000 g) are for the Workshop and Wrapping Room bosses and for completionists; against Cinderhoof the Frost build above is just as good. The Wishing Star Pedestal (1 Clockwork Heart, 2 Enchanted Wrapping, 4 Sugar Glass, 12,000 g) adds luck 9.
 
@@ -680,5 +682,5 @@ Commons: Hay Hoarder and Bell Thief (weak Frost), Harness Snipper (weak Clockwor
 - **Toy Workshop (6):** Wind-up Elf (keep Jaws on, never Frost), then Hammerhand and Grimbolt through the order board.
 - **Stables (6):** Carrot Crook, Antler Ripper and Cinderhoof through the sleigh run. Cinderhoof is the last elf. At 217,000 points you are a Yule Marshal.
 
-Pacing: the latest simulator run (Report 5 in `docs/BALANCE.md`) has a median of about 1,200 hunts to rank 5. The Carol Loft is a detour inside rank 2, so it adds hunts there.
+Pacing: the latest simulator run (Report 15 in `docs/BALANCE.md`) has a median of about 1,700 hunts to rank 5 and 1,800 to catch every elf, following this walkthrough. The Carol Loft is a detour inside rank 2, so it adds hunts there.
 
