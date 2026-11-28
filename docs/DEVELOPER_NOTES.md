@@ -464,7 +464,7 @@ The Wrapping Room's elves are weak to Starlight, but **Madame Shredwell is now w
 | Cookie Pantry | 1 | None: hunt for gold, buy better gear and bait, rank up | No boss here |
 | Wrapping Room | 2 | Bait ladder: three bait tiers, each crafted from the last tier's drops | Tier 3 bait is armed |
 | Toy Workshop | 3 | Order board: three standing orders (Clockwork, Starlight, Frost); every catch fills the one for your trap's type | A Rush order is finished |
-| Reindeer Stables | 4 | Sleigh run: 40 hunts to make the sleigh ready | The sleigh launches |
+| Reindeer Stables | 4 | Sleigh run: 37 hunts to make the sleigh ready | The sleigh launches |
 
 The Tangle Meter, first planned for the Wrapping Room, is kept as a spare loop for a later location.
 
@@ -540,7 +540,7 @@ The elves pin three standing toy orders to the board, one for each core trap typ
 
 Get the sleigh ready before the countdown runs out, while thieves undo your work. The countdown is a number of hunts, not a clock.
 
-- **Start a run** from the panel (free). The run lasts 40 hunts; every hunt counts, and Hot Cocoa's stronger pull on rarer elves helps here.
+- **Start a run** from the panel (free). The run lasts 37 hunts; every hunt counts, and Hot Cocoa's stronger pull on rarer elves helps here.
 - **Readiness** 0 to 100: a common catch adds 5, the rare adds 12, Antler Ripper adds 20 (first pass was 4 and 10; tuned in the simulator). A Bell Thief escape takes 8 (it runs off with the bells); a Harness Snipper escape takes 5.
 - Antler Ripper's weight is 0 below 50 Readiness and 6 from 50 up.
 - **Launch:** reaching 100 before the countdown ends launches the sleigh: 2,000 gold and 1 Silver Sleighbell, and Cinderhoof ambushes it, so the next attracted hunt is Cinderhoof (weight 0 otherwise). It drops Brimstone Coal as now.
@@ -1131,20 +1131,20 @@ Section 1c of [Balance notes](BALANCE.md) gives **net gold per hunt** (expected 
 | Carol Loft | 24 / 25 / 37 | 25 / 26 / 37 | 11% to 12% |
 | Toy Workshop | 96 / 120 / 145 | 65 / 89 / 114 | 43% to 38% |
 | Reindeer Stables, run off | 289 / 335 / 335 | 261 / 304 / 304 | 100% |
-| Reindeer Stables, run on | about 308 / 368 / 368 | **-47 / -23 / -23** | |
+| Reindeer Stables, run on | about 308 / 368 / 368 | **-48 / -25 / -25** | |
 
-A run on recommended gear costs about 850 gold (36.7 hunts at -23); on beginner gear about 1,800 (38.8 hunts at -47), about 3 and 7 hunts of ride-off income. Only 18% (beginner) to 43% (recommended) of runs launch, so two launches need roughly 5 to 11 runs. Bait is now 18 to 33% of a hunt's gold in the Pantry-to-Stables range at recommended gear, within the 25 to 35% rule, except the Pantry (47%, left as the starter area).
+The run is 37 hunts long (was 40) and launches about **34% of the time with recommended gear** (eddy: 30 to 35%) and 13% with beginner gear. A run on recommended gear costs about 870 gold (34.8 hunts at -25); on beginner gear about 1,740 (36.2 hunts at -48). Reaching Cinderhoof needs two launches: recommended gear about 5.9 runs, 205 hunts and 5,100 gold; beginner gear about 15 runs, 560 hunts and 27,000 gold. Bait is now 18 to 33% of a hunt's gold in the Pantry-to-Stables range at recommended gear, within the 25 to 35% rule, except the Pantry (47%, left as the starter area).
 
 ### Simulator results (200 players, seed 42, bot starts a run only with its whole cost in hand and a Frost trap that can win it, and abandons a run it can no longer pay for)
 
 | Metric | Before | After |
 | --- | --- | --- |
-| Hunts to rank 5 | median 1,460 | **median 1,697** |
-| Hunts to catch every elf | median 2,433 (p10 1,562, p90 4,251) | **median 2,781 (p10 1,798, p90 5,308)** |
-| Ranks 1 to 4 (median hunts) | | 127, 291, 444, 810 (targets 150, 250, 400, 600) |
-| Sleigh runs per player / launched | | 6.9 / 0.9 |
+| Hunts to rank 5 | median 1,460 | **median 1,698** |
+| Hunts to catch every elf | median 2,433 (p10 1,562, p90 4,251) | **median 3,101 (p10 1,916, p90 5,841)** |
+| Ranks 1 to 4 (median hunts) | | 127, 291, 444, 811 (targets 150, 250, 400, 600) |
+| Sleigh runs per player / launched | | 7.5 / 0.8 |
 
-Rank 4 is now flagged too slow (810 vs 600): the Snow Globe Prison costs 25,000 and the Stables bait and run upkeep slow the saving. The full collection takes about 350 more hunts because Antler Ripper needs runs. Not retuned: levers if eddy wants it faster are Hot Cocoa 45 to 30, upkeep 100 to 70, or launch gold 2,000 to 3,000.
+Rank 4 is now flagged too slow (811 vs 600): the Snow Globe Prison costs 25,000 and the Stables bait and run upkeep slow the saving. The full collection takes about 670 more hunts because Antler Ripper needs runs. Not retuned: levers if eddy wants it faster are Hot Cocoa 45 to 30, upkeep 100 to 70, or launch gold 2,000 to 3,000. Run length was cut 40 to 37 hunts to bring the recommended-gear launch rate from 43% to 34%.
 
 ### Build notes
 
@@ -1569,7 +1569,7 @@ To stay on a version or roll back, set the image line to `ghcr.io/cheesezilla/na
 
 | Date | PR | Change |
 | --- | --- | --- |
-| 2026-11-28 | this PR | **Area baits built on `integration`.** Each area only works with its own bait (new Glitter Gumdrop 16 and Honey Lozenge 8, Peppermint Bark 50 to 40, Hot Cocoa 90 to 45); a wrong bait is used up and the catch always fails; the old Stables half-attraction rule is removed. A sleigh run costs 100 gold upkeep per hunt and catches pay 25% gold (net negative while on); a run can be abandoned at any time; the stranded-player rescue gives the area's cheapest bait. `npm run balance` gains 1c (net gold per hunt, farm index) and 1d (Stables run off/on). Sim: median 1,697 hunts to rank 5 (1,460 before), 2,781 to catch every elf (2,433 before); rank 4 now flagged slow (810 vs 600) |
+| 2026-11-28 | this PR | **Area baits built on `integration`.** Each area only works with its own bait (new Glitter Gumdrop 16 and Honey Lozenge 8, Peppermint Bark 50 to 40, Hot Cocoa 90 to 45); a wrong bait is used up and the catch always fails; the old Stables half-attraction rule is removed. A sleigh run costs 100 gold upkeep per hunt and catches pay 25% gold (net negative while on); a run can be abandoned at any time; the stranded-player rescue gives the area's cheapest bait. `npm run balance` gains 1c (net gold per hunt, farm index) and 1d (Stables run off/on). Sim: median 1,698 hunts to rank 5 (1,460 before), 3,101 to catch every elf (2,433 before); rank 4 now flagged slow (811 vs 600). Sleigh run 37 hunts, launches 34% of runs with recommended gear |
 | 2026-11-28 | this PR | **Release 1.0.3 (integration only).** What's new popup is derived from the save (not a mount-time flag) and More > What's new has a "Show the latest notes popup" button for re-testing. New games and Start over still skip the popup by design (`releaseSeen` starts at the latest version). Every API call, hunts included, runs the `x-app-version` check. |
 | 2026-11-28 | this PR | **Release 1.0.2 (integration only).** Version bump with fresh release notes so the What's new popup can be re-tested on the :integration image. No code or game numbers changed. |
 | 2026-11-28 | this PR | **Release 1.0.1.** `package.json` and lockfile bumped, `CHANGELOG.md` and `content/releases.json` carry the 1.0.1 notes (PRs 71 to 81: refresh popup, admin always-catch fix, Cheer Meter reset on travel, Cinderhoof harder, wording fixes, Carol Horn luck 1, balance check, commons, Grimbolt and gear tuning, docs consolidated, branch cleanup workflow). No game numbers changed in this PR |

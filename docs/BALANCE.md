@@ -131,13 +131,13 @@ Net gold per hunt = expected gold from catches (encounter weight x catch rate x 
 
 ### 1d. Reindeer Stables: gold per hunt with the sleigh run off and on
 
-**Off** = hunting without starting a run (the 1c numbers). **On** = back-to-back sleigh runs: each run lasts up to 40 hunts, catches add Readiness (common +5, rare +12, miniboss +20), escapes from Bell Thief and Harness Snipper take some away, and from 50 Readiness Antler Ripper comes at weight 6. While a run is on, each hunt costs 100 gold of upkeep and catches pay 25% of their gold. A launch (100 Readiness) pays 2000 gold; a run that times out pays 10 gold per Readiness. Solved exactly over every Readiness and hunts-left state, with the cheapest-net bait (the same as 1c, so the bait cost is small). Left out: the launch item (silver_sleighbell), the forced Cinderhoof fight after 2 launches, pillage.
+**Off** = hunting without starting a run (the 1c numbers). **On** = back-to-back sleigh runs: each run lasts up to 37 hunts, catches add Readiness (common +5, rare +12, miniboss +20), escapes from Bell Thief and Harness Snipper take some away, and from 50 Readiness Antler Ripper comes at weight 6. While a run is on, each hunt costs 100 gold of upkeep and catches pay 25% of their gold. A launch (100 Readiness) pays 2000 gold; a run that times out pays 10 gold per Readiness. Solved exactly over every Readiness and hunts-left state, with the cheapest-net bait (the same as 1c, so the bait cost is small). Left out: the launch item (silver_sleighbell), the forced Cinderhoof fight after 2 launches, pillage.
 
 | Gear | Setup used | Gold / hunt, ride off | Gold / hunt, ride on (after upkeep) | On vs off | Hunts per run | Runs that launch | Net per hunt after bait (off / on) |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1. Beginner | Snow Globe Prison + Yule Log Base | 306 | -2 | -101% | 38.8 | 18% | 261 / -47 |
-| 2. Recommended | Sleigh-Bell Snapper + Gingerbread Cottage | 349 | 22 | -94% | 36.7 | 43% | 304 / -23 |
-| 3. Endgame | Sleigh-Bell Snapper + Gingerbread Cottage | 349 | 22 | -94% | 36.7 | 43% | 304 / -23 |
+| 1. Beginner | Snow Globe Prison + Yule Log Base | 306 | -3 | -101% | 36.2 | 13% | 261 / -48 |
+| 2. Recommended | Sleigh-Bell Snapper + Gingerbread Cottage | 349 | 20 | -94% | 34.8 | 34% | 304 / -25 |
+| 3. Endgame | Sleigh-Bell Snapper + Gingerbread Cottage | 349 | 20 | -94% | 34.8 | 34% | 304 / -25 |
 
 ### 2. Rare, mini boss and boss catch rates: fresh player vs endgame gear
 
@@ -448,9 +448,9 @@ Built on `integration` (eddy, 28 Nov). Each area only works with its own bait (a
 
 | Metric | Before | After |
 | --- | --- | --- |
-| Hunts to rank 5 | median 1,460 | median 1,697 |
-| Hunts to catch all 28 elves | median 2,433 (p10 1,562, p90 4,251) | median 2,781 (p10 1,798, p90 5,308) |
-| Ranks 1 to 4 (median hunts) | | 127, 291, 444, 810 (targets 150, 250, 400, 600; rank 4 flagged too slow) |
-| Net gold per hunt, Stables, recommended gear | 335 (run on 368) | 304 off, -23 on |
+| Hunts to rank 5 | median 1,460 | median 1,698 |
+| Hunts to catch all 28 elves | median 2,433 (p10 1,562, p90 4,251) | median 3,101 (p10 1,916, p90 5,841) |
+| Ranks 1 to 4 (median hunts) | | 127, 291, 444, 811 (targets 150, 250, 400, 600; rank 4 flagged too slow) |
+| Net gold per hunt, Stables, recommended gear | 335 (run on 368) | 304 off, -25 on |
 
 The simulated player only starts a run with the whole cost in hand and a Snow Globe Prison or Sleigh-Bell Snapper, and abandons a run it cannot pay for; without that rule it never saved the 25,000 gold for the trap.
